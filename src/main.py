@@ -44,23 +44,30 @@ def main():
     processor.export_to_csv(csv_path)
     processor.export_to_json(json_path)
     
-    # Print statistics
+    # Get and display statistics
     stats = processor.get_statistics()
-    print("\nData Collection Statistics:")
+    print("\nStatistics:")
     print(f"Total exoplanets: {stats['total_exoplanets']}")
     print("\nSources:")
     for source, count in stats['sources'].items():
         print(f"  {source}: {count}")
-    print("\nDiscovery Methods:")
+    print("\nDiscovery methods:")
     for method, count in stats['discovery_methods'].items():
         print(f"  {method}: {count}")
-    print("\nDiscovery Years:")
+    print("\nDiscovery years:")
     for year, count in sorted(stats['discovery_years'].items()):
         print(f"  {year}: {count}")
     
-    print(f"\nData exported to:")
-    print(f"  CSV: {csv_path}")
-    print(f"  JSON: {json_path}")
+    # Vérifier les exoplanètes sans article
+    print("\nVérification des exoplanètes sans article sur Wikipedia...")
+    exoplanets_without_articles = processor.filter_exoplanets_without_articles()
+    print(f"Nombre d'exoplanètes sans article : {len(exoplanets_without_articles)}")
+    
+    # Exporter la liste des exoplanètes sans article
+    if exoplanets_without_articles:
+        missing_articles_path = os.path.join(output_dir, f"missing_articles_{timestamp}.csv")
+        processor.export_to_csv(missing_articles_path, exoplanets_without_articles)
+        print(f"Liste des exoplanètes sans article exportée dans : {missing_articles_path}")
 
 if __name__ == "__main__":
     main() 
