@@ -1,0 +1,73 @@
+== rho Crb c ==
+
+{{Infobox Exoplanète
+| nom = rho Crb c
+| image = 
+| légende = 
+| étoile = rho CrB
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| masse = ?<ref></ref>
+| rayon = ?<ref></ref>
+| densité = ?<ref></ref>
+| gravité = ?<ref></ref>
+| température = 448.0 K<ref></ref>
+| période = 102.19 j<ref></ref>
+| demi_grand_axe = 0.4206 ua<ref></ref>
+| excentricité = 0.096 <ref></ref>
+| inclinaison = ?<ref></ref>
+| méthode_découverte = Radial Velocity
+| date_découverte = 2016
+| statut = Confirmée
+}}
+
+rho Crb c est une exoplanète découverte en 2016 par la méthode de Radial Velocity. Elle orbite autour de l'étoile rho CrB.
+
+== Caractéristiques ==
+
+=== Caractéristiques orbitales ===
+* Période orbitale : 102.19 jours<ref></ref>
+* Demi-grand axe : 0.4206 ua<ref></ref>
+* Excentricité : 0.096 <ref></ref>
+* Inclinaison : ?<ref></ref>
+
+=== Caractéristiques physiques ===
+* Masse : ?<ref></ref>
+* Rayon : ?<ref></ref>
+* Densité : ?<ref></ref>
+* Température d'équilibre : 448.0 K<ref></ref>
+
+== Étoile hôte ==
+
+{{Infobox Étoile
+| nom = rho CrB
+| image = 
+| légende = 
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| magnitude_absolue = 
+| magnitude_apparente = 
+| masse = ?<ref></ref>
+| rayon = ?<ref></ref>
+| température = ?<ref></ref>
+| métallicité = ?<ref></ref>
+| âge = ?<ref></ref>
+}}
+
+L'étoile hôte rho CrB est une étoile de type spectral inconnu.
+
+== Découverte ==
+
+rho Crb c a été découverte en 2016 par la méthode de Radial Velocity.
+
+== Références ==
+<references />
+
+[[Catégorie:Exoplanète]]
+[[Catégorie:Exoplanète découverte en 2016]]

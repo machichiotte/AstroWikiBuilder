@@ -1,0 +1,73 @@
+== eps Eri b ==
+
+{{Infobox Exoplanète
+| nom = eps Eri b
+| image = 
+| légende = 
+| étoile = eps Eri
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| masse = 209.76674862 M⊕<ref></ref>
+| rayon = 14.1 R⊕<ref></ref>
+| densité = ?<ref></ref>
+| gravité = ?<ref></ref>
+| température = ?<ref></ref>
+| période = 2671.0 j<ref></ref>
+| demi_grand_axe = 3.53 ua<ref></ref>
+| excentricité = 0.07 <ref></ref>
+| inclinaison = 78.81 °<ref></ref>
+| méthode_découverte = Radial Velocity
+| date_découverte = 2000
+| statut = Confirmée
+}}
+
+eps Eri b est une exoplanète découverte en 2000 par la méthode de Radial Velocity. Elle orbite autour de l'étoile eps Eri.
+
+== Caractéristiques ==
+
+=== Caractéristiques orbitales ===
+* Période orbitale : 2671.0 jours<ref></ref>
+* Demi-grand axe : 3.53 ua<ref></ref>
+* Excentricité : 0.07 <ref></ref>
+* Inclinaison : 78.81 °<ref></ref>
+
+=== Caractéristiques physiques ===
+* Masse : 209.76674862 M⊕<ref></ref>
+* Rayon : 14.1 R⊕<ref></ref>
+* Densité : ?<ref></ref>
+* Température d'équilibre : ?<ref></ref>
+
+== Étoile hôte ==
+
+{{Infobox Étoile
+| nom = eps Eri
+| image = 
+| légende = 
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| magnitude_absolue = 
+| magnitude_apparente = 
+| masse = ?<ref></ref>
+| rayon = ?<ref></ref>
+| température = ?<ref></ref>
+| métallicité = ?<ref></ref>
+| âge = ?<ref></ref>
+}}
+
+L'étoile hôte eps Eri est une étoile de type spectral inconnu.
+
+== Découverte ==
+
+eps Eri b a été découverte en 2000 par la méthode de Radial Velocity.
+
+== Références ==
+<references />
+
+[[Catégorie:Exoplanète]]
+[[Catégorie:Exoplanète découverte en 2000]]

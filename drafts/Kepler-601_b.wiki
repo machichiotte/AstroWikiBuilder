@@ -1,0 +1,73 @@
+== Kepler-601 b ==
+
+{{Infobox Exoplanète
+| nom = Kepler-601 b
+| image = 
+| légende = 
+| étoile = Kepler-601
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| masse = 4.27 M⊕<ref></ref>
+| rayon = 1.9 R⊕<ref></ref>
+| densité = ?<ref></ref>
+| gravité = ?<ref></ref>
+| température = 833.0 K<ref></ref>
+| période = 5.378868441 j<ref></ref>
+| demi_grand_axe = 0.05494 ua<ref></ref>
+| excentricité = 0.0 <ref></ref>
+| inclinaison = 85.81 °<ref></ref>
+| méthode_découverte = Transit
+| date_découverte = 2016
+| statut = Confirmée
+}}
+
+Kepler-601 b est une exoplanète découverte en 2016 par la méthode de Transit. Elle orbite autour de l'étoile Kepler-601.
+
+== Caractéristiques ==
+
+=== Caractéristiques orbitales ===
+* Période orbitale : 5.378868441 jours<ref></ref>
+* Demi-grand axe : 0.05494 ua<ref></ref>
+* Excentricité : 0.0 <ref></ref>
+* Inclinaison : 85.81 °<ref></ref>
+
+=== Caractéristiques physiques ===
+* Masse : 4.27 M⊕<ref></ref>
+* Rayon : 1.9 R⊕<ref></ref>
+* Densité : ?<ref></ref>
+* Température d'équilibre : 833.0 K<ref></ref>
+
+== Étoile hôte ==
+
+{{Infobox Étoile
+| nom = Kepler-601
+| image = 
+| légende = 
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| magnitude_absolue = 
+| magnitude_apparente = 
+| masse = ?<ref></ref>
+| rayon = ?<ref></ref>
+| température = ?<ref></ref>
+| métallicité = ?<ref></ref>
+| âge = ?<ref></ref>
+}}
+
+L'étoile hôte Kepler-601 est une étoile de type spectral inconnu.
+
+== Découverte ==
+
+Kepler-601 b a été découverte en 2016 par la méthode de Transit.
+
+== Références ==
+<references />
+
+[[Catégorie:Exoplanète]]
+[[Catégorie:Exoplanète découverte en 2016]]

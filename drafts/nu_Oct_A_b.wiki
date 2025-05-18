@@ -1,0 +1,73 @@
+== nu Oct A b ==
+
+{{Infobox Exoplanète
+| nom = nu Oct A b
+| image = 
+| légende = 
+| étoile = nu Oct A
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| masse = 762.7881768 M⊕<ref></ref>
+| rayon = 13.3 R⊕<ref></ref>
+| densité = ?<ref></ref>
+| gravité = ?<ref></ref>
+| température = ?<ref></ref>
+| période = 417.0 j<ref></ref>
+| demi_grand_axe = 1.25 ua<ref></ref>
+| excentricité = 0.11 <ref></ref>
+| inclinaison = 112.5 °<ref></ref>
+| méthode_découverte = Radial Velocity
+| date_découverte = 2016
+| statut = Confirmée
+}}
+
+nu Oct A b est une exoplanète découverte en 2016 par la méthode de Radial Velocity. Elle orbite autour de l'étoile nu Oct A.
+
+== Caractéristiques ==
+
+=== Caractéristiques orbitales ===
+* Période orbitale : 417.0 jours<ref></ref>
+* Demi-grand axe : 1.25 ua<ref></ref>
+* Excentricité : 0.11 <ref></ref>
+* Inclinaison : 112.5 °<ref></ref>
+
+=== Caractéristiques physiques ===
+* Masse : 762.7881768 M⊕<ref></ref>
+* Rayon : 13.3 R⊕<ref></ref>
+* Densité : ?<ref></ref>
+* Température d'équilibre : ?<ref></ref>
+
+== Étoile hôte ==
+
+{{Infobox Étoile
+| nom = nu Oct A
+| image = 
+| légende = 
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| magnitude_absolue = 
+| magnitude_apparente = 
+| masse = ?<ref></ref>
+| rayon = ?<ref></ref>
+| température = ?<ref></ref>
+| métallicité = ?<ref></ref>
+| âge = ?<ref></ref>
+}}
+
+L'étoile hôte nu Oct A est une étoile de type spectral inconnu.
+
+== Découverte ==
+
+nu Oct A b a été découverte en 2016 par la méthode de Radial Velocity.
+
+== Références ==
+<references />
+
+[[Catégorie:Exoplanète]]
+[[Catégorie:Exoplanète découverte en 2016]]

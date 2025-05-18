@@ -1,0 +1,73 @@
+== MOA 2011-BLG-322L b ==
+
+{{Infobox Exoplanète
+| nom = MOA 2011-BLG-322L b
+| image = 
+| légende = 
+| étoile = MOA-2011-BLG-322L
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| masse = 11.6 M⊕<ref></ref>
+| rayon = ?<ref></ref>
+| densité = ?<ref></ref>
+| gravité = ?<ref></ref>
+| température = ?<ref></ref>
+| période = ?<ref></ref>
+| demi_grand_axe = ?<ref></ref>
+| excentricité = ?<ref></ref>
+| inclinaison = ?<ref></ref>
+| méthode_découverte = ?
+| date_découverte = ?
+| statut = Confirmée
+}}
+
+MOA 2011-BLG-322L b est une exoplanète découverte en None par la méthode de None. Elle orbite autour de l'étoile MOA-2011-BLG-322L.
+
+== Caractéristiques ==
+
+=== Caractéristiques orbitales ===
+* Période orbitale : ?<ref></ref>
+* Demi-grand axe : ?<ref></ref>
+* Excentricité : ?<ref></ref>
+* Inclinaison : ?<ref></ref>
+
+=== Caractéristiques physiques ===
+* Masse : 11.6 M⊕<ref></ref>
+* Rayon : ?<ref></ref>
+* Densité : ?<ref></ref>
+* Température d'équilibre : ?<ref></ref>
+
+== Étoile hôte ==
+
+{{Infobox Étoile
+| nom = MOA-2011-BLG-322L
+| image = 
+| légende = 
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| magnitude_absolue = 
+| magnitude_apparente = 
+| masse = ?<ref></ref>
+| rayon = ?<ref></ref>
+| température = ?<ref></ref>
+| métallicité = ?<ref></ref>
+| âge = ?<ref></ref>
+}}
+
+L'étoile hôte MOA-2011-BLG-322L est une étoile de type spectral inconnu.
+
+== Découverte ==
+
+MOA 2011-BLG-322L b a été découverte en None par la méthode de None.
+
+== Références ==
+<references />
+
+[[Catégorie:Exoplanète]]
+[[Catégorie:Exoplanète découverte en None]]

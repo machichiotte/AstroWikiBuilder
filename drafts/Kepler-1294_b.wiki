@@ -1,0 +1,73 @@
+== Kepler-1294 b ==
+
+{{Infobox Exoplanète
+| nom = Kepler-1294 b
+| image = 
+| légende = 
+| étoile = Kepler-1294
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| masse = 10.3 M⊕<ref></ref>
+| rayon = 3.19 R⊕<ref></ref>
+| densité = ?<ref></ref>
+| gravité = ?<ref></ref>
+| température = 401.0 K<ref></ref>
+| période = 115.6862258 j<ref></ref>
+| demi_grand_axe = 0.4684 ua<ref></ref>
+| excentricité = 0.0 <ref></ref>
+| inclinaison = 89.93 °<ref></ref>
+| méthode_découverte = Transit
+| date_découverte = 2016
+| statut = Confirmée
+}}
+
+Kepler-1294 b est une exoplanète découverte en 2016 par la méthode de Transit. Elle orbite autour de l'étoile Kepler-1294.
+
+== Caractéristiques ==
+
+=== Caractéristiques orbitales ===
+* Période orbitale : 115.6862258 jours<ref></ref>
+* Demi-grand axe : 0.4684 ua<ref></ref>
+* Excentricité : 0.0 <ref></ref>
+* Inclinaison : 89.93 °<ref></ref>
+
+=== Caractéristiques physiques ===
+* Masse : 10.3 M⊕<ref></ref>
+* Rayon : 3.19 R⊕<ref></ref>
+* Densité : ?<ref></ref>
+* Température d'équilibre : 401.0 K<ref></ref>
+
+== Étoile hôte ==
+
+{{Infobox Étoile
+| nom = Kepler-1294
+| image = 
+| légende = 
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| magnitude_absolue = 
+| magnitude_apparente = 
+| masse = ?<ref></ref>
+| rayon = ?<ref></ref>
+| température = ?<ref></ref>
+| métallicité = ?<ref></ref>
+| âge = ?<ref></ref>
+}}
+
+L'étoile hôte Kepler-1294 est une étoile de type spectral inconnu.
+
+== Découverte ==
+
+Kepler-1294 b a été découverte en 2016 par la méthode de Transit.
+
+== Références ==
+<references />
+
+[[Catégorie:Exoplanète]]
+[[Catégorie:Exoplanète découverte en 2016]]

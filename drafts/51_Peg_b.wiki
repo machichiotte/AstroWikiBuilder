@@ -1,0 +1,73 @@
+== 51 Peg b ==
+
+{{Infobox Exoplanète
+| nom = 51 Peg b
+| image = 
+| légende = 
+| étoile = 51 Peg
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| masse = 146.2018 M⊕<ref></ref>
+| rayon = 14.3 R⊕<ref></ref>
+| densité = ?<ref></ref>
+| gravité = ?<ref></ref>
+| température = ?<ref></ref>
+| période = 4.230785 j<ref></ref>
+| demi_grand_axe = 0.0527 ua<ref></ref>
+| excentricité = 0.013 <ref></ref>
+| inclinaison = 80.0 °<ref></ref>
+| méthode_découverte = Radial Velocity
+| date_découverte = 1995
+| statut = Confirmée
+}}
+
+51 Peg b est une exoplanète découverte en 1995 par la méthode de Radial Velocity. Elle orbite autour de l'étoile 51 Peg.
+
+== Caractéristiques ==
+
+=== Caractéristiques orbitales ===
+* Période orbitale : 4.230785 jours<ref></ref>
+* Demi-grand axe : 0.0527 ua<ref></ref>
+* Excentricité : 0.013 <ref></ref>
+* Inclinaison : 80.0 °<ref></ref>
+
+=== Caractéristiques physiques ===
+* Masse : 146.2018 M⊕<ref></ref>
+* Rayon : 14.3 R⊕<ref></ref>
+* Densité : ?<ref></ref>
+* Température d'équilibre : ?<ref></ref>
+
+== Étoile hôte ==
+
+{{Infobox Étoile
+| nom = 51 Peg
+| image = 
+| légende = 
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| magnitude_absolue = 
+| magnitude_apparente = 
+| masse = ?<ref></ref>
+| rayon = ?<ref></ref>
+| température = ?<ref></ref>
+| métallicité = ?<ref></ref>
+| âge = ?<ref></ref>
+}}
+
+L'étoile hôte 51 Peg est une étoile de type spectral inconnu.
+
+== Découverte ==
+
+51 Peg b a été découverte en 1995 par la méthode de Radial Velocity.
+
+== Références ==
+<references />
+
+[[Catégorie:Exoplanète]]
+[[Catégorie:Exoplanète découverte en 1995]]

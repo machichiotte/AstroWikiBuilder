@@ -1,0 +1,73 @@
+== SWEEPS-11 ==
+
+{{Infobox Exoplanète
+| nom = SWEEPS-11
+| image = 
+| légende = 
+| étoile = SWEEPS-11
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| masse = 9.7 M⊕<ref></ref>
+| rayon = 1.13 R⊕<ref></ref>
+| densité = ?<ref></ref>
+| gravité = ?<ref></ref>
+| température = ?<ref></ref>
+| période = 1.796 j<ref></ref>
+| demi_grand_axe = 0.03 ua<ref></ref>
+| excentricité = ?<ref></ref>
+| inclinaison = 84.0 °<ref></ref>
+| méthode_découverte = ?
+| date_découverte = ?
+| statut = Confirmée
+}}
+
+SWEEPS-11 est une exoplanète découverte en None par la méthode de None. Elle orbite autour de l'étoile SWEEPS-11.
+
+== Caractéristiques ==
+
+=== Caractéristiques orbitales ===
+* Période orbitale : 1.796 jours<ref></ref>
+* Demi-grand axe : 0.03 ua<ref></ref>
+* Excentricité : ?<ref></ref>
+* Inclinaison : 84.0 °<ref></ref>
+
+=== Caractéristiques physiques ===
+* Masse : 9.7 M⊕<ref></ref>
+* Rayon : 1.13 R⊕<ref></ref>
+* Densité : ?<ref></ref>
+* Température d'équilibre : ?<ref></ref>
+
+== Étoile hôte ==
+
+{{Infobox Étoile
+| nom = SWEEPS-11
+| image = 
+| légende = 
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| magnitude_absolue = 
+| magnitude_apparente = 
+| masse = ?<ref></ref>
+| rayon = ?<ref></ref>
+| température = ?<ref></ref>
+| métallicité = ?<ref></ref>
+| âge = ?<ref></ref>
+}}
+
+L'étoile hôte SWEEPS-11 est une étoile de type spectral inconnu.
+
+== Découverte ==
+
+SWEEPS-11 a été découverte en None par la méthode de None.
+
+== Références ==
+<references />
+
+[[Catégorie:Exoplanète]]
+[[Catégorie:Exoplanète découverte en None]]

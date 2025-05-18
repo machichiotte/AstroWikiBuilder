@@ -1,0 +1,73 @@
+== BD-06 1339 d ==
+
+{{Infobox Exoplanète
+| nom = BD-06 1339 d
+| image = 
+| légende = 
+| étoile = BD-06 1339
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| masse = ?<ref></ref>
+| rayon = ?<ref></ref>
+| densité = ?<ref></ref>
+| gravité = ?<ref></ref>
+| température = ?<ref></ref>
+| période = 487.0 j<ref></ref>
+| demi_grand_axe = 1.06 ua<ref></ref>
+| excentricité = 0.02 <ref></ref>
+| inclinaison = ?<ref></ref>
+| méthode_découverte = Radial Velocity
+| date_découverte = 2014
+| statut = Confirmée
+}}
+
+BD-06 1339 d est une exoplanète découverte en 2014 par la méthode de Radial Velocity. Elle orbite autour de l'étoile BD-06 1339.
+
+== Caractéristiques ==
+
+=== Caractéristiques orbitales ===
+* Période orbitale : 487.0 jours<ref></ref>
+* Demi-grand axe : 1.06 ua<ref></ref>
+* Excentricité : 0.02 <ref></ref>
+* Inclinaison : ?<ref></ref>
+
+=== Caractéristiques physiques ===
+* Masse : ?<ref></ref>
+* Rayon : ?<ref></ref>
+* Densité : ?<ref></ref>
+* Température d'équilibre : ?<ref></ref>
+
+== Étoile hôte ==
+
+{{Infobox Étoile
+| nom = BD-06 1339
+| image = 
+| légende = 
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| magnitude_absolue = 
+| magnitude_apparente = 
+| masse = ?<ref></ref>
+| rayon = ?<ref></ref>
+| température = ?<ref></ref>
+| métallicité = ?<ref></ref>
+| âge = ?<ref></ref>
+}}
+
+L'étoile hôte BD-06 1339 est une étoile de type spectral inconnu.
+
+== Découverte ==
+
+BD-06 1339 d a été découverte en 2014 par la méthode de Radial Velocity.
+
+== Références ==
+<references />
+
+[[Catégorie:Exoplanète]]
+[[Catégorie:Exoplanète découverte en 2014]]

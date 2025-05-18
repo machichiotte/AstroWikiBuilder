@@ -1,0 +1,73 @@
+== MOA-bin-1L b ==
+
+{{Infobox Exoplanète
+| nom = MOA-bin-1L b
+| image = 
+| légende = 
+| étoile = MOA-bin-1L
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| masse = 1200.0 M⊕<ref></ref>
+| rayon = 13.0 R⊕<ref></ref>
+| densité = ?<ref></ref>
+| gravité = ?<ref></ref>
+| température = ?<ref></ref>
+| période = ?<ref></ref>
+| demi_grand_axe = 8.3 ua<ref></ref>
+| excentricité = ?<ref></ref>
+| inclinaison = ?<ref></ref>
+| méthode_découverte = Microlensing
+| date_découverte = 2012
+| statut = Confirmée
+}}
+
+MOA-bin-1L b est une exoplanète découverte en 2012 par la méthode de Microlensing. Elle orbite autour de l'étoile MOA-bin-1L.
+
+== Caractéristiques ==
+
+=== Caractéristiques orbitales ===
+* Période orbitale : ?<ref></ref>
+* Demi-grand axe : 8.3 ua<ref></ref>
+* Excentricité : ?<ref></ref>
+* Inclinaison : ?<ref></ref>
+
+=== Caractéristiques physiques ===
+* Masse : 1200.0 M⊕<ref></ref>
+* Rayon : 13.0 R⊕<ref></ref>
+* Densité : ?<ref></ref>
+* Température d'équilibre : ?<ref></ref>
+
+== Étoile hôte ==
+
+{{Infobox Étoile
+| nom = MOA-bin-1L
+| image = 
+| légende = 
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| magnitude_absolue = 
+| magnitude_apparente = 
+| masse = ?<ref></ref>
+| rayon = ?<ref></ref>
+| température = ?<ref></ref>
+| métallicité = ?<ref></ref>
+| âge = ?<ref></ref>
+}}
+
+L'étoile hôte MOA-bin-1L est une étoile de type spectral inconnu.
+
+== Découverte ==
+
+MOA-bin-1L b a été découverte en 2012 par la méthode de Microlensing.
+
+== Références ==
+<references />
+
+[[Catégorie:Exoplanète]]
+[[Catégorie:Exoplanète découverte en 2012]]

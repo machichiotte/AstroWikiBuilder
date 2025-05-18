@@ -1,0 +1,73 @@
+== Kepler-215 c ==
+
+{{Infobox Exoplanète
+| nom = Kepler-215 c
+| image = 
+| légende = 
+| étoile = Kepler-215
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| masse = 3.78 M⊕<ref></ref>
+| rayon = 1.77 R⊕<ref></ref>
+| densité = ?<ref></ref>
+| gravité = ?<ref></ref>
+| température = 675.0 K<ref></ref>
+| période = 14.667108 j<ref></ref>
+| demi_grand_axe = 0.113 ua<ref></ref>
+| excentricité = 0.0 <ref></ref>
+| inclinaison = 88.61 °<ref></ref>
+| méthode_découverte = Transit
+| date_découverte = 2014
+| statut = Confirmée
+}}
+
+Kepler-215 c est une exoplanète découverte en 2014 par la méthode de Transit. Elle orbite autour de l'étoile Kepler-215.
+
+== Caractéristiques ==
+
+=== Caractéristiques orbitales ===
+* Période orbitale : 14.667108 jours<ref></ref>
+* Demi-grand axe : 0.113 ua<ref></ref>
+* Excentricité : 0.0 <ref></ref>
+* Inclinaison : 88.61 °<ref></ref>
+
+=== Caractéristiques physiques ===
+* Masse : 3.78 M⊕<ref></ref>
+* Rayon : 1.77 R⊕<ref></ref>
+* Densité : ?<ref></ref>
+* Température d'équilibre : 675.0 K<ref></ref>
+
+== Étoile hôte ==
+
+{{Infobox Étoile
+| nom = Kepler-215
+| image = 
+| légende = 
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| magnitude_absolue = 
+| magnitude_apparente = 
+| masse = ?<ref></ref>
+| rayon = ?<ref></ref>
+| température = ?<ref></ref>
+| métallicité = ?<ref></ref>
+| âge = ?<ref></ref>
+}}
+
+L'étoile hôte Kepler-215 est une étoile de type spectral inconnu.
+
+== Découverte ==
+
+Kepler-215 c a été découverte en 2014 par la méthode de Transit.
+
+== Références ==
+<references />
+
+[[Catégorie:Exoplanète]]
+[[Catégorie:Exoplanète découverte en 2014]]

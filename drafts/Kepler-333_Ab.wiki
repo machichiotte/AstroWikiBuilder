@@ -1,0 +1,73 @@
+== Kepler-333 Ab ==
+
+{{Infobox Exoplanète
+| nom = Kepler-333 Ab
+| image = 
+| légende = 
+| étoile = Kepler-333 A
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| masse = ?<ref></ref>
+| rayon = 0.1195 R⊕<ref></ref>
+| densité = ?<ref></ref>
+| gravité = ?<ref></ref>
+| température = 480.0 K<ref></ref>
+| période = 12.55111099 j<ref></ref>
+| demi_grand_axe = 0.0896 ua<ref></ref>
+| excentricité = 0.0 <ref></ref>
+| inclinaison = 88.9 °<ref></ref>
+| méthode_découverte = Primary Transit
+| date_découverte = 2014
+| statut = Confirmée
+}}
+
+Kepler-333 Ab est une exoplanète découverte en 2014 par la méthode de Primary Transit. Elle orbite autour de l'étoile Kepler-333 A.
+
+== Caractéristiques ==
+
+=== Caractéristiques orbitales ===
+* Période orbitale : 12.55111099 jours<ref></ref>
+* Demi-grand axe : 0.0896 ua<ref></ref>
+* Excentricité : 0.0 <ref></ref>
+* Inclinaison : 88.9 °<ref></ref>
+
+=== Caractéristiques physiques ===
+* Masse : ?<ref></ref>
+* Rayon : 0.1195 R⊕<ref></ref>
+* Densité : ?<ref></ref>
+* Température d'équilibre : 480.0 K<ref></ref>
+
+== Étoile hôte ==
+
+{{Infobox Étoile
+| nom = Kepler-333 A
+| image = 
+| légende = 
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| magnitude_absolue = 
+| magnitude_apparente = 
+| masse = ?<ref></ref>
+| rayon = ?<ref></ref>
+| température = ?<ref></ref>
+| métallicité = ?<ref></ref>
+| âge = ?<ref></ref>
+}}
+
+L'étoile hôte Kepler-333 A est une étoile de type spectral inconnu.
+
+== Découverte ==
+
+Kepler-333 Ab a été découverte en 2014 par la méthode de Primary Transit.
+
+== Références ==
+<references />
+
+[[Catégorie:Exoplanète]]
+[[Catégorie:Exoplanète découverte en 2014]]

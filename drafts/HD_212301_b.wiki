@@ -1,0 +1,73 @@
+== HD 212301 b ==
+
+{{Infobox Exoplanète
+| nom = HD 212301 b
+| image = 
+| légende = 
+| étoile = HD 212301
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| masse = 162.0933 M⊕<ref></ref>
+| rayon = 14.2 R⊕<ref></ref>
+| densité = ?<ref></ref>
+| gravité = ?<ref></ref>
+| température = ?<ref></ref>
+| période = 2.24571 j<ref></ref>
+| demi_grand_axe = 0.03 ua<ref></ref>
+| excentricité = 0.0 <ref></ref>
+| inclinaison = ?<ref></ref>
+| méthode_découverte = Radial Velocity
+| date_découverte = 2005
+| statut = Confirmée
+}}
+
+HD 212301 b est une exoplanète découverte en 2005 par la méthode de Radial Velocity. Elle orbite autour de l'étoile HD 212301.
+
+== Caractéristiques ==
+
+=== Caractéristiques orbitales ===
+* Période orbitale : 2.24571 jours<ref></ref>
+* Demi-grand axe : 0.03 ua<ref></ref>
+* Excentricité : 0.0 <ref></ref>
+* Inclinaison : ?<ref></ref>
+
+=== Caractéristiques physiques ===
+* Masse : 162.0933 M⊕<ref></ref>
+* Rayon : 14.2 R⊕<ref></ref>
+* Densité : ?<ref></ref>
+* Température d'équilibre : ?<ref></ref>
+
+== Étoile hôte ==
+
+{{Infobox Étoile
+| nom = HD 212301
+| image = 
+| légende = 
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| magnitude_absolue = 
+| magnitude_apparente = 
+| masse = ?<ref></ref>
+| rayon = ?<ref></ref>
+| température = ?<ref></ref>
+| métallicité = ?<ref></ref>
+| âge = ?<ref></ref>
+}}
+
+L'étoile hôte HD 212301 est une étoile de type spectral inconnu.
+
+== Découverte ==
+
+HD 212301 b a été découverte en 2005 par la méthode de Radial Velocity.
+
+== Références ==
+<references />
+
+[[Catégorie:Exoplanète]]
+[[Catégorie:Exoplanète découverte en 2005]]

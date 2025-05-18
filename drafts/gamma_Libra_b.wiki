@@ -1,0 +1,73 @@
+== gamma Libra b ==
+
+{{Infobox Exoplanète
+| nom = gamma Libra b
+| image = 
+| légende = 
+| étoile = gamma Libra
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| masse = 1.02 M⊕<ref></ref>
+| rayon = ?<ref></ref>
+| densité = ?<ref></ref>
+| gravité = ?<ref></ref>
+| température = ?<ref></ref>
+| période = 415.2 j<ref></ref>
+| demi_grand_axe = 1.24 ua<ref></ref>
+| excentricité = 0.21 <ref></ref>
+| inclinaison = ?<ref></ref>
+| méthode_découverte = ?
+| date_découverte = ?
+| statut = Confirmée
+}}
+
+gamma Libra b est une exoplanète découverte en None par la méthode de None. Elle orbite autour de l'étoile gamma Libra.
+
+== Caractéristiques ==
+
+=== Caractéristiques orbitales ===
+* Période orbitale : 415.2 jours<ref></ref>
+* Demi-grand axe : 1.24 ua<ref></ref>
+* Excentricité : 0.21 <ref></ref>
+* Inclinaison : ?<ref></ref>
+
+=== Caractéristiques physiques ===
+* Masse : 1.02 M⊕<ref></ref>
+* Rayon : ?<ref></ref>
+* Densité : ?<ref></ref>
+* Température d'équilibre : ?<ref></ref>
+
+== Étoile hôte ==
+
+{{Infobox Étoile
+| nom = gamma Libra
+| image = 
+| légende = 
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| magnitude_absolue = 
+| magnitude_apparente = 
+| masse = ?<ref></ref>
+| rayon = ?<ref></ref>
+| température = ?<ref></ref>
+| métallicité = ?<ref></ref>
+| âge = ?<ref></ref>
+}}
+
+L'étoile hôte gamma Libra est une étoile de type spectral inconnu.
+
+== Découverte ==
+
+gamma Libra b a été découverte en None par la méthode de None.
+
+== Références ==
+<references />
+
+[[Catégorie:Exoplanète]]
+[[Catégorie:Exoplanète découverte en None]]

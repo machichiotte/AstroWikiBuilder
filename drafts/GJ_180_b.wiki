@@ -1,0 +1,73 @@
+== GJ 180 b ==
+
+{{Infobox Exoplanète
+| nom = GJ 180 b
+| image = 
+| légende = 
+| étoile = GJ 180
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| masse = 6.49 M⊕<ref></ref>
+| rayon = 2.43 R⊕<ref></ref>
+| densité = ?<ref></ref>
+| gravité = ?<ref></ref>
+| température = ?<ref></ref>
+| période = 17.133 j<ref></ref>
+| demi_grand_axe = 0.092 ua<ref></ref>
+| excentricité = 0.07 <ref></ref>
+| inclinaison = ?<ref></ref>
+| méthode_découverte = Radial Velocity
+| date_découverte = 2014
+| statut = Confirmée
+}}
+
+GJ 180 b est une exoplanète découverte en 2014 par la méthode de Radial Velocity. Elle orbite autour de l'étoile GJ 180.
+
+== Caractéristiques ==
+
+=== Caractéristiques orbitales ===
+* Période orbitale : 17.133 jours<ref></ref>
+* Demi-grand axe : 0.092 ua<ref></ref>
+* Excentricité : 0.07 <ref></ref>
+* Inclinaison : ?<ref></ref>
+
+=== Caractéristiques physiques ===
+* Masse : 6.49 M⊕<ref></ref>
+* Rayon : 2.43 R⊕<ref></ref>
+* Densité : ?<ref></ref>
+* Température d'équilibre : ?<ref></ref>
+
+== Étoile hôte ==
+
+{{Infobox Étoile
+| nom = GJ 180
+| image = 
+| légende = 
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| magnitude_absolue = 
+| magnitude_apparente = 
+| masse = ?<ref></ref>
+| rayon = ?<ref></ref>
+| température = ?<ref></ref>
+| métallicité = ?<ref></ref>
+| âge = ?<ref></ref>
+}}
+
+L'étoile hôte GJ 180 est une étoile de type spectral inconnu.
+
+== Découverte ==
+
+GJ 180 b a été découverte en 2014 par la méthode de Radial Velocity.
+
+== Références ==
+<references />
+
+[[Catégorie:Exoplanète]]
+[[Catégorie:Exoplanète découverte en 2014]]

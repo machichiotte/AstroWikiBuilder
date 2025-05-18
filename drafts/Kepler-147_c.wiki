@@ -1,0 +1,73 @@
+== Kepler-147 c ==
+
+{{Infobox Exoplanète
+| nom = Kepler-147 c
+| image = 
+| légende = 
+| étoile = Kepler-147
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| masse = 6.48 M⊕<ref></ref>
+| rayon = 2.43 R⊕<ref></ref>
+| densité = ?<ref></ref>
+| gravité = ?<ref></ref>
+| température = 689.0 K<ref></ref>
+| période = 33.416423 j<ref></ref>
+| demi_grand_axe = 0.216 ua<ref></ref>
+| excentricité = 0.0 <ref></ref>
+| inclinaison = 85.15 °<ref></ref>
+| méthode_découverte = Transit
+| date_découverte = 2014
+| statut = Confirmée
+}}
+
+Kepler-147 c est une exoplanète découverte en 2014 par la méthode de Transit. Elle orbite autour de l'étoile Kepler-147.
+
+== Caractéristiques ==
+
+=== Caractéristiques orbitales ===
+* Période orbitale : 33.416423 jours<ref></ref>
+* Demi-grand axe : 0.216 ua<ref></ref>
+* Excentricité : 0.0 <ref></ref>
+* Inclinaison : 85.15 °<ref></ref>
+
+=== Caractéristiques physiques ===
+* Masse : 6.48 M⊕<ref></ref>
+* Rayon : 2.43 R⊕<ref></ref>
+* Densité : ?<ref></ref>
+* Température d'équilibre : 689.0 K<ref></ref>
+
+== Étoile hôte ==
+
+{{Infobox Étoile
+| nom = Kepler-147
+| image = 
+| légende = 
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| magnitude_absolue = 
+| magnitude_apparente = 
+| masse = ?<ref></ref>
+| rayon = ?<ref></ref>
+| température = ?<ref></ref>
+| métallicité = ?<ref></ref>
+| âge = ?<ref></ref>
+}}
+
+L'étoile hôte Kepler-147 est une étoile de type spectral inconnu.
+
+== Découverte ==
+
+Kepler-147 c a été découverte en 2014 par la méthode de Transit.
+
+== Références ==
+<references />
+
+[[Catégorie:Exoplanète]]
+[[Catégorie:Exoplanète découverte en 2014]]

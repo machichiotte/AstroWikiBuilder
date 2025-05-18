@@ -1,0 +1,73 @@
+== beta Pic b ==
+
+{{Infobox Exoplanète
+| nom = beta Pic b
+| image = 
+| légende = 
+| étoile = beta Pic
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| masse = 11.9 M⊕<ref></ref>
+| rayon = 1.65 R⊕<ref></ref>
+| densité = ?<ref></ref>
+| gravité = ?<ref></ref>
+| température = ?<ref></ref>
+| période = 7707.0 j<ref></ref>
+| demi_grand_axe = 9.93 ua<ref></ref>
+| excentricité = 0.103 <ref></ref>
+| inclinaison = 89.0 °<ref></ref>
+| méthode_découverte = Imaging
+| date_découverte = 2008
+| statut = Confirmée
+}}
+
+beta Pic b est une exoplanète découverte en 2008 par la méthode de Imaging. Elle orbite autour de l'étoile beta Pic.
+
+== Caractéristiques ==
+
+=== Caractéristiques orbitales ===
+* Période orbitale : 7707.0 jours<ref></ref>
+* Demi-grand axe : 9.93 ua<ref></ref>
+* Excentricité : 0.103 <ref></ref>
+* Inclinaison : 89.0 °<ref></ref>
+
+=== Caractéristiques physiques ===
+* Masse : 11.9 M⊕<ref></ref>
+* Rayon : 1.65 R⊕<ref></ref>
+* Densité : ?<ref></ref>
+* Température d'équilibre : ?<ref></ref>
+
+== Étoile hôte ==
+
+{{Infobox Étoile
+| nom = beta Pic
+| image = 
+| légende = 
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| magnitude_absolue = 
+| magnitude_apparente = 
+| masse = ?<ref></ref>
+| rayon = ?<ref></ref>
+| température = ?<ref></ref>
+| métallicité = ?<ref></ref>
+| âge = ?<ref></ref>
+}}
+
+L'étoile hôte beta Pic est une étoile de type spectral inconnu.
+
+== Découverte ==
+
+beta Pic b a été découverte en 2008 par la méthode de Imaging.
+
+== Références ==
+<references />
+
+[[Catégorie:Exoplanète]]
+[[Catégorie:Exoplanète découverte en 2008]]

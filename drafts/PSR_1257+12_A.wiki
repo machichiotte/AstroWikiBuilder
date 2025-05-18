@@ -1,0 +1,73 @@
+== PSR 1257+12 A ==
+
+{{Infobox Exoplanète
+| nom = PSR 1257+12 A
+| image = 
+| légende = 
+| étoile = PSR 1257+12
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| masse = 6.29e-05 M⊕<ref></ref>
+| rayon = ?<ref></ref>
+| densité = ?<ref></ref>
+| gravité = ?<ref></ref>
+| température = ?<ref></ref>
+| période = 25.262 j<ref></ref>
+| demi_grand_axe = 0.19 ua<ref></ref>
+| excentricité = 0.0 <ref></ref>
+| inclinaison = ?<ref></ref>
+| méthode_découverte = ?
+| date_découverte = ?
+| statut = Confirmée
+}}
+
+PSR 1257+12 A est une exoplanète découverte en None par la méthode de None. Elle orbite autour de l'étoile PSR 1257+12.
+
+== Caractéristiques ==
+
+=== Caractéristiques orbitales ===
+* Période orbitale : 25.262 jours<ref></ref>
+* Demi-grand axe : 0.19 ua<ref></ref>
+* Excentricité : 0.0 <ref></ref>
+* Inclinaison : ?<ref></ref>
+
+=== Caractéristiques physiques ===
+* Masse : 6.29e-05 M⊕<ref></ref>
+* Rayon : ?<ref></ref>
+* Densité : ?<ref></ref>
+* Température d'équilibre : ?<ref></ref>
+
+== Étoile hôte ==
+
+{{Infobox Étoile
+| nom = PSR 1257+12
+| image = 
+| légende = 
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| magnitude_absolue = 
+| magnitude_apparente = 
+| masse = ?<ref></ref>
+| rayon = ?<ref></ref>
+| température = ?<ref></ref>
+| métallicité = ?<ref></ref>
+| âge = ?<ref></ref>
+}}
+
+L'étoile hôte PSR 1257+12 est une étoile de type spectral inconnu.
+
+== Découverte ==
+
+PSR 1257+12 A a été découverte en None par la méthode de None.
+
+== Références ==
+<references />
+
+[[Catégorie:Exoplanète]]
+[[Catégorie:Exoplanète découverte en None]]

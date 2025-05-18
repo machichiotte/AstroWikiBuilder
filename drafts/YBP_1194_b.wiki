@@ -1,0 +1,73 @@
+== YBP 1194 b ==
+
+{{Infobox Exoplanète
+| nom = YBP 1194 b
+| image = 
+| légende = 
+| étoile = YBP 1194
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| masse = ?<ref></ref>
+| rayon = ?<ref></ref>
+| densité = ?<ref></ref>
+| gravité = ?<ref></ref>
+| température = ?<ref></ref>
+| période = 6.958 j<ref></ref>
+| demi_grand_axe = ?<ref></ref>
+| excentricité = 0.24 <ref></ref>
+| inclinaison = ?<ref></ref>
+| méthode_découverte = Radial Velocity
+| date_découverte = 2014
+| statut = Confirmée
+}}
+
+YBP 1194 b est une exoplanète découverte en 2014 par la méthode de Radial Velocity. Elle orbite autour de l'étoile YBP 1194.
+
+== Caractéristiques ==
+
+=== Caractéristiques orbitales ===
+* Période orbitale : 6.958 jours<ref></ref>
+* Demi-grand axe : ?<ref></ref>
+* Excentricité : 0.24 <ref></ref>
+* Inclinaison : ?<ref></ref>
+
+=== Caractéristiques physiques ===
+* Masse : ?<ref></ref>
+* Rayon : ?<ref></ref>
+* Densité : ?<ref></ref>
+* Température d'équilibre : ?<ref></ref>
+
+== Étoile hôte ==
+
+{{Infobox Étoile
+| nom = YBP 1194
+| image = 
+| légende = 
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| magnitude_absolue = 
+| magnitude_apparente = 
+| masse = ?<ref></ref>
+| rayon = ?<ref></ref>
+| température = ?<ref></ref>
+| métallicité = ?<ref></ref>
+| âge = ?<ref></ref>
+}}
+
+L'étoile hôte YBP 1194 est une étoile de type spectral inconnu.
+
+== Découverte ==
+
+YBP 1194 b a été découverte en 2014 par la méthode de Radial Velocity.
+
+== Références ==
+<references />
+
+[[Catégorie:Exoplanète]]
+[[Catégorie:Exoplanète découverte en 2014]]

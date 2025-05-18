@@ -1,0 +1,73 @@
+== PDS 70 b ==
+
+{{Infobox Exoplanète
+| nom = PDS 70 b
+| image = 
+| légende = 
+| étoile = PDS 70
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| masse = 953.49 M⊕<ref></ref>
+| rayon = 30.48848 R⊕<ref></ref>
+| densité = ?<ref></ref>
+| gravité = ?<ref></ref>
+| température = 1204.0 K<ref></ref>
+| période = 43500.0 j<ref></ref>
+| demi_grand_axe = 20.0 ua<ref></ref>
+| excentricité = 0.19 <ref></ref>
+| inclinaison = 140.0 °<ref></ref>
+| méthode_découverte = Imaging
+| date_découverte = 2018
+| statut = Confirmée
+}}
+
+PDS 70 b est une exoplanète découverte en 2018 par la méthode de Imaging. Elle orbite autour de l'étoile PDS 70.
+
+== Caractéristiques ==
+
+=== Caractéristiques orbitales ===
+* Période orbitale : 43500.0 jours<ref></ref>
+* Demi-grand axe : 20.0 ua<ref></ref>
+* Excentricité : 0.19 <ref></ref>
+* Inclinaison : 140.0 °<ref></ref>
+
+=== Caractéristiques physiques ===
+* Masse : 953.49 M⊕<ref></ref>
+* Rayon : 30.48848 R⊕<ref></ref>
+* Densité : ?<ref></ref>
+* Température d'équilibre : 1204.0 K<ref></ref>
+
+== Étoile hôte ==
+
+{{Infobox Étoile
+| nom = PDS 70
+| image = 
+| légende = 
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| magnitude_absolue = 
+| magnitude_apparente = 
+| masse = ?<ref></ref>
+| rayon = ?<ref></ref>
+| température = ?<ref></ref>
+| métallicité = ?<ref></ref>
+| âge = ?<ref></ref>
+}}
+
+L'étoile hôte PDS 70 est une étoile de type spectral inconnu.
+
+== Découverte ==
+
+PDS 70 b a été découverte en 2018 par la méthode de Imaging.
+
+== Références ==
+<references />
+
+[[Catégorie:Exoplanète]]
+[[Catégorie:Exoplanète découverte en 2018]]

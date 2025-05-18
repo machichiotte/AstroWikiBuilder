@@ -1,0 +1,73 @@
+== DENIS-P J082303.1-491201 b ==
+
+{{Infobox Exoplanète
+| nom = DENIS-P J082303.1-491201 b
+| image = 
+| légende = 
+| étoile = DENIS-P J082303.1-491201
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| masse = 9057.77 M⊕<ref></ref>
+| rayon = 11.9 R⊕<ref></ref>
+| densité = ?<ref></ref>
+| gravité = ?<ref></ref>
+| température = ?<ref></ref>
+| période = 246.36 j<ref></ref>
+| demi_grand_axe = 0.36 ua<ref></ref>
+| excentricité = 0.345 <ref></ref>
+| inclinaison = 56.6 °<ref></ref>
+| méthode_découverte = Astrometry
+| date_découverte = 2013
+| statut = Confirmée
+}}
+
+DENIS-P J082303.1-491201 b est une exoplanète découverte en 2013 par la méthode de Astrometry. Elle orbite autour de l'étoile DENIS-P J082303.1-491201.
+
+== Caractéristiques ==
+
+=== Caractéristiques orbitales ===
+* Période orbitale : 246.36 jours<ref></ref>
+* Demi-grand axe : 0.36 ua<ref></ref>
+* Excentricité : 0.345 <ref></ref>
+* Inclinaison : 56.6 °<ref></ref>
+
+=== Caractéristiques physiques ===
+* Masse : 9057.77 M⊕<ref></ref>
+* Rayon : 11.9 R⊕<ref></ref>
+* Densité : ?<ref></ref>
+* Température d'équilibre : ?<ref></ref>
+
+== Étoile hôte ==
+
+{{Infobox Étoile
+| nom = DENIS-P J082303.1-491201
+| image = 
+| légende = 
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| magnitude_absolue = 
+| magnitude_apparente = 
+| masse = ?<ref></ref>
+| rayon = ?<ref></ref>
+| température = ?<ref></ref>
+| métallicité = ?<ref></ref>
+| âge = ?<ref></ref>
+}}
+
+L'étoile hôte DENIS-P J082303.1-491201 est une étoile de type spectral inconnu.
+
+== Découverte ==
+
+DENIS-P J082303.1-491201 b a été découverte en 2013 par la méthode de Astrometry.
+
+== Références ==
+<references />
+
+[[Catégorie:Exoplanète]]
+[[Catégorie:Exoplanète découverte en 2013]]

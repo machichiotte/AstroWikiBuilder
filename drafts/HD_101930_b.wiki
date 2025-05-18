@@ -1,0 +1,73 @@
+== HD 101930 b ==
+
+{{Infobox Exoplanète
+| nom = HD 101930 b
+| image = 
+| légende = 
+| étoile = HD 101930
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| masse = 79.4575 M⊕<ref></ref>
+| rayon = 10.6 R⊕<ref></ref>
+| densité = ?<ref></ref>
+| gravité = ?<ref></ref>
+| température = ?<ref></ref>
+| période = 70.46 j<ref></ref>
+| demi_grand_axe = 0.3 ua<ref></ref>
+| excentricité = 0.11 <ref></ref>
+| inclinaison = ?<ref></ref>
+| méthode_découverte = Radial Velocity
+| date_découverte = 2005
+| statut = Confirmée
+}}
+
+HD 101930 b est une exoplanète découverte en 2005 par la méthode de Radial Velocity. Elle orbite autour de l'étoile HD 101930.
+
+== Caractéristiques ==
+
+=== Caractéristiques orbitales ===
+* Période orbitale : 70.46 jours<ref></ref>
+* Demi-grand axe : 0.3 ua<ref></ref>
+* Excentricité : 0.11 <ref></ref>
+* Inclinaison : ?<ref></ref>
+
+=== Caractéristiques physiques ===
+* Masse : 79.4575 M⊕<ref></ref>
+* Rayon : 10.6 R⊕<ref></ref>
+* Densité : ?<ref></ref>
+* Température d'équilibre : ?<ref></ref>
+
+== Étoile hôte ==
+
+{{Infobox Étoile
+| nom = HD 101930
+| image = 
+| légende = 
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| magnitude_absolue = 
+| magnitude_apparente = 
+| masse = ?<ref></ref>
+| rayon = ?<ref></ref>
+| température = ?<ref></ref>
+| métallicité = ?<ref></ref>
+| âge = ?<ref></ref>
+}}
+
+L'étoile hôte HD 101930 est une étoile de type spectral inconnu.
+
+== Découverte ==
+
+HD 101930 b a été découverte en 2005 par la méthode de Radial Velocity.
+
+== Références ==
+<references />
+
+[[Catégorie:Exoplanète]]
+[[Catégorie:Exoplanète découverte en 2005]]

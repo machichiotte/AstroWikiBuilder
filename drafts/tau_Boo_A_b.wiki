@@ -1,0 +1,73 @@
+== tau Boo A b ==
+
+{{Infobox Exoplanète
+| nom = tau Boo A b
+| image = 
+| légende = 
+| étoile = tau Boo A
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| masse = 6.13 M⊕<ref></ref>
+| rayon = ?<ref></ref>
+| densité = ?<ref></ref>
+| gravité = ?<ref></ref>
+| température = 2000.0 K<ref></ref>
+| période = 3.3124568 j<ref></ref>
+| demi_grand_axe = 0.049 ua<ref></ref>
+| excentricité = 0.011 <ref></ref>
+| inclinaison = 44.5 °<ref></ref>
+| méthode_découverte = ?
+| date_découverte = ?
+| statut = Confirmée
+}}
+
+tau Boo A b est une exoplanète découverte en None par la méthode de None. Elle orbite autour de l'étoile tau Boo A.
+
+== Caractéristiques ==
+
+=== Caractéristiques orbitales ===
+* Période orbitale : 3.3124568 jours<ref></ref>
+* Demi-grand axe : 0.049 ua<ref></ref>
+* Excentricité : 0.011 <ref></ref>
+* Inclinaison : 44.5 °<ref></ref>
+
+=== Caractéristiques physiques ===
+* Masse : 6.13 M⊕<ref></ref>
+* Rayon : ?<ref></ref>
+* Densité : ?<ref></ref>
+* Température d'équilibre : 2000.0 K<ref></ref>
+
+== Étoile hôte ==
+
+{{Infobox Étoile
+| nom = tau Boo A
+| image = 
+| légende = 
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| magnitude_absolue = 
+| magnitude_apparente = 
+| masse = ?<ref></ref>
+| rayon = ?<ref></ref>
+| température = ?<ref></ref>
+| métallicité = ?<ref></ref>
+| âge = ?<ref></ref>
+}}
+
+L'étoile hôte tau Boo A est une étoile de type spectral inconnu.
+
+== Découverte ==
+
+tau Boo A b a été découverte en None par la méthode de None.
+
+== Références ==
+<references />
+
+[[Catégorie:Exoplanète]]
+[[Catégorie:Exoplanète découverte en None]]

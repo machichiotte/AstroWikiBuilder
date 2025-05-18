@@ -1,0 +1,73 @@
+== HD 93083 b ==
+
+{{Infobox Exoplanète
+| nom = HD 93083 b
+| image = 
+| légende = 
+| étoile = HD 93083
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| masse = 117.59 M⊕<ref></ref>
+| rayon = 13.4 R⊕<ref></ref>
+| densité = ?<ref></ref>
+| gravité = ?<ref></ref>
+| température = ?<ref></ref>
+| période = 143.58 j<ref></ref>
+| demi_grand_axe = 0.477 ua<ref></ref>
+| excentricité = 0.14 <ref></ref>
+| inclinaison = ?<ref></ref>
+| méthode_découverte = Radial Velocity
+| date_découverte = 2005
+| statut = Confirmée
+}}
+
+HD 93083 b est une exoplanète découverte en 2005 par la méthode de Radial Velocity. Elle orbite autour de l'étoile HD 93083.
+
+== Caractéristiques ==
+
+=== Caractéristiques orbitales ===
+* Période orbitale : 143.58 jours<ref></ref>
+* Demi-grand axe : 0.477 ua<ref></ref>
+* Excentricité : 0.14 <ref></ref>
+* Inclinaison : ?<ref></ref>
+
+=== Caractéristiques physiques ===
+* Masse : 117.59 M⊕<ref></ref>
+* Rayon : 13.4 R⊕<ref></ref>
+* Densité : ?<ref></ref>
+* Température d'équilibre : ?<ref></ref>
+
+== Étoile hôte ==
+
+{{Infobox Étoile
+| nom = HD 93083
+| image = 
+| légende = 
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| magnitude_absolue = 
+| magnitude_apparente = 
+| masse = ?<ref></ref>
+| rayon = ?<ref></ref>
+| température = ?<ref></ref>
+| métallicité = ?<ref></ref>
+| âge = ?<ref></ref>
+}}
+
+L'étoile hôte HD 93083 est une étoile de type spectral inconnu.
+
+== Découverte ==
+
+HD 93083 b a été découverte en 2005 par la méthode de Radial Velocity.
+
+== Références ==
+<references />
+
+[[Catégorie:Exoplanète]]
+[[Catégorie:Exoplanète découverte en 2005]]

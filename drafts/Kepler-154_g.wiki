@@ -1,0 +1,73 @@
+== Kepler-154 g ==
+
+{{Infobox Exoplanète
+| nom = Kepler-154 g
+| image = 
+| légende = 
+| étoile = Kepler-154
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| masse = ?<ref></ref>
+| rayon = 0.9145 R⊕<ref></ref>
+| densité = ?<ref></ref>
+| gravité = ?<ref></ref>
+| température = ?<ref></ref>
+| période = 1250.0 j<ref></ref>
+| demi_grand_axe = ?<ref></ref>
+| excentricité = 0.15 <ref></ref>
+| inclinaison = ?<ref></ref>
+| méthode_découverte = Radial Velocity
+| date_découverte = 2019
+| statut = Confirmée
+}}
+
+Kepler-154 g est une exoplanète découverte en 2019 par la méthode de Radial Velocity. Elle orbite autour de l'étoile Kepler-154.
+
+== Caractéristiques ==
+
+=== Caractéristiques orbitales ===
+* Période orbitale : 1250.0 jours<ref></ref>
+* Demi-grand axe : ?<ref></ref>
+* Excentricité : 0.15 <ref></ref>
+* Inclinaison : ?<ref></ref>
+
+=== Caractéristiques physiques ===
+* Masse : ?<ref></ref>
+* Rayon : 0.9145 R⊕<ref></ref>
+* Densité : ?<ref></ref>
+* Température d'équilibre : ?<ref></ref>
+
+== Étoile hôte ==
+
+{{Infobox Étoile
+| nom = Kepler-154
+| image = 
+| légende = 
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| magnitude_absolue = 
+| magnitude_apparente = 
+| masse = ?<ref></ref>
+| rayon = ?<ref></ref>
+| température = ?<ref></ref>
+| métallicité = ?<ref></ref>
+| âge = ?<ref></ref>
+}}
+
+L'étoile hôte Kepler-154 est une étoile de type spectral inconnu.
+
+== Découverte ==
+
+Kepler-154 g a été découverte en 2019 par la méthode de Radial Velocity.
+
+== Références ==
+<references />
+
+[[Catégorie:Exoplanète]]
+[[Catégorie:Exoplanète découverte en 2019]]

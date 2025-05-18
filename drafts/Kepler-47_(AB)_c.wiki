@@ -1,0 +1,73 @@
+== Kepler-47 (AB) c ==
+
+{{Infobox Exoplanète
+| nom = Kepler-47 (AB) c
+| image = 
+| légende = 
+| étoile = Kepler-47 A
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| masse = ?<ref></ref>
+| rayon = 0.42011066 R⊕<ref></ref>
+| densité = ?<ref></ref>
+| gravité = ?<ref></ref>
+| température = 245.3 K<ref></ref>
+| période = 303.158 j<ref></ref>
+| demi_grand_axe = 0.989 ua<ref></ref>
+| excentricité = ?<ref></ref>
+| inclinaison = 89.826 °<ref></ref>
+| méthode_découverte = ?
+| date_découverte = ?
+| statut = Confirmée
+}}
+
+Kepler-47 (AB) c est une exoplanète découverte en None par la méthode de None. Elle orbite autour de l'étoile Kepler-47 A.
+
+== Caractéristiques ==
+
+=== Caractéristiques orbitales ===
+* Période orbitale : 303.158 jours<ref></ref>
+* Demi-grand axe : 0.989 ua<ref></ref>
+* Excentricité : ?<ref></ref>
+* Inclinaison : 89.826 °<ref></ref>
+
+=== Caractéristiques physiques ===
+* Masse : ?<ref></ref>
+* Rayon : 0.42011066 R⊕<ref></ref>
+* Densité : ?<ref></ref>
+* Température d'équilibre : 245.3 K<ref></ref>
+
+== Étoile hôte ==
+
+{{Infobox Étoile
+| nom = Kepler-47 A
+| image = 
+| légende = 
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| magnitude_absolue = 
+| magnitude_apparente = 
+| masse = ?<ref></ref>
+| rayon = ?<ref></ref>
+| température = ?<ref></ref>
+| métallicité = ?<ref></ref>
+| âge = ?<ref></ref>
+}}
+
+L'étoile hôte Kepler-47 A est une étoile de type spectral inconnu.
+
+== Découverte ==
+
+Kepler-47 (AB) c a été découverte en None par la méthode de None.
+
+== Références ==
+<references />
+
+[[Catégorie:Exoplanète]]
+[[Catégorie:Exoplanète découverte en None]]

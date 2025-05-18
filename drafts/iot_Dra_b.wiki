@@ -1,0 +1,73 @@
+== iot Dra b ==
+
+{{Infobox Exoplanète
+| nom = iot Dra b
+| image = 
+| légende = 
+| étoile = iot Dra
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| masse = 3756.73177074 M⊕<ref></ref>
+| rayon = 12.4 R⊕<ref></ref>
+| densité = ?<ref></ref>
+| gravité = ?<ref></ref>
+| température = ?<ref></ref>
+| période = 510.8544 j<ref></ref>
+| demi_grand_axe = 1.453 ua<ref></ref>
+| excentricité = 0.701 <ref></ref>
+| inclinaison = 46.0 °<ref></ref>
+| méthode_découverte = Radial Velocity
+| date_découverte = 2002
+| statut = Confirmée
+}}
+
+iot Dra b est une exoplanète découverte en 2002 par la méthode de Radial Velocity. Elle orbite autour de l'étoile iot Dra.
+
+== Caractéristiques ==
+
+=== Caractéristiques orbitales ===
+* Période orbitale : 510.8544 jours<ref></ref>
+* Demi-grand axe : 1.453 ua<ref></ref>
+* Excentricité : 0.701 <ref></ref>
+* Inclinaison : 46.0 °<ref></ref>
+
+=== Caractéristiques physiques ===
+* Masse : 3756.73177074 M⊕<ref></ref>
+* Rayon : 12.4 R⊕<ref></ref>
+* Densité : ?<ref></ref>
+* Température d'équilibre : ?<ref></ref>
+
+== Étoile hôte ==
+
+{{Infobox Étoile
+| nom = iot Dra
+| image = 
+| légende = 
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| magnitude_absolue = 
+| magnitude_apparente = 
+| masse = ?<ref></ref>
+| rayon = ?<ref></ref>
+| température = ?<ref></ref>
+| métallicité = ?<ref></ref>
+| âge = ?<ref></ref>
+}}
+
+L'étoile hôte iot Dra est une étoile de type spectral inconnu.
+
+== Découverte ==
+
+iot Dra b a été découverte en 2002 par la méthode de Radial Velocity.
+
+== Références ==
+<references />
+
+[[Catégorie:Exoplanète]]
+[[Catégorie:Exoplanète découverte en 2002]]

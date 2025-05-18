@@ -1,0 +1,73 @@
+== KIC 10255705 b ==
+
+{{Infobox Exoplanète
+| nom = KIC 10255705 b
+| image = 
+| légende = 
+| étoile = KIC 10255705
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| masse = ?<ref></ref>
+| rayon = 0.65 R⊕<ref></ref>
+| densité = ?<ref></ref>
+| gravité = ?<ref></ref>
+| température = 295.0 K<ref></ref>
+| période = 707.3793 j<ref></ref>
+| demi_grand_axe = 1.6 ua<ref></ref>
+| excentricité = 0.0 <ref></ref>
+| inclinaison = 89.75 °<ref></ref>
+| méthode_découverte = Primary Transit
+| date_découverte = 2013
+| statut = Confirmée
+}}
+
+KIC 10255705 b est une exoplanète découverte en 2013 par la méthode de Primary Transit. Elle orbite autour de l'étoile KIC 10255705.
+
+== Caractéristiques ==
+
+=== Caractéristiques orbitales ===
+* Période orbitale : 707.3793 jours<ref></ref>
+* Demi-grand axe : 1.6 ua<ref></ref>
+* Excentricité : 0.0 <ref></ref>
+* Inclinaison : 89.75 °<ref></ref>
+
+=== Caractéristiques physiques ===
+* Masse : ?<ref></ref>
+* Rayon : 0.65 R⊕<ref></ref>
+* Densité : ?<ref></ref>
+* Température d'équilibre : 295.0 K<ref></ref>
+
+== Étoile hôte ==
+
+{{Infobox Étoile
+| nom = KIC 10255705
+| image = 
+| légende = 
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| magnitude_absolue = 
+| magnitude_apparente = 
+| masse = ?<ref></ref>
+| rayon = ?<ref></ref>
+| température = ?<ref></ref>
+| métallicité = ?<ref></ref>
+| âge = ?<ref></ref>
+}}
+
+L'étoile hôte KIC 10255705 est une étoile de type spectral inconnu.
+
+== Découverte ==
+
+KIC 10255705 b a été découverte en 2013 par la méthode de Primary Transit.
+
+== Références ==
+<references />
+
+[[Catégorie:Exoplanète]]
+[[Catégorie:Exoplanète découverte en 2013]]

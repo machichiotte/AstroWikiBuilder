@@ -1,0 +1,73 @@
+== WASP-103 b ==
+
+{{Infobox Exoplanète
+| nom = WASP-103 b
+| image = 
+| légende = 
+| étoile = WASP-103
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| masse = 473.547 M⊕<ref></ref>
+| rayon = 17.127 R⊕<ref></ref>
+| densité = ?<ref></ref>
+| gravité = ?<ref></ref>
+| température = 2508.0 K<ref></ref>
+| période = 0.925542 j<ref></ref>
+| demi_grand_axe = 0.01985 ua<ref></ref>
+| excentricité = 0.15 <ref></ref>
+| inclinaison = 86.3 °<ref></ref>
+| méthode_découverte = Transit
+| date_découverte = 2014
+| statut = Confirmée
+}}
+
+WASP-103 b est une exoplanète découverte en 2014 par la méthode de Transit. Elle orbite autour de l'étoile WASP-103.
+
+== Caractéristiques ==
+
+=== Caractéristiques orbitales ===
+* Période orbitale : 0.925542 jours<ref></ref>
+* Demi-grand axe : 0.01985 ua<ref></ref>
+* Excentricité : 0.15 <ref></ref>
+* Inclinaison : 86.3 °<ref></ref>
+
+=== Caractéristiques physiques ===
+* Masse : 473.547 M⊕<ref></ref>
+* Rayon : 17.127 R⊕<ref></ref>
+* Densité : ?<ref></ref>
+* Température d'équilibre : 2508.0 K<ref></ref>
+
+== Étoile hôte ==
+
+{{Infobox Étoile
+| nom = WASP-103
+| image = 
+| légende = 
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| magnitude_absolue = 
+| magnitude_apparente = 
+| masse = ?<ref></ref>
+| rayon = ?<ref></ref>
+| température = ?<ref></ref>
+| métallicité = ?<ref></ref>
+| âge = ?<ref></ref>
+}}
+
+L'étoile hôte WASP-103 est une étoile de type spectral inconnu.
+
+== Découverte ==
+
+WASP-103 b a été découverte en 2014 par la méthode de Transit.
+
+== Références ==
+<references />
+
+[[Catégorie:Exoplanète]]
+[[Catégorie:Exoplanète découverte en 2014]]

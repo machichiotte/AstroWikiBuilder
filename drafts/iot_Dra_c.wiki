@@ -1,0 +1,73 @@
+== iot Dra c ==
+
+{{Infobox Exoplanète
+| nom = iot Dra c
+| image = 
+| légende = 
+| étoile = iot Dra
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| masse = 4958.1231492 M⊕<ref></ref>
+| rayon = 12.2 R⊕<ref></ref>
+| densité = ?<ref></ref>
+| gravité = ?<ref></ref>
+| température = ?<ref></ref>
+| période = 25000.0 j<ref></ref>
+| demi_grand_axe = 19.4 ua<ref></ref>
+| excentricité = 0.455 <ref></ref>
+| inclinaison = 86.0 °<ref></ref>
+| méthode_découverte = Radial Velocity
+| date_découverte = 2022
+| statut = Confirmée
+}}
+
+iot Dra c est une exoplanète découverte en 2022 par la méthode de Radial Velocity. Elle orbite autour de l'étoile iot Dra.
+
+== Caractéristiques ==
+
+=== Caractéristiques orbitales ===
+* Période orbitale : 25000.0 jours<ref></ref>
+* Demi-grand axe : 19.4 ua<ref></ref>
+* Excentricité : 0.455 <ref></ref>
+* Inclinaison : 86.0 °<ref></ref>
+
+=== Caractéristiques physiques ===
+* Masse : 4958.1231492 M⊕<ref></ref>
+* Rayon : 12.2 R⊕<ref></ref>
+* Densité : ?<ref></ref>
+* Température d'équilibre : ?<ref></ref>
+
+== Étoile hôte ==
+
+{{Infobox Étoile
+| nom = iot Dra
+| image = 
+| légende = 
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| magnitude_absolue = 
+| magnitude_apparente = 
+| masse = ?<ref></ref>
+| rayon = ?<ref></ref>
+| température = ?<ref></ref>
+| métallicité = ?<ref></ref>
+| âge = ?<ref></ref>
+}}
+
+L'étoile hôte iot Dra est une étoile de type spectral inconnu.
+
+== Découverte ==
+
+iot Dra c a été découverte en 2022 par la méthode de Radial Velocity.
+
+== Références ==
+<references />
+
+[[Catégorie:Exoplanète]]
+[[Catégorie:Exoplanète découverte en 2022]]

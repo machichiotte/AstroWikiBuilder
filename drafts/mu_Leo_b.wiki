@@ -1,0 +1,73 @@
+== mu Leo b ==
+
+{{Infobox Exoplanète
+| nom = mu Leo b
+| image = 
+| légende = 
+| étoile = mu Leo
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| masse = 762.8 M⊕<ref></ref>
+| rayon = 13.3 R⊕<ref></ref>
+| densité = ?<ref></ref>
+| gravité = ?<ref></ref>
+| température = ?<ref></ref>
+| période = 357.8 j<ref></ref>
+| demi_grand_axe = 1.1 ua<ref></ref>
+| excentricité = 0.09 <ref></ref>
+| inclinaison = ?<ref></ref>
+| méthode_découverte = Radial Velocity
+| date_découverte = 2014
+| statut = Confirmée
+}}
+
+mu Leo b est une exoplanète découverte en 2014 par la méthode de Radial Velocity. Elle orbite autour de l'étoile mu Leo.
+
+== Caractéristiques ==
+
+=== Caractéristiques orbitales ===
+* Période orbitale : 357.8 jours<ref></ref>
+* Demi-grand axe : 1.1 ua<ref></ref>
+* Excentricité : 0.09 <ref></ref>
+* Inclinaison : ?<ref></ref>
+
+=== Caractéristiques physiques ===
+* Masse : 762.8 M⊕<ref></ref>
+* Rayon : 13.3 R⊕<ref></ref>
+* Densité : ?<ref></ref>
+* Température d'équilibre : ?<ref></ref>
+
+== Étoile hôte ==
+
+{{Infobox Étoile
+| nom = mu Leo
+| image = 
+| légende = 
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| magnitude_absolue = 
+| magnitude_apparente = 
+| masse = ?<ref></ref>
+| rayon = ?<ref></ref>
+| température = ?<ref></ref>
+| métallicité = ?<ref></ref>
+| âge = ?<ref></ref>
+}}
+
+L'étoile hôte mu Leo est une étoile de type spectral inconnu.
+
+== Découverte ==
+
+mu Leo b a été découverte en 2014 par la méthode de Radial Velocity.
+
+== Références ==
+<references />
+
+[[Catégorie:Exoplanète]]
+[[Catégorie:Exoplanète découverte en 2014]]

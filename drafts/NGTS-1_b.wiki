@@ -1,0 +1,73 @@
+== NGTS-1 b ==
+
+{{Infobox Exoplanète
+| nom = NGTS-1 b
+| image = 
+| légende = 
+| étoile = NGTS-1
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| masse = 258.07796 M⊕<ref></ref>
+| rayon = 14.90797 R⊕<ref></ref>
+| densité = ?<ref></ref>
+| gravité = ?<ref></ref>
+| température = 790.0 K<ref></ref>
+| période = 2.647298 j<ref></ref>
+| demi_grand_axe = 0.0326 ua<ref></ref>
+| excentricité = 0.016 <ref></ref>
+| inclinaison = 85.27 °<ref></ref>
+| méthode_découverte = Transit
+| date_découverte = 2017
+| statut = Confirmée
+}}
+
+NGTS-1 b est une exoplanète découverte en 2017 par la méthode de Transit. Elle orbite autour de l'étoile NGTS-1.
+
+== Caractéristiques ==
+
+=== Caractéristiques orbitales ===
+* Période orbitale : 2.647298 jours<ref></ref>
+* Demi-grand axe : 0.0326 ua<ref></ref>
+* Excentricité : 0.016 <ref></ref>
+* Inclinaison : 85.27 °<ref></ref>
+
+=== Caractéristiques physiques ===
+* Masse : 258.07796 M⊕<ref></ref>
+* Rayon : 14.90797 R⊕<ref></ref>
+* Densité : ?<ref></ref>
+* Température d'équilibre : 790.0 K<ref></ref>
+
+== Étoile hôte ==
+
+{{Infobox Étoile
+| nom = NGTS-1
+| image = 
+| légende = 
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| magnitude_absolue = 
+| magnitude_apparente = 
+| masse = ?<ref></ref>
+| rayon = ?<ref></ref>
+| température = ?<ref></ref>
+| métallicité = ?<ref></ref>
+| âge = ?<ref></ref>
+}}
+
+L'étoile hôte NGTS-1 est une étoile de type spectral inconnu.
+
+== Découverte ==
+
+NGTS-1 b a été découverte en 2017 par la méthode de Transit.
+
+== Références ==
+<references />
+
+[[Catégorie:Exoplanète]]
+[[Catégorie:Exoplanète découverte en 2017]]

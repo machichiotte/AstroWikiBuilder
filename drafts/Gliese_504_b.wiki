@@ -1,0 +1,73 @@
+== Gliese 504 b ==
+
+{{Infobox Exoplanète
+| nom = Gliese 504 b
+| image = 
+| légende = 
+| étoile = Gliese 504
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| masse = ?<ref></ref>
+| rayon = 0.96 R⊕<ref></ref>
+| densité = ?<ref></ref>
+| gravité = ?<ref></ref>
+| température = 544.0 K<ref></ref>
+| période = ?<ref></ref>
+| demi_grand_axe = ?<ref></ref>
+| excentricité = ?<ref></ref>
+| inclinaison = ?<ref></ref>
+| méthode_découverte = ?
+| date_découverte = ?
+| statut = Confirmée
+}}
+
+Gliese 504 b est une exoplanète découverte en None par la méthode de None. Elle orbite autour de l'étoile Gliese 504.
+
+== Caractéristiques ==
+
+=== Caractéristiques orbitales ===
+* Période orbitale : ?<ref></ref>
+* Demi-grand axe : ?<ref></ref>
+* Excentricité : ?<ref></ref>
+* Inclinaison : ?<ref></ref>
+
+=== Caractéristiques physiques ===
+* Masse : ?<ref></ref>
+* Rayon : 0.96 R⊕<ref></ref>
+* Densité : ?<ref></ref>
+* Température d'équilibre : 544.0 K<ref></ref>
+
+== Étoile hôte ==
+
+{{Infobox Étoile
+| nom = Gliese 504
+| image = 
+| légende = 
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| magnitude_absolue = 
+| magnitude_apparente = 
+| masse = ?<ref></ref>
+| rayon = ?<ref></ref>
+| température = ?<ref></ref>
+| métallicité = ?<ref></ref>
+| âge = ?<ref></ref>
+}}
+
+L'étoile hôte Gliese 504 est une étoile de type spectral inconnu.
+
+== Découverte ==
+
+Gliese 504 b a été découverte en None par la méthode de None.
+
+== Références ==
+<references />
+
+[[Catégorie:Exoplanète]]
+[[Catégorie:Exoplanète découverte en None]]

@@ -1,0 +1,73 @@
+== mu Ara e ==
+
+{{Infobox Exoplanète
+| nom = mu Ara e
+| image = 
+| légende = 
+| étoile = mu Ara
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| masse = ?<ref></ref>
+| rayon = ?<ref></ref>
+| densité = ?<ref></ref>
+| gravité = ?<ref></ref>
+| température = ?<ref></ref>
+| période = 4205.8 j<ref></ref>
+| demi_grand_axe = 5.235 ua<ref></ref>
+| excentricité = 0.0985 <ref></ref>
+| inclinaison = ?<ref></ref>
+| méthode_découverte = Radial Velocity
+| date_découverte = 2006
+| statut = Confirmée
+}}
+
+mu Ara e est une exoplanète découverte en 2006 par la méthode de Radial Velocity. Elle orbite autour de l'étoile mu Ara.
+
+== Caractéristiques ==
+
+=== Caractéristiques orbitales ===
+* Période orbitale : 4205.8 jours<ref></ref>
+* Demi-grand axe : 5.235 ua<ref></ref>
+* Excentricité : 0.0985 <ref></ref>
+* Inclinaison : ?<ref></ref>
+
+=== Caractéristiques physiques ===
+* Masse : ?<ref></ref>
+* Rayon : ?<ref></ref>
+* Densité : ?<ref></ref>
+* Température d'équilibre : ?<ref></ref>
+
+== Étoile hôte ==
+
+{{Infobox Étoile
+| nom = mu Ara
+| image = 
+| légende = 
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| magnitude_absolue = 
+| magnitude_apparente = 
+| masse = ?<ref></ref>
+| rayon = ?<ref></ref>
+| température = ?<ref></ref>
+| métallicité = ?<ref></ref>
+| âge = ?<ref></ref>
+}}
+
+L'étoile hôte mu Ara est une étoile de type spectral inconnu.
+
+== Découverte ==
+
+mu Ara e a été découverte en 2006 par la méthode de Radial Velocity.
+
+== Références ==
+<references />
+
+[[Catégorie:Exoplanète]]
+[[Catégorie:Exoplanète découverte en 2006]]

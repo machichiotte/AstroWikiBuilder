@@ -1,0 +1,73 @@
+== HD 109271 b ==
+
+{{Infobox Exoplanète
+| nom = HD 109271 b
+| image = 
+| légende = 
+| étoile = HD 109271
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| masse = 17.162 M⊕<ref></ref>
+| rayon = 4.31 R⊕<ref></ref>
+| densité = ?<ref></ref>
+| gravité = ?<ref></ref>
+| température = ?<ref></ref>
+| période = 7.8543 j<ref></ref>
+| demi_grand_axe = 0.079 ua<ref></ref>
+| excentricité = 0.25 <ref></ref>
+| inclinaison = ?<ref></ref>
+| méthode_découverte = Radial Velocity
+| date_découverte = 2013
+| statut = Confirmée
+}}
+
+HD 109271 b est une exoplanète découverte en 2013 par la méthode de Radial Velocity. Elle orbite autour de l'étoile HD 109271.
+
+== Caractéristiques ==
+
+=== Caractéristiques orbitales ===
+* Période orbitale : 7.8543 jours<ref></ref>
+* Demi-grand axe : 0.079 ua<ref></ref>
+* Excentricité : 0.25 <ref></ref>
+* Inclinaison : ?<ref></ref>
+
+=== Caractéristiques physiques ===
+* Masse : 17.162 M⊕<ref></ref>
+* Rayon : 4.31 R⊕<ref></ref>
+* Densité : ?<ref></ref>
+* Température d'équilibre : ?<ref></ref>
+
+== Étoile hôte ==
+
+{{Infobox Étoile
+| nom = HD 109271
+| image = 
+| légende = 
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| magnitude_absolue = 
+| magnitude_apparente = 
+| masse = ?<ref></ref>
+| rayon = ?<ref></ref>
+| température = ?<ref></ref>
+| métallicité = ?<ref></ref>
+| âge = ?<ref></ref>
+}}
+
+L'étoile hôte HD 109271 est une étoile de type spectral inconnu.
+
+== Découverte ==
+
+HD 109271 b a été découverte en 2013 par la méthode de Radial Velocity.
+
+== Références ==
+<references />
+
+[[Catégorie:Exoplanète]]
+[[Catégorie:Exoplanète découverte en 2013]]

@@ -1,0 +1,73 @@
+== iot Cap c ==
+
+{{Infobox Exoplanète
+| nom = iot Cap c
+| image = 
+| légende = 
+| étoile = iot Cap
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| masse = 7.485 M⊕<ref></ref>
+| rayon = ?<ref></ref>
+| densité = ?<ref></ref>
+| gravité = ?<ref></ref>
+| température = ?<ref></ref>
+| période = 2481.1 j<ref></ref>
+| demi_grand_axe = 5.067 ua<ref></ref>
+| excentricité = 0.202 <ref></ref>
+| inclinaison = 158.462 °<ref></ref>
+| méthode_découverte = Radial Velocity, Astrometry
+| date_découverte = 2022
+| statut = Confirmée
+}}
+
+iot Cap c est une exoplanète découverte en 2022 par la méthode de Radial Velocity, Astrometry. Elle orbite autour de l'étoile iot Cap.
+
+== Caractéristiques ==
+
+=== Caractéristiques orbitales ===
+* Période orbitale : 2481.1 jours<ref></ref>
+* Demi-grand axe : 5.067 ua<ref></ref>
+* Excentricité : 0.202 <ref></ref>
+* Inclinaison : 158.462 °<ref></ref>
+
+=== Caractéristiques physiques ===
+* Masse : 7.485 M⊕<ref></ref>
+* Rayon : ?<ref></ref>
+* Densité : ?<ref></ref>
+* Température d'équilibre : ?<ref></ref>
+
+== Étoile hôte ==
+
+{{Infobox Étoile
+| nom = iot Cap
+| image = 
+| légende = 
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| magnitude_absolue = 
+| magnitude_apparente = 
+| masse = ?<ref></ref>
+| rayon = ?<ref></ref>
+| température = ?<ref></ref>
+| métallicité = ?<ref></ref>
+| âge = ?<ref></ref>
+}}
+
+L'étoile hôte iot Cap est une étoile de type spectral inconnu.
+
+== Découverte ==
+
+iot Cap c a été découverte en 2022 par la méthode de Radial Velocity, Astrometry.
+
+== Références ==
+<references />
+
+[[Catégorie:Exoplanète]]
+[[Catégorie:Exoplanète découverte en 2022]]

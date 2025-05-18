@@ -1,0 +1,73 @@
+== bet Pic c ==
+
+{{Infobox Exoplanète
+| nom = bet Pic c
+| image = 
+| légende = 
+| étoile = bet Pic
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| masse = 3222.46221857 M⊕<ref></ref>
+| rayon = 12.5 R⊕<ref></ref>
+| densité = ?<ref></ref>
+| gravité = ?<ref></ref>
+| température = ?<ref></ref>
+| période = 1192.77951 j<ref></ref>
+| demi_grand_axe = 2.68 ua<ref></ref>
+| excentricité = 0.314 <ref></ref>
+| inclinaison = 88.947 °<ref></ref>
+| méthode_découverte = Radial Velocity
+| date_découverte = 2019
+| statut = Confirmée
+}}
+
+bet Pic c est une exoplanète découverte en 2019 par la méthode de Radial Velocity. Elle orbite autour de l'étoile bet Pic.
+
+== Caractéristiques ==
+
+=== Caractéristiques orbitales ===
+* Période orbitale : 1192.77951 jours<ref></ref>
+* Demi-grand axe : 2.68 ua<ref></ref>
+* Excentricité : 0.314 <ref></ref>
+* Inclinaison : 88.947 °<ref></ref>
+
+=== Caractéristiques physiques ===
+* Masse : 3222.46221857 M⊕<ref></ref>
+* Rayon : 12.5 R⊕<ref></ref>
+* Densité : ?<ref></ref>
+* Température d'équilibre : ?<ref></ref>
+
+== Étoile hôte ==
+
+{{Infobox Étoile
+| nom = bet Pic
+| image = 
+| légende = 
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| magnitude_absolue = 
+| magnitude_apparente = 
+| masse = ?<ref></ref>
+| rayon = ?<ref></ref>
+| température = ?<ref></ref>
+| métallicité = ?<ref></ref>
+| âge = ?<ref></ref>
+}}
+
+L'étoile hôte bet Pic est une étoile de type spectral inconnu.
+
+== Découverte ==
+
+bet Pic c a été découverte en 2019 par la méthode de Radial Velocity.
+
+== Références ==
+<references />
+
+[[Catégorie:Exoplanète]]
+[[Catégorie:Exoplanète découverte en 2019]]

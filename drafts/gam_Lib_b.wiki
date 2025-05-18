@@ -1,0 +1,73 @@
+== gam Lib b ==
+
+{{Infobox Exoplanète
+| nom = gam Lib b
+| image = 
+| légende = 
+| étoile = gam Lib
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| masse = 357.87478628 M⊕<ref></ref>
+| rayon = 13.7 R⊕<ref></ref>
+| densité = ?<ref></ref>
+| gravité = ?<ref></ref>
+| température = ?<ref></ref>
+| période = 414.88 j<ref></ref>
+| demi_grand_axe = 1.319 ua<ref></ref>
+| excentricité = 0.16 <ref></ref>
+| inclinaison = ?<ref></ref>
+| méthode_découverte = Radial Velocity
+| date_découverte = 2018
+| statut = Confirmée
+}}
+
+gam Lib b est une exoplanète découverte en 2018 par la méthode de Radial Velocity. Elle orbite autour de l'étoile gam Lib.
+
+== Caractéristiques ==
+
+=== Caractéristiques orbitales ===
+* Période orbitale : 414.88 jours<ref></ref>
+* Demi-grand axe : 1.319 ua<ref></ref>
+* Excentricité : 0.16 <ref></ref>
+* Inclinaison : ?<ref></ref>
+
+=== Caractéristiques physiques ===
+* Masse : 357.87478628 M⊕<ref></ref>
+* Rayon : 13.7 R⊕<ref></ref>
+* Densité : ?<ref></ref>
+* Température d'équilibre : ?<ref></ref>
+
+== Étoile hôte ==
+
+{{Infobox Étoile
+| nom = gam Lib
+| image = 
+| légende = 
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| magnitude_absolue = 
+| magnitude_apparente = 
+| masse = ?<ref></ref>
+| rayon = ?<ref></ref>
+| température = ?<ref></ref>
+| métallicité = ?<ref></ref>
+| âge = ?<ref></ref>
+}}
+
+L'étoile hôte gam Lib est une étoile de type spectral inconnu.
+
+== Découverte ==
+
+gam Lib b a été découverte en 2018 par la méthode de Radial Velocity.
+
+== Références ==
+<references />
+
+[[Catégorie:Exoplanète]]
+[[Catégorie:Exoplanète découverte en 2018]]

@@ -1,0 +1,73 @@
+== ups And c ==
+
+{{Infobox Exoplanète
+| nom = ups And c
+| image = 
+| légende = 
+| étoile = ups And
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| masse = 4443.24112986 M⊕<ref></ref>
+| rayon = 12.3 R⊕<ref></ref>
+| densité = ?<ref></ref>
+| gravité = ?<ref></ref>
+| température = ?<ref></ref>
+| période = 241.258 j<ref></ref>
+| demi_grand_axe = 0.827774 ua<ref></ref>
+| excentricité = 0.2596 <ref></ref>
+| inclinaison = ?<ref></ref>
+| méthode_découverte = Radial Velocity
+| date_découverte = 1999
+| statut = Confirmée
+}}
+
+ups And c est une exoplanète découverte en 1999 par la méthode de Radial Velocity. Elle orbite autour de l'étoile ups And.
+
+== Caractéristiques ==
+
+=== Caractéristiques orbitales ===
+* Période orbitale : 241.258 jours<ref></ref>
+* Demi-grand axe : 0.827774 ua<ref></ref>
+* Excentricité : 0.2596 <ref></ref>
+* Inclinaison : ?<ref></ref>
+
+=== Caractéristiques physiques ===
+* Masse : 4443.24112986 M⊕<ref></ref>
+* Rayon : 12.3 R⊕<ref></ref>
+* Densité : ?<ref></ref>
+* Température d'équilibre : ?<ref></ref>
+
+== Étoile hôte ==
+
+{{Infobox Étoile
+| nom = ups And
+| image = 
+| légende = 
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| magnitude_absolue = 
+| magnitude_apparente = 
+| masse = ?<ref></ref>
+| rayon = ?<ref></ref>
+| température = ?<ref></ref>
+| métallicité = ?<ref></ref>
+| âge = ?<ref></ref>
+}}
+
+L'étoile hôte ups And est une étoile de type spectral inconnu.
+
+== Découverte ==
+
+ups And c a été découverte en 1999 par la méthode de Radial Velocity.
+
+== Références ==
+<references />
+
+[[Catégorie:Exoplanète]]
+[[Catégorie:Exoplanète découverte en 1999]]

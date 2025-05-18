@@ -1,0 +1,73 @@
+== EPIC 201702477 b ==
+
+{{Infobox Exoplanète
+| nom = EPIC 201702477 b
+| image = 
+| légende = 
+| étoile = EPIC 201702477
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| masse = ?<ref></ref>
+| rayon = 0.67 R⊕<ref></ref>
+| densité = ?<ref></ref>
+| gravité = ?<ref></ref>
+| température = 529.0 K<ref></ref>
+| période = 40.7362 j<ref></ref>
+| demi_grand_axe = 0.2205 ua<ref></ref>
+| excentricité = ?<ref></ref>
+| inclinaison = ?<ref></ref>
+| méthode_découverte = ?
+| date_découverte = ?
+| statut = Confirmée
+}}
+
+EPIC 201702477 b est une exoplanète découverte en None par la méthode de None. Elle orbite autour de l'étoile EPIC 201702477.
+
+== Caractéristiques ==
+
+=== Caractéristiques orbitales ===
+* Période orbitale : 40.7362 jours<ref></ref>
+* Demi-grand axe : 0.2205 ua<ref></ref>
+* Excentricité : ?<ref></ref>
+* Inclinaison : ?<ref></ref>
+
+=== Caractéristiques physiques ===
+* Masse : ?<ref></ref>
+* Rayon : 0.67 R⊕<ref></ref>
+* Densité : ?<ref></ref>
+* Température d'équilibre : 529.0 K<ref></ref>
+
+== Étoile hôte ==
+
+{{Infobox Étoile
+| nom = EPIC 201702477
+| image = 
+| légende = 
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| magnitude_absolue = 
+| magnitude_apparente = 
+| masse = ?<ref></ref>
+| rayon = ?<ref></ref>
+| température = ?<ref></ref>
+| métallicité = ?<ref></ref>
+| âge = ?<ref></ref>
+}}
+
+L'étoile hôte EPIC 201702477 est une étoile de type spectral inconnu.
+
+== Découverte ==
+
+EPIC 201702477 b a été découverte en None par la méthode de None.
+
+== Références ==
+<references />
+
+[[Catégorie:Exoplanète]]
+[[Catégorie:Exoplanète découverte en None]]

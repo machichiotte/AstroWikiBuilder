@@ -1,0 +1,73 @@
+== HAT-P-32 b ==
+
+{{Infobox Exoplanète
+| nom = HAT-P-32 b
+| image = 
+| légende = 
+| étoile = HAT-P-32
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| masse = 216.1244 M⊕<ref></ref>
+| rayon = 22.19382 R⊕<ref></ref>
+| densité = ?<ref></ref>
+| gravité = ?<ref></ref>
+| température = 1835.7 K<ref></ref>
+| période = 2.1500082 j<ref></ref>
+| demi_grand_axe = 0.03397 ua<ref></ref>
+| excentricité = 0.159 <ref></ref>
+| inclinaison = 88.98 °<ref></ref>
+| méthode_découverte = Transit
+| date_découverte = 2011
+| statut = Confirmée
+}}
+
+HAT-P-32 b est une exoplanète découverte en 2011 par la méthode de Transit. Elle orbite autour de l'étoile HAT-P-32.
+
+== Caractéristiques ==
+
+=== Caractéristiques orbitales ===
+* Période orbitale : 2.1500082 jours<ref></ref>
+* Demi-grand axe : 0.03397 ua<ref></ref>
+* Excentricité : 0.159 <ref></ref>
+* Inclinaison : 88.98 °<ref></ref>
+
+=== Caractéristiques physiques ===
+* Masse : 216.1244 M⊕<ref></ref>
+* Rayon : 22.19382 R⊕<ref></ref>
+* Densité : ?<ref></ref>
+* Température d'équilibre : 1835.7 K<ref></ref>
+
+== Étoile hôte ==
+
+{{Infobox Étoile
+| nom = HAT-P-32
+| image = 
+| légende = 
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| magnitude_absolue = 
+| magnitude_apparente = 
+| masse = ?<ref></ref>
+| rayon = ?<ref></ref>
+| température = ?<ref></ref>
+| métallicité = ?<ref></ref>
+| âge = ?<ref></ref>
+}}
+
+L'étoile hôte HAT-P-32 est une étoile de type spectral inconnu.
+
+== Découverte ==
+
+HAT-P-32 b a été découverte en 2011 par la méthode de Transit.
+
+== Références ==
+<references />
+
+[[Catégorie:Exoplanète]]
+[[Catégorie:Exoplanète découverte en 2011]]

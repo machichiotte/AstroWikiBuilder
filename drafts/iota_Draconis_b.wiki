@@ -1,0 +1,73 @@
+== iota Draconis b ==
+
+{{Infobox Exoplanète
+| nom = iota Draconis b
+| image = 
+| légende = 
+| étoile = iota Draconis
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| masse = 8.82 M⊕<ref></ref>
+| rayon = ?<ref></ref>
+| densité = ?<ref></ref>
+| gravité = ?<ref></ref>
+| température = 598.2 K<ref></ref>
+| période = 510.702 j<ref></ref>
+| demi_grand_axe = 1.275 ua<ref></ref>
+| excentricité = 0.713 <ref></ref>
+| inclinaison = 69.9 °<ref></ref>
+| méthode_découverte = ?
+| date_découverte = ?
+| statut = Confirmée
+}}
+
+iota Draconis b est une exoplanète découverte en None par la méthode de None. Elle orbite autour de l'étoile iota Draconis.
+
+== Caractéristiques ==
+
+=== Caractéristiques orbitales ===
+* Période orbitale : 510.702 jours<ref></ref>
+* Demi-grand axe : 1.275 ua<ref></ref>
+* Excentricité : 0.713 <ref></ref>
+* Inclinaison : 69.9 °<ref></ref>
+
+=== Caractéristiques physiques ===
+* Masse : 8.82 M⊕<ref></ref>
+* Rayon : ?<ref></ref>
+* Densité : ?<ref></ref>
+* Température d'équilibre : 598.2 K<ref></ref>
+
+== Étoile hôte ==
+
+{{Infobox Étoile
+| nom = iota Draconis
+| image = 
+| légende = 
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| magnitude_absolue = 
+| magnitude_apparente = 
+| masse = ?<ref></ref>
+| rayon = ?<ref></ref>
+| température = ?<ref></ref>
+| métallicité = ?<ref></ref>
+| âge = ?<ref></ref>
+}}
+
+L'étoile hôte iota Draconis est une étoile de type spectral inconnu.
+
+== Découverte ==
+
+iota Draconis b a été découverte en None par la méthode de None.
+
+== Références ==
+<references />
+
+[[Catégorie:Exoplanète]]
+[[Catégorie:Exoplanète découverte en None]]

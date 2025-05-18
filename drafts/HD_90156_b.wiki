@@ -1,0 +1,73 @@
+== HD 90156 b ==
+
+{{Infobox Exoplanète
+| nom = HD 90156 b
+| image = 
+| légende = 
+| étoile = HD 90156
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| masse = 17.98 M⊕<ref></ref>
+| rayon = 4.43 R⊕<ref></ref>
+| densité = ?<ref></ref>
+| gravité = ?<ref></ref>
+| température = ?<ref></ref>
+| période = 49.77 j<ref></ref>
+| demi_grand_axe = 0.25 ua<ref></ref>
+| excentricité = 0.31 <ref></ref>
+| inclinaison = ?<ref></ref>
+| méthode_découverte = Radial Velocity
+| date_découverte = 2009
+| statut = Confirmée
+}}
+
+HD 90156 b est une exoplanète découverte en 2009 par la méthode de Radial Velocity. Elle orbite autour de l'étoile HD 90156.
+
+== Caractéristiques ==
+
+=== Caractéristiques orbitales ===
+* Période orbitale : 49.77 jours<ref></ref>
+* Demi-grand axe : 0.25 ua<ref></ref>
+* Excentricité : 0.31 <ref></ref>
+* Inclinaison : ?<ref></ref>
+
+=== Caractéristiques physiques ===
+* Masse : 17.98 M⊕<ref></ref>
+* Rayon : 4.43 R⊕<ref></ref>
+* Densité : ?<ref></ref>
+* Température d'équilibre : ?<ref></ref>
+
+== Étoile hôte ==
+
+{{Infobox Étoile
+| nom = HD 90156
+| image = 
+| légende = 
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| magnitude_absolue = 
+| magnitude_apparente = 
+| masse = ?<ref></ref>
+| rayon = ?<ref></ref>
+| température = ?<ref></ref>
+| métallicité = ?<ref></ref>
+| âge = ?<ref></ref>
+}}
+
+L'étoile hôte HD 90156 est une étoile de type spectral inconnu.
+
+== Découverte ==
+
+HD 90156 b a été découverte en 2009 par la méthode de Radial Velocity.
+
+== Références ==
+<references />
+
+[[Catégorie:Exoplanète]]
+[[Catégorie:Exoplanète découverte en 2009]]

@@ -1,0 +1,73 @@
+== Kepler-428 b ==
+
+{{Infobox Exoplanète
+| nom = Kepler-428 b
+| image = 
+| légende = 
+| étoile = Kepler-428
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| masse = 403.63 M⊕<ref></ref>
+| rayon = 12.11 R⊕<ref></ref>
+| densité = ?<ref></ref>
+| gravité = ?<ref></ref>
+| température = 1070.0 K<ref></ref>
+| période = 3.52563254 j<ref></ref>
+| demi_grand_axe = 0.0433 ua<ref></ref>
+| excentricité = 0.22 <ref></ref>
+| inclinaison = 89.36 °<ref></ref>
+| méthode_découverte = Transit
+| date_découverte = 2014
+| statut = Confirmée
+}}
+
+Kepler-428 b est une exoplanète découverte en 2014 par la méthode de Transit. Elle orbite autour de l'étoile Kepler-428.
+
+== Caractéristiques ==
+
+=== Caractéristiques orbitales ===
+* Période orbitale : 3.52563254 jours<ref></ref>
+* Demi-grand axe : 0.0433 ua<ref></ref>
+* Excentricité : 0.22 <ref></ref>
+* Inclinaison : 89.36 °<ref></ref>
+
+=== Caractéristiques physiques ===
+* Masse : 403.63 M⊕<ref></ref>
+* Rayon : 12.11 R⊕<ref></ref>
+* Densité : ?<ref></ref>
+* Température d'équilibre : 1070.0 K<ref></ref>
+
+== Étoile hôte ==
+
+{{Infobox Étoile
+| nom = Kepler-428
+| image = 
+| légende = 
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| magnitude_absolue = 
+| magnitude_apparente = 
+| masse = ?<ref></ref>
+| rayon = ?<ref></ref>
+| température = ?<ref></ref>
+| métallicité = ?<ref></ref>
+| âge = ?<ref></ref>
+}}
+
+L'étoile hôte Kepler-428 est une étoile de type spectral inconnu.
+
+== Découverte ==
+
+Kepler-428 b a été découverte en 2014 par la méthode de Transit.
+
+== Références ==
+<references />
+
+[[Catégorie:Exoplanète]]
+[[Catégorie:Exoplanète découverte en 2014]]

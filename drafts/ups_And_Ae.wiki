@@ -1,0 +1,73 @@
+== ups And Ae ==
+
+{{Infobox Exoplanète
+| nom = ups And Ae
+| image = 
+| légende = 
+| étoile = ups And A
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| masse = ?<ref></ref>
+| rayon = ?<ref></ref>
+| densité = ?<ref></ref>
+| gravité = ?<ref></ref>
+| température = ?<ref></ref>
+| période = 3848.86 j<ref></ref>
+| demi_grand_axe = 5.2456 ua<ref></ref>
+| excentricité = 0.00536 <ref></ref>
+| inclinaison = ?<ref></ref>
+| méthode_découverte = Radial Velocity
+| date_découverte = 2010
+| statut = Confirmée
+}}
+
+ups And Ae est une exoplanète découverte en 2010 par la méthode de Radial Velocity. Elle orbite autour de l'étoile ups And A.
+
+== Caractéristiques ==
+
+=== Caractéristiques orbitales ===
+* Période orbitale : 3848.86 jours<ref></ref>
+* Demi-grand axe : 5.2456 ua<ref></ref>
+* Excentricité : 0.00536 <ref></ref>
+* Inclinaison : ?<ref></ref>
+
+=== Caractéristiques physiques ===
+* Masse : ?<ref></ref>
+* Rayon : ?<ref></ref>
+* Densité : ?<ref></ref>
+* Température d'équilibre : ?<ref></ref>
+
+== Étoile hôte ==
+
+{{Infobox Étoile
+| nom = ups And A
+| image = 
+| légende = 
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| magnitude_absolue = 
+| magnitude_apparente = 
+| masse = ?<ref></ref>
+| rayon = ?<ref></ref>
+| température = ?<ref></ref>
+| métallicité = ?<ref></ref>
+| âge = ?<ref></ref>
+}}
+
+L'étoile hôte ups And A est une étoile de type spectral inconnu.
+
+== Découverte ==
+
+ups And Ae a été découverte en 2010 par la méthode de Radial Velocity.
+
+== Références ==
+<references />
+
+[[Catégorie:Exoplanète]]
+[[Catégorie:Exoplanète découverte en 2010]]

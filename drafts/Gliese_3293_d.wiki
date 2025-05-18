@@ -1,0 +1,73 @@
+== Gliese 3293 d ==
+
+{{Infobox Exoplanète
+| nom = Gliese 3293 d
+| image = 
+| légende = 
+| étoile = Gliese 3293
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| masse = 0.07 M⊕<ref></ref>
+| rayon = ?<ref></ref>
+| densité = ?<ref></ref>
+| gravité = ?<ref></ref>
+| température = ?<ref></ref>
+| période = 123.98 j<ref></ref>
+| demi_grand_axe = 0.3644 ua<ref></ref>
+| excentricité = 0.37 <ref></ref>
+| inclinaison = ?<ref></ref>
+| méthode_découverte = ?
+| date_découverte = ?
+| statut = Confirmée
+}}
+
+Gliese 3293 d est une exoplanète découverte en None par la méthode de None. Elle orbite autour de l'étoile Gliese 3293.
+
+== Caractéristiques ==
+
+=== Caractéristiques orbitales ===
+* Période orbitale : 123.98 jours<ref></ref>
+* Demi-grand axe : 0.3644 ua<ref></ref>
+* Excentricité : 0.37 <ref></ref>
+* Inclinaison : ?<ref></ref>
+
+=== Caractéristiques physiques ===
+* Masse : 0.07 M⊕<ref></ref>
+* Rayon : ?<ref></ref>
+* Densité : ?<ref></ref>
+* Température d'équilibre : ?<ref></ref>
+
+== Étoile hôte ==
+
+{{Infobox Étoile
+| nom = Gliese 3293
+| image = 
+| légende = 
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| magnitude_absolue = 
+| magnitude_apparente = 
+| masse = ?<ref></ref>
+| rayon = ?<ref></ref>
+| température = ?<ref></ref>
+| métallicité = ?<ref></ref>
+| âge = ?<ref></ref>
+}}
+
+L'étoile hôte Gliese 3293 est une étoile de type spectral inconnu.
+
+== Découverte ==
+
+Gliese 3293 d a été découverte en None par la méthode de None.
+
+== Références ==
+<references />
+
+[[Catégorie:Exoplanète]]
+[[Catégorie:Exoplanète découverte en None]]

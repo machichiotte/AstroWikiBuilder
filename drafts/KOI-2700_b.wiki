@@ -1,0 +1,73 @@
+== KOI-2700 b ==
+
+{{Infobox Exoplanète
+| nom = KOI-2700 b
+| image = 
+| légende = 
+| étoile = KOI-2700
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| masse = 0.00271 M⊕<ref></ref>
+| rayon = 0.0946 R⊕<ref></ref>
+| densité = ?<ref></ref>
+| gravité = ?<ref></ref>
+| température = ?<ref></ref>
+| période = 0.910022 j<ref></ref>
+| demi_grand_axe = ?<ref></ref>
+| excentricité = ?<ref></ref>
+| inclinaison = ?<ref></ref>
+| méthode_découverte = Primary Transit
+| date_découverte = 2013
+| statut = Confirmée
+}}
+
+KOI-2700 b est une exoplanète découverte en 2013 par la méthode de Primary Transit. Elle orbite autour de l'étoile KOI-2700.
+
+== Caractéristiques ==
+
+=== Caractéristiques orbitales ===
+* Période orbitale : 0.910022 jours<ref></ref>
+* Demi-grand axe : ?<ref></ref>
+* Excentricité : ?<ref></ref>
+* Inclinaison : ?<ref></ref>
+
+=== Caractéristiques physiques ===
+* Masse : 0.00271 M⊕<ref></ref>
+* Rayon : 0.0946 R⊕<ref></ref>
+* Densité : ?<ref></ref>
+* Température d'équilibre : ?<ref></ref>
+
+== Étoile hôte ==
+
+{{Infobox Étoile
+| nom = KOI-2700
+| image = 
+| légende = 
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| magnitude_absolue = 
+| magnitude_apparente = 
+| masse = ?<ref></ref>
+| rayon = ?<ref></ref>
+| température = ?<ref></ref>
+| métallicité = ?<ref></ref>
+| âge = ?<ref></ref>
+}}
+
+L'étoile hôte KOI-2700 est une étoile de type spectral inconnu.
+
+== Découverte ==
+
+KOI-2700 b a été découverte en 2013 par la méthode de Primary Transit.
+
+== Références ==
+<references />
+
+[[Catégorie:Exoplanète]]
+[[Catégorie:Exoplanète découverte en 2013]]

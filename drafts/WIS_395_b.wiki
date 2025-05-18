@@ -1,0 +1,73 @@
+== WIS 395 b ==
+
+{{Infobox Exoplanète
+| nom = WIS 395 b
+| image = 
+| légende = 
+| étoile = WIS 395
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| masse = 11.9 M⊕<ref></ref>
+| rayon = ?<ref></ref>
+| densité = ?<ref></ref>
+| gravité = ?<ref></ref>
+| température = ?<ref></ref>
+| période = ?<ref></ref>
+| demi_grand_axe = 22086.0 ua<ref></ref>
+| excentricité = ?<ref></ref>
+| inclinaison = ?<ref></ref>
+| méthode_découverte = Imaging, Astrometry
+| date_découverte = 2010
+| statut = Confirmée
+}}
+
+WIS 395 b est une exoplanète découverte en 2010 par la méthode de Imaging, Astrometry. Elle orbite autour de l'étoile WIS 395.
+
+== Caractéristiques ==
+
+=== Caractéristiques orbitales ===
+* Période orbitale : ?<ref></ref>
+* Demi-grand axe : 22086.0 ua<ref></ref>
+* Excentricité : ?<ref></ref>
+* Inclinaison : ?<ref></ref>
+
+=== Caractéristiques physiques ===
+* Masse : 11.9 M⊕<ref></ref>
+* Rayon : ?<ref></ref>
+* Densité : ?<ref></ref>
+* Température d'équilibre : ?<ref></ref>
+
+== Étoile hôte ==
+
+{{Infobox Étoile
+| nom = WIS 395
+| image = 
+| légende = 
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| magnitude_absolue = 
+| magnitude_apparente = 
+| masse = ?<ref></ref>
+| rayon = ?<ref></ref>
+| température = ?<ref></ref>
+| métallicité = ?<ref></ref>
+| âge = ?<ref></ref>
+}}
+
+L'étoile hôte WIS 395 est une étoile de type spectral inconnu.
+
+== Découverte ==
+
+WIS 395 b a été découverte en 2010 par la méthode de Imaging, Astrometry.
+
+== Références ==
+<references />
+
+[[Catégorie:Exoplanète]]
+[[Catégorie:Exoplanète découverte en 2010]]

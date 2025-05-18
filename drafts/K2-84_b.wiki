@@ -1,0 +1,73 @@
+== K2-84 b ==
+
+{{Infobox Exoplanète
+| nom = K2-84 b
+| image = 
+| légende = 
+| étoile = K2-84
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| masse = 6.39 M⊕<ref></ref>
+| rayon = 2.41 R⊕<ref></ref>
+| densité = ?<ref></ref>
+| gravité = ?<ref></ref>
+| température = ?<ref></ref>
+| période = 6.4215 j<ref></ref>
+| demi_grand_axe = 0.0665 ua<ref></ref>
+| excentricité = ?<ref></ref>
+| inclinaison = ?<ref></ref>
+| méthode_découverte = Transit
+| date_découverte = 2016
+| statut = Confirmée
+}}
+
+K2-84 b est une exoplanète découverte en 2016 par la méthode de Transit. Elle orbite autour de l'étoile K2-84.
+
+== Caractéristiques ==
+
+=== Caractéristiques orbitales ===
+* Période orbitale : 6.4215 jours<ref></ref>
+* Demi-grand axe : 0.0665 ua<ref></ref>
+* Excentricité : ?<ref></ref>
+* Inclinaison : ?<ref></ref>
+
+=== Caractéristiques physiques ===
+* Masse : 6.39 M⊕<ref></ref>
+* Rayon : 2.41 R⊕<ref></ref>
+* Densité : ?<ref></ref>
+* Température d'équilibre : ?<ref></ref>
+
+== Étoile hôte ==
+
+{{Infobox Étoile
+| nom = K2-84
+| image = 
+| légende = 
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| magnitude_absolue = 
+| magnitude_apparente = 
+| masse = ?<ref></ref>
+| rayon = ?<ref></ref>
+| température = ?<ref></ref>
+| métallicité = ?<ref></ref>
+| âge = ?<ref></ref>
+}}
+
+L'étoile hôte K2-84 est une étoile de type spectral inconnu.
+
+== Découverte ==
+
+K2-84 b a été découverte en 2016 par la méthode de Transit.
+
+== Références ==
+<references />
+
+[[Catégorie:Exoplanète]]
+[[Catégorie:Exoplanète découverte en 2016]]

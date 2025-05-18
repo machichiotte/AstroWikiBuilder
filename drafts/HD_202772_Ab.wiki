@@ -1,0 +1,73 @@
+== HD 202772 Ab ==
+
+{{Infobox Exoplanète
+| nom = HD 202772 Ab
+| image = 
+| légende = 
+| étoile = HD 202772 A
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| masse = 1.008 M⊕<ref></ref>
+| rayon = 1.562 R⊕<ref></ref>
+| densité = ?<ref></ref>
+| gravité = ?<ref></ref>
+| température = 2132.0 K<ref></ref>
+| période = 3.30896 j<ref></ref>
+| demi_grand_axe = 0.0519 ua<ref></ref>
+| excentricité = 0.047 <ref></ref>
+| inclinaison = 84.2 °<ref></ref>
+| méthode_découverte = Primary Transit
+| date_découverte = 2018
+| statut = Confirmée
+}}
+
+HD 202772 Ab est une exoplanète découverte en 2018 par la méthode de Primary Transit. Elle orbite autour de l'étoile HD 202772 A.
+
+== Caractéristiques ==
+
+=== Caractéristiques orbitales ===
+* Période orbitale : 3.30896 jours<ref></ref>
+* Demi-grand axe : 0.0519 ua<ref></ref>
+* Excentricité : 0.047 <ref></ref>
+* Inclinaison : 84.2 °<ref></ref>
+
+=== Caractéristiques physiques ===
+* Masse : 1.008 M⊕<ref></ref>
+* Rayon : 1.562 R⊕<ref></ref>
+* Densité : ?<ref></ref>
+* Température d'équilibre : 2132.0 K<ref></ref>
+
+== Étoile hôte ==
+
+{{Infobox Étoile
+| nom = HD 202772 A
+| image = 
+| légende = 
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| magnitude_absolue = 
+| magnitude_apparente = 
+| masse = ?<ref></ref>
+| rayon = ?<ref></ref>
+| température = ?<ref></ref>
+| métallicité = ?<ref></ref>
+| âge = ?<ref></ref>
+}}
+
+L'étoile hôte HD 202772 A est une étoile de type spectral inconnu.
+
+== Découverte ==
+
+HD 202772 Ab a été découverte en 2018 par la méthode de Primary Transit.
+
+== Références ==
+<references />
+
+[[Catégorie:Exoplanète]]
+[[Catégorie:Exoplanète découverte en 2018]]

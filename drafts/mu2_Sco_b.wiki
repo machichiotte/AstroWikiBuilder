@@ -1,0 +1,73 @@
+== mu2 Sco b ==
+
+{{Infobox Exoplanète
+| nom = mu2 Sco b
+| image = 
+| légende = 
+| étoile = mu2 Sco
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| masse = 4576.7290608 M⊕<ref></ref>
+| rayon = 12.3 R⊕<ref></ref>
+| densité = ?<ref></ref>
+| gravité = ?<ref></ref>
+| température = ?<ref></ref>
+| période = ?<ref></ref>
+| demi_grand_axe = 242.4 ua<ref></ref>
+| excentricité = 0.56 <ref></ref>
+| inclinaison = 96.6 °<ref></ref>
+| méthode_découverte = Imaging
+| date_découverte = 2022
+| statut = Confirmée
+}}
+
+mu2 Sco b est une exoplanète découverte en 2022 par la méthode de Imaging. Elle orbite autour de l'étoile mu2 Sco.
+
+== Caractéristiques ==
+
+=== Caractéristiques orbitales ===
+* Période orbitale : ?<ref></ref>
+* Demi-grand axe : 242.4 ua<ref></ref>
+* Excentricité : 0.56 <ref></ref>
+* Inclinaison : 96.6 °<ref></ref>
+
+=== Caractéristiques physiques ===
+* Masse : 4576.7290608 M⊕<ref></ref>
+* Rayon : 12.3 R⊕<ref></ref>
+* Densité : ?<ref></ref>
+* Température d'équilibre : ?<ref></ref>
+
+== Étoile hôte ==
+
+{{Infobox Étoile
+| nom = mu2 Sco
+| image = 
+| légende = 
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| magnitude_absolue = 
+| magnitude_apparente = 
+| masse = ?<ref></ref>
+| rayon = ?<ref></ref>
+| température = ?<ref></ref>
+| métallicité = ?<ref></ref>
+| âge = ?<ref></ref>
+}}
+
+L'étoile hôte mu2 Sco est une étoile de type spectral inconnu.
+
+== Découverte ==
+
+mu2 Sco b a été découverte en 2022 par la méthode de Imaging.
+
+== Références ==
+<references />
+
+[[Catégorie:Exoplanète]]
+[[Catégorie:Exoplanète découverte en 2022]]

@@ -1,0 +1,73 @@
+== HD 564 b ==
+
+{{Infobox Exoplanète
+| nom = HD 564 b
+| image = 
+| légende = 
+| étoile = HD 564
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| masse = 104.88 M⊕<ref></ref>
+| rayon = 12.5 R⊕<ref></ref>
+| densité = ?<ref></ref>
+| gravité = ?<ref></ref>
+| température = ?<ref></ref>
+| période = 492.3 j<ref></ref>
+| demi_grand_axe = 1.2 ua<ref></ref>
+| excentricité = 0.096 <ref></ref>
+| inclinaison = ?<ref></ref>
+| méthode_découverte = Radial Velocity
+| date_découverte = 2014
+| statut = Confirmée
+}}
+
+HD 564 b est une exoplanète découverte en 2014 par la méthode de Radial Velocity. Elle orbite autour de l'étoile HD 564.
+
+== Caractéristiques ==
+
+=== Caractéristiques orbitales ===
+* Période orbitale : 492.3 jours<ref></ref>
+* Demi-grand axe : 1.2 ua<ref></ref>
+* Excentricité : 0.096 <ref></ref>
+* Inclinaison : ?<ref></ref>
+
+=== Caractéristiques physiques ===
+* Masse : 104.88 M⊕<ref></ref>
+* Rayon : 12.5 R⊕<ref></ref>
+* Densité : ?<ref></ref>
+* Température d'équilibre : ?<ref></ref>
+
+== Étoile hôte ==
+
+{{Infobox Étoile
+| nom = HD 564
+| image = 
+| légende = 
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| magnitude_absolue = 
+| magnitude_apparente = 
+| masse = ?<ref></ref>
+| rayon = ?<ref></ref>
+| température = ?<ref></ref>
+| métallicité = ?<ref></ref>
+| âge = ?<ref></ref>
+}}
+
+L'étoile hôte HD 564 est une étoile de type spectral inconnu.
+
+== Découverte ==
+
+HD 564 b a été découverte en 2014 par la méthode de Radial Velocity.
+
+== Références ==
+<references />
+
+[[Catégorie:Exoplanète]]
+[[Catégorie:Exoplanète découverte en 2014]]

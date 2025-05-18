@@ -1,0 +1,73 @@
+== Kepler-1987 b ==
+
+{{Infobox Exoplanète
+| nom = Kepler-1987 b
+| image = 
+| légende = 
+| étoile = Kepler-1987
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| masse = 2.04 M⊕<ref></ref>
+| rayon = 1.23 R⊕<ref></ref>
+| densité = ?<ref></ref>
+| gravité = ?<ref></ref>
+| température = 997.0 K<ref></ref>
+| période = 2.345863002 j<ref></ref>
+| demi_grand_axe = 0.0318 ua<ref></ref>
+| excentricité = 0.0 <ref></ref>
+| inclinaison = 89.81 °<ref></ref>
+| méthode_découverte = Transit
+| date_découverte = 2023
+| statut = Confirmée
+}}
+
+Kepler-1987 b est une exoplanète découverte en 2023 par la méthode de Transit. Elle orbite autour de l'étoile Kepler-1987.
+
+== Caractéristiques ==
+
+=== Caractéristiques orbitales ===
+* Période orbitale : 2.345863002 jours<ref></ref>
+* Demi-grand axe : 0.0318 ua<ref></ref>
+* Excentricité : 0.0 <ref></ref>
+* Inclinaison : 89.81 °<ref></ref>
+
+=== Caractéristiques physiques ===
+* Masse : 2.04 M⊕<ref></ref>
+* Rayon : 1.23 R⊕<ref></ref>
+* Densité : ?<ref></ref>
+* Température d'équilibre : 997.0 K<ref></ref>
+
+== Étoile hôte ==
+
+{{Infobox Étoile
+| nom = Kepler-1987
+| image = 
+| légende = 
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| magnitude_absolue = 
+| magnitude_apparente = 
+| masse = ?<ref></ref>
+| rayon = ?<ref></ref>
+| température = ?<ref></ref>
+| métallicité = ?<ref></ref>
+| âge = ?<ref></ref>
+}}
+
+L'étoile hôte Kepler-1987 est une étoile de type spectral inconnu.
+
+== Découverte ==
+
+Kepler-1987 b a été découverte en 2023 par la méthode de Transit.
+
+== Références ==
+<references />
+
+[[Catégorie:Exoplanète]]
+[[Catégorie:Exoplanète découverte en 2023]]

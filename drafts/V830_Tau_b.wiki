@@ -1,0 +1,73 @@
+== V830 Tau b ==
+
+{{Infobox Exoplanète
+| nom = V830 Tau b
+| image = 
+| légende = 
+| étoile = V830 Tau
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| masse = 222.481 M⊕<ref></ref>
+| rayon = 14.0 R⊕<ref></ref>
+| densité = ?<ref></ref>
+| gravité = ?<ref></ref>
+| température = ?<ref></ref>
+| période = 4.927 j<ref></ref>
+| demi_grand_axe = 0.057 ua<ref></ref>
+| excentricité = 0.0 <ref></ref>
+| inclinaison = 55.0 °<ref></ref>
+| méthode_découverte = Radial Velocity
+| date_découverte = 2016
+| statut = Confirmée
+}}
+
+V830 Tau b est une exoplanète découverte en 2016 par la méthode de Radial Velocity. Elle orbite autour de l'étoile V830 Tau.
+
+== Caractéristiques ==
+
+=== Caractéristiques orbitales ===
+* Période orbitale : 4.927 jours<ref></ref>
+* Demi-grand axe : 0.057 ua<ref></ref>
+* Excentricité : 0.0 <ref></ref>
+* Inclinaison : 55.0 °<ref></ref>
+
+=== Caractéristiques physiques ===
+* Masse : 222.481 M⊕<ref></ref>
+* Rayon : 14.0 R⊕<ref></ref>
+* Densité : ?<ref></ref>
+* Température d'équilibre : ?<ref></ref>
+
+== Étoile hôte ==
+
+{{Infobox Étoile
+| nom = V830 Tau
+| image = 
+| légende = 
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| magnitude_absolue = 
+| magnitude_apparente = 
+| masse = ?<ref></ref>
+| rayon = ?<ref></ref>
+| température = ?<ref></ref>
+| métallicité = ?<ref></ref>
+| âge = ?<ref></ref>
+}}
+
+L'étoile hôte V830 Tau est une étoile de type spectral inconnu.
+
+== Découverte ==
+
+V830 Tau b a été découverte en 2016 par la méthode de Radial Velocity.
+
+== Références ==
+<references />
+
+[[Catégorie:Exoplanète]]
+[[Catégorie:Exoplanète découverte en 2016]]

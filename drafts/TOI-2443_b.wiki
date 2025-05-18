@@ -1,0 +1,73 @@
+== TOI-2443 b ==
+
+{{Infobox Exoplanète
+| nom = TOI-2443 b
+| image = 
+| légende = 
+| étoile = TOI-2443
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| masse = 4.8 M⊕<ref></ref>
+| rayon = 2.363 R⊕<ref></ref>
+| densité = ?<ref></ref>
+| gravité = ?<ref></ref>
+| température = 519.0 K<ref></ref>
+| période = 15.66858 j<ref></ref>
+| demi_grand_axe = 0.105 ua<ref></ref>
+| excentricité = 0.301 <ref></ref>
+| inclinaison = 89.72 °<ref></ref>
+| méthode_découverte = Transit
+| date_découverte = 2023
+| statut = Confirmée
+}}
+
+TOI-2443 b est une exoplanète découverte en 2023 par la méthode de Transit. Elle orbite autour de l'étoile TOI-2443.
+
+== Caractéristiques ==
+
+=== Caractéristiques orbitales ===
+* Période orbitale : 15.66858 jours<ref></ref>
+* Demi-grand axe : 0.105 ua<ref></ref>
+* Excentricité : 0.301 <ref></ref>
+* Inclinaison : 89.72 °<ref></ref>
+
+=== Caractéristiques physiques ===
+* Masse : 4.8 M⊕<ref></ref>
+* Rayon : 2.363 R⊕<ref></ref>
+* Densité : ?<ref></ref>
+* Température d'équilibre : 519.0 K<ref></ref>
+
+== Étoile hôte ==
+
+{{Infobox Étoile
+| nom = TOI-2443
+| image = 
+| légende = 
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| magnitude_absolue = 
+| magnitude_apparente = 
+| masse = ?<ref></ref>
+| rayon = ?<ref></ref>
+| température = ?<ref></ref>
+| métallicité = ?<ref></ref>
+| âge = ?<ref></ref>
+}}
+
+L'étoile hôte TOI-2443 est une étoile de type spectral inconnu.
+
+== Découverte ==
+
+TOI-2443 b a été découverte en 2023 par la méthode de Transit.
+
+== Références ==
+<references />
+
+[[Catégorie:Exoplanète]]
+[[Catégorie:Exoplanète découverte en 2023]]

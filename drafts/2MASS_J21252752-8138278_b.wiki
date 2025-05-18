@@ -1,0 +1,73 @@
+== 2MASS J21252752-8138278 b ==
+
+{{Infobox Exoplanète
+| nom = 2MASS J21252752-8138278 b
+| image = 
+| légende = 
+| étoile = 2MASS J21252752-8138278
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| masse = 3813.940884 M⊕<ref></ref>
+| rayon = 12.4 R⊕<ref></ref>
+| densité = ?<ref></ref>
+| gravité = ?<ref></ref>
+| température = 1616.0 K<ref></ref>
+| période = ?<ref></ref>
+| demi_grand_axe = 7493.0 ua<ref></ref>
+| excentricité = ?<ref></ref>
+| inclinaison = ?<ref></ref>
+| méthode_découverte = Imaging
+| date_découverte = 2024
+| statut = Confirmée
+}}
+
+2MASS J21252752-8138278 b est une exoplanète découverte en 2024 par la méthode de Imaging. Elle orbite autour de l'étoile 2MASS J21252752-8138278.
+
+== Caractéristiques ==
+
+=== Caractéristiques orbitales ===
+* Période orbitale : ?<ref></ref>
+* Demi-grand axe : 7493.0 ua<ref></ref>
+* Excentricité : ?<ref></ref>
+* Inclinaison : ?<ref></ref>
+
+=== Caractéristiques physiques ===
+* Masse : 3813.940884 M⊕<ref></ref>
+* Rayon : 12.4 R⊕<ref></ref>
+* Densité : ?<ref></ref>
+* Température d'équilibre : 1616.0 K<ref></ref>
+
+== Étoile hôte ==
+
+{{Infobox Étoile
+| nom = 2MASS J21252752-8138278
+| image = 
+| légende = 
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| magnitude_absolue = 
+| magnitude_apparente = 
+| masse = ?<ref></ref>
+| rayon = ?<ref></ref>
+| température = ?<ref></ref>
+| métallicité = ?<ref></ref>
+| âge = ?<ref></ref>
+}}
+
+L'étoile hôte 2MASS J21252752-8138278 est une étoile de type spectral inconnu.
+
+== Découverte ==
+
+2MASS J21252752-8138278 b a été découverte en 2024 par la méthode de Imaging.
+
+== Références ==
+<references />
+
+[[Catégorie:Exoplanète]]
+[[Catégorie:Exoplanète découverte en 2024]]

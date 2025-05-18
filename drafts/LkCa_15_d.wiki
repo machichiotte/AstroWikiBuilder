@@ -1,0 +1,73 @@
+== LkCa 15 d ==
+
+{{Infobox Exoplanète
+| nom = LkCa 15 d
+| image = 
+| légende = 
+| étoile = LkCa 15
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| masse = 0.5 M⊕<ref></ref>
+| rayon = ?<ref></ref>
+| densité = ?<ref></ref>
+| gravité = ?<ref></ref>
+| température = ?<ref></ref>
+| période = ?<ref></ref>
+| demi_grand_axe = 24.7 ua<ref></ref>
+| excentricité = ?<ref></ref>
+| inclinaison = 50.0 °<ref></ref>
+| méthode_découverte = ?
+| date_découverte = ?
+| statut = Confirmée
+}}
+
+LkCa 15 d est une exoplanète découverte en None par la méthode de None. Elle orbite autour de l'étoile LkCa 15.
+
+== Caractéristiques ==
+
+=== Caractéristiques orbitales ===
+* Période orbitale : ?<ref></ref>
+* Demi-grand axe : 24.7 ua<ref></ref>
+* Excentricité : ?<ref></ref>
+* Inclinaison : 50.0 °<ref></ref>
+
+=== Caractéristiques physiques ===
+* Masse : 0.5 M⊕<ref></ref>
+* Rayon : ?<ref></ref>
+* Densité : ?<ref></ref>
+* Température d'équilibre : ?<ref></ref>
+
+== Étoile hôte ==
+
+{{Infobox Étoile
+| nom = LkCa 15
+| image = 
+| légende = 
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| magnitude_absolue = 
+| magnitude_apparente = 
+| masse = ?<ref></ref>
+| rayon = ?<ref></ref>
+| température = ?<ref></ref>
+| métallicité = ?<ref></ref>
+| âge = ?<ref></ref>
+}}
+
+L'étoile hôte LkCa 15 est une étoile de type spectral inconnu.
+
+== Découverte ==
+
+LkCa 15 d a été découverte en None par la méthode de None.
+
+== Références ==
+<references />
+
+[[Catégorie:Exoplanète]]
+[[Catégorie:Exoplanète découverte en None]]

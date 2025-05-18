@@ -1,0 +1,73 @@
+== Kepler-397 b ==
+
+{{Infobox Exoplanète
+| nom = Kepler-397 b
+| image = 
+| légende = 
+| étoile = Kepler-397
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| masse = 6.62 M⊕<ref></ref>
+| rayon = 2.46 R⊕<ref></ref>
+| densité = ?<ref></ref>
+| gravité = ?<ref></ref>
+| température = 539.0 K<ref></ref>
+| période = 22.250949 j<ref></ref>
+| demi_grand_axe = 0.144 ua<ref></ref>
+| excentricité = 0.0 <ref></ref>
+| inclinaison = 89.33 °<ref></ref>
+| méthode_découverte = Transit
+| date_découverte = 2014
+| statut = Confirmée
+}}
+
+Kepler-397 b est une exoplanète découverte en 2014 par la méthode de Transit. Elle orbite autour de l'étoile Kepler-397.
+
+== Caractéristiques ==
+
+=== Caractéristiques orbitales ===
+* Période orbitale : 22.250949 jours<ref></ref>
+* Demi-grand axe : 0.144 ua<ref></ref>
+* Excentricité : 0.0 <ref></ref>
+* Inclinaison : 89.33 °<ref></ref>
+
+=== Caractéristiques physiques ===
+* Masse : 6.62 M⊕<ref></ref>
+* Rayon : 2.46 R⊕<ref></ref>
+* Densité : ?<ref></ref>
+* Température d'équilibre : 539.0 K<ref></ref>
+
+== Étoile hôte ==
+
+{{Infobox Étoile
+| nom = Kepler-397
+| image = 
+| légende = 
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| magnitude_absolue = 
+| magnitude_apparente = 
+| masse = ?<ref></ref>
+| rayon = ?<ref></ref>
+| température = ?<ref></ref>
+| métallicité = ?<ref></ref>
+| âge = ?<ref></ref>
+}}
+
+L'étoile hôte Kepler-397 est une étoile de type spectral inconnu.
+
+== Découverte ==
+
+Kepler-397 b a été découverte en 2014 par la méthode de Transit.
+
+== Références ==
+<references />
+
+[[Catégorie:Exoplanète]]
+[[Catégorie:Exoplanète découverte en 2014]]

@@ -1,0 +1,73 @@
+== gamma Lib b ==
+
+{{Infobox Exoplanète
+| nom = gamma Lib b
+| image = 
+| légende = 
+| étoile = gamma Lib
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| masse = ?<ref></ref>
+| rayon = ?<ref></ref>
+| densité = ?<ref></ref>
+| gravité = ?<ref></ref>
+| température = ?<ref></ref>
+| période = 415.2 j<ref></ref>
+| demi_grand_axe = 1.2397 ua<ref></ref>
+| excentricité = 0.25 <ref></ref>
+| inclinaison = ?<ref></ref>
+| méthode_découverte = Radial Velocity
+| date_découverte = 2018
+| statut = Confirmée
+}}
+
+gamma Lib b est une exoplanète découverte en 2018 par la méthode de Radial Velocity. Elle orbite autour de l'étoile gamma Lib.
+
+== Caractéristiques ==
+
+=== Caractéristiques orbitales ===
+* Période orbitale : 415.2 jours<ref></ref>
+* Demi-grand axe : 1.2397 ua<ref></ref>
+* Excentricité : 0.25 <ref></ref>
+* Inclinaison : ?<ref></ref>
+
+=== Caractéristiques physiques ===
+* Masse : ?<ref></ref>
+* Rayon : ?<ref></ref>
+* Densité : ?<ref></ref>
+* Température d'équilibre : ?<ref></ref>
+
+== Étoile hôte ==
+
+{{Infobox Étoile
+| nom = gamma Lib
+| image = 
+| légende = 
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| magnitude_absolue = 
+| magnitude_apparente = 
+| masse = ?<ref></ref>
+| rayon = ?<ref></ref>
+| température = ?<ref></ref>
+| métallicité = ?<ref></ref>
+| âge = ?<ref></ref>
+}}
+
+L'étoile hôte gamma Lib est une étoile de type spectral inconnu.
+
+== Découverte ==
+
+gamma Lib b a été découverte en 2018 par la méthode de Radial Velocity.
+
+== Références ==
+<references />
+
+[[Catégorie:Exoplanète]]
+[[Catégorie:Exoplanète découverte en 2018]]

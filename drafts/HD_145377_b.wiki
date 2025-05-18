@@ -1,0 +1,73 @@
+== HD 145377 b ==
+
+{{Infobox Exoplanète
+| nom = HD 145377 b
+| image = 
+| légende = 
+| étoile = HD 145377
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| masse = 1913.3366 M⊕<ref></ref>
+| rayon = 12.8 R⊕<ref></ref>
+| densité = ?<ref></ref>
+| gravité = ?<ref></ref>
+| température = ?<ref></ref>
+| période = 103.95 j<ref></ref>
+| demi_grand_axe = 0.45 ua<ref></ref>
+| excentricité = 0.31 <ref></ref>
+| inclinaison = ?<ref></ref>
+| méthode_découverte = Radial Velocity
+| date_découverte = 2008
+| statut = Confirmée
+}}
+
+HD 145377 b est une exoplanète découverte en 2008 par la méthode de Radial Velocity. Elle orbite autour de l'étoile HD 145377.
+
+== Caractéristiques ==
+
+=== Caractéristiques orbitales ===
+* Période orbitale : 103.95 jours<ref></ref>
+* Demi-grand axe : 0.45 ua<ref></ref>
+* Excentricité : 0.31 <ref></ref>
+* Inclinaison : ?<ref></ref>
+
+=== Caractéristiques physiques ===
+* Masse : 1913.3366 M⊕<ref></ref>
+* Rayon : 12.8 R⊕<ref></ref>
+* Densité : ?<ref></ref>
+* Température d'équilibre : ?<ref></ref>
+
+== Étoile hôte ==
+
+{{Infobox Étoile
+| nom = HD 145377
+| image = 
+| légende = 
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| magnitude_absolue = 
+| magnitude_apparente = 
+| masse = ?<ref></ref>
+| rayon = ?<ref></ref>
+| température = ?<ref></ref>
+| métallicité = ?<ref></ref>
+| âge = ?<ref></ref>
+}}
+
+L'étoile hôte HD 145377 est une étoile de type spectral inconnu.
+
+== Découverte ==
+
+HD 145377 b a été découverte en 2008 par la méthode de Radial Velocity.
+
+== Références ==
+<references />
+
+[[Catégorie:Exoplanète]]
+[[Catégorie:Exoplanète découverte en 2008]]

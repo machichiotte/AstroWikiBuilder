@@ -1,0 +1,73 @@
+== Kepler-443 b ==
+
+{{Infobox Exoplanète
+| nom = Kepler-443 b
+| image = 
+| légende = 
+| étoile = Kepler-443
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| masse = 6.04 M⊕<ref></ref>
+| rayon = 2.33 R⊕<ref></ref>
+| densité = ?<ref></ref>
+| gravité = ?<ref></ref>
+| température = 233.0 K<ref></ref>
+| période = 177.6693 j<ref></ref>
+| demi_grand_axe = 0.495 ua<ref></ref>
+| excentricité = 0.11 <ref></ref>
+| inclinaison = 89.94 °<ref></ref>
+| méthode_découverte = Transit
+| date_découverte = 2015
+| statut = Confirmée
+}}
+
+Kepler-443 b est une exoplanète découverte en 2015 par la méthode de Transit. Elle orbite autour de l'étoile Kepler-443.
+
+== Caractéristiques ==
+
+=== Caractéristiques orbitales ===
+* Période orbitale : 177.6693 jours<ref></ref>
+* Demi-grand axe : 0.495 ua<ref></ref>
+* Excentricité : 0.11 <ref></ref>
+* Inclinaison : 89.94 °<ref></ref>
+
+=== Caractéristiques physiques ===
+* Masse : 6.04 M⊕<ref></ref>
+* Rayon : 2.33 R⊕<ref></ref>
+* Densité : ?<ref></ref>
+* Température d'équilibre : 233.0 K<ref></ref>
+
+== Étoile hôte ==
+
+{{Infobox Étoile
+| nom = Kepler-443
+| image = 
+| légende = 
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| magnitude_absolue = 
+| magnitude_apparente = 
+| masse = ?<ref></ref>
+| rayon = ?<ref></ref>
+| température = ?<ref></ref>
+| métallicité = ?<ref></ref>
+| âge = ?<ref></ref>
+}}
+
+L'étoile hôte Kepler-443 est une étoile de type spectral inconnu.
+
+== Découverte ==
+
+Kepler-443 b a été découverte en 2015 par la méthode de Transit.
+
+== Références ==
+<references />
+
+[[Catégorie:Exoplanète]]
+[[Catégorie:Exoplanète découverte en 2015]]

@@ -1,0 +1,73 @@
+== Kepler-225 c ==
+
+{{Infobox Exoplanète
+| nom = Kepler-225 c
+| image = 
+| légende = 
+| étoile = Kepler-225
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| masse = 4.04 M⊕<ref></ref>
+| rayon = 1.84 R⊕<ref></ref>
+| densité = ?<ref></ref>
+| gravité = ?<ref></ref>
+| température = 412.0 K<ref></ref>
+| période = 18.794234 j<ref></ref>
+| demi_grand_axe = 0.111 ua<ref></ref>
+| excentricité = 0.0 <ref></ref>
+| inclinaison = 89.52 °<ref></ref>
+| méthode_découverte = Transit
+| date_découverte = 2014
+| statut = Confirmée
+}}
+
+Kepler-225 c est une exoplanète découverte en 2014 par la méthode de Transit. Elle orbite autour de l'étoile Kepler-225.
+
+== Caractéristiques ==
+
+=== Caractéristiques orbitales ===
+* Période orbitale : 18.794234 jours<ref></ref>
+* Demi-grand axe : 0.111 ua<ref></ref>
+* Excentricité : 0.0 <ref></ref>
+* Inclinaison : 89.52 °<ref></ref>
+
+=== Caractéristiques physiques ===
+* Masse : 4.04 M⊕<ref></ref>
+* Rayon : 1.84 R⊕<ref></ref>
+* Densité : ?<ref></ref>
+* Température d'équilibre : 412.0 K<ref></ref>
+
+== Étoile hôte ==
+
+{{Infobox Étoile
+| nom = Kepler-225
+| image = 
+| légende = 
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| magnitude_absolue = 
+| magnitude_apparente = 
+| masse = ?<ref></ref>
+| rayon = ?<ref></ref>
+| température = ?<ref></ref>
+| métallicité = ?<ref></ref>
+| âge = ?<ref></ref>
+}}
+
+L'étoile hôte Kepler-225 est une étoile de type spectral inconnu.
+
+== Découverte ==
+
+Kepler-225 c a été découverte en 2014 par la méthode de Transit.
+
+== Références ==
+<references />
+
+[[Catégorie:Exoplanète]]
+[[Catégorie:Exoplanète découverte en 2014]]

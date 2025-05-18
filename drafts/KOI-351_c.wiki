@@ -1,0 +1,73 @@
+== KOI-351 c ==
+
+{{Infobox Exoplanète
+| nom = KOI-351 c
+| image = 
+| légende = 
+| étoile = KOI-351
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| masse = 1.81 M⊕<ref></ref>
+| rayon = 1.19 R⊕<ref></ref>
+| densité = ?<ref></ref>
+| gravité = ?<ref></ref>
+| température = 987.0 K<ref></ref>
+| période = 8.719375 j<ref></ref>
+| demi_grand_axe = 0.089 ua<ref></ref>
+| excentricité = 0.0 <ref></ref>
+| inclinaison = 89.68 °<ref></ref>
+| méthode_découverte = Transit
+| date_découverte = 2013
+| statut = Confirmée
+}}
+
+KOI-351 c est une exoplanète découverte en 2013 par la méthode de Transit. Elle orbite autour de l'étoile KOI-351.
+
+== Caractéristiques ==
+
+=== Caractéristiques orbitales ===
+* Période orbitale : 8.719375 jours<ref></ref>
+* Demi-grand axe : 0.089 ua<ref></ref>
+* Excentricité : 0.0 <ref></ref>
+* Inclinaison : 89.68 °<ref></ref>
+
+=== Caractéristiques physiques ===
+* Masse : 1.81 M⊕<ref></ref>
+* Rayon : 1.19 R⊕<ref></ref>
+* Densité : ?<ref></ref>
+* Température d'équilibre : 987.0 K<ref></ref>
+
+== Étoile hôte ==
+
+{{Infobox Étoile
+| nom = KOI-351
+| image = 
+| légende = 
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| magnitude_absolue = 
+| magnitude_apparente = 
+| masse = ?<ref></ref>
+| rayon = ?<ref></ref>
+| température = ?<ref></ref>
+| métallicité = ?<ref></ref>
+| âge = ?<ref></ref>
+}}
+
+L'étoile hôte KOI-351 est une étoile de type spectral inconnu.
+
+== Découverte ==
+
+KOI-351 c a été découverte en 2013 par la méthode de Transit.
+
+== Références ==
+<references />
+
+[[Catégorie:Exoplanète]]
+[[Catégorie:Exoplanète découverte en 2013]]

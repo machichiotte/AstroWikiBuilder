@@ -1,0 +1,73 @@
+== HD 190360 b ==
+
+{{Infobox Exoplanète
+| nom = HD 190360 b
+| image = 
+| légende = 
+| étoile = HD 190360
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| masse = 572.0911326 M⊕<ref></ref>
+| rayon = 13.4 R⊕<ref></ref>
+| densité = ?<ref></ref>
+| gravité = ?<ref></ref>
+| température = 150.0 K<ref></ref>
+| période = 2854.0 j<ref></ref>
+| demi_grand_axe = 3.9 ua<ref></ref>
+| excentricité = 0.34 <ref></ref>
+| inclinaison = 80.2 °<ref></ref>
+| méthode_découverte = Radial Velocity
+| date_découverte = 2003
+| statut = Confirmée
+}}
+
+HD 190360 b est une exoplanète découverte en 2003 par la méthode de Radial Velocity. Elle orbite autour de l'étoile HD 190360.
+
+== Caractéristiques ==
+
+=== Caractéristiques orbitales ===
+* Période orbitale : 2854.0 jours<ref></ref>
+* Demi-grand axe : 3.9 ua<ref></ref>
+* Excentricité : 0.34 <ref></ref>
+* Inclinaison : 80.2 °<ref></ref>
+
+=== Caractéristiques physiques ===
+* Masse : 572.0911326 M⊕<ref></ref>
+* Rayon : 13.4 R⊕<ref></ref>
+* Densité : ?<ref></ref>
+* Température d'équilibre : 150.0 K<ref></ref>
+
+== Étoile hôte ==
+
+{{Infobox Étoile
+| nom = HD 190360
+| image = 
+| légende = 
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| magnitude_absolue = 
+| magnitude_apparente = 
+| masse = ?<ref></ref>
+| rayon = ?<ref></ref>
+| température = ?<ref></ref>
+| métallicité = ?<ref></ref>
+| âge = ?<ref></ref>
+}}
+
+L'étoile hôte HD 190360 est une étoile de type spectral inconnu.
+
+== Découverte ==
+
+HD 190360 b a été découverte en 2003 par la méthode de Radial Velocity.
+
+== Références ==
+<references />
+
+[[Catégorie:Exoplanète]]
+[[Catégorie:Exoplanète découverte en 2003]]

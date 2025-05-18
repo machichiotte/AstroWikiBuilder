@@ -1,0 +1,73 @@
+== WASP-47 c ==
+
+{{Infobox Exoplanète
+| nom = WASP-47 c
+| image = 
+| légende = 
+| étoile = WASP-47
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| masse = 447.0 M⊕<ref></ref>
+| rayon = ?<ref></ref>
+| densité = ?<ref></ref>
+| gravité = ?<ref></ref>
+| température = 247.0 K<ref></ref>
+| période = 589.57 j<ref></ref>
+| demi_grand_axe = 1.393 ua<ref></ref>
+| excentricité = 0.264 <ref></ref>
+| inclinaison = 90.0 °<ref></ref>
+| méthode_découverte = Radial Velocity
+| date_découverte = 2015
+| statut = Confirmée
+}}
+
+WASP-47 c est une exoplanète découverte en 2015 par la méthode de Radial Velocity. Elle orbite autour de l'étoile WASP-47.
+
+== Caractéristiques ==
+
+=== Caractéristiques orbitales ===
+* Période orbitale : 589.57 jours<ref></ref>
+* Demi-grand axe : 1.393 ua<ref></ref>
+* Excentricité : 0.264 <ref></ref>
+* Inclinaison : 90.0 °<ref></ref>
+
+=== Caractéristiques physiques ===
+* Masse : 447.0 M⊕<ref></ref>
+* Rayon : ?<ref></ref>
+* Densité : ?<ref></ref>
+* Température d'équilibre : 247.0 K<ref></ref>
+
+== Étoile hôte ==
+
+{{Infobox Étoile
+| nom = WASP-47
+| image = 
+| légende = 
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| magnitude_absolue = 
+| magnitude_apparente = 
+| masse = ?<ref></ref>
+| rayon = ?<ref></ref>
+| température = ?<ref></ref>
+| métallicité = ?<ref></ref>
+| âge = ?<ref></ref>
+}}
+
+L'étoile hôte WASP-47 est une étoile de type spectral inconnu.
+
+== Découverte ==
+
+WASP-47 c a été découverte en 2015 par la méthode de Radial Velocity.
+
+== Références ==
+<references />
+
+[[Catégorie:Exoplanète]]
+[[Catégorie:Exoplanète découverte en 2015]]

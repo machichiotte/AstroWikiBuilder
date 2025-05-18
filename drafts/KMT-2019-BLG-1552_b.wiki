@@ -1,0 +1,73 @@
+== KMT-2019-BLG-1552 b ==
+
+{{Infobox Exoplanète
+| nom = KMT-2019-BLG-1552 b
+| image = 
+| légende = 
+| étoile = KMT-2019-BLG-1552
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| masse = 4.05 M⊕<ref></ref>
+| rayon = ?<ref></ref>
+| densité = ?<ref></ref>
+| gravité = ?<ref></ref>
+| température = ?<ref></ref>
+| période = ?<ref></ref>
+| demi_grand_axe = 2.6 ua<ref></ref>
+| excentricité = ?<ref></ref>
+| inclinaison = ?<ref></ref>
+| méthode_découverte = Microlensing
+| date_découverte = 2022
+| statut = Confirmée
+}}
+
+KMT-2019-BLG-1552 b est une exoplanète découverte en 2022 par la méthode de Microlensing. Elle orbite autour de l'étoile KMT-2019-BLG-1552.
+
+== Caractéristiques ==
+
+=== Caractéristiques orbitales ===
+* Période orbitale : ?<ref></ref>
+* Demi-grand axe : 2.6 ua<ref></ref>
+* Excentricité : ?<ref></ref>
+* Inclinaison : ?<ref></ref>
+
+=== Caractéristiques physiques ===
+* Masse : 4.05 M⊕<ref></ref>
+* Rayon : ?<ref></ref>
+* Densité : ?<ref></ref>
+* Température d'équilibre : ?<ref></ref>
+
+== Étoile hôte ==
+
+{{Infobox Étoile
+| nom = KMT-2019-BLG-1552
+| image = 
+| légende = 
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| magnitude_absolue = 
+| magnitude_apparente = 
+| masse = ?<ref></ref>
+| rayon = ?<ref></ref>
+| température = ?<ref></ref>
+| métallicité = ?<ref></ref>
+| âge = ?<ref></ref>
+}}
+
+L'étoile hôte KMT-2019-BLG-1552 est une étoile de type spectral inconnu.
+
+== Découverte ==
+
+KMT-2019-BLG-1552 b a été découverte en 2022 par la méthode de Microlensing.
+
+== Références ==
+<references />
+
+[[Catégorie:Exoplanète]]
+[[Catégorie:Exoplanète découverte en 2022]]

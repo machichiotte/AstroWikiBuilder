@@ -1,0 +1,73 @@
+== tau Ceti f ==
+
+{{Infobox Exoplanète
+| nom = tau Ceti f
+| image = 
+| légende = 
+| étoile = tau Ceti
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| masse = 0.0124 M⊕<ref></ref>
+| rayon = ?<ref></ref>
+| densité = ?<ref></ref>
+| gravité = ?<ref></ref>
+| température = ?<ref></ref>
+| période = 636.13 j<ref></ref>
+| demi_grand_axe = 1.334 ua<ref></ref>
+| excentricité = 0.16 <ref></ref>
+| inclinaison = ?<ref></ref>
+| méthode_découverte = ?
+| date_découverte = ?
+| statut = Confirmée
+}}
+
+tau Ceti f est une exoplanète découverte en None par la méthode de None. Elle orbite autour de l'étoile tau Ceti.
+
+== Caractéristiques ==
+
+=== Caractéristiques orbitales ===
+* Période orbitale : 636.13 jours<ref></ref>
+* Demi-grand axe : 1.334 ua<ref></ref>
+* Excentricité : 0.16 <ref></ref>
+* Inclinaison : ?<ref></ref>
+
+=== Caractéristiques physiques ===
+* Masse : 0.0124 M⊕<ref></ref>
+* Rayon : ?<ref></ref>
+* Densité : ?<ref></ref>
+* Température d'équilibre : ?<ref></ref>
+
+== Étoile hôte ==
+
+{{Infobox Étoile
+| nom = tau Ceti
+| image = 
+| légende = 
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| magnitude_absolue = 
+| magnitude_apparente = 
+| masse = ?<ref></ref>
+| rayon = ?<ref></ref>
+| température = ?<ref></ref>
+| métallicité = ?<ref></ref>
+| âge = ?<ref></ref>
+}}
+
+L'étoile hôte tau Ceti est une étoile de type spectral inconnu.
+
+== Découverte ==
+
+tau Ceti f a été découverte en None par la méthode de None.
+
+== Références ==
+<references />
+
+[[Catégorie:Exoplanète]]
+[[Catégorie:Exoplanète découverte en None]]

@@ -1,0 +1,73 @@
+== BD-10 3166 b ==
+
+{{Infobox Exoplanète
+| nom = BD-10 3166 b
+| image = 
+| légende = 
+| étoile = BD-10 3166
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| masse = 187.5197 M⊕<ref></ref>
+| rayon = 14.1 R⊕<ref></ref>
+| densité = ?<ref></ref>
+| gravité = ?<ref></ref>
+| température = ?<ref></ref>
+| période = 3.48777 j<ref></ref>
+| demi_grand_axe = 0.04 ua<ref></ref>
+| excentricité = 0.02 <ref></ref>
+| inclinaison = ?<ref></ref>
+| méthode_découverte = Radial Velocity
+| date_découverte = 2000
+| statut = Confirmée
+}}
+
+BD-10 3166 b est une exoplanète découverte en 2000 par la méthode de Radial Velocity. Elle orbite autour de l'étoile BD-10 3166.
+
+== Caractéristiques ==
+
+=== Caractéristiques orbitales ===
+* Période orbitale : 3.48777 jours<ref></ref>
+* Demi-grand axe : 0.04 ua<ref></ref>
+* Excentricité : 0.02 <ref></ref>
+* Inclinaison : ?<ref></ref>
+
+=== Caractéristiques physiques ===
+* Masse : 187.5197 M⊕<ref></ref>
+* Rayon : 14.1 R⊕<ref></ref>
+* Densité : ?<ref></ref>
+* Température d'équilibre : ?<ref></ref>
+
+== Étoile hôte ==
+
+{{Infobox Étoile
+| nom = BD-10 3166
+| image = 
+| légende = 
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| magnitude_absolue = 
+| magnitude_apparente = 
+| masse = ?<ref></ref>
+| rayon = ?<ref></ref>
+| température = ?<ref></ref>
+| métallicité = ?<ref></ref>
+| âge = ?<ref></ref>
+}}
+
+L'étoile hôte BD-10 3166 est une étoile de type spectral inconnu.
+
+== Découverte ==
+
+BD-10 3166 b a été découverte en 2000 par la méthode de Radial Velocity.
+
+== Références ==
+<references />
+
+[[Catégorie:Exoplanète]]
+[[Catégorie:Exoplanète découverte en 2000]]

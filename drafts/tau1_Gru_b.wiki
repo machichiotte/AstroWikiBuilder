@@ -1,0 +1,73 @@
+== tau1 Gru b ==
+
+{{Infobox Exoplanète
+| nom = tau1 Gru b
+| image = 
+| légende = 
+| étoile = tau1 Gru
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| masse = ?<ref></ref>
+| rayon = ?<ref></ref>
+| densité = ?<ref></ref>
+| gravité = ?<ref></ref>
+| température = ?<ref></ref>
+| période = 1311.0 j<ref></ref>
+| demi_grand_axe = 2.56 ua<ref></ref>
+| excentricité = 0.07 <ref></ref>
+| inclinaison = ?<ref></ref>
+| méthode_découverte = Radial Velocity
+| date_découverte = 2002
+| statut = Confirmée
+}}
+
+tau1 Gru b est une exoplanète découverte en 2002 par la méthode de Radial Velocity. Elle orbite autour de l'étoile tau1 Gru.
+
+== Caractéristiques ==
+
+=== Caractéristiques orbitales ===
+* Période orbitale : 1311.0 jours<ref></ref>
+* Demi-grand axe : 2.56 ua<ref></ref>
+* Excentricité : 0.07 <ref></ref>
+* Inclinaison : ?<ref></ref>
+
+=== Caractéristiques physiques ===
+* Masse : ?<ref></ref>
+* Rayon : ?<ref></ref>
+* Densité : ?<ref></ref>
+* Température d'équilibre : ?<ref></ref>
+
+== Étoile hôte ==
+
+{{Infobox Étoile
+| nom = tau1 Gru
+| image = 
+| légende = 
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| magnitude_absolue = 
+| magnitude_apparente = 
+| masse = ?<ref></ref>
+| rayon = ?<ref></ref>
+| température = ?<ref></ref>
+| métallicité = ?<ref></ref>
+| âge = ?<ref></ref>
+}}
+
+L'étoile hôte tau1 Gru est une étoile de type spectral inconnu.
+
+== Découverte ==
+
+tau1 Gru b a été découverte en 2002 par la méthode de Radial Velocity.
+
+== Références ==
+<references />
+
+[[Catégorie:Exoplanète]]
+[[Catégorie:Exoplanète découverte en 2002]]

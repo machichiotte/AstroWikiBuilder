@@ -1,0 +1,73 @@
+== gamma Librai c ==
+
+{{Infobox Exoplanète
+| nom = gamma Librai c
+| image = 
+| légende = 
+| étoile = gamma Libra
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| masse = 4.58 M⊕<ref></ref>
+| rayon = ?<ref></ref>
+| densité = ?<ref></ref>
+| gravité = ?<ref></ref>
+| température = ?<ref></ref>
+| période = 964.6 j<ref></ref>
+| demi_grand_axe = 2.17 ua<ref></ref>
+| excentricité = 0.057 <ref></ref>
+| inclinaison = ?<ref></ref>
+| méthode_découverte = ?
+| date_découverte = ?
+| statut = Confirmée
+}}
+
+gamma Librai c est une exoplanète découverte en None par la méthode de None. Elle orbite autour de l'étoile gamma Libra.
+
+== Caractéristiques ==
+
+=== Caractéristiques orbitales ===
+* Période orbitale : 964.6 jours<ref></ref>
+* Demi-grand axe : 2.17 ua<ref></ref>
+* Excentricité : 0.057 <ref></ref>
+* Inclinaison : ?<ref></ref>
+
+=== Caractéristiques physiques ===
+* Masse : 4.58 M⊕<ref></ref>
+* Rayon : ?<ref></ref>
+* Densité : ?<ref></ref>
+* Température d'équilibre : ?<ref></ref>
+
+== Étoile hôte ==
+
+{{Infobox Étoile
+| nom = gamma Libra
+| image = 
+| légende = 
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| magnitude_absolue = 
+| magnitude_apparente = 
+| masse = ?<ref></ref>
+| rayon = ?<ref></ref>
+| température = ?<ref></ref>
+| métallicité = ?<ref></ref>
+| âge = ?<ref></ref>
+}}
+
+L'étoile hôte gamma Libra est une étoile de type spectral inconnu.
+
+== Découverte ==
+
+gamma Librai c a été découverte en None par la méthode de None.
+
+== Références ==
+<references />
+
+[[Catégorie:Exoplanète]]
+[[Catégorie:Exoplanète découverte en None]]

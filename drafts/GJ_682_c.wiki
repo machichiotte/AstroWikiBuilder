@@ -1,0 +1,73 @@
+== GJ 682 c ==
+
+{{Infobox Exoplanète
+| nom = GJ 682 c
+| image = 
+| légende = 
+| étoile = GJ 682
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| masse = 8.7 M⊕<ref></ref>
+| rayon = 2.89 R⊕<ref></ref>
+| densité = ?<ref></ref>
+| gravité = ?<ref></ref>
+| température = ?<ref></ref>
+| période = 57.32 j<ref></ref>
+| demi_grand_axe = 0.176 ua<ref></ref>
+| excentricité = 0.1 <ref></ref>
+| inclinaison = ?<ref></ref>
+| méthode_découverte = Radial Velocity
+| date_découverte = 2014
+| statut = Confirmée
+}}
+
+GJ 682 c est une exoplanète découverte en 2014 par la méthode de Radial Velocity. Elle orbite autour de l'étoile GJ 682.
+
+== Caractéristiques ==
+
+=== Caractéristiques orbitales ===
+* Période orbitale : 57.32 jours<ref></ref>
+* Demi-grand axe : 0.176 ua<ref></ref>
+* Excentricité : 0.1 <ref></ref>
+* Inclinaison : ?<ref></ref>
+
+=== Caractéristiques physiques ===
+* Masse : 8.7 M⊕<ref></ref>
+* Rayon : 2.89 R⊕<ref></ref>
+* Densité : ?<ref></ref>
+* Température d'équilibre : ?<ref></ref>
+
+== Étoile hôte ==
+
+{{Infobox Étoile
+| nom = GJ 682
+| image = 
+| légende = 
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| magnitude_absolue = 
+| magnitude_apparente = 
+| masse = ?<ref></ref>
+| rayon = ?<ref></ref>
+| température = ?<ref></ref>
+| métallicité = ?<ref></ref>
+| âge = ?<ref></ref>
+}}
+
+L'étoile hôte GJ 682 est une étoile de type spectral inconnu.
+
+== Découverte ==
+
+GJ 682 c a été découverte en 2014 par la méthode de Radial Velocity.
+
+== Références ==
+<references />
+
+[[Catégorie:Exoplanète]]
+[[Catégorie:Exoplanète découverte en 2014]]

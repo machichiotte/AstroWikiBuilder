@@ -1,0 +1,73 @@
+== OGLE-2017-BLG-0364L b ==
+
+{{Infobox Exoplanète
+| nom = OGLE-2017-BLG-0364L b
+| image = 
+| légende = 
+| étoile = OGLE-2017-BLG-0364L
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| masse = 75.8 M⊕<ref></ref>
+| rayon = 10.3 R⊕<ref></ref>
+| densité = ?<ref></ref>
+| gravité = ?<ref></ref>
+| température = ?<ref></ref>
+| période = ?<ref></ref>
+| demi_grand_axe = 3.79 ua<ref></ref>
+| excentricité = ?<ref></ref>
+| inclinaison = ?<ref></ref>
+| méthode_découverte = Microlensing
+| date_découverte = 2024
+| statut = Confirmée
+}}
+
+OGLE-2017-BLG-0364L b est une exoplanète découverte en 2024 par la méthode de Microlensing. Elle orbite autour de l'étoile OGLE-2017-BLG-0364L.
+
+== Caractéristiques ==
+
+=== Caractéristiques orbitales ===
+* Période orbitale : ?<ref></ref>
+* Demi-grand axe : 3.79 ua<ref></ref>
+* Excentricité : ?<ref></ref>
+* Inclinaison : ?<ref></ref>
+
+=== Caractéristiques physiques ===
+* Masse : 75.8 M⊕<ref></ref>
+* Rayon : 10.3 R⊕<ref></ref>
+* Densité : ?<ref></ref>
+* Température d'équilibre : ?<ref></ref>
+
+== Étoile hôte ==
+
+{{Infobox Étoile
+| nom = OGLE-2017-BLG-0364L
+| image = 
+| légende = 
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| magnitude_absolue = 
+| magnitude_apparente = 
+| masse = ?<ref></ref>
+| rayon = ?<ref></ref>
+| température = ?<ref></ref>
+| métallicité = ?<ref></ref>
+| âge = ?<ref></ref>
+}}
+
+L'étoile hôte OGLE-2017-BLG-0364L est une étoile de type spectral inconnu.
+
+== Découverte ==
+
+OGLE-2017-BLG-0364L b a été découverte en 2024 par la méthode de Microlensing.
+
+== Références ==
+<references />
+
+[[Catégorie:Exoplanète]]
+[[Catégorie:Exoplanète découverte en 2024]]

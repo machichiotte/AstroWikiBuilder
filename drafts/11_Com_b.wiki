@@ -1,0 +1,73 @@
+== 11 Com b ==
+
+{{Infobox Exoplanète
+| nom = 11 Com b
+| image = 
+| légende = 
+| étoile = 11 Com
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| masse = 4914.89848585 M⊕<ref></ref>
+| rayon = 12.2 R⊕<ref></ref>
+| densité = ?<ref></ref>
+| gravité = ?<ref></ref>
+| température = ?<ref></ref>
+| période = 323.21 j<ref></ref>
+| demi_grand_axe = 1.178 ua<ref></ref>
+| excentricité = 0.238 <ref></ref>
+| inclinaison = ?<ref></ref>
+| méthode_découverte = Radial Velocity
+| date_découverte = 2007
+| statut = Confirmée
+}}
+
+11 Com b est une exoplanète découverte en 2007 par la méthode de Radial Velocity. Elle orbite autour de l'étoile 11 Com.
+
+== Caractéristiques ==
+
+=== Caractéristiques orbitales ===
+* Période orbitale : 323.21 jours<ref></ref>
+* Demi-grand axe : 1.178 ua<ref></ref>
+* Excentricité : 0.238 <ref></ref>
+* Inclinaison : ?<ref></ref>
+
+=== Caractéristiques physiques ===
+* Masse : 4914.89848585 M⊕<ref></ref>
+* Rayon : 12.2 R⊕<ref></ref>
+* Densité : ?<ref></ref>
+* Température d'équilibre : ?<ref></ref>
+
+== Étoile hôte ==
+
+{{Infobox Étoile
+| nom = 11 Com
+| image = 
+| légende = 
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| magnitude_absolue = 
+| magnitude_apparente = 
+| masse = ?<ref></ref>
+| rayon = ?<ref></ref>
+| température = ?<ref></ref>
+| métallicité = ?<ref></ref>
+| âge = ?<ref></ref>
+}}
+
+L'étoile hôte 11 Com est une étoile de type spectral inconnu.
+
+== Découverte ==
+
+11 Com b a été découverte en 2007 par la méthode de Radial Velocity.
+
+== Références ==
+<references />
+
+[[Catégorie:Exoplanète]]
+[[Catégorie:Exoplanète découverte en 2007]]

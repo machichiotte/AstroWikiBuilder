@@ -1,0 +1,73 @@
+== KELT-23 A b ==
+
+{{Infobox Exoplanète
+| nom = KELT-23 A b
+| image = 
+| légende = 
+| étoile = KELT-23 A
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| masse = 298.12454 M⊕<ref></ref>
+| rayon = 14.829507 R⊕<ref></ref>
+| densité = ?<ref></ref>
+| gravité = ?<ref></ref>
+| température = 1561.0 K<ref></ref>
+| période = 2.255251 j<ref></ref>
+| demi_grand_axe = 0.03302 ua<ref></ref>
+| excentricité = 0.0 <ref></ref>
+| inclinaison = 85.37 °<ref></ref>
+| méthode_découverte = Transit
+| date_découverte = 2019
+| statut = Confirmée
+}}
+
+KELT-23 A b est une exoplanète découverte en 2019 par la méthode de Transit. Elle orbite autour de l'étoile KELT-23 A.
+
+== Caractéristiques ==
+
+=== Caractéristiques orbitales ===
+* Période orbitale : 2.255251 jours<ref></ref>
+* Demi-grand axe : 0.03302 ua<ref></ref>
+* Excentricité : 0.0 <ref></ref>
+* Inclinaison : 85.37 °<ref></ref>
+
+=== Caractéristiques physiques ===
+* Masse : 298.12454 M⊕<ref></ref>
+* Rayon : 14.829507 R⊕<ref></ref>
+* Densité : ?<ref></ref>
+* Température d'équilibre : 1561.0 K<ref></ref>
+
+== Étoile hôte ==
+
+{{Infobox Étoile
+| nom = KELT-23 A
+| image = 
+| légende = 
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| magnitude_absolue = 
+| magnitude_apparente = 
+| masse = ?<ref></ref>
+| rayon = ?<ref></ref>
+| température = ?<ref></ref>
+| métallicité = ?<ref></ref>
+| âge = ?<ref></ref>
+}}
+
+L'étoile hôte KELT-23 A est une étoile de type spectral inconnu.
+
+== Découverte ==
+
+KELT-23 A b a été découverte en 2019 par la méthode de Transit.
+
+== Références ==
+<references />
+
+[[Catégorie:Exoplanète]]
+[[Catégorie:Exoplanète découverte en 2019]]

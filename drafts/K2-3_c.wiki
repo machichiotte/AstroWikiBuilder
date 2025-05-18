@@ -1,0 +1,73 @@
+== K2-3 c ==
+
+{{Infobox Exoplanète
+| nom = K2-3 c
+| image = 
+| légende = 
+| étoile = K2-3
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| masse = 2.68 M⊕<ref></ref>
+| rayon = 1.582 R⊕<ref></ref>
+| densité = ?<ref></ref>
+| gravité = ?<ref></ref>
+| température = 371.8 K<ref></ref>
+| période = 24.646729 j<ref></ref>
+| demi_grand_axe = 0.1357 ua<ref></ref>
+| excentricité = 0.048 <ref></ref>
+| inclinaison = 89.84 °<ref></ref>
+| méthode_découverte = Transit
+| date_découverte = 2015
+| statut = Confirmée
+}}
+
+K2-3 c est une exoplanète découverte en 2015 par la méthode de Transit. Elle orbite autour de l'étoile K2-3.
+
+== Caractéristiques ==
+
+=== Caractéristiques orbitales ===
+* Période orbitale : 24.646729 jours<ref></ref>
+* Demi-grand axe : 0.1357 ua<ref></ref>
+* Excentricité : 0.048 <ref></ref>
+* Inclinaison : 89.84 °<ref></ref>
+
+=== Caractéristiques physiques ===
+* Masse : 2.68 M⊕<ref></ref>
+* Rayon : 1.582 R⊕<ref></ref>
+* Densité : ?<ref></ref>
+* Température d'équilibre : 371.8 K<ref></ref>
+
+== Étoile hôte ==
+
+{{Infobox Étoile
+| nom = K2-3
+| image = 
+| légende = 
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| magnitude_absolue = 
+| magnitude_apparente = 
+| masse = ?<ref></ref>
+| rayon = ?<ref></ref>
+| température = ?<ref></ref>
+| métallicité = ?<ref></ref>
+| âge = ?<ref></ref>
+}}
+
+L'étoile hôte K2-3 est une étoile de type spectral inconnu.
+
+== Découverte ==
+
+K2-3 c a été découverte en 2015 par la méthode de Transit.
+
+== Références ==
+<references />
+
+[[Catégorie:Exoplanète]]
+[[Catégorie:Exoplanète découverte en 2015]]

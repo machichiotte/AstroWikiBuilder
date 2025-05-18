@@ -1,0 +1,73 @@
+== eps Tau b ==
+
+{{Infobox Exoplanète
+| nom = eps Tau b
+| image = 
+| légende = 
+| étoile = eps Tau
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| masse = 2285.18624633 M⊕<ref></ref>
+| rayon = 12.7 R⊕<ref></ref>
+| densité = ?<ref></ref>
+| gravité = ?<ref></ref>
+| température = ?<ref></ref>
+| période = 585.82 j<ref></ref>
+| demi_grand_axe = 1.878 ua<ref></ref>
+| excentricité = 0.076 <ref></ref>
+| inclinaison = ?<ref></ref>
+| méthode_découverte = Radial Velocity
+| date_découverte = 2006
+| statut = Confirmée
+}}
+
+eps Tau b est une exoplanète découverte en 2006 par la méthode de Radial Velocity. Elle orbite autour de l'étoile eps Tau.
+
+== Caractéristiques ==
+
+=== Caractéristiques orbitales ===
+* Période orbitale : 585.82 jours<ref></ref>
+* Demi-grand axe : 1.878 ua<ref></ref>
+* Excentricité : 0.076 <ref></ref>
+* Inclinaison : ?<ref></ref>
+
+=== Caractéristiques physiques ===
+* Masse : 2285.18624633 M⊕<ref></ref>
+* Rayon : 12.7 R⊕<ref></ref>
+* Densité : ?<ref></ref>
+* Température d'équilibre : ?<ref></ref>
+
+== Étoile hôte ==
+
+{{Infobox Étoile
+| nom = eps Tau
+| image = 
+| légende = 
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| magnitude_absolue = 
+| magnitude_apparente = 
+| masse = ?<ref></ref>
+| rayon = ?<ref></ref>
+| température = ?<ref></ref>
+| métallicité = ?<ref></ref>
+| âge = ?<ref></ref>
+}}
+
+L'étoile hôte eps Tau est une étoile de type spectral inconnu.
+
+== Découverte ==
+
+eps Tau b a été découverte en 2006 par la méthode de Radial Velocity.
+
+== Références ==
+<references />
+
+[[Catégorie:Exoplanète]]
+[[Catégorie:Exoplanète découverte en 2006]]

@@ -1,0 +1,73 @@
+== Kepler-447 b ==
+
+{{Infobox Exoplanète
+| nom = Kepler-447 b
+| image = 
+| légende = 
+| étoile = Kepler-447
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| masse = 435.41 M⊕<ref></ref>
+| rayon = 18.49 R⊕<ref></ref>
+| densité = ?<ref></ref>
+| gravité = ?<ref></ref>
+| température = 882.0 K<ref></ref>
+| période = 7.79430132 j<ref></ref>
+| demi_grand_axe = 0.0769 ua<ref></ref>
+| excentricité = 0.123 <ref></ref>
+| inclinaison = 86.55 °<ref></ref>
+| méthode_découverte = Transit
+| date_découverte = 2015
+| statut = Confirmée
+}}
+
+Kepler-447 b est une exoplanète découverte en 2015 par la méthode de Transit. Elle orbite autour de l'étoile Kepler-447.
+
+== Caractéristiques ==
+
+=== Caractéristiques orbitales ===
+* Période orbitale : 7.79430132 jours<ref></ref>
+* Demi-grand axe : 0.0769 ua<ref></ref>
+* Excentricité : 0.123 <ref></ref>
+* Inclinaison : 86.55 °<ref></ref>
+
+=== Caractéristiques physiques ===
+* Masse : 435.41 M⊕<ref></ref>
+* Rayon : 18.49 R⊕<ref></ref>
+* Densité : ?<ref></ref>
+* Température d'équilibre : 882.0 K<ref></ref>
+
+== Étoile hôte ==
+
+{{Infobox Étoile
+| nom = Kepler-447
+| image = 
+| légende = 
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| magnitude_absolue = 
+| magnitude_apparente = 
+| masse = ?<ref></ref>
+| rayon = ?<ref></ref>
+| température = ?<ref></ref>
+| métallicité = ?<ref></ref>
+| âge = ?<ref></ref>
+}}
+
+L'étoile hôte Kepler-447 est une étoile de type spectral inconnu.
+
+== Découverte ==
+
+Kepler-447 b a été découverte en 2015 par la méthode de Transit.
+
+== Références ==
+<references />
+
+[[Catégorie:Exoplanète]]
+[[Catégorie:Exoplanète découverte en 2015]]

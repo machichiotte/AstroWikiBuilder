@@ -1,0 +1,73 @@
+== KIC 8435766 b ==
+
+{{Infobox Exoplanète
+| nom = KIC 8435766 b
+| image = 
+| légende = 
+| étoile = KIC 8435766
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| masse = 0.005882 M⊕<ref></ref>
+| rayon = 0.109356 R⊕<ref></ref>
+| densité = ?<ref></ref>
+| gravité = ?<ref></ref>
+| température = ?<ref></ref>
+| période = 0.35500744 j<ref></ref>
+| demi_grand_axe = ?<ref></ref>
+| excentricité = ?<ref></ref>
+| inclinaison = 75.2 °<ref></ref>
+| méthode_découverte = ?
+| date_découverte = ?
+| statut = Confirmée
+}}
+
+KIC 8435766 b est une exoplanète découverte en None par la méthode de None. Elle orbite autour de l'étoile KIC 8435766.
+
+== Caractéristiques ==
+
+=== Caractéristiques orbitales ===
+* Période orbitale : 0.35500744 jours<ref></ref>
+* Demi-grand axe : ?<ref></ref>
+* Excentricité : ?<ref></ref>
+* Inclinaison : 75.2 °<ref></ref>
+
+=== Caractéristiques physiques ===
+* Masse : 0.005882 M⊕<ref></ref>
+* Rayon : 0.109356 R⊕<ref></ref>
+* Densité : ?<ref></ref>
+* Température d'équilibre : ?<ref></ref>
+
+== Étoile hôte ==
+
+{{Infobox Étoile
+| nom = KIC 8435766
+| image = 
+| légende = 
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| magnitude_absolue = 
+| magnitude_apparente = 
+| masse = ?<ref></ref>
+| rayon = ?<ref></ref>
+| température = ?<ref></ref>
+| métallicité = ?<ref></ref>
+| âge = ?<ref></ref>
+}}
+
+L'étoile hôte KIC 8435766 est une étoile de type spectral inconnu.
+
+== Découverte ==
+
+KIC 8435766 b a été découverte en None par la méthode de None.
+
+== Références ==
+<references />
+
+[[Catégorie:Exoplanète]]
+[[Catégorie:Exoplanète découverte en None]]

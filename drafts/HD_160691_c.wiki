@@ -1,0 +1,73 @@
+== HD 160691 c ==
+
+{{Infobox Exoplanète
+| nom = HD 160691 c
+| image = 
+| légende = 
+| étoile = HD 160691
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| masse = 1398.4449908 M⊕<ref></ref>
+| rayon = ?<ref></ref>
+| densité = ?<ref></ref>
+| gravité = ?<ref></ref>
+| température = ?<ref></ref>
+| période = 3947.0 j<ref></ref>
+| demi_grand_axe = 4.17 ua<ref></ref>
+| excentricité = 0.0985 <ref></ref>
+| inclinaison = 60.0 °<ref></ref>
+| méthode_découverte = Radial Velocity
+| date_découverte = 2004
+| statut = Confirmée
+}}
+
+HD 160691 c est une exoplanète découverte en 2004 par la méthode de Radial Velocity. Elle orbite autour de l'étoile HD 160691.
+
+== Caractéristiques ==
+
+=== Caractéristiques orbitales ===
+* Période orbitale : 3947.0 jours<ref></ref>
+* Demi-grand axe : 4.17 ua<ref></ref>
+* Excentricité : 0.0985 <ref></ref>
+* Inclinaison : 60.0 °<ref></ref>
+
+=== Caractéristiques physiques ===
+* Masse : 1398.4449908 M⊕<ref></ref>
+* Rayon : ?<ref></ref>
+* Densité : ?<ref></ref>
+* Température d'équilibre : ?<ref></ref>
+
+== Étoile hôte ==
+
+{{Infobox Étoile
+| nom = HD 160691
+| image = 
+| légende = 
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| magnitude_absolue = 
+| magnitude_apparente = 
+| masse = ?<ref></ref>
+| rayon = ?<ref></ref>
+| température = ?<ref></ref>
+| métallicité = ?<ref></ref>
+| âge = ?<ref></ref>
+}}
+
+L'étoile hôte HD 160691 est une étoile de type spectral inconnu.
+
+== Découverte ==
+
+HD 160691 c a été découverte en 2004 par la méthode de Radial Velocity.
+
+== Références ==
+<references />
+
+[[Catégorie:Exoplanète]]
+[[Catégorie:Exoplanète découverte en 2004]]

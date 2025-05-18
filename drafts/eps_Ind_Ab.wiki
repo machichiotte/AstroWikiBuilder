@@ -1,0 +1,73 @@
+== eps Ind Ab ==
+
+{{Infobox Exoplanète
+| nom = eps Ind Ab
+| image = 
+| légende = 
+| étoile = eps Ind A
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| masse = 2.96 M⊕<ref></ref>
+| rayon = ?<ref></ref>
+| densité = ?<ref></ref>
+| gravité = ?<ref></ref>
+| température = ?<ref></ref>
+| période = 15676.5 j<ref></ref>
+| demi_grand_axe = 11.08 ua<ref></ref>
+| excentricité = 0.42 <ref></ref>
+| inclinaison = 98.73 °<ref></ref>
+| méthode_découverte = Radial Velocity
+| date_découverte = 2018
+| statut = Confirmée
+}}
+
+eps Ind Ab est une exoplanète découverte en 2018 par la méthode de Radial Velocity. Elle orbite autour de l'étoile eps Ind A.
+
+== Caractéristiques ==
+
+=== Caractéristiques orbitales ===
+* Période orbitale : 15676.5 jours<ref></ref>
+* Demi-grand axe : 11.08 ua<ref></ref>
+* Excentricité : 0.42 <ref></ref>
+* Inclinaison : 98.73 °<ref></ref>
+
+=== Caractéristiques physiques ===
+* Masse : 2.96 M⊕<ref></ref>
+* Rayon : ?<ref></ref>
+* Densité : ?<ref></ref>
+* Température d'équilibre : ?<ref></ref>
+
+== Étoile hôte ==
+
+{{Infobox Étoile
+| nom = eps Ind A
+| image = 
+| légende = 
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| magnitude_absolue = 
+| magnitude_apparente = 
+| masse = ?<ref></ref>
+| rayon = ?<ref></ref>
+| température = ?<ref></ref>
+| métallicité = ?<ref></ref>
+| âge = ?<ref></ref>
+}}
+
+L'étoile hôte eps Ind A est une étoile de type spectral inconnu.
+
+== Découverte ==
+
+eps Ind Ab a été découverte en 2018 par la méthode de Radial Velocity.
+
+== Références ==
+<references />
+
+[[Catégorie:Exoplanète]]
+[[Catégorie:Exoplanète découverte en 2018]]

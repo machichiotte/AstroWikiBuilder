@@ -1,0 +1,73 @@
+== TOI-1288 b ==
+
+{{Infobox Exoplanète
+| nom = TOI-1288 b
+| image = 
+| légende = 
+| étoile = TOI-1288
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| masse = 44.1 M⊕<ref></ref>
+| rayon = 4.96846551 R⊕<ref></ref>
+| densité = ?<ref></ref>
+| gravité = ?<ref></ref>
+| température = 1203.44 K<ref></ref>
+| période = 2.6998279 j<ref></ref>
+| demi_grand_axe = 0.0374 ua<ref></ref>
+| excentricité = 0.0 <ref></ref>
+| inclinaison = 89.5 °<ref></ref>
+| méthode_découverte = Transit
+| date_découverte = 2022
+| statut = Confirmée
+}}
+
+TOI-1288 b est une exoplanète découverte en 2022 par la méthode de Transit. Elle orbite autour de l'étoile TOI-1288.
+
+== Caractéristiques ==
+
+=== Caractéristiques orbitales ===
+* Période orbitale : 2.6998279 jours<ref></ref>
+* Demi-grand axe : 0.0374 ua<ref></ref>
+* Excentricité : 0.0 <ref></ref>
+* Inclinaison : 89.5 °<ref></ref>
+
+=== Caractéristiques physiques ===
+* Masse : 44.1 M⊕<ref></ref>
+* Rayon : 4.96846551 R⊕<ref></ref>
+* Densité : ?<ref></ref>
+* Température d'équilibre : 1203.44 K<ref></ref>
+
+== Étoile hôte ==
+
+{{Infobox Étoile
+| nom = TOI-1288
+| image = 
+| légende = 
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| magnitude_absolue = 
+| magnitude_apparente = 
+| masse = ?<ref></ref>
+| rayon = ?<ref></ref>
+| température = ?<ref></ref>
+| métallicité = ?<ref></ref>
+| âge = ?<ref></ref>
+}}
+
+L'étoile hôte TOI-1288 est une étoile de type spectral inconnu.
+
+== Découverte ==
+
+TOI-1288 b a été découverte en 2022 par la méthode de Transit.
+
+== Références ==
+<references />
+
+[[Catégorie:Exoplanète]]
+[[Catégorie:Exoplanète découverte en 2022]]

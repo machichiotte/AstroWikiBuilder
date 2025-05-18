@@ -1,0 +1,73 @@
+== K2-314 c ==
+
+{{Infobox Exoplanète
+| nom = K2-314 c
+| image = 
+| légende = 
+| étoile = EPIC 249893012
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| masse = 0.04616 M⊕<ref></ref>
+| rayon = 0.3274 R⊕<ref></ref>
+| densité = ?<ref></ref>
+| gravité = ?<ref></ref>
+| température = 990.0 K<ref></ref>
+| période = 15.624 j<ref></ref>
+| demi_grand_axe = 0.13 ua<ref></ref>
+| excentricité = 0.07 <ref></ref>
+| inclinaison = 87.94 °<ref></ref>
+| méthode_découverte = Primary Transit
+| date_découverte = 2020
+| statut = Confirmée
+}}
+
+K2-314 c est une exoplanète découverte en 2020 par la méthode de Primary Transit. Elle orbite autour de l'étoile EPIC 249893012.
+
+== Caractéristiques ==
+
+=== Caractéristiques orbitales ===
+* Période orbitale : 15.624 jours<ref></ref>
+* Demi-grand axe : 0.13 ua<ref></ref>
+* Excentricité : 0.07 <ref></ref>
+* Inclinaison : 87.94 °<ref></ref>
+
+=== Caractéristiques physiques ===
+* Masse : 0.04616 M⊕<ref></ref>
+* Rayon : 0.3274 R⊕<ref></ref>
+* Densité : ?<ref></ref>
+* Température d'équilibre : 990.0 K<ref></ref>
+
+== Étoile hôte ==
+
+{{Infobox Étoile
+| nom = EPIC 249893012
+| image = 
+| légende = 
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| magnitude_absolue = 
+| magnitude_apparente = 
+| masse = ?<ref></ref>
+| rayon = ?<ref></ref>
+| température = ?<ref></ref>
+| métallicité = ?<ref></ref>
+| âge = ?<ref></ref>
+}}
+
+L'étoile hôte EPIC 249893012 est une étoile de type spectral inconnu.
+
+== Découverte ==
+
+K2-314 c a été découverte en 2020 par la méthode de Primary Transit.
+
+== Références ==
+<references />
+
+[[Catégorie:Exoplanète]]
+[[Catégorie:Exoplanète découverte en 2020]]

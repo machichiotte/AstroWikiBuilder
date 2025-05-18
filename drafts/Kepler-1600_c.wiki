@@ -1,0 +1,73 @@
+== Kepler-1600 c ==
+
+{{Infobox Exoplanète
+| nom = Kepler-1600 c
+| image = 
+| légende = 
+| étoile = Kepler-1600
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| masse = 4.43 M⊕<ref></ref>
+| rayon = 1.94206512 R⊕<ref></ref>
+| densité = ?<ref></ref>
+| gravité = ?<ref></ref>
+| température = 786.0 K<ref></ref>
+| période = 7.298049927 j<ref></ref>
+| demi_grand_axe = 0.06961 ua<ref></ref>
+| excentricité = 0.0 <ref></ref>
+| inclinaison = 88.63 °<ref></ref>
+| méthode_découverte = Transit
+| date_découverte = 2021
+| statut = Confirmée
+}}
+
+Kepler-1600 c est une exoplanète découverte en 2021 par la méthode de Transit. Elle orbite autour de l'étoile Kepler-1600.
+
+== Caractéristiques ==
+
+=== Caractéristiques orbitales ===
+* Période orbitale : 7.298049927 jours<ref></ref>
+* Demi-grand axe : 0.06961 ua<ref></ref>
+* Excentricité : 0.0 <ref></ref>
+* Inclinaison : 88.63 °<ref></ref>
+
+=== Caractéristiques physiques ===
+* Masse : 4.43 M⊕<ref></ref>
+* Rayon : 1.94206512 R⊕<ref></ref>
+* Densité : ?<ref></ref>
+* Température d'équilibre : 786.0 K<ref></ref>
+
+== Étoile hôte ==
+
+{{Infobox Étoile
+| nom = Kepler-1600
+| image = 
+| légende = 
+| constellation = 
+| ascension_droite = 
+| déclinaison = 
+| distance = ?
+| type_spectral = ?
+| magnitude_absolue = 
+| magnitude_apparente = 
+| masse = ?<ref></ref>
+| rayon = ?<ref></ref>
+| température = ?<ref></ref>
+| métallicité = ?<ref></ref>
+| âge = ?<ref></ref>
+}}
+
+L'étoile hôte Kepler-1600 est une étoile de type spectral inconnu.
+
+== Découverte ==
+
+Kepler-1600 c a été découverte en 2021 par la méthode de Transit.
+
+== Références ==
+<references />
+
+[[Catégorie:Exoplanète]]
+[[Catégorie:Exoplanète découverte en 2021]]

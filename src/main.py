@@ -4,70 +4,91 @@ from src.data_collectors.nasa_exoplanet import NASAExoplanetCollector
 from src.data_collectors.exoplanet_eu import ExoplanetEUCollector
 from src.data_collectors.open_exoplanet import OpenExoplanetCollector
 from src.utils.data_processor import DataProcessor
+from src.utils.wikipedia_generator import WikipediaGenerator
+
+def clean_filename(filename):
+    # Liste des caractères invalides pour Windows
+    invalid_chars = '<>:"/\\|?*\t\n\r'
+    # Remplacer les caractères invalides par des underscores
+    for char in invalid_chars:
+        filename = filename.replace(char, '_')
+    # Supprimer les underscores consécutifs
+    while '__' in filename:
+        filename = filename.replace('__', '_')
+    # Supprimer les underscores au début et à la fin
+    filename = filename.strip('_')
+    return filename
 
 def main():
-    # Create output directory if it doesn't exist
-    output_dir = "output"
-    os.makedirs(output_dir, exist_ok=True)
+    # Initialisation des collecteurs
+    nasa_collector = NASAExoplanetCollector()
+    exoplanet_eu_collector = ExoplanetEUCollector("data/exoplanet_eu.csv")
+    open_exoplanet_collector = OpenExoplanetCollector()
     
-    # Initialize data processor
+    # Initialisation du processeur de données
     processor = DataProcessor()
     
-    # Collect data from NASA Exoplanet Archive
-    print("Collecting data from NASA Exoplanet Archive...")
-    nasa_collector = NASAExoplanetCollector()
+    # Collecte des données
+    print("\nCollecte des données depuis la NASA Exoplanet Archive...")
     nasa_exoplanets = nasa_collector.fetch_data()
-    processor.add_exoplanets(nasa_exoplanets, "NASA Exoplanet Archive")
-    print(f"Collected {len(nasa_exoplanets)} exoplanets from NASA Exoplanet Archive")
+    processor.add_exoplanets(nasa_exoplanets, "nasa")
     
-    # Collect data from Exoplanet.eu (if CSV file exists)
-    exoplanet_eu_csv = "data/exoplanet_eu.csv"  # Update this path to your CSV file
-    if os.path.exists(exoplanet_eu_csv):
-        print("Collecting data from Exoplanet.eu...")
-        eu_collector = ExoplanetEUCollector(exoplanet_eu_csv)
-        eu_exoplanets = eu_collector.fetch_data()
-        processor.add_exoplanets(eu_exoplanets, "The Extrasolar Planets Encyclopaedia")
-        print(f"Collected {len(eu_exoplanets)} exoplanets from Exoplanet.eu")
+    print("\nCollecte des données depuis Exoplanet.eu...")
+    exoplanet_eu_data = exoplanet_eu_collector.fetch_data()
+    processor.add_exoplanets(exoplanet_eu_data, "exoplanet_eu")
     
-    # Collect data from Open Exoplanet Catalogue
-    print("Collecting data from Open Exoplanet Catalogue...")
-    oec_collector = OpenExoplanetCollector()
-    oec_exoplanets = oec_collector.fetch_data()
-    processor.add_exoplanets(oec_exoplanets, "Open Exoplanet Catalogue")
-    print(f"Collected {len(oec_exoplanets)} exoplanets from Open Exoplanet Catalogue")
+    print("\nCollecte des données depuis Open Exoplanet Catalogue...")
+    open_exoplanet_data = open_exoplanet_collector.fetch_data()
+    processor.add_exoplanets(open_exoplanet_data, "open_exoplanet")
     
-    # Export consolidated data
+    # Génération des noms de fichiers avec timestamp
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    csv_path = os.path.join(output_dir, f"exoplanets_{timestamp}.csv")
-    json_path = os.path.join(output_dir, f"exoplanets_{timestamp}.json")
+    output_dir = "output"
+    drafts_dir = "drafts"
     
-    processor.export_to_csv(csv_path)
-    processor.export_to_json(json_path)
+    # Création des dossiers s'ils n'existent pas
+    os.makedirs(output_dir, exist_ok=True)
+    os.makedirs(drafts_dir, exist_ok=True)
     
-    # Get and display statistics
+    # Export des données consolidées
+    print("\nExport des données consolidées...")
+    processor.export_to_csv(f"{output_dir}/exoplanets_{timestamp}.csv")
+    processor.export_to_json(f"{output_dir}/exoplanets_{timestamp}.json")
+    
+    # Affichage des statistiques
     stats = processor.get_statistics()
-    print("\nStatistics:")
-    print(f"Total exoplanets: {stats['total_exoplanets']}")
-    print("\nSources:")
+    print("\nStatistiques des exoplanètes collectées :")
+    print(f"Nombre total d'exoplanètes : {stats['total_exoplanets']}")
+    print("\nPar source :")
     for source, count in stats['sources'].items():
-        print(f"  {source}: {count}")
-    print("\nDiscovery methods:")
+        print(f"- {source} : {count}")
+    print("\nPar méthode de découverte :")
     for method, count in stats['discovery_methods'].items():
-        print(f"  {method}: {count}")
-    print("\nDiscovery years:")
+        print(f"- {method} : {count}")
+    print("\nPar année de découverte :")
     for year, count in sorted(stats['discovery_years'].items()):
-        print(f"  {year}: {count}")
+        print(f"- {year} : {count}")
     
-    # Vérifier les exoplanètes sans article
+    # Vérification des articles Wikipédia
     print("\nVérification des exoplanètes sans article sur Wikipedia...")
     exoplanets_without_articles = processor.filter_exoplanets_without_articles()
-    print(f"Nombre d'exoplanètes sans article : {len(exoplanets_without_articles)}")
     
-    # Exporter la liste des exoplanètes sans article
     if exoplanets_without_articles:
-        missing_articles_path = os.path.join(output_dir, f"missing_articles_{timestamp}.csv")
-        processor.export_to_csv(missing_articles_path, exoplanets_without_articles)
-        print(f"Liste des exoplanètes sans article exportée dans : {missing_articles_path}")
+        print(f"\nNombre d'exoplanètes sans article : {len(exoplanets_without_articles)}")
+        processor.export_to_csv(f"{output_dir}/missing_articles_{timestamp}.csv", exoplanets_without_articles)
+        
+        # Génération des brouillons d'articles
+        print("\nGénération des brouillons d'articles...")
+        generator = WikipediaGenerator()
+        for exoplanet in exoplanets_without_articles:
+            content = generator.generate_article_content(exoplanet)
+            safe_filename = clean_filename(exoplanet.name.replace(' ', '_'))
+            filename = f"{drafts_dir}/{safe_filename}.wiki"
+            with open(filename, 'w', encoding='utf-8') as f:
+                f.write(content)
+            print(f"Brouillon généré pour {exoplanet.name}")
+    else:
+        print("\nToutes les exoplanètes ont déjà un article sur Wikipedia.")
 
 if __name__ == "__main__":
     main() 
