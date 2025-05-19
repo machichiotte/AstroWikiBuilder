@@ -65,6 +65,16 @@ class Exoplanet:
             current_value = getattr(self, field_name)
             other_value = getattr(other, field_name)
             
+            # Cas spécial pour other_names qui est une liste
+            if field_name == 'other_names':
+                if current_value is None:
+                    setattr(self, field_name, other_value)
+                elif other_value is not None:
+                    # Fusionner les listes en évitant les doublons
+                    combined_names = list(set(current_value + other_value))
+                    setattr(self, field_name, combined_names)
+                continue
+            
             if current_value is None and other_value is not None:
                 setattr(self, field_name, other_value)
             elif current_value is not None and other_value is not None:

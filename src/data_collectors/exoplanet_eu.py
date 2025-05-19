@@ -1,8 +1,13 @@
 import pandas as pd
-from typing import List
+from typing import List, Optional
 from datetime import datetime
+import logging
 from src.models.exoplanet import Exoplanet
 from src.models.reference import DataPoint, Reference, SourceType
+
+# Configuration du logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 class ExoplanetEUCollector:
     def __init__(self, csv_path: str):
@@ -10,6 +15,7 @@ class ExoplanetEUCollector:
         Initialize the collector with the path to the downloaded CSV file
         """
         self.csv_path = csv_path
+        self.required_columns = ['name', 'star_name', 'detection_type', 'discovered']
     
     def fetch_data(self) -> List[Exoplanet]:
         """
@@ -17,23 +23,28 @@ class ExoplanetEUCollector:
         """
         try:
             df = pd.read_csv(self.csv_path)
-           # print("Colonnes du CSV EPE :", list(df.columns))
-            print(df.head(3))
+            logger.info(f"Colonnes trouvées dans le CSV EPE : {list(df.columns)}")
+            
+            # Vérification des colonnes requises
+            missing_columns = [col for col in self.required_columns if col not in df.columns]
+            if missing_columns:
+                raise ValueError(f"Colonnes manquantes dans le CSV : {missing_columns}")
             
             exoplanets = []
-            for _, row in df.iterrows():
+            for index, row in df.iterrows():
                 try:
                     exoplanet = self._convert_row_to_exoplanet(row)
                     if exoplanet:
                         exoplanets.append(exoplanet)
                 except Exception as e:
-                    print(f"Erreur sur la ligne : {row}")
-                    print(e)
+                    logger.error(f"Erreur sur la ligne {index}: {str(e)}")
+                    logger.debug(f"Données de la ligne : {row.to_dict()}")
             
+            logger.info(f"Nombre d'exoplanètes traitées avec succès : {len(exoplanets)}")
             return exoplanets
             
         except Exception as e:
-            print(f"Erreur lors de la lecture du CSV EPE : {e}")
+            logger.error(f"Erreur lors de la lecture du CSV EPE : {str(e)}")
             return []
     
     def _create_reference(self) -> Reference:
@@ -44,71 +55,87 @@ class ExoplanetEUCollector:
             url="https://exoplanet.eu/"
         )
     
-    def _convert_row_to_exoplanet(self, row: pd.Series) -> Exoplanet:
+    def _safe_float_conversion(self, value: any) -> Optional[float]:
+        """Convertit une valeur en float de manière sécurisée"""
+        if pd.isna(value):
+            return None
+        try:
+            return float(value)
+        except (ValueError, TypeError):
+            return None
+    
+    def _convert_row_to_exoplanet(self, row: pd.Series) -> Optional[Exoplanet]:
         """
         Convert a row from the Exoplanet.eu CSV to an Exoplanet object
         """
         try:
             ref = self._create_reference()
             
+            # Validation des données de base
+            if pd.isna(row['name']) or pd.isna(row['star_name']):
+                logger.warning(f"Données de base manquantes pour l'exoplanète : {row.get('name', 'Unknown')}")
+                return None
+            
             # Création de l'objet Exoplanet avec les données de base
             exoplanet = Exoplanet(
-                name=row['name'],
-                host_star=DataPoint(row['star_name'], ref),
-                discovery_method=DataPoint(row['detection_type'], ref),
-                discovery_date=DataPoint(row['discovered'], ref)
+                name=str(row['name']).strip(),
+                host_star=DataPoint(str(row['star_name']).strip(), ref),
+                discovery_method=DataPoint(str(row['detection_type']).strip(), ref) if pd.notna(row['detection_type']) else None,
+                discovery_date=DataPoint(str(row['discovered']).strip(), ref) if pd.notna(row['discovered']) else None
             )
             
             # Caractéristiques orbitales
-            if pd.notna(row['semi_major_axis']):
-                exoplanet.semi_major_axis = DataPoint(float(row['semi_major_axis']), ref)
-            if pd.notna(row['eccentricity']):
-                exoplanet.eccentricity = DataPoint(float(row['eccentricity']), ref)
-            if pd.notna(row['orbital_period']):
-                exoplanet.orbital_period = DataPoint(float(row['orbital_period']), ref)
-            if pd.notna(row['inclination']):
-                exoplanet.inclination = DataPoint(float(row['inclination']), ref)
-            if pd.notna(row['omega']):
-                exoplanet.argument_of_periastron = DataPoint(float(row['omega']), ref)
-            if pd.notna(row['tperi']):
-                exoplanet.periastron_time = DataPoint(float(row['tperi']), ref)
+            for field, csv_field in [
+                ('semi_major_axis', 'semi_major_axis'),
+                ('eccentricity', 'eccentricity'),
+                ('orbital_period', 'orbital_period'),
+                ('inclination', 'inclination'),
+                ('argument_of_periastron', 'omega'),
+                ('periastron_time', 'tperi')
+            ]:
+                value = self._safe_float_conversion(row.get(csv_field))
+                if value is not None:
+                    setattr(exoplanet, field, DataPoint(value, ref))
             
             # Caractéristiques physiques
-            if pd.notna(row['mass']):
-                exoplanet.mass = DataPoint(float(row['mass']), ref)
-            if pd.notna(row['radius']):
-                exoplanet.radius = DataPoint(float(row['radius']), ref)
-            if pd.notna(row['temp_calculated']):
-                exoplanet.temperature = DataPoint(float(row['temp_calculated']), ref)
+            for field, csv_field in [
+                ('mass', 'mass'),
+                ('radius', 'radius'),
+                ('temperature', 'temp_calculated')
+            ]:
+                value = self._safe_float_conversion(row.get(csv_field))
+                if value is not None:
+                    setattr(exoplanet, field, DataPoint(value, ref))
             
             # Informations sur l'étoile
-            if pd.notna(row['star_sp_type']):
-                exoplanet.spectral_type = DataPoint(row['star_sp_type'], ref)
-            if pd.notna(row['star_teff']):
-                exoplanet.star_temperature = DataPoint(float(row['star_teff']), ref)
-            if pd.notna(row['star_radius']):
-                exoplanet.star_radius = DataPoint(float(row['star_radius']), ref)
-            if pd.notna(row['star_mass']):
-                exoplanet.star_mass = DataPoint(float(row['star_mass']), ref)
-            if pd.notna(row['star_distance']):
-                exoplanet.distance = DataPoint(float(row['star_distance']), ref)
-            if pd.notna(row['mag_v']):
-                exoplanet.apparent_magnitude = DataPoint(float(row['mag_v']), ref)
+            for field, csv_field in [
+                ('spectral_type', 'star_sp_type'),
+                ('star_temperature', 'star_teff'),
+                ('star_radius', 'star_radius'),
+                ('star_mass', 'star_mass'),
+                ('distance', 'star_distance'),
+                ('apparent_magnitude', 'mag_v')
+            ]:
+                value = row.get(csv_field)
+                if pd.notna(value):
+                    if isinstance(value, (int, float)):
+                        value = self._safe_float_conversion(value)
+                    setattr(exoplanet, field, DataPoint(value, ref))
             
             # Découverte
-            if pd.notna(row['planet_status']):
-                exoplanet.status = DataPoint(row['planet_status'], ref)
+            if pd.notna(row.get('planet_status')):
+                exoplanet.status = DataPoint(str(row['planet_status']).strip(), ref)
             
             # Autres noms
-            if pd.notna(row['alternate_names']):
-                names = row['alternate_names'].split(',')
+            if pd.notna(row.get('alternate_names')):
+                names = str(row['alternate_names']).split(',')
                 for name in names:
                     name = name.strip()
-                    if name and name != exoplanet.name:  # Ne pas ajouter le nom principal
+                    if name and name != exoplanet.name:
                         exoplanet.other_names.append(name)
             
             return exoplanet
             
-        except (ValueError, KeyError) as e:
-            print(f"Error converting row to Exoplanet: {e}")
+        except Exception as e:
+            logger.error(f"Erreur lors de la conversion de la ligne en Exoplanet : {str(e)}")
             return None 

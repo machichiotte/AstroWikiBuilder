@@ -21,25 +21,25 @@ def clean_filename(filename):
 
 def main():
     # Initialisation des collecteurs
-    #nasa_collector = NASAExoplanetCollector()
+    nasa_collector = NASAExoplanetCollector()
     exoplanet_eu_collector = ExoplanetEUCollector("data/exoplanet_eu.csv")
-   # open_exoplanet_collector = OpenExoplanetCollector()
+    open_exoplanet_collector = OpenExoplanetCollector()
     
     # Initialisation du processeur de données
     processor = DataProcessor()
     
     # Collecte des données
-  #  print("\nCollecte des données depuis la NASA Exoplanet Archive...")
-   # nasa_exoplanets = nasa_collector.fetch_data()
-    #processor.add_exoplanets(nasa_exoplanets, "nasa")
+    print("\nCollecte des données depuis la NASA Exoplanet Archive...")
+    nasa_exoplanets = nasa_collector.fetch_data()
+    processor.add_exoplanets(nasa_exoplanets, "nasa")
     
     print("\nCollecte des données depuis Exoplanet.eu...")
     exoplanet_eu_data = exoplanet_eu_collector.fetch_data()
     processor.add_exoplanets(exoplanet_eu_data, "exoplanet_eu")
     
-  #  print("\nCollecte des données depuis Open Exoplanet Catalogue...")
-   # open_exoplanet_data = open_exoplanet_collector.fetch_data()
-   # processor.add_exoplanets(open_exoplanet_data, "open_exoplanet")
+    print("\nCollecte des données depuis Open Exoplanet Catalogue...")
+    open_exoplanet_data = open_exoplanet_collector.fetch_data()
+    processor.add_exoplanets(open_exoplanet_data, "open_exoplanet")
     
     # Génération des noms de fichiers avec timestamp
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -66,7 +66,7 @@ def main():
     for method, count in stats['discovery_methods'].items():
         print(f"- {method} : {count}")
     print("\nPar année de découverte :")
-    for year, count in sorted(stats['discovery_years'].items()):
+    for year, count in sorted(stats['discovery_years'].items(), key=lambda x: str(x[0])):
         print(f"- {year} : {count}")
     
     # Vérification des articles Wikipédia

@@ -1,7 +1,8 @@
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Set
 from src.models.exoplanet import Exoplanet
+from src.models.reference import SourceType, DataPoint
 import datetime
-from src.models.reference import SourceType
+import locale
 
 class WikipediaGenerator:
     """
@@ -10,18 +11,28 @@ class WikipediaGenerator:
     
     def __init__(self):
         self.template_refs = {
-            'nasa': "{{Lien web |langue=en |nom1=NasaGov |titre={title} |url=https://science.nasa.gov/exoplanet-catalog/{id}/ |site=science.nasa.gov |date=2024-11-1 |consulté le=2025-1-3 }}",
+            'nasa': "{{Lien web |langue=en |nom1=NASA |titre={title} |url=https://science.nasa.gov/exoplanet-catalog/{id}/ |site=science.nasa.gov |date=2024-11-1 |consulté le=2025-1-3 }}",
             'exoplanet_eu': "{{Lien web |langue=en |nom1=EPE |titre={title} |url=https://exoplanet.eu/catalog/{id}/ |site=exoplanet.eu |date=2024-8-1 |consulté le=2025-1-3 }}",
             'open_exoplanet': "{{Lien web |langue=en |nom1=OEC |titre={title} |url=https://github.com/OpenExoplanetCatalogue/open_exoplanet_catalogue |site=Open Exoplanet Catalogue |date=2024-1-1 |consulté le=2025-1-3 }}"
         }
+        self._used_refs = set()
+        locale.setlocale(locale.LC_ALL, 'fr_FR.UTF-8')
     
-    def _format_value_with_unit(self, value: Optional[float], unit: str) -> str:
+    def _format_numeric_value(self, value: Optional[float], precision: int = 2) -> str:
+        """
+        Formate une valeur numérique avec le format français
+        """
+        if value is None:
+            return ""
+        return locale.format_string(f"%.{precision}f", value, grouping=True)
+    
+    def _format_value_with_unit(self, value: Optional[float], unit: str, precision: int = 2) -> str:
         """
         Formate une valeur avec son unité, gère les valeurs None
         """
         if value is None:
             return ""
-        return f"{value} {unit}"
+        return f"{self._format_numeric_value(value, precision)} {unit}"
     
     def _get_reference(self, source: str, title: str, id: str) -> str:
         """
@@ -29,6 +40,35 @@ class WikipediaGenerator:
         """
         template = self.template_refs.get(source, "")
         return template.format(title=title, id=id)
+    
+    def _add_reference(self, ref_name: str, ref_content: str) -> str:
+        """
+        Ajoute une référence et retourne la balise de référence appropriée
+        """
+        if ref_name not in self._used_refs:
+            self._used_refs.add(ref_name)
+            return f'<ref name="{ref_name}">{ref_content}</ref>'
+        return f'<ref name="{ref_name}" />'
+    
+    def _format_datapoint(self, datapoint: DataPoint) -> str:
+        """Formate un DataPoint pour l'affichage dans l'article"""
+        if not datapoint or not datapoint.value:
+            return ""
+            
+        # Essayer de convertir la valeur en nombre si possible
+        try:
+            value = float(datapoint.value)
+            value_str = self._format_numeric_value(value)
+        except (ValueError, TypeError):
+            # Si la conversion échoue, utiliser la valeur telle quelle
+            value_str = str(datapoint.value)
+        
+        if datapoint.reference:
+            ref_name = "EPE" if datapoint.reference.source == SourceType.EPE else "NASA" if datapoint.reference.source == SourceType.NASA else "OEC"
+            ref_content = datapoint.reference.to_wiki_ref()
+            return f"{value_str} {self._add_reference(ref_name, ref_content)}"
+            
+        return value_str
     
     def generate_infobox_exoplanet(self, exoplanet: Exoplanet) -> str:
         """
@@ -40,7 +80,19 @@ class WikipediaGenerator:
             return getattr(exoplanet, attr).unit if getattr(exoplanet, attr) and hasattr(getattr(exoplanet, attr), 'unit') and getattr(exoplanet, attr).unit else None
         def notes(attr):
             ref = getattr(exoplanet, attr).reference if getattr(exoplanet, attr) and hasattr(getattr(exoplanet, attr), 'reference') else None
-            return ref.to_wiki_ref() if ref and hasattr(ref, 'to_wiki_ref') else None
+            if not ref or not hasattr(ref, 'to_wiki_ref'):
+                return None
+            
+            # Vérifier si c'est la première occurrence de cette référence
+            ref_name = "EPE" if ref.source == SourceType.EPE else "NASA" if ref.source == SourceType.NASA else "OEC"
+            if not hasattr(self, '_used_refs'):
+                self._used_refs = set()
+            
+            if ref_name not in self._used_refs:
+                self._used_refs.add(ref_name)
+                return ref.to_wiki_ref()
+            else:
+                return f"<ref name=\"{ref_name}\" />"
 
         def add_field(label, attr, default_unit=None):
             v = val(attr)
@@ -56,6 +108,9 @@ class WikipediaGenerator:
                 if n:
                     s += f" | {label} notes = {n}\n"
             return s
+
+        # Réinitialiser les références utilisées pour chaque nouvelle exoplanète
+        self._used_refs = set()
 
         infobox = f"{{{{Infobox Exoplanète\n"
         infobox += f" | nom = {exoplanet.name}\n"
@@ -139,7 +194,7 @@ class WikipediaGenerator:
             value = getattr(exoplanet, field_name)
             if value and hasattr(value, 'reference') and value.reference:
                 if value.reference.source == SourceType.NASA:
-                    refs.add("NasaGov")
+                    refs.add("NASA")
                 elif value.reference.source == SourceType.EPE:
                     refs.add("EPE")
                 elif value.reference.source == SourceType.OEP:
@@ -152,49 +207,55 @@ class WikipediaGenerator:
         return list(refs)
 
     def _format_references_section(self, exoplanet: Exoplanet) -> str:
-        """
-        Génère la section Références avec les définitions des références utilisées
-        """
-        refs = self._get_used_references(exoplanet)
-        refs_text = []
-        if "EPE" in refs:
-            refs_text.append(f'<ref name="EPE">{self._get_reference("exoplanet_eu", exoplanet.name, exoplanet.name.lower().replace(" ", "_"))}</ref>')
-        if "NasaGov" in refs:
-            refs_text.append(f'<ref name="NasaGov">{self._get_reference("nasa", exoplanet.name, exoplanet.name.lower().replace(" ", "-") )}</ref>')
-        refs_text.append("{{références}}")
-        return "\n".join(refs_text)
+        """Génère la section Références"""
+        refs = []
+        for ref_name in self._get_used_references(exoplanet):
+            if ref_name == "NASA":
+                refs.append(f'<ref name="NASA">{{{{Lien web |langue=en |nom1=NASA |titre={exoplanet.name} |url=https://science.nasa.gov/exoplanet-catalog/{exoplanet.name.lower().replace(" ", "-")}/ |site=science.nasa.gov |date=2024-11-1 |consulté le=2025-1-3 }}}}</ref>')
+            elif ref_name == "EPE":
+                refs.append(f'<ref name="EPE">{{{{Lien web |langue=en |nom1=EPE |titre={exoplanet.name} |url=https://exoplanet.eu/catalog/{exoplanet.name.lower().replace(" ", "_")}/ |site=exoplanet.eu |date=2024-8-1 |consulté le=2025-1-3 }}}}</ref>')
+            elif ref_name == "OEC":
+                refs.append(f'<ref name="OEC">{{{{Lien web |langue=en |nom1=OEC |titre={exoplanet.name} |url=https://www.openexoplanetcatalogue.com/planet/{exoplanet.name}/ |site=Open Exoplanet Catalogue |date=2024-8-1 |consulté le=2025-1-3 }}}}</ref>')
+        
+        return '\n'.join(refs) + '\n\n{{références}}'
 
     def generate_article_content(self, exoplanet: Exoplanet) -> str:
-        """
-        Génère le contenu complet de l'article
-        """
+        """Génère le contenu de l'article Wikipedia"""
+        # Réinitialiser les références pour chaque nouvel article
+        self._used_refs = set()
+        
+        planet_type = self._get_planet_type(exoplanet)
         content = f"""{{{{Ébauche|exoplanète|}}}}
 
 {self.generate_infobox_exoplanet(exoplanet)}
 
-'''{{{{nobr|{exoplanet.name}}}}}''' est une [[planète]] en [[orbite]] autour de {{{{nobr|[[{exoplanet.host_star}]]}}}}, une [[étoile]] [[{exoplanet.spectral_type or "?"}]] qui est l'objet primaire du système {{{{nobr|[[{exoplanet.host_star}]]}}}}.
+'''{{{{nobr|{exoplanet.name}}}}}''' est une [[planète]] en [[orbite]] autour de {{{{nobr|[[{self._format_datapoint(exoplanet.host_star)}]]}}}}, {self._get_star_description(exoplanet)}.
 
-Cette [[exoplanète]] est un [[{self._get_planet_type(exoplanet)}]] {self._get_size_comparison(exoplanet)}. Elle orbite à {{{{unité|{exoplanet.semi_major_axis}|[[unité astronomique|unités astronomiques]]}}}} de son étoile{self._get_orbital_comparison(exoplanet)}.
+== Caractéristiques ==
+Cette [[exoplanète]] est un [[{planet_type}]] {self._get_planet_description(exoplanet)}. Elle orbite à {{{{unité|{self._format_datapoint(exoplanet.semi_major_axis)}|[[unité astronomique|unités astronomiques]]}}}} de son étoile{self._get_orbital_comparison(exoplanet)}.
+
+== Découverte ==
+Cette planète a été découverte en {self._format_datapoint(exoplanet.discovery_date)} par la méthode de {self._format_datapoint(exoplanet.discovery_method)}.
 
 == Références ==
 {self._format_references_section(exoplanet)}
 
 {{{{portail|astronomie|exoplanètes}}}}
 
-[[Catégorie:{self._get_planet_type(exoplanet)}]]
+[[Catégorie:{planet_type}]]
 """
         return content
     
     def _get_size_comparison(self, exoplanet: Exoplanet) -> str:
-        """ 
+        """
         Génère une comparaison de taille avec Jupiter ou la Terre
         """
         mass_value = exoplanet.mass.value if exoplanet.mass and exoplanet.mass.value else None
         if mass_value:
             if mass_value > 10:
-                return f"environ {mass_value/317.8:.1f} fois plus massif que [[Jupiter (planète)|Jupiter]]"
+                return f"environ {self._format_numeric_value(mass_value/317.8, 1)} fois plus massif que [[Jupiter (planète)|Jupiter]]"
             else:
-                return f"environ {mass_value:.1f} fois plus massif que la [[Terre]]"
+                return f"environ {self._format_numeric_value(mass_value, 1)} fois plus massif que la [[Terre]]"
         return ""
     
     def _get_orbital_comparison(self, exoplanet: Exoplanet) -> str:
@@ -213,6 +274,34 @@ Cette [[exoplanète]] est un [[{self._get_planet_type(exoplanet)}]] {self._get_s
                 return ", une distance comparable à la [[ceinture d'astéroïdes]] (entre [[Mars (planète)|Mars]] et Jupiter) dans le [[système solaire]]"
         return ""
     
+    def _get_star_description(self, exoplanet: Exoplanet) -> str:
+        """
+        Génère une description de l'étoile hôte
+        """
+        desc = []
+        if exoplanet.spectral_type and exoplanet.spectral_type.value:
+            desc.append(f"une [[étoile]] de type spectral [[{exoplanet.spectral_type.value}]]")
+        if exoplanet.distance and exoplanet.distance.value:
+            desc.append(f"située à {self._format_datapoint(exoplanet.distance)} [[parsec|pc]] de la [[Terre]]")
+        if exoplanet.apparent_magnitude and exoplanet.apparent_magnitude.value:
+            desc.append(f"d'une [[magnitude apparente]] de {self._format_datapoint(exoplanet.apparent_magnitude)}")
+        
+        return " ".join(desc) if desc else "une étoile"
+    
+    def _get_planet_description(self, exoplanet: Exoplanet) -> str:
+        """
+        Génère une description de la planète
+        """
+        desc = []
+        if exoplanet.mass and exoplanet.mass.value:
+            desc.append(self._get_size_comparison(exoplanet))
+        if exoplanet.radius and exoplanet.radius.value:
+            desc.append(f"d'un rayon de {self._format_datapoint(exoplanet.radius)} [[rayon jovien|R_J]]")
+        if exoplanet.temperature and exoplanet.temperature.value:
+            desc.append(f"avec une température de {self._format_datapoint(exoplanet.temperature)} [[kelvin|K]]")
+        
+        return ", ".join(desc) if desc else ""
+    
     def _format_references(self, exoplanet: Exoplanet) -> str:
         """Formate les références pour l'article."""
         references = []
@@ -222,6 +311,6 @@ Cette [[exoplanète]] est un [[{self._get_planet_type(exoplanet)}]] {self._get_s
             )
         if exoplanet.source == "nasa":
             references.append(
-                f'<ref>{{{{Lien web |langue=en |nom1=NasaGov |titre={exoplanet.name} |url=https://science.nasa.gov/exoplanet-catalog/{exoplanet.name.lower().replace(" ", "-")}/ |site=science.nasa.gov |date=2024-11-1 |consulté le=2025-1-3 }}}}</ref>'
+                f'<ref>{{{{Lien web |langue=en |nom1=NASA |titre={exoplanet.name} |url=https://science.nasa.gov/exoplanet-catalog/{exoplanet.name.lower().replace(" ", "-")}/ |site=science.nasa.gov |date=2024-11-1 |consulté le=2025-1-3 }}}}</ref>'
             )
         return " ".join(references) 
