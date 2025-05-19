@@ -1,8 +1,10 @@
 import requests
 import pandas as pd
 import io
-from typing import List, Dict, Any
+from typing import List
+from datetime import datetime
 from src.models.exoplanet import Exoplanet
+from src.models.reference import DataPoint, Reference, SourceType
 
 class NASAExoplanetCollector:
     BASE_URL = "https://exoplanetarchive.ipac.caltech.edu/TAP/sync?query=select+*+from+PSCompPars&format=csv"
@@ -52,39 +54,59 @@ class NASAExoplanetCollector:
             print(response.text)
             return []
     
+    def _create_reference(self) -> Reference:
+        """Crée une référence pour les données NASA"""
+        return Reference(
+            source=SourceType.NASA,
+            date=datetime.now(),
+            url="https://exoplanetarchive.ipac.caltech.edu/"
+        )
+    
     def _convert_row_to_exoplanet(self, row: pd.Series) -> Exoplanet:
         """
         Convert a row from the NASA Exoplanet Archive to an Exoplanet object
         """
         try:
-            return Exoplanet(
+            ref = self._create_reference()
+            
+            # Création de l'objet Exoplanet avec les données de base
+            exoplanet = Exoplanet(
                 name=row['pl_name'],
-                host_star=row['hostname'],
-                discovery_year=int(row['disc_year']),
-                discovery_method=row['discoverymethod'],
-                mass=float(row['pl_bmasse']) if pd.notna(row['pl_bmasse']) else None,
-                mass_error_min=float(row['pl_bmasseerr1']) if pd.notna(row['pl_bmasseerr1']) else None,
-                mass_error_max=float(row['pl_bmasseerr2']) if pd.notna(row['pl_bmasseerr2']) else None,
-                radius=float(row['pl_rade']) if pd.notna(row['pl_rade']) else None,
-                radius_error_min=float(row['pl_radeerr1']) if pd.notna(row['pl_radeerr1']) else None,
-                radius_error_max=float(row['pl_radeerr2']) if pd.notna(row['pl_radeerr2']) else None,
-                orbital_period=float(row['pl_orbper']) if pd.notna(row['pl_orbper']) else None,
-                orbital_period_error_min=float(row['pl_orbpererr1']) if pd.notna(row['pl_orbpererr1']) else None,
-                orbital_period_error_max=float(row['pl_orbpererr2']) if pd.notna(row['pl_orbpererr2']) else None,
-                semi_major_axis=float(row['pl_orbsmax']) if pd.notna(row['pl_orbsmax']) else None,
-                semi_major_axis_error_min=float(row['pl_orbsmaxerr1']) if pd.notna(row['pl_orbsmaxerr1']) else None,
-                semi_major_axis_error_max=float(row['pl_orbsmaxerr2']) if pd.notna(row['pl_orbsmaxerr2']) else None,
-                eccentricity=float(row['pl_orbeccen']) if pd.notna(row['pl_orbeccen']) else None,
-                eccentricity_error_min=float(row['pl_orbeccenerr1']) if pd.notna(row['pl_orbeccenerr1']) else None,
-                eccentricity_error_max=float(row['pl_orbeccenerr2']) if pd.notna(row['pl_orbeccenerr2']) else None,
-                inclination=float(row['pl_orbincl']) if pd.notna(row['pl_orbincl']) else None,
-                inclination_error_min=float(row['pl_orbinclerr1']) if pd.notna(row['pl_orbinclerr1']) else None,
-                inclination_error_max=float(row['pl_orbinclerr2']) if pd.notna(row['pl_orbinclerr2']) else None,
-                equilibrium_temperature=float(row['pl_eqt']) if pd.notna(row['pl_eqt']) else None,
-                equilibrium_temperature_error_min=float(row['pl_eqterr1']) if pd.notna(row['pl_eqterr1']) else None,
-                equilibrium_temperature_error_max=float(row['pl_eqterr2']) if pd.notna(row['pl_eqterr2']) else None,
-                source="NASA Exoplanet Archive"
+                host_star=DataPoint(row['hostname'], ref),
+                discovery_method=DataPoint(row['discoverymethod'], ref),
+                discovery_date=DataPoint(row['disc_year'], ref)
             )
+            
+            # Caractéristiques orbitales
+            if pd.notna(row['pl_orbsmax']):
+                exoplanet.semi_major_axis = DataPoint(float(row['pl_orbsmax']), ref)
+            if pd.notna(row['pl_orbeccen']):
+                exoplanet.eccentricity = DataPoint(float(row['pl_orbeccen']), ref)
+            if pd.notna(row['pl_orbper']):
+                exoplanet.orbital_period = DataPoint(float(row['pl_orbper']), ref)
+            if pd.notna(row['pl_orbincl']):
+                exoplanet.inclination = DataPoint(float(row['pl_orbincl']), ref)
+            
+            # Caractéristiques physiques
+            if pd.notna(row['pl_bmasse']):
+                exoplanet.mass = DataPoint(float(row['pl_bmasse']), ref)
+            if pd.notna(row['pl_rade']):
+                exoplanet.radius = DataPoint(float(row['pl_rade']), ref)
+            if pd.notna(row['pl_eqt']):
+                exoplanet.temperature = DataPoint(float(row['pl_eqt']), ref)
+            
+            # Informations sur l'étoile
+            if pd.notna(row['st_spectype']):
+                exoplanet.spectral_type = DataPoint(row['st_spectype'], ref)
+            if pd.notna(row['st_teff']):
+                exoplanet.star_temperature = DataPoint(float(row['st_teff']), ref)
+            if pd.notna(row['st_rad']):
+                exoplanet.star_radius = DataPoint(float(row['st_rad']), ref)
+            if pd.notna(row['st_mass']):
+                exoplanet.star_mass = DataPoint(float(row['st_mass']), ref)
+            
+            return exoplanet
+            
         except (ValueError, KeyError) as e:
             print(f"Error converting row to Exoplanet: {e}")
             return None 

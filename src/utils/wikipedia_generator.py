@@ -1,6 +1,7 @@
 from typing import Dict, List, Optional
 from src.models.exoplanet import Exoplanet
 import datetime
+from src.models.reference import SourceType
 
 class WikipediaGenerator:
     """
@@ -31,114 +32,96 @@ class WikipediaGenerator:
     
     def generate_infobox_exoplanet(self, exoplanet: Exoplanet) -> str:
         """
-        Génère l'infobox pour une exoplanète
+        Génère l'infobox pour une exoplanète, conforme au modèle Wikipédia fourni, sans afficher les unités/notes si la valeur principale est absente
         """
-        # Utiliser uniquement les balises <ref name="EPE"/> et <ref name="NasaGov"/>
-        infobox = f"""{{{{Infobox Exoplanète
- | nom                       = {exoplanet.name}
- | image                     = 
- | légende                   = 
-<!-- ÉTOILE -->
- | étoile                    = [[{exoplanet.host_star}]]
- | époque étoile             = 
- | époque étoile notes       = 
- | ascension droite          = 
- | ascension droite notes    = <ref name=\"EPE\"/>
- | déclinaison               = 
- | déclinaison notes         = <ref name=\"EPE\"/>
- | distance                  = {self._format_value_with_unit(exoplanet.distance, "pc")}
- | distance notes            = <ref name=\"EPE\"/>
- | constellation             = 
- | carte UAI                 = 
- | type spectral             = [[{exoplanet.star_type or "?"}]]
- | type spectral notes       = <ref name=\"EPE\"/>
- | magnitude apparente       = 
- | magnitude apparente notes = <ref name=\"EPE\"/>
-<!-- PLANÈTE -->
-<!-- Type -->
- | type                      = [[{self._get_planet_type(exoplanet)}]]
- | type notes                = <ref name=\"EPE\"/>
-<!-- Caractéristiques orbitales -->
- | demi-grand axe            = {self._format_value_with_unit(exoplanet.semi_major_axis, "")}
- | demi-grand axe notes      = <ref name=\"EPE\"/>
- | périastre                 = 
- | périastre unité           = 
- | périastre notes           = 
- | apoastre                  = 
- | apoastre unité            = 
- | apoastre notes            = 
- | excentricité              = {self._format_value_with_unit(exoplanet.eccentricity, "")}
- | excentricité notes        = <ref name=\"EPE\"/>
- | période                   = {self._format_value_with_unit(exoplanet.orbital_period, "")}
- | période année             = 
- | période heure             = 
- | période notes             = <ref name=\"EPE\"/>
- | distance angulaire        = 
- | distance angulaire notes  = 
- | t_peri                    = 
- | t_peri notes              = 
- | inclinaison               = {self._format_value_with_unit(exoplanet.inclination, "")}
- | inclinaison unité         = 
- | inclinaison notes         = 
- | arg_péri                  = 
- | arg_péri notes            = 
- | époque                    = 
- | époque notes              = 
-<!-- Caractéristiques physiques -->
- | masse                     = {self._format_value_with_unit(exoplanet.mass, "")}
- | masse notes               = <ref name=\"EPE\"/>
- | masse minimale            = 
- | masse minimale unité      = 
- | masse minimale notes      = 
- | rayon                     = {self._format_value_with_unit(exoplanet.radius, "")}
- | rayon notes               = (estimation) <ref name=\"NasaGov\"/>
- | masse volumique           = {self._format_value_with_unit(exoplanet.density, "")}
- | masse volumique unité     = 
- | masse volumique notes     = 
- | gravité                   = {self._format_value_with_unit(exoplanet.gravity, "")}
- | gravité unité             = 
- | gravité notes             = 
- | période de rotation       = 
- | période de rotation unité = 
- | période de rotation notes = 
- | température               = {self._format_value_with_unit(exoplanet.equilibrium_temperature, "")}
- | température unité         = 
- | température notes         = 
-<!-- Atmosphère -->
- | pression                  = 
- | pression notes            = 
- | composition               = 
- | composition notes         = 
- | vitesse des vents         = 
- | vitesse des vents notes   = 
-<!-- Découverte -->
- | découvreurs               = 
- | découvreurs notes         = 
- | programme                 = 
- | programme notes           = 
- | méthode                   = {exoplanet.discovery_method or "?"}
- | méthode notes             = <ref name=\"NasaGov\"/>
- | date                      = {exoplanet.discovery_year or "?"}
- | date notes                = <ref name=\"NasaGov\"/>
- | lieu                      = 
- | lieu notes                = 
- | prédécouverte             = 
- | prédécouverte notes       = 
- | détection                 = 
- | détection notes           = 
- | statut                    = Confirmée
- | statut notes              = <ref name=\"EPE\"/>
-<!-- Informations supplémentaires -->
- | autres noms               = {exoplanet.name}}}}}"""
+        def val(attr):
+            return getattr(exoplanet, attr).value if getattr(exoplanet, attr) and hasattr(getattr(exoplanet, attr), 'value') else None
+        def unit(attr):
+            return getattr(exoplanet, attr).unit if getattr(exoplanet, attr) and hasattr(getattr(exoplanet, attr), 'unit') and getattr(exoplanet, attr).unit else None
+        def notes(attr):
+            ref = getattr(exoplanet, attr).reference if getattr(exoplanet, attr) and hasattr(getattr(exoplanet, attr), 'reference') else None
+            return ref.to_wiki_ref() if ref and hasattr(ref, 'to_wiki_ref') else None
+
+        def add_field(label, attr, default_unit=None):
+            v = val(attr)
+            s = ""
+            if v is not None and v != "":
+                s += f" | {label} = {v}\n"
+                u = unit(attr)
+                n = notes(attr)
+                if u:
+                    s += f" | {label} unité = {u}\n"
+                elif default_unit:
+                    s += f" | {label} unité = {default_unit}\n"
+                if n:
+                    s += f" | {label} notes = {n}\n"
+            return s
+
+        infobox = f"{{{{Infobox Exoplanète\n"
+        infobox += f" | nom = {exoplanet.name}\n"
+        infobox += " | image = \n | légende = \n"
+        # Étoile
+        infobox += add_field("étoile", "host_star")
+        infobox += add_field("époque étoile", "star_epoch")
+        infobox += add_field("ascension droite", "right_ascension")
+        infobox += add_field("déclinaison", "declination")
+        infobox += add_field("distance", "distance", "pc")
+        infobox += add_field("constellation", "constellation")
+        infobox += add_field("type spectral", "spectral_type")
+        infobox += add_field("magnitude apparente", "apparent_magnitude")
+        # Planète
+        infobox += f" | type = {self._get_planet_type(exoplanet)}\n"
+        # Caractéristiques orbitales
+        infobox += add_field("demi-grand axe", "semi_major_axis", "ua")
+        infobox += add_field("périastre", "periastron", "ua")
+        infobox += add_field("apoastre", "apoastron", "ua")
+        infobox += add_field("excentricité", "eccentricity")
+        infobox += add_field("période", "orbital_period", "j")
+        infobox += add_field("distance angulaire", "angular_distance")
+        infobox += add_field("t_peri", "periastron_time")
+        infobox += add_field("inclinaison", "inclination", "°")
+        infobox += add_field("arg_péri", "argument_of_periastron", "°")
+        infobox += add_field("époque", "epoch")
+        # Caractéristiques physiques
+        infobox += add_field("masse", "mass", "M_J")
+        infobox += add_field("masse minimale", "minimum_mass", "M_J")
+        infobox += add_field("rayon", "radius", "R_J")
+        infobox += add_field("masse volumique", "density", "kg/m³")
+        infobox += add_field("gravité", "gravity", "m/s²")
+        infobox += add_field("période de rotation", "rotation_period", "h")
+        infobox += add_field("température", "temperature", "K")
+        infobox += add_field("albedo_bond", "bond_albedo")
+        # Atmosphère
+        infobox += add_field("pression", "pressure")
+        infobox += add_field("composition", "composition")
+        infobox += add_field("vitesse des vents", "wind_speed")
+        # Découverte
+        infobox += add_field("découvreurs", "discoverers")
+        infobox += add_field("programme", "discovery_program")
+        infobox += add_field("méthode", "discovery_method")
+        infobox += add_field("date", "discovery_date")
+        infobox += add_field("lieu", "discovery_location")
+        infobox += add_field("prédécouverte", "pre_discovery")
+        infobox += add_field("détection", "detection_method")
+        infobox += add_field("statut", "status")
+        # Autres noms
+        if exoplanet.other_names:
+            other_names_str = ", ".join([f"{k}: {v.value}" for k, v in exoplanet.other_names.items() if v.value])
+            if other_names_str:
+                infobox += f" | autres noms = {other_names_str}\n"
+        infobox += "}}"
         return infobox
     
     def _get_planet_type(self, exoplanet: Exoplanet) -> str:
         """
         Détermine le type de planète en fonction de ses caractéristiques
         """
-        if exoplanet.mass and exoplanet.mass > 10:
+        mass_value = exoplanet.mass.value if exoplanet.mass and exoplanet.mass.value else None
+        radius_value = exoplanet.radius.value if exoplanet.radius and exoplanet.radius.value else None
+
+        if mass_value and mass_value > 10:
             return "Géante gazeuse"
-        elif exoplanet.radius and exoplanet.radius > 2:
+        elif radius_value and radius_value > 2:
             return "Géante gazeuse"
         else:
             return "Planète tellurique"
@@ -147,13 +130,27 @@ class WikipediaGenerator:
         """
         Retourne la liste des références utilisées pour l'exoplanète
         """
-        refs = []
-        # EPE est toujours utilisée dans l'infobox
-        refs.append("EPE")
-        # NasaGov est utilisée si la source est 'nasa' ou pour le rayon
-        if exoplanet.source == "nasa" or exoplanet.radius:
-            refs.append("NasaGov")
-        return list(set(refs))
+        refs = set()
+        
+        # Parcourir tous les attributs de l'exoplanète
+        for field_name in exoplanet.__dataclass_fields__:
+            if field_name == 'name' or field_name == 'other_names':
+                continue
+                
+            value = getattr(exoplanet, field_name)
+            if value and hasattr(value, 'reference') and value.reference:
+                if value.reference.source == SourceType.NASA:
+                    refs.add("NasaGov")
+                elif value.reference.source == SourceType.EPE:
+                    refs.add("EPE")
+                elif value.reference.source == SourceType.OEP:
+                    refs.add("OEC")
+        
+        # Si aucune référence n'a été trouvée, ajouter au moins EPE par défaut
+        if not refs:
+            refs.add("EPE")
+            
+        return list(refs)
 
     def _format_references_section(self, exoplanet: Exoplanet) -> str:
         """
@@ -176,7 +173,7 @@ class WikipediaGenerator:
 
 {self.generate_infobox_exoplanet(exoplanet)}
 
-'''{{{{nobr|{exoplanet.name}}}}}''' est une [[planète]] en [[orbite]] autour de {{{{nobr|[[{exoplanet.host_star}]]}}}}, une [[étoile]] [[{exoplanet.star_type or "?"}]] qui est l'objet primaire du système {{{{nobr|[[{exoplanet.host_star}]]}}}}.
+'''{{{{nobr|{exoplanet.name}}}}}''' est une [[planète]] en [[orbite]] autour de {{{{nobr|[[{exoplanet.host_star}]]}}}}, une [[étoile]] [[{exoplanet.spectral_type or "?"}]] qui est l'objet primaire du système {{{{nobr|[[{exoplanet.host_star}]]}}}}.
 
 Cette [[exoplanète]] est un [[{self._get_planet_type(exoplanet)}]] {self._get_size_comparison(exoplanet)}. Elle orbite à {{{{unité|{exoplanet.semi_major_axis}|[[unité astronomique|unités astronomiques]]}}}} de son étoile{self._get_orbital_comparison(exoplanet)}.
 
@@ -193,23 +190,25 @@ Cette [[exoplanète]] est un [[{self._get_planet_type(exoplanet)}]] {self._get_s
         """ 
         Génère une comparaison de taille avec Jupiter ou la Terre
         """
-        if exoplanet.mass:
-            if exoplanet.mass > 10:
-                return f"environ {exoplanet.mass/317.8:.1f} fois plus massif que [[Jupiter (planète)|Jupiter]]"
+        mass_value = exoplanet.mass.value if exoplanet.mass and exoplanet.mass.value else None
+        if mass_value:
+            if mass_value > 10:
+                return f"environ {mass_value/317.8:.1f} fois plus massif que [[Jupiter (planète)|Jupiter]]"
             else:
-                return f"environ {exoplanet.mass:.1f} fois plus massif que la [[Terre]]"
+                return f"environ {mass_value:.1f} fois plus massif que la [[Terre]]"
         return ""
     
     def _get_orbital_comparison(self, exoplanet: Exoplanet) -> str:
         """
         Génère une comparaison orbitale avec le système solaire
         """
-        if exoplanet.semi_major_axis:
-            if exoplanet.semi_major_axis < 0.1:
+        sma = exoplanet.semi_major_axis.value if exoplanet.semi_major_axis and exoplanet.semi_major_axis.value else None
+        if sma:
+            if sma < 0.1:
                 return ", une distance comparable à celle de [[Mercure (planète)|Mercure]] dans le [[système solaire]]"
-            elif exoplanet.semi_major_axis < 1:
+            elif sma < 1:
                 return ", une distance comparable à celle de [[Vénus (planète)|Vénus]] dans le [[système solaire]]"
-            elif exoplanet.semi_major_axis < 2:
+            elif sma < 2:
                 return ", une distance comparable à celle de [[Mars (planète)|Mars]] dans le [[système solaire]]"
             else:
                 return ", une distance comparable à la [[ceinture d'astéroïdes]] (entre [[Mars (planète)|Mars]] et Jupiter) dans le [[système solaire]]"
