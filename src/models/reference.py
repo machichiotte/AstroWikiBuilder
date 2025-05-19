@@ -29,5 +29,8 @@ class DataPoint:
         if self.value is None:
             return None
         if self.reference:
+            # Pour les noms alternatifs, on ne retourne que la valeur
+            if hasattr(self, '_is_alternate_name') and self._is_alternate_name:
+                return str(self.value)
             return f"{self.value} {self.reference.to_wiki_ref()}"
         return str(self.value) 

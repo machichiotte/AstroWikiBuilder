@@ -105,10 +105,9 @@ class WikipediaGenerator:
         infobox += add_field("détection", "detection_method")
         infobox += add_field("statut", "status")
         # Autres noms
-        if exoplanet.other_names:
-            other_names_str = ", ".join([f"{k}: {v.value}" for k, v in exoplanet.other_names.items() if v.value])
-            if other_names_str:
-                infobox += f" | autres noms = {other_names_str}\n"
+        other_names_str = ", ".join(exoplanet.other_names) if exoplanet.other_names else None
+        if other_names_str:
+            infobox += f" | autres noms = {other_names_str}\n"
         infobox += "}}"
         return infobox
     

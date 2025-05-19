@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import Optional, Dict
+from typing import Optional, Dict, List
 from datetime import datetime
 from .reference import DataPoint, Reference, SourceType
 
@@ -7,7 +7,7 @@ from .reference import DataPoint, Reference, SourceType
 class Exoplanet:
     # Identifiants
     name: str
-    other_names: Dict[str, DataPoint] = field(default_factory=dict)
+    other_names: List[str] = field(default_factory=list)
     
     # Étoile hôte
     host_star: DataPoint = None
@@ -172,8 +172,7 @@ class Exoplanet:
         
         # Autres noms
         if self.other_names:
-            other_names_str = ", ".join([f"{name} {ref.to_wiki_value()}" for name, ref in self.other_names.items()])
-            infobox += f" | autres noms = {other_names_str}\n"
+            infobox += f" | autres noms = {', '.join(self.other_names)}\n"
         
         infobox += "}}"
         return infobox 
