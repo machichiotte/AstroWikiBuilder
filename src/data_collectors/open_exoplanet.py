@@ -1,5 +1,6 @@
 import requests
-import xml.etree.ElementTree as ET
+import csv
+from io import StringIO
 from typing import List
 from datetime import datetime
 from src.models.exoplanet import Exoplanet
@@ -24,19 +25,20 @@ class OpenExoplanetCollector:
             if not response.text or len(response.text) < 100:
                 print("Réponse brute de l'API OEP :")
                 print(response.text)
+                return []
             
-            # Parse XML data
-            root = ET.fromstring(response.text)
-            print("Racine XML OEP :", root.tag)
+            # Parse CSV data
+            csv_data = StringIO(response.text)
+            reader = csv.DictReader(csv_data)
             
             exoplanets = []
-            for system in root.findall(".//system"):
+            for row in reader:
                 try:
-                    exoplanet = self._convert_system_to_exoplanet(system)
+                    exoplanet = self._convert_row_to_exoplanet(row)
                     if exoplanet:
                         exoplanets.append(exoplanet)
                 except Exception as e:
-                    print(f"Erreur sur le système : {system}")
+                    print(f"Erreur sur la ligne : {row}")
                     print(e)
             
             return exoplanets
@@ -45,7 +47,7 @@ class OpenExoplanetCollector:
             print(f"Error fetching data from Open Exoplanet Catalogue: {e}")
             return []
         except Exception as e:
-            print(f"Erreur lors du parsing du XML OEP : {e}")
+            print(f"Erreur lors du parsing du CSV OEP : {e}")
             print(response.text)
             return []
     
@@ -57,104 +59,107 @@ class OpenExoplanetCollector:
             url="https://www.openexoplanetcatalogue.com/"
         )
     
-    def _get_text(self, element: ET.Element, tag: str) -> str:
-        """Récupère le texte d'un élément XML"""
-        child = element.find(tag)
-        return child.text if child is not None else None
+    def _get_value(self, row: dict, key: str) -> str:
+        """Récupère une valeur du dictionnaire"""
+        return row.get(key)
     
-    def _get_float(self, element: ET.Element, tag: str) -> float:
-        """Récupère un nombre flottant d'un élément XML"""
-        text = self._get_text(element, tag)
-        return float(text) if text is not None else None
+    def _get_float(self, row: dict, key: str) -> float:
+        """Récupère un nombre flottant du dictionnaire"""
+        value = self._get_value(row, key)
+        try:
+            return float(value) if value is not None else None
+        except (ValueError, TypeError):
+            return None
     
-    def _convert_system_to_exoplanet(self, system: ET.Element) -> Exoplanet:
+    def _convert_row_to_exoplanet(self, row: dict) -> Exoplanet:
         """
-        Convert a system from the Open Exoplanet Catalogue to an Exoplanet object
+        Convert a row from the Open Exoplanet Catalogue to an Exoplanet object
         """
         try:
             ref = self._create_reference()
             
             # Récupération des données de base
-            name = self._get_text(system, "name")
+            name = self._get_value(row, "name")
             if not name:
                 return None
             
             # Création de l'objet Exoplanet avec les données de base
             exoplanet = Exoplanet(
                 name=name,
-                host_star=DataPoint(self._get_text(system, "star/name"), ref),
-                discovery_method=DataPoint(self._get_text(system, "discoverymethod"), ref),
-                discovery_date=DataPoint(self._get_text(system, "discoveryyear"), ref)
+                host_star=DataPoint(self._get_value(row, "star_name"), ref),
+                discovery_method=DataPoint(self._get_value(row, "discoverymethod"), ref),
+                discovery_date=DataPoint(self._get_value(row, "discoveryyear"), ref)
             )
             
             # Caractéristiques orbitales
-            semi_major_axis = self._get_float(system, "semimajoraxis")
+            semi_major_axis = self._get_float(row, "semimajoraxis")
             if semi_major_axis is not None:
                 exoplanet.semi_major_axis = DataPoint(semi_major_axis, ref)
             
-            eccentricity = self._get_float(system, "eccentricity")
+            eccentricity = self._get_float(row, "eccentricity")
             if eccentricity is not None:
                 exoplanet.eccentricity = DataPoint(eccentricity, ref)
             
-            orbital_period = self._get_float(system, "period")
+            orbital_period = self._get_float(row, "period")
             if orbital_period is not None:
                 exoplanet.orbital_period = DataPoint(orbital_period, ref)
             
-            inclination = self._get_float(system, "inclination")
+            inclination = self._get_float(row, "inclination")
             if inclination is not None:
                 exoplanet.inclination = DataPoint(inclination, ref)
             
             # Caractéristiques physiques
-            mass = self._get_float(system, "mass")
+            mass = self._get_float(row, "mass")
             if mass is not None:
                 exoplanet.mass = DataPoint(mass, ref)
             
-            radius = self._get_float(system, "radius")
+            radius = self._get_float(row, "radius")
             if radius is not None:
                 exoplanet.radius = DataPoint(radius, ref)
             
-            temperature = self._get_float(system, "temperature")
+            temperature = self._get_float(row, "temperature")
             if temperature is not None:
                 exoplanet.temperature = DataPoint(temperature, ref)
             
             # Informations sur l'étoile
-            star = system.find("star")
-            if star is not None:
-                spectral_type = self._get_text(star, "spectraltype")
-                if spectral_type:
-                    exoplanet.spectral_type = DataPoint(spectral_type, ref)
-                
-                star_temperature = self._get_float(star, "temperature")
-                if star_temperature:
-                    exoplanet.star_temperature = DataPoint(star_temperature, ref)
-                
-                star_radius = self._get_float(star, "radius")
-                if star_radius:
-                    exoplanet.star_radius = DataPoint(star_radius, ref)
-                
-                star_mass = self._get_float(star, "mass")
-                if star_mass:
-                    exoplanet.star_mass = DataPoint(star_mass, ref)
-                
-                distance = self._get_float(star, "distance")
-                if distance:
-                    exoplanet.distance = DataPoint(distance, ref)
-                
-                constellation = self._get_text(star, "constellation")
-                if constellation:
-                    exoplanet.constellation = DataPoint(constellation, ref)
-                
-                apparent_magnitude = self._get_float(star, "apparentmagnitude")
-                if apparent_magnitude:
-                    exoplanet.apparent_magnitude = DataPoint(apparent_magnitude, ref)
+            spectral_type = self._get_value(row, "spectraltype")
+            if spectral_type:
+                exoplanet.spectral_type = DataPoint(spectral_type, ref)
+            
+            star_temperature = self._get_float(row, "star_temperature")
+            if star_temperature:
+                exoplanet.star_temperature = DataPoint(star_temperature, ref)
+            
+            star_radius = self._get_float(row, "star_radius")
+            if star_radius:
+                exoplanet.star_radius = DataPoint(star_radius, ref)
+            
+            star_mass = self._get_float(row, "star_mass")
+            if star_mass:
+                exoplanet.star_mass = DataPoint(star_mass, ref)
+            
+            distance = self._get_float(row, "distance")
+            if distance:
+                exoplanet.distance = DataPoint(distance, ref)
+            
+            constellation = self._get_value(row, "constellation")
+            if constellation:
+                exoplanet.constellation = DataPoint(constellation, ref)
+            
+            apparent_magnitude = self._get_float(row, "apparentmagnitude")
+            if apparent_magnitude:
+                exoplanet.apparent_magnitude = DataPoint(apparent_magnitude, ref)
             
             # Autres noms
-            for alt_name in system.findall("name"):
-                if alt_name.text != name:
-                    exoplanet.other_names[alt_name.text] = DataPoint(alt_name.text, ref)
+            alt_names = self._get_value(row, "alt_names")
+            if alt_names:
+                for alt_name in alt_names.split(','):
+                    alt_name = alt_name.strip()
+                    if alt_name and alt_name != name:
+                        exoplanet.other_names[alt_name] = DataPoint(alt_name, ref)
             
             return exoplanet
             
         except (ValueError, KeyError) as e:
-            print(f"Error converting system to Exoplanet: {e}")
+            print(f"Error converting row to Exoplanet: {e}")
             return None 
