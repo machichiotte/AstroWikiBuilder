@@ -120,7 +120,7 @@ class WikipediaChecker:
                 if redirect_target:
                     normalized_target = self.normalize_title(redirect_target)
                     
-                    # Vérifier si la redirection ne mène pas à la page de l'étoile
+                    # Vérifier si la redirection mène à la page de l'étoile
                     if normalized_host_star and normalized_target == normalized_host_star:
                         logs.append(f"Redirect target '{redirect_target}' matches host star '{host_star}' - article does not exist")
                         if verbose:
@@ -265,6 +265,35 @@ class WikipediaChecker:
                 result_title = original_title or title
                 if result_title in results:
                     host_star = host_stars.get(result_title) if host_stars else None
+                    
+                    # Vérifier si la redirection pointe vers l'étoile hôte
+                    if is_redirect and host_star:
+                        redirect_target = redirects.get(original_title)
+                        if redirect_target:
+                            normalized_target = self.normalize_title(redirect_target)
+                            normalized_host_star = self.normalize_title(host_star)
+                            if normalized_target == normalized_host_star:
+                                results[result_title] = WikiArticleInfo(
+                                    exists=False,
+                                    title=title,
+                                    host_star=host_star
+                                )
+                                continue
+                    
+                    # Vérifier si la redirection pointe vers un alias valide
+                    if is_redirect:
+                        redirect_target = redirects.get(original_title)
+                        if redirect_target:
+                            normalized_target = self.normalize_title(redirect_target)
+                            # Si la redirection ne pointe pas vers un alias valide, considérer comme manquant
+                            if normalized_target not in [self.normalize_title(t) for t in [original_title] + (aliases.get(original_title, []) if aliases else [])]:
+                                results[result_title] = WikiArticleInfo(
+                                    exists=False,
+                                    title=title,
+                                    host_star=host_star
+                                )
+                                continue
+                    
                     results[result_title] = WikiArticleInfo(
                         exists=True,
                         title=title,
