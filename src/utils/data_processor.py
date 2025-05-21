@@ -94,7 +94,7 @@ class DataProcessor:
                 exoplanets_without_articles.append((exoplanet, article_info))
         
         return exoplanets_without_articles
-
+    
     def get_all_articles_info(self) -> List[Tuple[Exoplanet, Dict[str, 'WikiArticleInfo']]]:
         """Obtient les informations de tous les articles Wikipedia pour chaque exoplanète."""
         print("\nDébut de la vérification des articles Wikipedia...")
@@ -200,28 +200,38 @@ class DataProcessor:
                             'article_name': name,
                             'type': 'Redirection' if info.is_redirect else 'Direct',
                             'url': info.url,
-                            'redirect_target': info.redirect_target if info.is_redirect else None
+                            'redirect_target': info.redirect_target if info.is_redirect else None,
+                            'host_star': exoplanet.host_star.value if exoplanet.host_star else None
                         })
                         csv_data.append([
                             exoplanet.name,
                             name,
                             'Redirection' if info.is_redirect else 'Direct',
                             info.url,
-                            info.redirect_target if info.is_redirect else ''
+                            info.redirect_target if info.is_redirect else '',
+                            exoplanet.host_star.value if exoplanet.host_star else ''
                         ])
                     # Pour les articles manquants, ne garder que le nom
                     else:
                         json_data.append({
                             'exoplanet': exoplanet.name,
-                            'article_name': name
+                            'article_name': name,
+                            'host_star': exoplanet.host_star.value if exoplanet.host_star else None
                         })
                         csv_data.append([
                             exoplanet.name,
-                            name
+                            name,
+                            exoplanet.host_star.value if exoplanet.host_star else ''
                         ])
             else:
-                json_data.append({'exoplanet': exoplanet.name})
-                csv_data.append([exoplanet.name])
+                json_data.append({
+                    'exoplanet': exoplanet.name,
+                    'host_star': exoplanet.host_star.value if exoplanet.host_star else None
+                })
+                csv_data.append([
+                    exoplanet.name,
+                    exoplanet.host_star.value if exoplanet.host_star else ''
+                ])
         
         print("Formatage des données terminé.")
         return json_data, csv_data

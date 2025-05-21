@@ -102,7 +102,7 @@ def main():
     print("\nÉcriture du CSV des articles existants...")
     with open(existing_csv_path, 'w', newline='', encoding='utf-8') as f:
         writer = csv.writer(f)
-        writer.writerow(['Exoplanète', 'Nom Article', 'Type', 'URL', 'Cible Redirection'])
+        writer.writerow(['Exoplanète', 'Nom Article', 'Type', 'URL', 'Cible Redirection', 'Étoile Hôte'])
         writer.writerows(existing_csv_data)
     print("Écriture du CSV des articles existants terminée.")
     
