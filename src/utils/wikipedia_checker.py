@@ -99,8 +99,9 @@ class WikipediaChecker:
             pages = data['query']['pages']
             page_id = list(pages.keys())[0]
             
-            if page_id == '-1':
-                logs.append(f"No page found for '{title}' (page_id -1)")
+            # Vérifier si la page existe vraiment
+            if page_id == '-1' or 'missing' in pages[page_id]:
+                logs.append(f"No page found for '{title}' (page_id -1 or missing)")
                 if verbose:
                     print('\n'.join(logs))
                 return WikiArticleInfo(exists=False, title=title, host_star=host_star)
@@ -248,7 +249,7 @@ class WikipediaChecker:
             # Traiter les pages
             pages = data['query']['pages']
             for page_id, page in pages.items():
-                if page_id == '-1':
+                if page_id == '-1' or 'missing' in page:
                     continue
                     
                 title = page['title']
