@@ -3,218 +3,240 @@ import os
 from datetime import datetime
 import csv
 import argparse
-from src.data_collectors.nasa_exoplanet import NASAExoplanetCollector
-from src.data_collectors.exoplanet_eu import ExoplanetEUCollector
-from src.models.exoplanet import Exoplanet
-# Temporairement commenté
-# from src.data_collectors.open_exoplanet import OpenExoplanetCollector
-from src.utils.data_processor import DataProcessor
-from src.utils.wikipedia_generator import WikipediaGenerator
 import json
-from typing import List, Tuple
+from typing import List, Tuple, Dict, Any # Added Dict, Any
+import logging # Added logging
+
+# Project imports
+from src.data_collectors.nasa_exoplanet import NASAExoplanetCollector
+# from src.data_collectors.exoplanet_eu import ExoplanetEUCollector # Still commented
+# from src.data_collectors.open_exoplanet import OpenExoplanetCollector # Still commented
+
+from src.models.exoplanet import Exoplanet
+# Import new services and the refactored DataProcessor
+from src.utils.data_processor import DataProcessor
+from src.utils.wikipedia_checker import WikipediaChecker, WikiArticleInfo # Assuming WikiArticleInfo is here
+from src.services.exoplanet_repository import ExoplanetRepository
+from src.services.statistics_service import StatisticsService
+from src.services.wikipedia_service import WikipediaService
+from src.services.export_service import ExportService
+
+from src.utils.wikipedia_generator import WikipediaGenerator # Keep this for draft generation
+
+# Setup basic logging
+# You can customize format and level further if needed
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__) # Create a logger for this module
 
 def clean_filename(filename):
-    # Liste des caractères invalides pour Windows
     invalid_chars = '<>:"/\\|?*\t\n\r'
-    # Remplacer les caractères invalides par des underscores
     for char in invalid_chars:
         filename = filename.replace(char, '_')
-    # Supprimer les underscores consécutifs
     while '__' in filename:
         filename = filename.replace('__', '_')
-    # Supprimer les underscores au début et à la fin
     filename = filename.strip('_')
     return filename
 
 def main():
-    # Configuration des arguments en ligne de commande
     parser = argparse.ArgumentParser(description='Générateur d\'articles Wikipedia pour les exoplanètes')
     parser.add_argument('--use-mock-data', action='store_true', help='Utiliser les données mockées de la NASA')
     parser.add_argument('--sources', nargs='+', choices=['nasa', 'exoplanet_eu', 'open_exoplanet'],
-                      default=['nasa', 'exoplanet_eu'],
-                      help='Sources de données à utiliser (par défaut: nasa exoplanet_eu)')
+                        default=['nasa'], # Defaulting to only nasa since exoplanet_eu is commented
+                        help='Sources de données à utiliser (par défaut: nasa)')
     args = parser.parse_args()
     
-    # Initialisation des collecteurs
+    # --- 1. Initialize services ---
+    repository = ExoplanetRepository()
+    stat_service = StatisticsService()
+    
+    # Configure User-Agent for WikipediaChecker
+    # It's good practice to set a descriptive User-Agent for any bot/script accessing web APIs
+    # Replace 'your_project_name', 'your_contact_info' with actual details
+    wiki_user_agent = 'AstroWikiBuilder/1.1 (bot; machichiotte@gmail.com or your_project_contact_page)'
+    wikipedia_checker_instance = WikipediaChecker(user_agent=wiki_user_agent)
+    
+    wiki_service = WikipediaService(wikipedia_checker=wikipedia_checker_instance)
+    export_service = ExportService()
+
+    # --- 2. Initialize DataProcessor with injected services ---
+    processor = DataProcessor(
+        repository=repository,
+        stat_service=stat_service,
+        wiki_service=wiki_service,
+        export_service=export_service
+    )
+    
     collectors = {}
     if 'nasa' in args.sources:
         collectors['nasa'] = NASAExoplanetCollector(use_mock_data=args.use_mock_data)
-    #if 'exoplanet_eu' in args.sources:
-    #    collectors['exoplanet_eu'] = ExoplanetEUCollector("data/exoplanet_eu.csv")
-    # Temporairement commenté
+        
+    # if 'exoplanet_eu' in args.sources:
+    #     collectors['exoplanet_eu'] = ExoplanetEUCollector("data/exoplanet_eu.csv")
     # if 'open_exoplanet' in args.sources:
     #     collectors['open_exoplanet'] = OpenExoplanetCollector()
     
-    # Initialisation du processeur de données
-    processor = DataProcessor()
-    
-    # Collecte des données
-    for source, collector in collectors.items():
-        print(f"\nCollecte des données depuis {source}...")
-        exoplanets = collector.fetch_data()
-        processor.add_exoplanets(exoplanets, source)
-    
-    # Génération des noms de fichiers avec timestamp
+    all_fetched_exoplanets_for_drafts: List[Exoplanet] = [] # To collect all for drafts later
+
+    for source_name_collector, collector in collectors.items():
+        logger.info(f"Collecte des données depuis {source_name_collector}...")
+        exoplanets_from_collector = collector.fetch_data()
+        if exoplanets_from_collector:
+            # The processor now uses add_exoplanets_from_source
+            processor.add_exoplanets_from_source(exoplanets_from_collector, source_name_collector)
+            all_fetched_exoplanets_for_drafts.extend(exoplanets_from_collector) # Collect for drafts
+        else:
+            logger.warning(f"Aucune exoplanète récupérée depuis {source_name_collector}.")
+            
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     output_dir = "output"
-    drafts_dir = "drafts"
+    drafts_dir_base = "drafts" # Renamed to avoid conflict with save_drafts parameter
     
-    # Création des dossiers s'ils n'existent pas
     os.makedirs(output_dir, exist_ok=True)
-    os.makedirs(drafts_dir, exist_ok=True)
-    os.makedirs(f"{drafts_dir}/missing", exist_ok=True)
-    os.makedirs(f"{drafts_dir}/existing", exist_ok=True)
+    os.makedirs(drafts_dir_base, exist_ok=True) # Create base drafts directory
+    # Subdirectories for drafts will be created by save_drafts if needed, or ensure here
+    os.makedirs(os.path.join(drafts_dir_base, "missing"), exist_ok=True)
+    os.makedirs(os.path.join(drafts_dir_base, "existing"), exist_ok=True)
     
-    # Export des données consolidées
-    print("\nExport des données consolidées...")
-    processor.export_to_csv(f"{output_dir}/exoplanets_{timestamp}.csv")
-    processor.export_to_json(f"{output_dir}/exoplanets_{timestamp}.json")
-    
-    # Affichage des statistiques
+    logger.info("Export des données consolidées...")
+    # Use the new export method in DataProcessor
+    try:
+        processor.export_exoplanet_data('csv', f"{output_dir}/exoplanets_consolidated_{timestamp}.csv")
+        processor.export_exoplanet_data('json', f"{output_dir}/exoplanets_consolidated_{timestamp}.json")
+    except Exception as e:
+        logger.error(f"Erreur lors de l'export des données consolidées : {e}")
+
     stats = processor.get_statistics()
-    print("\nStatistiques des exoplanètes collectées :")
-    print(f"Nombre total d'exoplanètes : {stats['total_exoplanets']}")
-    print("\nPar source :")
-    for source, count in stats['sources'].items():
-        print(f"- {source} : {count}")
-    print("\nPar méthode de découverte :")
-    for method, count in stats['discovery_methods'].items():
-        print(f"- {method} : {count}")
-    print("\nPar année de découverte :")
-    for year, count in sorted(stats['discovery_years'].items(), key=lambda x: str(x[0])):
-        print(f"- {year} : {count}")
+    logger.info("Statistiques des exoplanètes collectées :")
+    logger.info(f"Nombre total d'exoplanètes consolidées : {stats.get('total_exoplanets', 0)}")
     
-    # Vérification des articles Wikipédia
-    print("\nVérification des articles Wikipedia...")
-    print("Début de la séparation des articles...")
-    existing_articles, missing_articles = processor.separate_articles_by_status()
-    print("Séparation des articles terminée.")
-    
-    # Création des fichiers pour les articles existants
-    existing_csv_path = f"{output_dir}/existing_wikipedia_links_{timestamp}.csv"
-    existing_json_path = f"{output_dir}/existing_wikipedia_links_{timestamp}.json"
-    
-    # Formatage et écriture des données des articles existants
-    print("Formatage des données des articles existants...")
-    existing_json_data, existing_csv_data = processor.format_wiki_links_data(existing_articles)
-    print("Formatage des données des articles existants terminé.")
-    
-    # Écriture du CSV des articles existants
-    print("\nÉcriture du CSV des articles existants...")
-    with open(existing_csv_path, 'w', newline='', encoding='utf-8') as f:
-        writer = csv.writer(f)
-        writer.writerow(['Exoplanète', 'Nom Article', 'Type', 'URL', 'Cible Redirection', 'Étoile Hôte'])
-        writer.writerows(existing_csv_data)
-    print("Écriture du CSV des articles existants terminée.")
-    
-    # Écriture du JSON des articles existants
-    print("Écriture du JSON des articles existants...")
-    with open(existing_json_path, 'w', encoding='utf-8') as f:
-        json.dump(existing_json_data, f, ensure_ascii=False, indent=2)
-    print("Écriture du JSON des articles existants terminée.")
-    
-    print("\nInformations des articles existants exportées dans :")
-    print(f"- CSV : {existing_csv_path}")
-    print(f"- JSON : {existing_json_path}")
-    
-    # Création des fichiers pour les articles manquants
-    missing_csv_path = f"{output_dir}/missing_wikipedia_links_{timestamp}.csv"
-    missing_json_path = f"{output_dir}/missing_wikipedia_links_{timestamp}.json"
-    
-    # Formatage et écriture des données des articles manquants
-    print("Formatage des données des articles manquants...")
-    missing_json_data, missing_csv_data = processor.format_wiki_links_data(missing_articles)
-    print("Formatage des données des articles manquants terminé.")
-    
-    # Écriture du CSV des articles manquants
-    print("\nÉcriture du CSV des articles manquants...")
-    with open(missing_csv_path, 'w', newline='', encoding='utf-8') as f:
-        writer = csv.writer(f)
-        writer.writerow(['Exoplanète', 'Nom Article'])
-        writer.writerows(missing_csv_data)
-    print("Écriture du CSV des articles manquants terminée.")
-    
-    # Écriture du JSON des articles manquants
-    print("Écriture du JSON des articles manquants...")
-    with open(missing_json_path, 'w', encoding='utf-8') as f:
-        json.dump(missing_json_data, f, ensure_ascii=False, indent=2)
-    print("Écriture du JSON des articles manquants terminée.")
-    
-    print("\nInformations des articles manquants exportées dans :")
-    print(f"- CSV : {missing_csv_path}")
-    print(f"- JSON : {missing_json_path}")
-    
-    if missing_articles:
-        print(f"\nNombre d'exoplanètes sans article : {len(missing_articles)}")
+    logger.info("Points de données par source :") # Updated stat key
+    for source, count in stats.get('data_points_by_source', {}).items():
+        logger.info(f"- {source} : {count}")
         
-        # Exporter les exoplanètes sans article (données complètes)
-        processor.export_to_csv(f"{output_dir}/missing_wikipedia_links_{timestamp}.csv", [e for e, _ in missing_articles])
-        processor.export_to_json(f"{output_dir}/missing_wikipedia_links_{timestamp}.json", [e for e, _ in missing_articles])
+    logger.info("Par méthode de découverte :")
+    for method, count in stats.get('discovery_methods', {}).items():
+        logger.info(f"- {method} : {count}")
         
-        # Générer les brouillons pour les articles manquants
-        missing_drafts = []
-        for exoplanet in exoplanets:
-            if not any(e.name == exoplanet.name for e, _ in existing_articles):
-                draft = generate_draft(exoplanet)
-                missing_drafts.append((exoplanet.name, draft))
+    logger.info("Par année de découverte :")
+    # Ensure years are treated as comparable, e.g., integers or strings
+    # Sorting by str(x[0]) is fine if years are consistently numbers.
+    for year, count in sorted(stats.get('discovery_years', {}).items(), key=lambda x: str(x[0])):
+        logger.info(f"- {year} : {count}")
         
-        # Générer les brouillons pour les articles existants
-        existing_drafts = []
-        for exoplanet in exoplanets:
-            if any(e.name == exoplanet.name for e, _ in existing_articles):
-                draft = generate_draft(exoplanet)
-                existing_drafts.append((exoplanet.name, draft))
-        
-        # Afficher le bilan
-        print("\nBilan de la génération des brouillons :")
-        print(f"- {len(missing_drafts)} brouillons générés pour les articles manquants")
-        print(f"- {len(existing_drafts)} brouillons générés pour les articles existants")
-        print(f"- Total : {len(missing_drafts) + len(existing_drafts)} brouillons")
-        
-        # Sauvegarder les brouillons
-        save_drafts(missing_drafts, existing_drafts)
+    logger.info("Vérification des articles Wikipedia...")
+    # This method now returns Dict[str, Dict[str, WikiArticleInfo]] for existing and missing
+    existing_wiki_data_map, missing_wiki_data_map = processor.get_and_separate_wikipedia_articles_by_status()
+    logger.info("Séparation des articles Wikipedia terminée.")
+
+    # --- Export Wikipedia links data using the new processor method ---
+    # This handles both CSV and JSON export internally via ExportService
+    try:
+        if existing_wiki_data_map:
+            processor.export_wikipedia_links_data(
+                filename_base=f"{output_dir}/exoplanet",
+                status_to_export="existing"
+            )
+            logger.info(f"Données des liens Wikipedia existants exportées vers {output_dir}/")
+        else:
+            logger.info("Aucun article Wikipedia existant trouvé à exporter.")
+
+        if missing_wiki_data_map:
+            processor.export_wikipedia_links_data(
+                filename_base=f"{output_dir}/exoplanet",
+                status_to_export="missing"
+            )
+            logger.info(f"Données des liens Wikipedia manquants exportées vers {output_dir}/")
+        else:
+            logger.info("Aucun article Wikipedia manquant trouvé (ou toutes les exoplanètes ont un article).")
+
+    except Exception as e:
+        logger.error(f"Erreur lors de l'export des données de liens Wikipedia : {e}")
+
+    # --- Draft Generation Logic ---
+    # Get all consolidated exoplanets from the repository for draft generation
+    all_consolidated_exoplanets = processor.get_all_exoplanets()
+
+    if not all_consolidated_exoplanets:
+        logger.warning("Aucune exoplanète dans le référentiel, la génération de brouillons est ignorée.")
     else:
-        print("\nToutes les exoplanètes ont déjà un article sur Wikipedia.")
+        missing_drafts_list: List[Tuple[str, str]] = []
+        existing_drafts_list: List[Tuple[str, str]] = []
+
+        logger.info("Génération des brouillons...")
+        for exoplanet_obj in all_consolidated_exoplanets:
+            draft_content = generate_draft(exoplanet_obj) # Uses your existing helper
+            
+            # Check against the maps returned by get_and_separate_wikipedia_articles_by_status
+            if exoplanet_obj.name in missing_wiki_data_map:
+                missing_drafts_list.append((exoplanet_obj.name, draft_content))
+            elif exoplanet_obj.name in existing_wiki_data_map:
+                # Even if an article exists, you might want to generate a draft for comparison or update
+                existing_drafts_list.append((exoplanet_obj.name, draft_content))
+            else:
+                # This case implies the exoplanet was not in either map,
+                # which could happen if no Wikipedia check was done for it or an error occurred.
+                # Or, if all_consolidated_exoplanets contains items not processed by wiki check.
+                # For safety, assume it's "missing" if not explicitly "existing".
+                # However, the separate_articles_by_status should cover all checked exoplanets.
+                # A more robust check might be needed if exoplanets can be added after wiki check.
+                # For now, if it's not in existing_wiki_data_map, assume a draft might be needed if desired.
+                # Let's stick to the definitions from separate_articles_by_status
+                logger.debug(f"Exoplanète {exoplanet_obj.name} non trouvée dans les résultats de statut Wikipedia distincts, "
+                             f"ne générant pas de brouillon dans les catégories standard existant/manquant.")
+
+
+        logger.info("Bilan de la génération des brouillons :")
+        logger.info(f"{len(missing_drafts_list)} brouillons générés pour les articles considérés comme manquants.")
+        logger.info(f"{len(existing_drafts_list)} brouillons générés pour les articles considérés comme existants.")
+        logger.info(f"Total : {len(missing_drafts_list) + len(existing_drafts_list)} brouillons générés.")
+        
+        if missing_drafts_list or existing_drafts_list:
+            save_drafts(missing_drafts_list, existing_drafts_list, drafts_dir=drafts_dir_base)
+            logger.info(f"Brouillons sauvegardés dans le répertoire : {drafts_dir_base}")
+        else:
+            logger.info("Aucun brouillon n'a été généré.")
+
+    logger.info("Traitement principal terminé.")
+
 
 def generate_draft(exoplanet: Exoplanet) -> str:
     """
     Génère le contenu d'un brouillon d'article pour une exoplanète.
-    
-    Args:
-        exoplanet: L'exoplanète pour laquelle générer le brouillon
-        
-    Returns:
-        str: Le contenu du brouillon
     """
-    generator = WikipediaGenerator()
+    generator = WikipediaGenerator() # Consider if this generator should be injected too
     return generator.generate_article_content(exoplanet)
 
-def save_drafts(missing_drafts: List[Tuple[str, str]], existing_drafts: List[Tuple[str, str]], drafts_dir: str = "drafts") -> None:
+def save_drafts(missing_drafts: List[Tuple[str, str]], 
+                existing_drafts: List[Tuple[str, str]], 
+                drafts_dir: str = "drafts") -> None: # Parameter name matches call
     """
     Sauvegarde les brouillons dans les fichiers appropriés.
-    
-    Args:
-        missing_drafts: Liste des brouillons pour les articles manquants
-        existing_drafts: Liste des brouillons pour les articles existants
-        drafts_dir: Répertoire de sauvegarde des brouillons
     """
-    # Créer les répertoires si nécessaire
-    os.makedirs(f"{drafts_dir}/missing", exist_ok=True)
-    os.makedirs(f"{drafts_dir}/existing", exist_ok=True)
+    # Ensure subdirectories exist (though main might have created them already)
+    missing_dir = os.path.join(drafts_dir, "missing")
+    existing_dir = os.path.join(drafts_dir, "existing")
+    os.makedirs(missing_dir, exist_ok=True)
+    os.makedirs(existing_dir, exist_ok=True)
     
-    # Sauvegarder les brouillons manquants
+    logger.info(f"Sauvegarde de {len(missing_drafts)} brouillons manquants dans {missing_dir}")
     for name, content in missing_drafts:
-        safe_filename = clean_filename(name.replace(' ', '_'))
-        filename = f"{drafts_dir}/missing/{safe_filename}.wiki"
-        with open(filename, 'w', encoding='utf-8') as f:
-            f.write(content)
-    
-    # Sauvegarder les brouillons existants
+        safe_filename = clean_filename(name) # .replace(' ', '_') is not needed if clean_filename handles spaces
+        filename = os.path.join(missing_dir, f"{safe_filename}.wiki")
+        try:
+            with open(filename, 'w', encoding='utf-8') as f:
+                f.write(content)
+        except Exception as e:
+            logger.error(f"Impossible de sauvegarder le brouillon {filename}: {e}")
+            
+    logger.info(f"Sauvegarde de {len(existing_drafts)} brouillons existants dans {existing_dir}")
     for name, content in existing_drafts:
-        safe_filename = clean_filename(name.replace(' ', '_'))
-        filename = f"{drafts_dir}/existing/{safe_filename}.wiki"
-        with open(filename, 'w', encoding='utf-8') as f:
-            f.write(content)
+        safe_filename = clean_filename(name)
+        filename = os.path.join(existing_dir, f"{safe_filename}.wiki")
+        try:
+            with open(filename, 'w', encoding='utf-8') as f:
+                f.write(content)
+        except Exception as e:
+            logger.error(f"Impossible de sauvegarder le brouillon {filename}: {e}")
 
 if __name__ == "__main__":
-    main() 
+    main()

@@ -9,12 +9,17 @@ import os
 import csv
 import json
 from datetime import datetime
+import logging
+
+# Configuration du logger
+logger = logging.getLogger(__name__)
 
 @dataclass
 class WikiArticleInfo:
     """Information sur un article Wikipedia"""
     exists: bool
     title: str
+    queried_title: str
     is_redirect: bool = False
     redirect_target: Optional[str] = None
     url: Optional[str] = None
@@ -26,337 +31,147 @@ class WikipediaChecker:
     """
     BASE_URL = "https://fr.wikipedia.org/w/api.php"
     
-    def __init__(self):
+    def __init__(self, user_agent: str = 'AstroWikiBuilder/1.0 (bot; machichiotte@gmail.com)'):
         self.session = requests.Session()
         self.session.headers.update({
-            'User-Agent': 'AstroWikiBuilder/1.0 (https://github.com/votre-username/AstroWikiBuilder; machichiotte@gmail.com)'
+            'User-Agent': user_agent # Utiliser le user_agent fourni
         })
+        logger.info(f"WikipediaChecker initialized with User-Agent: {user_agent}")
     
     def normalize_title(self, title: str) -> str:
-        """
-        Normalise un titre pour la comparaison :
-        - Convertit en minuscules
-        - Remplace les espaces, underscores et tirets par des tirets
-        - Retire les accents
-        - Retire les caractères spéciaux
-        
-        Args:
-            title: Le titre à normaliser
-            
-        Returns:
-            str: Le titre normalisé
-        """
-        # Convertir en minuscules
         title = title.lower()
-        
-        # Retirer les accents
         title = unicodedata.normalize('NFKD', title).encode('ASCII', 'ignore').decode('ASCII')
-        
-        # Remplacer les espaces, underscores et tirets par des tirets
         title = re.sub(r'[\s_\-]+', '-', title)
-        
-        # Retirer les caractères spéciaux sauf les tirets
         title = re.sub(r'[^a-z0-9\-]', '', title)
-        
         return title
     
-    def check_article_exists(self, title: str, host_star: Optional[str] = None, aliases: Optional[List[str]] = None, allow_partial: bool = False, verbose: bool = False) -> WikiArticleInfo:
-        """
-        Vérifie si un article existe sur Wikipedia en français, avec gestion des alias, matching souple et logging détaillé.
-        
-        Args:
-            title: Le titre de l'article à vérifier
-            host_star: Le nom de l'étoile hôte (pour éviter les redirections vers la page de l'étoile)
-            aliases: Liste d'alias possibles pour la planète
-            allow_partial: Autoriser le matching partiel (par inclusion)
-            verbose: Afficher les logs détaillés
-            
-        Returns:
-            WikiArticleInfo: Informations sur l'article
-        """
-        logs = []
-        if aliases is None:
-            aliases = []
-        all_titles = [title] + aliases
-        normalized_titles = [self.normalize_title(t) for t in all_titles]
-        
-        # Normaliser le nom de l'étoile si fourni
-        normalized_host_star = self.normalize_title(host_star) if host_star else None
-        
-        params = {
-            'action': 'query',
-            'titles': title,
-            'format': 'json',
-            'prop': 'info|redirects',
-            'inprop': 'url',
-            'redirects': 'true'
-        }
-        
-        try:
-            response = self.session.get(self.BASE_URL, params=params)
-            response.raise_for_status()
-            data = response.json()
-            
-            pages = data['query']['pages']
-            page_id = list(pages.keys())[0]
-            
-            # Vérifier si la page existe vraiment
-            if page_id == '-1' or 'missing' in pages[page_id]:
-                logs.append(f"No page found for '{title}' (page_id -1 or missing)")
-                if verbose:
-                    print('\n'.join(logs))
-                return WikiArticleInfo(exists=False, title=title, host_star=host_star)
-            
-            page = pages[page_id]
-            is_redirect = 'redirects' in page
-            
-            # Si c'est une redirection, vérifier si la cible correspond à un alias
-            if is_redirect:
-                redirect_target = None
-                if 'redirects' in data['query']:
-                    for redirect in data['query']['redirects']:
-                        if redirect['from'] == title:
-                            redirect_target = redirect['to']
-                            break
-                
-                if redirect_target:
-                    normalized_target = self.normalize_title(redirect_target)
-                    
-                    # Vérifier si la redirection mène à la page de l'étoile
-                    if normalized_host_star and normalized_target == normalized_host_star:
-                        logs.append(f"Redirect target '{redirect_target}' matches host star '{host_star}' - article does not exist")
-                        if verbose:
-                            print('\n'.join(logs))
-                        return WikiArticleInfo(exists=False, title=title, host_star=host_star)
-                    
-                    # Exact match avec un alias
-                    if normalized_target in normalized_titles:
-                        logs.append(f"Redirect target '{redirect_target}' matches one of the aliases (exact match).")
-                        if verbose:
-                            print('\n'.join(logs))
-                        return WikiArticleInfo(
-                            exists=True,
-                            title=page['title'],
-                            is_redirect=True,
-                            redirect_target=redirect_target,
-                            url=page.get('fullurl'),
-                            host_star=host_star
-                        )
-                    # Partial match si autorisé
-                    if allow_partial:
-                        for norm_alias in normalized_titles:
-                            if norm_alias in normalized_target or normalized_target in norm_alias:
-                                # Vérifier que le match partiel n'est pas avec le nom de l'étoile
-                                if not normalized_host_star or (normalized_host_star not in normalized_target and normalized_target not in normalized_host_star):
-                                    logs.append(f"Redirect target '{redirect_target}' partially matches alias '{norm_alias}'.")
-                                    if verbose:
-                                        print('\n'.join(logs))
-                                    return WikiArticleInfo(
-                                        exists=True,
-                                        title=page['title'],
-                                        is_redirect=True,
-                                        redirect_target=redirect_target,
-                                        url=page.get('fullurl'),
-                                        host_star=host_star
-                                    )
-                    logs.append(f"Redirect target '{redirect_target}' does not match any alias (exact or partial).")
-                    if verbose:
-                        print('\n'.join(logs))
-                    return WikiArticleInfo(exists=False, title=title, host_star=host_star)
-            
-            # Si pas de redirection, vérifier le titre de la page retournée
-            normalized_page_title = self.normalize_title(page['title'])
-            
-            # Vérifier si le titre ne correspond pas au nom de l'étoile
-            if normalized_host_star and normalized_page_title == normalized_host_star:
-                logs.append(f"Page title '{page['title']}' matches host star '{host_star}' - article does not exist")
-                if verbose:
-                    print('\n'.join(logs))
-                return WikiArticleInfo(exists=False, title=title, host_star=host_star)
-            
-            if normalized_page_title in normalized_titles:
-                logs.append(f"Page title '{page['title']}' matches one of the aliases (exact match).")
-                if verbose:
-                    print('\n'.join(logs))
-                return WikiArticleInfo(
-                    exists=True,
-                    title=page['title'],
-                    is_redirect=False,
-                    redirect_target=None,
-                    url=page.get('fullurl'),
-                    host_star=host_star
-                )
-            if allow_partial:
-                for norm_alias in normalized_titles:
-                    if norm_alias in normalized_page_title or normalized_page_title in norm_alias:
-                        # Vérifier que le match partiel n'est pas avec le nom de l'étoile
-                        if not normalized_host_star or (normalized_host_star not in normalized_page_title and normalized_page_title not in normalized_host_star):
-                            logs.append(f"Page title '{page['title']}' partially matches alias '{norm_alias}'.")
-                            if verbose:
-                                print('\n'.join(logs))
-                            return WikiArticleInfo(
-                                exists=True,
-                                title=page['title'],
-                                is_redirect=False,
-                                redirect_target=None,
-                                url=page.get('fullurl'),
-                                host_star=host_star
-                            )
-            logs.append(f"Page title '{page['title']}' does not match any alias (exact or partial).")
-            if verbose:
-                print('\n'.join(logs))
-            return WikiArticleInfo(exists=False, title=title, host_star=host_star)
-        except Exception as e:
-            logs.append(f"Erreur lors de la vérification de l'article {title}: {e}")
-            if verbose:
-                print('\n'.join(logs))
-            return WikiArticleInfo(exists=False, title=title, host_star=host_star)
-    
-    def check_multiple_articles(self, titles: List[str], host_stars: Optional[Dict[str, str]] = None, delay: float = 0.0) -> Dict[str, WikiArticleInfo]:
+    def check_multiple_articles(self, titles_to_check: List[str], exoplanet_context: Dict[str, Dict[str, Any]] = None) -> Dict[str, WikiArticleInfo]:
         """
         Vérifie l'existence de plusieurs articles (jusqu'à 50) en une seule requête.
         
         Args:
-            titles: Liste des titres d'articles à vérifier (max 50)
-            host_stars: Dictionnaire associant les titres à leurs étoiles hôtes
-            delay: Délai en secondes entre chaque requête (par défaut 0)
-            
-        Returns:
-            Dict[str, WikiArticleInfo]: Dictionnaire avec les titres comme clés et les infos comme valeurs
-        """
-        assert len(titles) <= 50, "L'API MediaWiki limite à 50 titres par requête."
-        results = {title: WikiArticleInfo(exists=False, title=title, host_star=host_stars.get(title) if host_stars else None) for title in titles}
+            titles_to_check: Liste des titres d'articles à vérifier (max 50). These are the exoplanet names or aliases.
+            exoplanet_context: Dictionnaire optionnel mappant chaque titre original de la requête (nom d'exoplanète)
+                               à un dictionnaire contenant des informations contextuelles comme `{'host_star_name': '...', 'aliases': ['alias1', ...]}`.
+                               Le titre principal de l'exoplanète doit être l'une des clés de `titles_to_check`.
         
+        Returns:
+            Dict[str, WikiArticleInfo]: Dictionnaire avec les titres originaux (queried_title) comme clés.
+        """
+        if not titles_to_check:
+            return {}
+        if len(titles_to_check) > 50:
+            # This should be handled by the calling method (batching)
+            raise ValueError("L'API MediaWiki limite à 50 titres par requête.")
+
+        # Initialize results with default "not found" for each queried title
+        results: Dict[str, WikiArticleInfo] = {
+            title: WikiArticleInfo(exists=False, title=title, queried_title=title) for title in titles_to_check
+        }
+
         params = {
             'action': 'query',
-            'titles': '|'.join(titles),
+            'titles': '|'.join(titles_to_check),
             'format': 'json',
-            'prop': 'info|redirects',
+            'prop': 'info|redirects', # 'redirects' here gets info if the page *is* a redirect source
             'inprop': 'url',
-            'redirects': 'true'
+            'redirects': 1, # Resolve redirects (i.e. if 'X' redirects to 'Y', query for 'X' will return info for 'Y')
+            'utf8': 1
         }
         
         try:
-            response = self.session.get(self.BASE_URL, params=params)
+            response = self.session.get(self.BASE_URL, params=params, timeout=10) # Added timeout
             response.raise_for_status()
-            data = response.json()
+            data = response.json().get('query', {})
+        except requests.RequestException as e:
+            # logger.error(f"Wikipedia API request error: {e}") # Use logger here
+            for title in titles_to_check: # Mark all as failed due to API error
+                results[title] = WikiArticleInfo(exists=False, title=title, queried_title=title, url=f"Error: {e}")
+            return results
+
+        normalized_map = data.get('normalized', [])
+        title_normalization_map = {item['from']: item['to'] for item in normalized_map}
+
+        redirect_map = {item['from']: item['to'] for item in data.get('redirects', [])}
+        
+        # This map will link the final resolved title (after normalization and redirection) back to the original queried title
+        resolved_to_queried_map: Dict[str, str] = {}
+        for queried_title in titles_to_check:
+            current_title = queried_title
+            # Step 1: Normalization (e.g. "alpha centauri bb" -> "Alpha Centauri Bb")
+            if current_title in title_normalization_map:
+                current_title = title_normalization_map[current_title]
             
-            # Traiter les redirections
-            redirects = {}
-            if 'redirects' in data['query']:
-                for redirect in data['query']['redirects']:
-                    redirects[redirect['from']] = redirect['to']
+            # Step 2: Redirection (e.g. "Proxima b" redirects to "Proxima Centauri b")
+            # The API with 'redirects=1' resolves this, so `page.title` will be the target.
+            # We need to know if a redirect happened for the *original* queried_title.
+            resolved_to_queried_map[current_title] = queried_title # map normalized title to original
+            if current_title in redirect_map: # if normalized title was a redirect source
+                 resolved_to_queried_map[redirect_map[current_title]] = queried_title # map redirect target to original
+
+
+        for page_id, page_info in data.get('pages', {}).items():
+            api_title = page_info.get('title') # This is the title returned by the API (could be a redirect target)
             
-            # Traiter les pages
-            pages = data['query']['pages']
-            for page_id, page in pages.items():
-                if page_id == '-1' or 'missing' in page:
+            # Find which original queried_title this page_info corresponds to
+            # This is tricky because the API might return a page_info with a title that was a redirect target.
+            original_queried_title = None
+            if api_title in resolved_to_queried_map:
+                original_queried_title = resolved_to_queried_map[api_title]
+            elif api_title in titles_to_check: # Direct match, no normalization or redirect from API's perspective for this title
+                original_queried_title = api_title
+            else: # Fallback: try to find based on page_info['title'] being a key in redirect_map's values
+                for r_from, r_to in redirect_map.items():
+                    if r_to == api_title: # api_title is a redirect target
+                        normalized_r_from = title_normalization_map.get(r_from, r_from)
+                        if normalized_r_from in titles_to_check:
+                           original_queried_title = normalized_r_from
+                           break
+                        elif r_from in titles_to_check: # if the original non-normalized redirect source was queried
+                           original_queried_title = r_from
+                           break
+                if not original_queried_title:
+                    # logger.warning(f"Could not map API title '{api_title}' back to any queried title. Skipping.")
                     continue
-                    
-                title = page['title']
-                is_redirect = 'redirects' in page
-                
-                # Trouver le titre original si c'est une redirection
-                original_title = None
-                for orig, target in redirects.items():
-                    if target == title:
-                        original_title = orig
-                        break
-                
-                # Mettre à jour le résultat pour le titre original ou le titre actuel
-                result_title = original_title or title
-                if result_title in results:
-                    host_star = host_stars.get(result_title) if host_stars else None
-                    
-                    # Vérifier si la redirection pointe vers l'étoile hôte
-                    if is_redirect and host_star:
-                        redirect_target = redirects.get(original_title)
-                        if redirect_target:
-                            normalized_target = self.normalize_title(redirect_target)
-                            normalized_host_star = self.normalize_title(host_star)
-                            if normalized_target == normalized_host_star:
-                                results[result_title] = WikiArticleInfo(
-                                    exists=False,
-                                    title=title,
-                                    host_star=host_star
-                                )
-                                continue
-                    
-                    # Vérifier si la redirection pointe vers un alias valide
-                    if is_redirect:
-                        redirect_target = redirects.get(original_title)
-                        if redirect_target:
-                            normalized_target = self.normalize_title(redirect_target)
-                            # Si la redirection ne pointe pas vers un alias valide, considérer comme manquant
-                            if normalized_target not in [self.normalize_title(t) for t in [original_title] + (aliases.get(original_title, []) if aliases else [])]:
-                                results[result_title] = WikiArticleInfo(
-                                    exists=False,
-                                    title=title,
-                                    host_star=host_star
-                                )
-                                continue
-                    
-                    results[result_title] = WikiArticleInfo(
-                        exists=True,
-                        title=title,
-                        is_redirect=is_redirect,
-                        redirect_target=redirects.get(original_title) if original_title else None,
-                        url=page.get('fullurl'),
-                        host_star=host_star
-                    )
             
-            if delay > 0:
-                print(f"Attente de {delay} seconde(s) avant la prochaine requête...")
-                time.sleep(delay)
-                
-        except Exception as e:
-            print(f"Erreur lors de la vérification des articles : {e}")
+            if 'missing' in page_info or page_id == '-1':
+                results[original_queried_title] = WikiArticleInfo(exists=False, title=api_title, queried_title=original_queried_title)
+                continue
+
+            is_redirect_source = original_queried_title in redirect_map # Was the *original queried title* a redirect?
+            redirect_target = redirect_map.get(original_queried_title) if is_redirect_source else None
+            
+            # Contextual check: if the page found is the host star page, it's not the exoplanet page.
+            # This logic needs the context (host star name for the original_queried_title).
+            host_star_name_for_original_title = None
+            if exoplanet_context and original_queried_title in exoplanet_context:
+                host_star_name_for_original_title = exoplanet_context[original_queried_title].get('host_star_name')
+
+            if host_star_name_for_original_title:
+                # If the (potentially redirected) title is the host star, then the exoplanet article itself doesn't exist.
+                # The `api_title` is the final title of the page found by MediaWiki.
+                if self.normalize_title(api_title) == self.normalize_title(host_star_name_for_original_title):
+                    results[original_queried_title] = WikiArticleInfo(
+                        exists=False, 
+                        title=api_title, 
+                        queried_title=original_queried_title,
+                        is_redirect=is_redirect_source, # It might be a redirect TO the host star page
+                        redirect_target=redirect_target,
+                        url=page_info.get('fullurl') # URL to the host star page
+                    )
+                    continue # Skip marking as exists=True
+
+            results[original_queried_title] = WikiArticleInfo(
+                exists=True,
+                title=api_title, # The actual title of the page found
+                queried_title=original_queried_title,
+                is_redirect=is_redirect_source,
+                redirect_target=redirect_target,
+                url=page_info.get('fullurl')
+            )
             
         return results
 
-    def check_all_articles(self, articles: List[Dict[str, Any]], batch_size: int = 50, delay: float = 0.0) -> Tuple[Dict[str, WikiArticleInfo], List[str]]:
-        """
-        Vérifie l'existence de tous les articles en les traitant par lots.
-        
-        Args:
-            articles: Liste des articles à vérifier, chaque article est un dictionnaire avec au moins 'name' et 'host_star'
-            batch_size: Taille des lots (max 50)
-            delay: Délai en secondes entre chaque lot
-            
-        Returns:
-            Tuple[Dict[str, WikiArticleInfo], List[str]]: Résultats et erreurs
-        """
-        results = {}
-        errors = []
-        total = len(articles)
-        
-        # Préparer le dictionnaire des noms d'étoiles
-        host_stars = {article['name']: article.get('host_star') for article in articles}
-        
-        for i in range(0, total, batch_size):
-            batch = articles[i:i + batch_size]
-            batch_titles = [article['name'] for article in batch]
-            
-            try:
-                batch_results = self.check_multiple_articles(
-                    batch_titles,
-                    host_stars={title: host_stars[title] for title in batch_titles},
-                    delay=delay
-                )
-                results.update(batch_results)
-            except Exception as e:
-                errors.extend(batch_titles)
-                print(f"Erreur lors du traitement du lot {i//batch_size + 1}: {e}")
-            
-            if i + batch_size < total:
-                print(f"Progression : {i + batch_size}/{total} articles traités")
-                if delay > 0:
-                    print(f"Attente de {delay} seconde(s) avant le prochain lot...")
-                    time.sleep(delay)
-        
-        return results, errors 
-
-    def save_results(self, results: Dict[str, WikiArticleInfo], output_dir: str = "output") -> None:
         """
         Sauvegarde les résultats dans des fichiers CSV et JSON.
         
