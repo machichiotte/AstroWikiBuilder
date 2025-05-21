@@ -36,8 +36,8 @@ def main():
     collectors = {}
     if 'nasa' in args.sources:
         collectors['nasa'] = NASAExoplanetCollector(use_mock_data=args.use_mock_data)
-    if 'exoplanet_eu' in args.sources:
-        collectors['exoplanet_eu'] = ExoplanetEUCollector("data/exoplanet_eu.csv")
+    #if 'exoplanet_eu' in args.sources:
+    #    collectors['exoplanet_eu'] = ExoplanetEUCollector("data/exoplanet_eu.csv")
     # Temporairement commenté
     # if 'open_exoplanet' in args.sources:
     #     collectors['open_exoplanet'] = OpenExoplanetCollector()
@@ -59,6 +59,8 @@ def main():
     # Création des dossiers s'ils n'existent pas
     os.makedirs(output_dir, exist_ok=True)
     os.makedirs(drafts_dir, exist_ok=True)
+    os.makedirs(f"{drafts_dir}/missing", exist_ok=True)
+    os.makedirs(f"{drafts_dir}/existing", exist_ok=True)
     
     # Export des données consolidées
     print("\nExport des données consolidées...")
@@ -146,16 +148,29 @@ def main():
         processor.export_to_csv(f"{output_dir}/missing_exoplanets_{timestamp}.csv", [e for e, _ in missing_articles])
         processor.export_to_json(f"{output_dir}/missing_exoplanets_{timestamp}.json", [e for e, _ in missing_articles])
         
-        # Génération des brouillons d'articles
-        print("\nGénération des brouillons d'articles...")
+        # Génération des brouillons d'articles manquants
+        print("\nGénération des brouillons d'articles manquants...")
         generator = WikipediaGenerator()
         for exoplanet, _ in missing_articles:
             content = generator.generate_article_content(exoplanet)
             safe_filename = clean_filename(exoplanet.name.replace(' ', '_'))
-            filename = f"{drafts_dir}/{safe_filename}.wiki"
+            filename = f"{drafts_dir}/missing/{safe_filename}.wiki"
             with open(filename, 'w', encoding='utf-8') as f:
                 f.write(content)
-            print(f"Brouillon généré pour {exoplanet.name}")
+            print(f"Brouillon généré pour {exoplanet.name} (article manquant)")
+    
+    # Génération des brouillons pour les articles existants
+    if existing_articles:
+        print(f"\nNombre d'exoplanètes avec article : {len(existing_articles)}")
+        print("\nGénération des brouillons d'articles existants...")
+        generator = WikipediaGenerator()
+        for exoplanet, article_info in existing_articles:
+            content = generator.generate_article_content(exoplanet)
+            safe_filename = clean_filename(exoplanet.name.replace(' ', '_'))
+            filename = f"{drafts_dir}/existing/{safe_filename}.wiki"
+            with open(filename, 'w', encoding='utf-8') as f:
+                f.write(content)
+            print(f"Brouillon généré pour {exoplanet.name} (article existant)")
     else:
         print("\nToutes les exoplanètes ont déjà un article sur Wikipedia.")
 
