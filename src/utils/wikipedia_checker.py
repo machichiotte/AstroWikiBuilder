@@ -2,6 +2,8 @@ import requests
 from typing import Dict, List, Optional, Tuple
 import time
 from dataclasses import dataclass
+import unicodedata
+import re
 
 @dataclass
 class WikiArticleInfo:
@@ -23,6 +25,34 @@ class WikipediaChecker:
         self.session.headers.update({
             'User-Agent': 'AstroWikiBuilder/1.0 (https://github.com/votre-username/AstroWikiBuilder; machichiotte@gmail.com)'
         })
+    
+    def normalize_title(self, title: str) -> str:
+        """
+        Normalise un titre pour la comparaison :
+        - Convertit en minuscules
+        - Remplace les espaces, underscores et tirets par des tirets
+        - Retire les accents
+        - Retire les caractères spéciaux
+        
+        Args:
+            title: Le titre à normaliser
+            
+        Returns:
+            str: Le titre normalisé
+        """
+        # Convertir en minuscules
+        title = title.lower()
+        
+        # Retirer les accents
+        title = unicodedata.normalize('NFKD', title).encode('ASCII', 'ignore').decode('ASCII')
+        
+        # Remplacer les espaces, underscores et tirets par des tirets
+        title = re.sub(r'[\s_\-]+', '-', title)
+        
+        # Retirer les caractères spéciaux sauf les tirets
+        title = re.sub(r'[^a-z0-9\-]', '', title)
+        
+        return title
     
     def check_article_exists(self, title: str) -> WikiArticleInfo:
         """
@@ -57,19 +87,38 @@ class WikipediaChecker:
             page = pages[page_id]
             is_redirect = 'redirects' in page
             
-            # Si c'est une redirection, obtenir la cible
-            redirect_target = None
-            if is_redirect and 'redirects' in data['query']:
-                for redirect in data['query']['redirects']:
-                    if redirect['from'] == title:
-                        redirect_target = redirect['to']
-                        break
+            # Si c'est une redirection, vérifier si la cible correspond exactement
+            if is_redirect:
+                redirect_target = None
+                if 'redirects' in data['query']:
+                    for redirect in data['query']['redirects']:
+                        if redirect['from'] == title:
+                            redirect_target = redirect['to']
+                            break
+                
+                # Vérifier si la cible correspond exactement au titre recherché
+                if redirect_target:
+                    normalized_title = self.normalize_title(title)
+                    normalized_target = self.normalize_title(redirect_target)
+                    
+                    # Si les titres normalisés ne correspondent pas exactement,
+                    # considérer l'article comme inexistant
+                    if normalized_title != normalized_target:
+                        return WikiArticleInfo(exists=False, title=title)
+                    
+                    return WikiArticleInfo(
+                        exists=True,
+                        title=page['title'],
+                        is_redirect=True,
+                        redirect_target=redirect_target,
+                        url=page.get('fullurl')
+                    )
             
             return WikiArticleInfo(
                 exists=True,
                 title=page['title'],
                 is_redirect=is_redirect,
-                redirect_target=redirect_target,
+                redirect_target=None,
                 url=page.get('fullurl')
             )
             
@@ -89,7 +138,7 @@ class WikipediaChecker:
             Dict[str, WikiArticleInfo]: Dictionnaire avec les titres comme clés et les infos comme valeurs
         """
         assert len(titles) <= 50, "L'API MediaWiki limite à 50 titres par requête."
-        results = {}
+        results = {title: WikiArticleInfo(exists=False, title=title) for title in titles}
         
         params = {
             'action': 'query',
@@ -114,6 +163,9 @@ class WikipediaChecker:
             # Traiter les pages
             pages = data['query']['pages']
             for page_id, page in pages.items():
+                if page_id == '-1':
+                    continue
+                    
                 title = page['title']
                 is_redirect = 'redirects' in page
                 
@@ -124,13 +176,16 @@ class WikipediaChecker:
                         original_title = orig
                         break
                 
-                results[original_title or title] = WikiArticleInfo(
-                    exists=page_id != '-1',
-                    title=title,
-                    is_redirect=is_redirect,
-                    redirect_target=redirects.get(original_title) if original_title else None,
-                    url=page.get('fullurl')
-                )
+                # Mettre à jour le résultat pour le titre original ou le titre actuel
+                result_title = original_title or title
+                if result_title in results:
+                    results[result_title] = WikiArticleInfo(
+                        exists=True,
+                        title=title,
+                        is_redirect=is_redirect,
+                        redirect_target=redirects.get(original_title) if original_title else None,
+                        url=page.get('fullurl')
+                    )
             
             if delay > 0:
                 print(f"Attente de {delay} seconde(s) avant la prochaine requête...")
@@ -138,7 +193,5 @@ class WikipediaChecker:
                 
         except Exception as e:
             print(f"Erreur lors de la vérification des articles : {e}")
-            for title in titles:
-                results[title] = WikiArticleInfo(exists=False, title=title)
-                
+            
         return results 
