@@ -15,6 +15,7 @@ class DataProcessor:
         """
         Ajoute ou fusionne les exoplanètes dans le dictionnaire
         """
+        print(f"  Ajout de {len(exoplanets)} exoplanètes depuis {source}...")
         for exoplanet in exoplanets:
             if exoplanet.name in self.exoplanets:
                 # Fusion avec l'exoplanète existante
@@ -22,6 +23,7 @@ class DataProcessor:
             else:
                 # Ajout d'une nouvelle exoplanète
                 self.exoplanets[exoplanet.name] = exoplanet
+        print(f"  Ajout terminé. Total actuel : {len(self.exoplanets)} exoplanètes")
     
     def get_all_exoplanets(self) -> List[Exoplanet]:
         """
@@ -67,55 +69,162 @@ class DataProcessor:
         return stats
     
     def filter_exoplanets_without_articles(self) -> List[Tuple[Exoplanet, Dict[str, 'WikiArticleInfo']]]:
-        """
-        Filtre les exoplanètes qui n'ont pas d'article sur Wikipédia et renvoie les informations sur les articles existants
+        """Filtre les exoplanètes qui n'ont pas d'article sur Wikipedia.
         
         Returns:
-            List[Tuple[Exoplanet, Dict[str, WikiArticleInfo]]]: Liste des tuples (exoplanète, infos sur les articles)
+            List[Tuple[Exoplanet, Dict[str, WikiArticleInfo]]]: Liste des tuples (exoplanet, article_info)
+            où article_info est un dictionnaire des articles existants pour cette exoplanète
         """
         exoplanets_without_articles = []
-        batch_size = 50
+        checker = WikipediaChecker()
         
-        # D'abord, vérifier tous les noms principaux
-        main_names = [exoplanet.name for exoplanet in self.exoplanets.values()]
-        main_results = {}
-        
-        for i in range(0, len(main_names), batch_size):
-            batch = main_names[i:i + batch_size]
-            batch_results = self.wikipedia_checker.check_multiple_articles(batch, delay=0.01)
-            main_results.update(batch_results)
-        
-        # Pour chaque exoplanète, vérifier si elle a un article sous son nom principal
-        for exoplanet in self.exoplanets.values():
-            article_info = {}
+        # Vérifier les articles pour chaque exoplanète
+        for exoplanet in self.exoplanets:
+            # Vérifier d'abord le nom principal
+            article_info = checker.check_multiple_articles([exoplanet.name])
             
-            # Vérifier le nom principal
-            main_info = main_results.get(exoplanet.name)
-            if main_info and main_info.exists:
-                article_info[exoplanet.name] = main_info
-                continue  # L'article existe sous le nom principal
-            
-            # Si pas d'article sous le nom principal, vérifier les noms alternatifs
-            if exoplanet.other_names:
-                alt_results = {}
-                
-                for i in range(0, len(exoplanet.other_names), batch_size):
-                    batch = exoplanet.other_names[i:i + batch_size]
-                    batch_results = self.wikipedia_checker.check_multiple_articles(batch, delay=0.01)
-                    alt_results.update(batch_results)
-                
-                # Ajouter les informations sur les articles existants
-                for name, info in alt_results.items():
-                    if info.exists:
-                        article_info[name] = info
+            # Si pas d'article avec le nom principal, vérifier les noms alternatifs
+            if not any(info.exists for info in article_info.values()):
+                if exoplanet.other_names:
+                    alt_articles = checker.check_multiple_articles(list(exoplanet.other_names))
+                    article_info.update(alt_articles)
             
             # Si aucun article n'existe, ajouter à la liste
-            if not article_info:
-                exoplanets_without_articles.append((exoplanet, {}))
-            else:
+            if not any(info.exists for info in article_info.values()):
                 exoplanets_without_articles.append((exoplanet, article_info))
         
         return exoplanets_without_articles
+
+    def get_all_articles_info(self) -> List[Tuple[Exoplanet, Dict[str, 'WikiArticleInfo']]]:
+        """Obtient les informations de tous les articles Wikipedia pour chaque exoplanète."""
+        print("\nDébut de la vérification des articles Wikipedia...")
+        all_articles_info = []
+        checker = WikipediaChecker()
+        exoplanets_list = list(self.exoplanets.values())
+        total = len(exoplanets_list)
+        step = max(1, total // 20)  # 5% du total
+        
+        print(f"Nombre total d'exoplanètes à vérifier : {total}")
+        
+        # Préparation des lots de titres à vérifier
+        all_titles = []
+        title_to_exoplanet = {}
+        
+        for exoplanet in exoplanets_list:
+            # Ajouter le nom principal
+            all_titles.append(exoplanet.name)
+            title_to_exoplanet[exoplanet.name] = exoplanet
+            
+            # Ajouter les noms alternatifs
+            if exoplanet.other_names:
+                for alt_name in exoplanet.other_names:
+                    all_titles.append(alt_name)
+                    title_to_exoplanet[alt_name] = exoplanet
+        
+        # Traitement par lots de 50
+        batch_size = 50
+        total_batches = (len(all_titles) + batch_size - 1) // batch_size
+        
+        for batch_idx in range(total_batches):
+            start_idx = batch_idx * batch_size
+            end_idx = min((batch_idx + 1) * batch_size, len(all_titles))
+            batch_titles = all_titles[start_idx:end_idx]
+            
+            percent = int((batch_idx / total_batches) * 100)
+            print(f"[{percent:3d}%] Vérification du lot {batch_idx + 1}/{total_batches} ({len(batch_titles)} titres)", flush=True)
+            
+            # Vérifier le lot de titres
+            batch_results = checker.check_multiple_articles(batch_titles)
+            
+            # Regrouper les résultats par exoplanète
+            exoplanet_results = {}
+            for title, info in batch_results.items():
+                # Vérifier si le titre est dans notre dictionnaire
+                if title in title_to_exoplanet:
+                    exoplanet = title_to_exoplanet[title]
+                    if exoplanet.name not in exoplanet_results:
+                        exoplanet_results[exoplanet.name] = (exoplanet, {})
+                    exoplanet_results[exoplanet.name][1][title] = info
+                else:
+                    print(f"  ⚠️ Titre non trouvé dans la correspondance : {title}")
+            
+            # Ajouter les résultats au total
+            all_articles_info.extend(exoplanet_results.values())
+            
+            # Log détaillé pour chaque exoplanète du lot
+            for exoplanet, article_info in exoplanet_results.values():
+                if any(info.exists for info in article_info.values()):
+                    print(f"  ✓ Article trouvé pour {exoplanet.name}")
+                else:
+                    print(f"  ✗ Pas d'article pour {exoplanet.name}")
+        
+        print("Vérification des articles Wikipedia terminée.")
+        return all_articles_info
+
+    def separate_articles_by_status(self) -> Tuple[List[Tuple[Exoplanet, Dict[str, 'WikiArticleInfo']]], List[Tuple[Exoplanet, Dict[str, 'WikiArticleInfo']]]]:
+        """Sépare les articles en deux listes : existants et manquants."""
+        print("\nDébut de la séparation des articles...")
+        all_articles = self.get_all_articles_info()
+        existing_articles = []
+        missing_articles = []
+        
+        print("Séparation des articles en cours...")
+        for exoplanet, article_info in all_articles:
+            if any(info.exists for info in article_info.values()):
+                existing_articles.append((exoplanet, article_info))
+            else:
+                missing_articles.append((exoplanet, article_info))
+        
+        print(f"Séparation terminée :")
+        print(f"- Articles existants : {len(existing_articles)}")
+        print(f"- Articles manquants : {len(missing_articles)}")
+        
+        return existing_articles, missing_articles
+    
+    def format_wiki_links_data(self, articles: List[Tuple[Exoplanet, Dict[str, 'WikiArticleInfo']]]) -> Tuple[List[dict], List[List[str]]]:
+        """Formate les données des liens Wikipedia pour l'export CSV et JSON."""
+        print(f"\nFormatage des données pour {len(articles)} articles...")
+        json_data = []
+        csv_data = []
+        
+        for idx, (exoplanet, article_info) in enumerate(articles, 1):
+            if idx % 100 == 0:
+                print(f"  Formatage de l'article {idx} sur {len(articles)}...")
+                
+            if article_info:
+                for name, info in article_info.items():
+                    # Pour les articles existants, inclure toutes les informations
+                    if info.exists:
+                        json_data.append({
+                            'exoplanet': exoplanet.name,
+                            'article_name': name,
+                            'type': 'Redirection' if info.is_redirect else 'Direct',
+                            'url': info.url,
+                            'redirect_target': info.redirect_target if info.is_redirect else None
+                        })
+                        csv_data.append([
+                            exoplanet.name,
+                            name,
+                            'Redirection' if info.is_redirect else 'Direct',
+                            info.url,
+                            info.redirect_target if info.is_redirect else ''
+                        ])
+                    # Pour les articles manquants, ne garder que le nom
+                    else:
+                        json_data.append({
+                            'exoplanet': exoplanet.name,
+                            'article_name': name
+                        })
+                        csv_data.append([
+                            exoplanet.name,
+                            name
+                        ])
+            else:
+                json_data.append({'exoplanet': exoplanet.name})
+                csv_data.append([exoplanet.name])
+        
+        print("Formatage des données terminé.")
+        return json_data, csv_data
     
     def _exoplanet_to_dict(self, exoplanet: Exoplanet) -> dict:
         """Convertit un objet Exoplanet en dictionnaire"""

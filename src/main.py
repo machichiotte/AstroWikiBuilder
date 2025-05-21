@@ -8,6 +8,7 @@ from src.data_collectors.exoplanet_eu import ExoplanetEUCollector
 # from src.data_collectors.open_exoplanet import OpenExoplanetCollector
 from src.utils.data_processor import DataProcessor
 from src.utils.wikipedia_generator import WikipediaGenerator
+import json
 
 def clean_filename(filename):
     # Liste des caractères invalides pour Windows
@@ -79,50 +80,76 @@ def main():
         print(f"- {year} : {count}")
     
     # Vérification des articles Wikipédia
-    print("\nVérification des exoplanètes sans article sur Wikipedia...")
-    exoplanets_without_articles = processor.filter_exoplanets_without_articles()
+    print("\nVérification des articles Wikipedia...")
+    print("Début de la séparation des articles...")
+    existing_articles, missing_articles = processor.separate_articles_by_status()
+    print("Séparation des articles terminée.")
     
-    if exoplanets_without_articles:
-        print(f"\nNombre d'exoplanètes sans article : {len(exoplanets_without_articles)}")
+    # Création des fichiers pour les articles existants
+    existing_csv_path = f"{output_dir}/existing_wikipedia_links_{timestamp}.csv"
+    existing_json_path = f"{output_dir}/existing_wikipedia_links_{timestamp}.json"
+    
+    # Formatage et écriture des données des articles existants
+    print("Formatage des données des articles existants...")
+    existing_json_data, existing_csv_data = processor.format_wiki_links_data(existing_articles)
+    print("Formatage des données des articles existants terminé.")
+    
+    # Écriture du CSV des articles existants
+    print("\nÉcriture du CSV des articles existants...")
+    with open(existing_csv_path, 'w', newline='', encoding='utf-8') as f:
+        writer = csv.writer(f)
+        writer.writerow(['Exoplanète', 'Nom Article', 'Type', 'URL', 'Cible Redirection'])
+        writer.writerows(existing_csv_data)
+    print("Écriture du CSV des articles existants terminée.")
+    
+    # Écriture du JSON des articles existants
+    print("Écriture du JSON des articles existants...")
+    with open(existing_json_path, 'w', encoding='utf-8') as f:
+        json.dump(existing_json_data, f, ensure_ascii=False, indent=2)
+    print("Écriture du JSON des articles existants terminée.")
+    
+    print("\nInformations des articles existants exportées dans :")
+    print(f"- CSV : {existing_csv_path}")
+    print(f"- JSON : {existing_json_path}")
+    
+    # Création des fichiers pour les articles manquants
+    missing_csv_path = f"{output_dir}/missing_articles_{timestamp}.csv"
+    missing_json_path = f"{output_dir}/missing_articles_{timestamp}.json"
+    
+    # Formatage et écriture des données des articles manquants
+    print("Formatage des données des articles manquants...")
+    missing_json_data, missing_csv_data = processor.format_wiki_links_data(missing_articles)
+    print("Formatage des données des articles manquants terminé.")
+    
+    # Écriture du CSV des articles manquants
+    print("\nÉcriture du CSV des articles manquants...")
+    with open(missing_csv_path, 'w', newline='', encoding='utf-8') as f:
+        writer = csv.writer(f)
+        writer.writerow(['Exoplanète', 'Nom Article'])
+        writer.writerows(missing_csv_data)
+    print("Écriture du CSV des articles manquants terminée.")
+    
+    # Écriture du JSON des articles manquants
+    print("Écriture du JSON des articles manquants...")
+    with open(missing_json_path, 'w', encoding='utf-8') as f:
+        json.dump(missing_json_data, f, ensure_ascii=False, indent=2)
+    print("Écriture du JSON des articles manquants terminée.")
+    
+    print("\nInformations des articles manquants exportées dans :")
+    print(f"- CSV : {missing_csv_path}")
+    print(f"- JSON : {missing_json_path}")
+    
+    if missing_articles:
+        print(f"\nNombre d'exoplanètes sans article : {len(missing_articles)}")
         
-        # Création du fichier CSV pour les liens
-        links_csv_path = f"{output_dir}/wikipedia_links_{timestamp}.csv"
-        with open(links_csv_path, 'w', newline='', encoding='utf-8') as csvfile:
-            writer = csv.writer(csvfile)
-            writer.writerow(['Exoplanète', 'Nom Article', 'Type', 'URL', 'Cible Redirection'])
-            
-            # Afficher les informations détaillées
-            for exoplanet, article_info in exoplanets_without_articles:
-                print(f"\nExoplanète : {exoplanet.name}")
-                if article_info:
-                    print("Articles existants :")
-                    for name, info in article_info.items():
-                        status = "redirection vers " + info.redirect_target if info.is_redirect else "article direct"
-                        print(f"  - {name} : {status}")
-                        if info.url:
-                            print(f"    URL : {info.url}")
-                        # Écrire dans le CSV
-                        writer.writerow([
-                            exoplanet.name,
-                            name,
-                            'Redirection' if info.is_redirect else 'Direct',
-                            info.url,
-                            info.redirect_target if info.is_redirect else ''
-                        ])
-                else:
-                    print("Aucun article existant")
-                    # Écrire dans le CSV même pour les exoplanètes sans article
-                    writer.writerow([exoplanet.name, '', '', '', ''])
-        
-        print(f"\nInformations des liens exportées dans : {links_csv_path}")
-        
-        # Exporter les exoplanètes sans article
-        processor.export_to_csv(f"{output_dir}/missing_articles_{timestamp}.csv", [e for e, _ in exoplanets_without_articles])
+        # Exporter les exoplanètes sans article (données complètes)
+        processor.export_to_csv(f"{output_dir}/missing_exoplanets_{timestamp}.csv", [e for e, _ in missing_articles])
+        processor.export_to_json(f"{output_dir}/missing_exoplanets_{timestamp}.json", [e for e, _ in missing_articles])
         
         # Génération des brouillons d'articles
         print("\nGénération des brouillons d'articles...")
         generator = WikipediaGenerator()
-        for exoplanet, _ in exoplanets_without_articles:
+        for exoplanet, _ in missing_articles:
             content = generator.generate_article_content(exoplanet)
             safe_filename = clean_filename(exoplanet.name.replace(' ', '_'))
             filename = f"{drafts_dir}/{safe_filename}.wiki"
