@@ -117,8 +117,8 @@ def main():
     print(f"- JSON : {existing_json_path}")
     
     # Création des fichiers pour les articles manquants
-    missing_csv_path = f"{output_dir}/missing_articles_{timestamp}.csv"
-    missing_json_path = f"{output_dir}/missing_articles_{timestamp}.json"
+    missing_csv_path = f"{output_dir}/missing_wikipedia_links_{timestamp}.csv"
+    missing_json_path = f"{output_dir}/missing_wikipedia_links_{timestamp}.json"
     
     # Formatage et écriture des données des articles manquants
     print("Formatage des données des articles manquants...")
@@ -147,8 +147,8 @@ def main():
         print(f"\nNombre d'exoplanètes sans article : {len(missing_articles)}")
         
         # Exporter les exoplanètes sans article (données complètes)
-        processor.export_to_csv(f"{output_dir}/missing_exoplanets_{timestamp}.csv", [e for e, _ in missing_articles])
-        processor.export_to_json(f"{output_dir}/missing_exoplanets_{timestamp}.json", [e for e, _ in missing_articles])
+        processor.export_to_csv(f"{output_dir}/missing_wikipedia_links_{timestamp}.csv", [e for e, _ in missing_articles])
+        processor.export_to_json(f"{output_dir}/missing_wikipedia_links_{timestamp}.json", [e for e, _ in missing_articles])
         
         # Générer les brouillons pour les articles manquants
         missing_drafts = []
