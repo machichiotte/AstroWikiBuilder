@@ -64,7 +64,7 @@ class WikipediaGenerator:
             value_str = str(datapoint.value)
         
         if datapoint.reference:
-            ref_name = "EPE" if datapoint.reference.source == SourceType.EPE else "NASA" if datapoint.reference.source == SourceType.NASA else "OEC"
+            ref_name = "EPE" if datapoint.reference.source == SourceType.EPE else "NasaGov" if datapoint.reference.source == SourceType.NASA else "OEC"
             ref_content = datapoint.reference.to_wiki_ref()
             return f"{value_str} {self._add_reference(ref_name, ref_content)}"
             
@@ -84,7 +84,8 @@ class WikipediaGenerator:
                 return None
             
             # Vérifier si c'est la première occurrence de cette référence
-            ref_name = "EPE" if ref.source == SourceType.EPE else "NASA" if ref.source == SourceType.NASA else "OEC"
+            ref_name = ref.source.value
+            
             if not hasattr(self, '_used_refs'):
                 self._used_refs = set()
             
@@ -168,17 +169,52 @@ class WikipediaGenerator:
     
     def _get_planet_type(self, exoplanet: Exoplanet) -> str:
         """
-        Détermine le type de planète en fonction de ses caractéristiques
+        Détermine le type de planète en fonction de ses caractéristiques physiques
         """
         mass_value = exoplanet.mass.value if exoplanet.mass and exoplanet.mass.value else None
         radius_value = exoplanet.radius.value if exoplanet.radius and exoplanet.radius.value else None
+        temp_value = exoplanet.temperature.value if exoplanet.temperature and exoplanet.temperature.value else None
 
-        if mass_value and mass_value > 10:
-            return "Géante gazeuse"
-        elif radius_value and radius_value > 2:
-            return "Géante gazeuse"
-        else:
-            return "Planète tellurique"
+        # Classification des planètes gazeuses
+        if mass_value and mass_value >= 1:  # Masse >= 1 M_J
+            if temp_value:
+                if temp_value >= 2200:
+                    return "Jupiter ultra-chaud"
+                elif temp_value >= 1000:
+                    return "Jupiter chaud"
+                elif temp_value >= 500:
+                    return "Jupiter tiède"
+                else:
+                    return "Jupiter froid"
+            else:
+                return "Géante gazeuse"
+
+        # Classification des planètes de glace
+        elif radius_value and radius_value >= 0.8:  # Rayon >= 0.8 R_J
+            if temp_value:
+                if temp_value >= 1000:
+                    return "Neptune chaud"
+                elif temp_value >= 500:
+                    return "Neptune tiède"
+                else:
+                    return "Neptune froid"
+            else:
+                return "Géante de glaces"
+
+        # Classification des planètes telluriques
+        elif mass_value and mass_value < 1:  # Masse < 1 M_J
+            if radius_value:
+                if radius_value >= 1.5:
+                    return "Super-Terre"
+                elif radius_value >= 0.8:
+                    return "Planète de dimensions terrestres"
+                else:
+                    return "Sous-Terre"
+            else:
+                return "Planète tellurique"
+
+        # Cas par défaut
+        return "Planète tellurique"
     
     def _get_used_references(self, exoplanet: Exoplanet) -> List[str]:
         """
@@ -193,12 +229,8 @@ class WikipediaGenerator:
                 
             value = getattr(exoplanet, field_name)
             if value and hasattr(value, 'reference') and value.reference:
-                if value.reference.source == SourceType.NASA:
-                    refs.add("NASA")
-                elif value.reference.source == SourceType.EPE:
-                    refs.add("EPE")
-                elif value.reference.source == SourceType.OEP:
-                    refs.add("OEC")
+                if isinstance(value.reference.source, SourceType):
+                    refs.add(value.reference.source.value)
         
         # Si aucune référence n'a été trouvée, ajouter au moins EPE par défaut
         if not refs:
@@ -206,18 +238,38 @@ class WikipediaGenerator:
             
         return list(refs)
 
+    # Chemin du fichier : astro/wiki/ref_utils.py
+
     def _format_references_section(self, exoplanet: Exoplanet) -> str:
         """Génère la section Références"""
+
+        reference_templates = {
+            "NasaGov": (
+                '<ref name="NasaGov">{{{{Lien web |langue=en |nom1=NasaGov |titre={name} |url=https://science.nasa.gov/exoplanet-catalog/{slug}/ '
+                '|site=science.nasa.gov |date=2024-11-1 |consulté le=2025-1-3 }}}}</ref>'
+            ),
+            "EPE": (
+                '<ref name="EPE">{{{{Lien web |langue=en |nom1=EPE |titre={name} |url=https://exoplanet.eu/catalog/{underscored}/ '
+                '|site=exoplanet.eu |date=2024-8-1 |consulté le=2025-1-3 }}}}</ref>'
+            ),
+            "OEC": (
+                '<ref name="OEC">{{{{Lien web |langue=en |nom1=OEC |titre={name} |url=https://www.openexoplanetcatalogue.com/planet/{name}/ '
+                '|site=Open Exoplanet Catalogue |date=2024-8-1 |consulté le=2025-1-3 }}}}</ref>'
+            ),
+        }
+
+        name = exoplanet.name
+        slug = name.lower().replace(" ", "-")
+        underscored = name.lower().replace(" ", "_")
+
         refs = []
         for ref_name in self._get_used_references(exoplanet):
-            if ref_name == "NASA":
-                refs.append(f'<ref name="NASA">{{{{Lien web |langue=en |nom1=NASA |titre={exoplanet.name} |url=https://science.nasa.gov/exoplanet-catalog/{exoplanet.name.lower().replace(" ", "-")}/ |site=science.nasa.gov |date=2024-11-1 |consulté le=2025-1-3 }}}}</ref>')
-            elif ref_name == "EPE":
-                refs.append(f'<ref name="EPE">{{{{Lien web |langue=en |nom1=EPE |titre={exoplanet.name} |url=https://exoplanet.eu/catalog/{exoplanet.name.lower().replace(" ", "_")}/ |site=exoplanet.eu |date=2024-8-1 |consulté le=2025-1-3 }}}}</ref>')
-            elif ref_name == "OEC":
-                refs.append(f'<ref name="OEC">{{{{Lien web |langue=en |nom1=OEC |titre={exoplanet.name} |url=https://www.openexoplanetcatalogue.com/planet/{exoplanet.name}/ |site=Open Exoplanet Catalogue |date=2024-8-1 |consulté le=2025-1-3 }}}}</ref>')
-        
+            template = reference_templates.get(ref_name)
+            if template:
+                refs.append(template.format(name=name, slug=slug, underscored=underscored))
+
         return '\n'.join(refs) + '\n\n{{références}}'
+
 
     def generate_article_content(self, exoplanet: Exoplanet) -> str:
         """Génère le contenu de l'article Wikipedia"""
@@ -311,6 +363,6 @@ Cette planète a été découverte en {self._format_datapoint(exoplanet.discover
             )
         if exoplanet.source == "nasa":
             references.append(
-                f'<ref>{{{{Lien web |langue=en |nom1=NASA |titre={exoplanet.name} |url=https://science.nasa.gov/exoplanet-catalog/{exoplanet.name.lower().replace(" ", "-")}/ |site=science.nasa.gov |date=2024-11-1 |consulté le=2025-1-3 }}}}</ref>'
+                f'<ref>{{{{Lien web |langue=en |nom1=NasaGov |titre={exoplanet.name} |url=https://science.nasa.gov/exoplanet-catalog/{exoplanet.name.lower().replace(" ", "-")}/ |site=science.nasa.gov |date=2024-11-1 |consulté le=2025-1-3 }}}}</ref>'
             )
         return " ".join(references) 

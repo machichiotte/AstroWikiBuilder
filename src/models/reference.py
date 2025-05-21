@@ -3,9 +3,9 @@ from datetime import datetime
 from enum import Enum
 
 class SourceType(Enum):
-    NASA = "NASA"
+    NASA = "NasaGov"
     EPE = "EPE"  # Exoplanet.eu
-    OEP = "OEP"  # Open Exoplanet Catalogue
+    OEC = "OEC"  # Open Exoplanet Catalogue
 
 @dataclass
 class Reference:

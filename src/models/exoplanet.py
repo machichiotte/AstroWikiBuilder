@@ -78,7 +78,7 @@ class Exoplanet:
             if current_value is None and other_value is not None:
                 setattr(self, field_name, other_value)
             elif current_value is not None and other_value is not None:
-                # Priorité : NASA > EPE > OEP
+                # Priorité : NASA > EPE > OEC
                 current_source = current_value.reference.source if current_value.reference else None
                 other_source = other_value.reference.source if other_value.reference else None
                 
@@ -86,7 +86,7 @@ class Exoplanet:
                     setattr(self, field_name, other_value)
                 elif current_source != SourceType.NASA and other_source == SourceType.EPE:
                     setattr(self, field_name, other_value)
-                elif current_source not in [SourceType.NASA, SourceType.EPE] and other_source == SourceType.OEP:
+                elif current_source not in [SourceType.NASA, SourceType.EPE] and other_source == SourceType.OEC:
                     setattr(self, field_name, other_value)
     
     def to_wiki_infobox(self) -> str:
