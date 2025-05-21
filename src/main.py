@@ -4,11 +4,13 @@ import csv
 import argparse
 from src.data_collectors.nasa_exoplanet import NASAExoplanetCollector
 from src.data_collectors.exoplanet_eu import ExoplanetEUCollector
+from src.models.exoplanet import Exoplanet
 # Temporairement commenté
 # from src.data_collectors.open_exoplanet import OpenExoplanetCollector
 from src.utils.data_processor import DataProcessor
 from src.utils.wikipedia_generator import WikipediaGenerator
 import json
+from typing import List, Tuple
 
 def clean_filename(filename):
     # Liste des caractères invalides pour Windows
@@ -148,31 +150,70 @@ def main():
         processor.export_to_csv(f"{output_dir}/missing_exoplanets_{timestamp}.csv", [e for e, _ in missing_articles])
         processor.export_to_json(f"{output_dir}/missing_exoplanets_{timestamp}.json", [e for e, _ in missing_articles])
         
-        # Génération des brouillons d'articles manquants
-        print("\nGénération des brouillons d'articles manquants...")
-        generator = WikipediaGenerator()
-        for exoplanet, _ in missing_articles:
-            content = generator.generate_article_content(exoplanet)
-            safe_filename = clean_filename(exoplanet.name.replace(' ', '_'))
-            filename = f"{drafts_dir}/missing/{safe_filename}.wiki"
-            with open(filename, 'w', encoding='utf-8') as f:
-                f.write(content)
-            print(f"Brouillon généré pour {exoplanet.name} (article manquant)")
-    
-    # Génération des brouillons pour les articles existants
-    if existing_articles:
-        print(f"\nNombre d'exoplanètes avec article : {len(existing_articles)}")
-        print("\nGénération des brouillons d'articles existants...")
-        generator = WikipediaGenerator()
-        for exoplanet, article_info in existing_articles:
-            content = generator.generate_article_content(exoplanet)
-            safe_filename = clean_filename(exoplanet.name.replace(' ', '_'))
-            filename = f"{drafts_dir}/existing/{safe_filename}.wiki"
-            with open(filename, 'w', encoding='utf-8') as f:
-                f.write(content)
-            print(f"Brouillon généré pour {exoplanet.name} (article existant)")
+        # Générer les brouillons pour les articles manquants
+        missing_drafts = []
+        for exoplanet in exoplanets:
+            if not any(e.name == exoplanet.name for e, _ in existing_articles):
+                draft = generate_draft(exoplanet)
+                missing_drafts.append((exoplanet.name, draft))
+        
+        # Générer les brouillons pour les articles existants
+        existing_drafts = []
+        for exoplanet in exoplanets:
+            if any(e.name == exoplanet.name for e, _ in existing_articles):
+                draft = generate_draft(exoplanet)
+                existing_drafts.append((exoplanet.name, draft))
+        
+        # Afficher le bilan
+        print("\nBilan de la génération des brouillons :")
+        print(f"- {len(missing_drafts)} brouillons générés pour les articles manquants")
+        print(f"- {len(existing_drafts)} brouillons générés pour les articles existants")
+        print(f"- Total : {len(missing_drafts) + len(existing_drafts)} brouillons")
+        
+        # Sauvegarder les brouillons
+        save_drafts(missing_drafts, existing_drafts)
     else:
         print("\nToutes les exoplanètes ont déjà un article sur Wikipedia.")
+
+def generate_draft(exoplanet: Exoplanet) -> str:
+    """
+    Génère le contenu d'un brouillon d'article pour une exoplanète.
+    
+    Args:
+        exoplanet: L'exoplanète pour laquelle générer le brouillon
+        
+    Returns:
+        str: Le contenu du brouillon
+    """
+    generator = WikipediaGenerator()
+    return generator.generate_article_content(exoplanet)
+
+def save_drafts(missing_drafts: List[Tuple[str, str]], existing_drafts: List[Tuple[str, str]], drafts_dir: str = "drafts") -> None:
+    """
+    Sauvegarde les brouillons dans les fichiers appropriés.
+    
+    Args:
+        missing_drafts: Liste des brouillons pour les articles manquants
+        existing_drafts: Liste des brouillons pour les articles existants
+        drafts_dir: Répertoire de sauvegarde des brouillons
+    """
+    # Créer les répertoires si nécessaire
+    os.makedirs(f"{drafts_dir}/missing", exist_ok=True)
+    os.makedirs(f"{drafts_dir}/existing", exist_ok=True)
+    
+    # Sauvegarder les brouillons manquants
+    for name, content in missing_drafts:
+        safe_filename = clean_filename(name.replace(' ', '_'))
+        filename = f"{drafts_dir}/missing/{safe_filename}.wiki"
+        with open(filename, 'w', encoding='utf-8') as f:
+            f.write(content)
+    
+    # Sauvegarder les brouillons existants
+    for name, content in existing_drafts:
+        safe_filename = clean_filename(name.replace(' ', '_'))
+        filename = f"{drafts_dir}/existing/{safe_filename}.wiki"
+        with open(filename, 'w', encoding='utf-8') as f:
+            f.write(content)
 
 if __name__ == "__main__":
     main() 
