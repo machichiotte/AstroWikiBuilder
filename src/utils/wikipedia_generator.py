@@ -1,3 +1,4 @@
+# src/utils/wikipedia_generator.py
 from typing import Dict, List, Optional, Set
 from src.models.exoplanet import Exoplanet
 from src.models.reference import SourceType, DataPoint
@@ -11,7 +12,7 @@ class WikipediaGenerator:
     
     def __init__(self):
         self.template_refs = {
-            'nasa': "{{Lien web |langue=en |nom1=NASA |titre={title} |url=https://science.nasa.gov/exoplanet-catalog/{id}/ |site=science.nasa.gov |date=2024-11-1 |consulté le=2025-1-3 }}",
+            'nasa': "{{Lien web |langue=en |nom1=NasaGov |titre={title} |url=https://science.nasa.gov/exoplanet-catalog/{id}/ |site=science.nasa.gov |date=2024-11-1 |consulté le=2025-1-3 }}",
             'exoplanet_eu': "{{Lien web |langue=en |nom1=EPE |titre={title} |url=https://exoplanet.eu/catalog/{id}/ |site=exoplanet.eu |date=2024-8-1 |consulté le=2025-1-3 }}",
             'open_exoplanet': "{{Lien web |langue=en |nom1=OEC |titre={title} |url=https://github.com/OpenExoplanetCatalogue/open_exoplanet_catalogue |site=Open Exoplanet Catalogue |date=2024-1-1 |consulté le=2025-1-3 }}"
         }
@@ -233,8 +234,7 @@ class WikipediaGenerator:
                     refs.add(value.reference.source.value)
         
         # Si aucune référence n'a été trouvée, ajouter au moins EPE par défaut
-        if not refs:
-            refs.add("EPE")
+        # Ne rien ajouter si pas de référence
             
         return list(refs)
 
