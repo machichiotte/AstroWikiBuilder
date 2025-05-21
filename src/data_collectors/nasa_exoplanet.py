@@ -2,6 +2,7 @@ import pandas as pd
 from typing import List, Optional
 from datetime import datetime
 import logging
+import os
 from src.models.exoplanet import Exoplanet
 from src.models.reference import DataPoint, Reference, SourceType
 
@@ -11,16 +12,32 @@ logger = logging.getLogger(__name__)
 
 class NASAExoplanetCollector:
     BASE_URL = "https://exoplanetarchive.ipac.caltech.edu/TAP/sync?query=select+*+from+PSCompPars&format=csv"
+    MOCK_DATA_PATH = "data/nasa_mock_data.csv"
     
-    def __init__(self):
+    def __init__(self, use_mock_data: bool = False):
         self.required_columns = ['pl_name', 'hostname', 'discoverymethod', 'disc_year']
+        self.use_mock_data = use_mock_data
+        
+        # Créer le dossier data s'il n'existe pas
+        os.makedirs("data", exist_ok=True)
     
     def fetch_data(self) -> List[Exoplanet]:
         """
         Fetch data from NASA Exoplanet Archive and convert to Exoplanet objects
         """
         try:
-            df = pd.read_csv(self.BASE_URL)
+            if self.use_mock_data:
+                if not os.path.exists(self.MOCK_DATA_PATH):
+                    logger.error(f"Fichier de données mockées non trouvé : {self.MOCK_DATA_PATH}")
+                    return []
+                df = pd.read_csv(self.MOCK_DATA_PATH)
+                logger.info("Utilisation des données mockées")
+            else:
+                df = pd.read_csv(self.BASE_URL)
+                # Sauvegarder les données pour une utilisation future
+                df.to_csv(self.MOCK_DATA_PATH, index=False)
+                logger.info(f"Données sauvegardées dans {self.MOCK_DATA_PATH}")
+            
             logger.info(f"Colonnes trouvées dans le CSV NASA : {list(df.columns)}")
             
             # Vérification des colonnes requises

@@ -1,8 +1,11 @@
 import os
 from datetime import datetime
+import csv
+import argparse
 from src.data_collectors.nasa_exoplanet import NASAExoplanetCollector
 from src.data_collectors.exoplanet_eu import ExoplanetEUCollector
-from src.data_collectors.open_exoplanet import OpenExoplanetCollector
+# Temporairement commenté
+# from src.data_collectors.open_exoplanet import OpenExoplanetCollector
 from src.utils.data_processor import DataProcessor
 from src.utils.wikipedia_generator import WikipediaGenerator
 
@@ -20,26 +23,32 @@ def clean_filename(filename):
     return filename
 
 def main():
+    # Configuration des arguments en ligne de commande
+    parser = argparse.ArgumentParser(description='Générateur d\'articles Wikipedia pour les exoplanètes')
+    parser.add_argument('--use-mock-data', action='store_true', help='Utiliser les données mockées de la NASA')
+    parser.add_argument('--sources', nargs='+', choices=['nasa', 'exoplanet_eu', 'open_exoplanet'],
+                      default=['nasa', 'exoplanet_eu'],
+                      help='Sources de données à utiliser (par défaut: nasa exoplanet_eu)')
+    args = parser.parse_args()
+    
     # Initialisation des collecteurs
-    nasa_collector = NASAExoplanetCollector()
-    exoplanet_eu_collector = ExoplanetEUCollector("data/exoplanet_eu.csv")
-    open_exoplanet_collector = OpenExoplanetCollector()
+    collectors = {}
+    if 'nasa' in args.sources:
+        collectors['nasa'] = NASAExoplanetCollector(use_mock_data=args.use_mock_data)
+    if 'exoplanet_eu' in args.sources:
+        collectors['exoplanet_eu'] = ExoplanetEUCollector("data/exoplanet_eu.csv")
+    # Temporairement commenté
+    # if 'open_exoplanet' in args.sources:
+    #     collectors['open_exoplanet'] = OpenExoplanetCollector()
     
     # Initialisation du processeur de données
     processor = DataProcessor()
     
     # Collecte des données
-    print("\nCollecte des données depuis la NASA Exoplanet Archive...")
-    nasa_exoplanets = nasa_collector.fetch_data()
-    processor.add_exoplanets(nasa_exoplanets, "nasa")
-    
-    print("\nCollecte des données depuis Exoplanet.eu...")
-    exoplanet_eu_data = exoplanet_eu_collector.fetch_data()
-    processor.add_exoplanets(exoplanet_eu_data, "exoplanet_eu")
-    
-    print("\nCollecte des données depuis Open Exoplanet Catalogue...")
-    open_exoplanet_data = open_exoplanet_collector.fetch_data()
-    processor.add_exoplanets(open_exoplanet_data, "open_exoplanet")
+    for source, collector in collectors.items():
+        print(f"\nCollecte des données depuis {source}...")
+        exoplanets = collector.fetch_data()
+        processor.add_exoplanets(exoplanets, source)
     
     # Génération des noms de fichiers avec timestamp
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -75,12 +84,45 @@ def main():
     
     if exoplanets_without_articles:
         print(f"\nNombre d'exoplanètes sans article : {len(exoplanets_without_articles)}")
-        processor.export_to_csv(f"{output_dir}/missing_articles_{timestamp}.csv", exoplanets_without_articles)
+        
+        # Création du fichier CSV pour les liens
+        links_csv_path = f"{output_dir}/wikipedia_links_{timestamp}.csv"
+        with open(links_csv_path, 'w', newline='', encoding='utf-8') as csvfile:
+            writer = csv.writer(csvfile)
+            writer.writerow(['Exoplanète', 'Nom Article', 'Type', 'URL', 'Cible Redirection'])
+            
+            # Afficher les informations détaillées
+            for exoplanet, article_info in exoplanets_without_articles:
+                print(f"\nExoplanète : {exoplanet.name}")
+                if article_info:
+                    print("Articles existants :")
+                    for name, info in article_info.items():
+                        status = "redirection vers " + info.redirect_target if info.is_redirect else "article direct"
+                        print(f"  - {name} : {status}")
+                        if info.url:
+                            print(f"    URL : {info.url}")
+                        # Écrire dans le CSV
+                        writer.writerow([
+                            exoplanet.name,
+                            name,
+                            'Redirection' if info.is_redirect else 'Direct',
+                            info.url,
+                            info.redirect_target if info.is_redirect else ''
+                        ])
+                else:
+                    print("Aucun article existant")
+                    # Écrire dans le CSV même pour les exoplanètes sans article
+                    writer.writerow([exoplanet.name, '', '', '', ''])
+        
+        print(f"\nInformations des liens exportées dans : {links_csv_path}")
+        
+        # Exporter les exoplanètes sans article
+        processor.export_to_csv(f"{output_dir}/missing_articles_{timestamp}.csv", [e for e, _ in exoplanets_without_articles])
         
         # Génération des brouillons d'articles
         print("\nGénération des brouillons d'articles...")
         generator = WikipediaGenerator()
-        for exoplanet in exoplanets_without_articles:
+        for exoplanet, _ in exoplanets_without_articles:
             content = generator.generate_article_content(exoplanet)
             safe_filename = clean_filename(exoplanet.name.replace(' ', '_'))
             filename = f"{drafts_dir}/{safe_filename}.wiki"

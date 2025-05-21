@@ -1,4 +1,4 @@
-from typing import List, Dict, Set
+from typing import List, Dict, Set, Tuple
 from src.models.exoplanet import Exoplanet
 from src.models.reference import SourceType, DataPoint
 import pandas as pd
@@ -66,9 +66,12 @@ class DataProcessor:
         
         return stats
     
-    def filter_exoplanets_without_articles(self) -> List[Exoplanet]:
+    def filter_exoplanets_without_articles(self) -> List[Tuple[Exoplanet, Dict[str, 'WikiArticleInfo']]]:
         """
-        Filtre les exoplanètes qui n'ont pas d'article sur Wikipédia
+        Filtre les exoplanètes qui n'ont pas d'article sur Wikipédia et renvoie les informations sur les articles existants
+        
+        Returns:
+            List[Tuple[Exoplanet, Dict[str, WikiArticleInfo]]]: Liste des tuples (exoplanète, infos sur les articles)
         """
         exoplanets_without_articles = []
         batch_size = 50
@@ -84,8 +87,13 @@ class DataProcessor:
         
         # Pour chaque exoplanète, vérifier si elle a un article sous son nom principal
         for exoplanet in self.exoplanets.values():
-            if main_results.get(exoplanet.name, False):
-                continue  # L'article existe déjà sous le nom principal, pas besoin de vérifier les noms alternatifs
+            article_info = {}
+            
+            # Vérifier le nom principal
+            main_info = main_results.get(exoplanet.name)
+            if main_info and main_info.exists:
+                article_info[exoplanet.name] = main_info
+                continue  # L'article existe sous le nom principal
             
             # Si pas d'article sous le nom principal, vérifier les noms alternatifs
             if exoplanet.other_names:
@@ -96,12 +104,16 @@ class DataProcessor:
                     batch_results = self.wikipedia_checker.check_multiple_articles(batch, delay=0.01)
                     alt_results.update(batch_results)
                 
-                # Si aucun article n'existe sous les noms alternatifs, ajouter à la liste
-                if not any(alt_results.values()):
-                    exoplanets_without_articles.append(exoplanet)
+                # Ajouter les informations sur les articles existants
+                for name, info in alt_results.items():
+                    if info.exists:
+                        article_info[name] = info
+            
+            # Si aucun article n'existe, ajouter à la liste
+            if not article_info:
+                exoplanets_without_articles.append((exoplanet, {}))
             else:
-                # Pas de noms alternatifs et pas d'article sous le nom principal
-                exoplanets_without_articles.append(exoplanet)
+                exoplanets_without_articles.append((exoplanet, article_info))
         
         return exoplanets_without_articles
     
