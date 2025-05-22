@@ -70,26 +70,6 @@ class WikipediaGenerator:
             self.template_refs[ref_name] = ref_content
         return self._get_reference(ref_name, "")
 
-    def _format_year_field_with_ref(self, field: DataPoint, exoplanet_name: str) -> str:
-        """
-        Formate un champ de type année avec sa référence
-        """
-        if not field or not field.value:
-            return ""
-            
-        year = str(field.value)
-        if not year.isdigit() or len(year) != 4:
-            return year
-            
-        ref = self._add_reference(str(field.reference.source.value), field.reference.to_wiki_ref(self.template_refs, exoplanet_name))
-        return f"{year}{ref}"
-
-    def generate_article(self, exoplanet: Exoplanet) -> str:
-        """
-        Génère l'article complet pour une exoplanète
-        """
-        return self.generate_article_content(exoplanet)
-
     def _get_planet_type(self, exoplanet: Exoplanet) -> str:
         """
         Détermine le type de planète en fonction de ses caractéristiques physiques
