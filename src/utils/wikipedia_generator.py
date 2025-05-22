@@ -14,7 +14,9 @@ class WikipediaGenerator:
         self.template_refs = {
             'nasa': "{{Lien web |langue=en |nom1=NasaGov |titre={title} |url=https://science.nasa.gov/exoplanet-catalog/{id}/ |site=science.nasa.gov |date=2024-11-1 |consulté le=2025-1-3 }}",
             'exoplanet_eu': "{{Lien web |langue=en |nom1=EPE |titre={title} |url=https://exoplanet.eu/catalog/{id}/ |site=exoplanet.eu |date=2024-8-1 |consulté le=2025-1-3 }}",
-            'open_exoplanet': "{{Lien web |langue=en |nom1=OEC |titre={title} |url=https://github.com/OpenExoplanetCatalogue/open_exoplanet_catalogue |site=Open Exoplanet Catalogue |date=2024-1-1 |consulté le=2025-1-3 }}"
+            'open_exoplanet': "{{Lien web |langue=en |nom1=OEC |titre={title} |url=https://github.com/OpenExoplanetCatalogue/open_exoplanet_catalogue |site=Open Exoplanet Catalogue |date=2024-1-1 |consulté le=2025-1-3 }}",
+            'article': "{{Article |langue= |auteur= |titre= |périodique= |année= |volume= |numéro= |pages= |lire en ligne= |consulté le= }}",
+            'ouvrage': "{{Ouvrage |langue= |auteur= |titre= |éditeur= |année= |pages totales= |passage= |isbn= |lire en ligne= |consulté le= }}"
         }
         self._used_refs = set()
         locale.setlocale(locale.LC_ALL, 'fr_FR.UTF-8')
@@ -44,11 +46,14 @@ class WikipediaGenerator:
     
     def _add_reference(self, ref_name: str, ref_content: str) -> str:
         """
-        Ajoute une référence et retourne la balise de référence appropriée
+        Ajoute une référence et retourne la balise de référence appropriée.
+        ref_content is expected to be the full reference tag for the first use,
+        including the <ref name="..."> wrapper.
+        e.g. <ref name="NasaGov">{{Lien web...}}</ref>
         """
         if ref_name not in self._used_refs:
             self._used_refs.add(ref_name)
-            return f'<ref name="{ref_name}">{ref_content}</ref>'
+            return ref_content # ref_content is already the full <ref name="NasaGov">{{...}}</ref>
         return f'<ref name="{ref_name}" />'
     
     def _format_datapoint(self, datapoint: DataPoint) -> str:
@@ -80,21 +85,28 @@ class WikipediaGenerator:
         def unit(attr):
             return getattr(exoplanet, attr).unit if getattr(exoplanet, attr) and hasattr(getattr(exoplanet, attr), 'unit') and getattr(exoplanet, attr).unit else None
         def notes(attr):
-            ref = getattr(exoplanet, attr).reference if getattr(exoplanet, attr) and hasattr(getattr(exoplanet, attr), 'reference') else None
-            if not ref or not hasattr(ref, 'to_wiki_ref'):
+            datapoint = getattr(exoplanet, attr, None)
+            if not datapoint or not hasattr(datapoint, 'reference') or not datapoint.reference:
                 return None
             
-            # Vérifier si c'est la première occurrence de cette référence
-            ref_name = ref.source.value
+            ref = datapoint.reference
+            # Ensure ref.source and ref.to_wiki_ref are available
+            if not hasattr(ref, 'source') or not ref.source or not hasattr(ref, 'to_wiki_ref'):
+                return None
+
+            # ref_name should be like "NasaGov", "EPE", from ref.source.value
+            # It's crucial that ref.source has a 'value' attribute if it's an Enum or similar.
+            # Assuming ref.source.value gives the string name for the ref.
+            ref_name = str(ref.source.value) if hasattr(ref.source, 'value') else str(ref.source)
             
-            if not hasattr(self, '_used_refs'):
-                self._used_refs = set()
-            
-            if ref_name not in self._used_refs:
-                self._used_refs.add(ref_name)
-                return ref.to_wiki_ref()
-            else:
-                return f"<ref name=\"{ref_name}\" />"
+            # ref.to_wiki_ref() is expected to return the full reference string for the first use,
+            # e.g., <ref name="NasaGov">{{Lien web...}}</ref>
+            ref_content_full = ref.to_wiki_ref()
+
+            if ref_content_full:
+                # self._add_reference will handle the logic of first vs. subsequent use
+                return self._add_reference(ref_name, ref_content_full)
+            return None
 
         def add_field(label, attr, default_unit=None):
             v = val(attr)
@@ -124,6 +136,9 @@ class WikipediaGenerator:
         infobox += add_field("déclinaison", "declination")
         infobox += add_field("distance", "distance", "pc")
         infobox += add_field("constellation", "constellation")
+        # Add "carte UAI" here, assuming exoplanet.iau_constellation_map holds the image filename
+        if hasattr(exoplanet, 'iau_constellation_map') and exoplanet.iau_constellation_map:
+            infobox += f" | carte = {exoplanet.iau_constellation_map}\n"
         infobox += add_field("type spectral", "spectral_type")
         infobox += add_field("magnitude apparente", "apparent_magnitude")
         # Planète
@@ -240,36 +255,19 @@ class WikipediaGenerator:
 
     # Chemin du fichier : astro/wiki/ref_utils.py
 
-    def _format_references_section(self, exoplanet: Exoplanet) -> str:
-        """Génère la section Références"""
+    def _format_references_section(self) -> str:
+        """
+        Génère la section "Notes et références" avec les sous-sections
+        "Notes" et "Références".
+        """
+        return """
+== Notes et références ==
+=== Notes ===
+{{références|groupe="note"}}
 
-        reference_templates = {
-            "NasaGov": (
-                '<ref name="NasaGov">{{{{Lien web |langue=en |nom1=NasaGov |titre={name} |url=https://science.nasa.gov/exoplanet-catalog/{slug}/ '
-                '|site=science.nasa.gov |date=2024-11-1 |consulté le=2025-1-3 }}}}</ref>'
-            ),
-            "EPE": (
-                '<ref name="EPE">{{{{Lien web |langue=en |nom1=EPE |titre={name} |url=https://exoplanet.eu/catalog/{underscored}/ '
-                '|site=exoplanet.eu |date=2024-8-1 |consulté le=2025-1-3 }}}}</ref>'
-            ),
-            "OEC": (
-                '<ref name="OEC">{{{{Lien web |langue=en |nom1=OEC |titre={name} |url=https://www.openexoplanetcatalogue.com/planet/{name}/ '
-                '|site=Open Exoplanet Catalogue |date=2024-8-1 |consulté le=2025-1-3 }}}}</ref>'
-            ),
-        }
-
-        name = exoplanet.name
-        slug = name.lower().replace(" ", "-")
-        underscored = name.lower().replace(" ", "_")
-
-        refs = []
-        for ref_name in self._get_used_references(exoplanet):
-            template = reference_templates.get(ref_name)
-            if template:
-                refs.append(template.format(name=name, slug=slug, underscored=underscored))
-
-        return '\n'.join(refs) + '\n\n{{références}}'
-
+=== Références ===
+{{Références}}
+"""
 
     def generate_article_content(self, exoplanet: Exoplanet) -> str:
         """Génère le contenu de l'article Wikipedia"""
@@ -277,11 +275,16 @@ class WikipediaGenerator:
         self._used_refs = set()
         
         planet_type = self._get_planet_type(exoplanet)
+        # Generate introduction sentence
+        introduction = self._generate_introduction_sentence(exoplanet)
+        # Generate categories
+        categories = self._generate_categories(exoplanet)
+
         content = f"""{{{{Ébauche|exoplanète|}}}}
 
 {self.generate_infobox_exoplanet(exoplanet)}
 
-'''{{{{nobr|{exoplanet.name}}}}}''' est une [[planète]] en [[orbite]] autour de {{{{nobr|[[{self._format_datapoint(exoplanet.host_star)}]]}}}}, {self._get_star_description(exoplanet)}.
+{introduction}
 
 == Caractéristiques ==
 Cette [[exoplanète]] est un [[{planet_type}]] {self._get_planet_description(exoplanet)}. Elle orbite à {{{{unité|{self._format_datapoint(exoplanet.semi_major_axis)}|[[unité astronomique|unités astronomiques]]}}}} de son étoile{self._get_orbital_comparison(exoplanet)}.
@@ -289,15 +292,85 @@ Cette [[exoplanète]] est un [[{planet_type}]] {self._get_planet_description(exo
 == Découverte ==
 Cette planète a été découverte en {self._format_datapoint(exoplanet.discovery_date)} par la méthode de {self._format_datapoint(exoplanet.discovery_method)}.
 
-== Références ==
-{self._format_references_section(exoplanet)}
+{self._format_references_section()}
 
 {{{{portail|astronomie|exoplanètes}}}}
 
-[[Catégorie:{planet_type}]]
+{categories}
 """
         return content
     
+    def _generate_introduction_sentence(self, exoplanet: Exoplanet) -> str:
+        """Génère la phrase d'introduction pour l'article."""
+        
+        star_name_formatted = ""
+        if exoplanet.host_star and exoplanet.host_star.value:
+            # Assuming host_star.value is the name, and we want to link it.
+            # _format_datapoint might add references, which is unusual for a direct star link in intro.
+            # For now, let's just use the value. If it's a DataPoint, we need just the value.
+            star_name = exoplanet.host_star.value
+            star_name_formatted = f"[[{star_name}]]" # Simple link to the star name
+            # If host_star is a DataPoint itself and has a reference for its name,
+            # _format_datapoint(exoplanet.host_star) would include that.
+            # For an intro, usually, we don't ref the star name itself, but its properties.
+            # Using exoplanet.host_star.value directly is safer if it's just a name.
+        else:
+            star_name_formatted = "son étoile hôte"
+
+        # Use _get_star_description for additional details about the star
+        star_details = self._get_star_description(exoplanet) # This already fetches spectral type, distance, etc.
+
+        # Construct constellation part if available
+        constellation_part = ""
+        if exoplanet.constellation and exoplanet.constellation.value:
+            constellation_name = exoplanet.constellation.value
+            constellation_part = f" dans la [[constellation]] de [[{constellation_name}]]"
+            # If constellation itself has a reference via _format_datapoint(exoplanet.constellation), 
+            # it would be complex. Usually, constellation is just a name.
+
+        intro = f"'''{{{{nobr|{exoplanet.name}}}}}''' est une [[exoplanète]] en [[orbite]] autour de {{{{nobr|{star_name_formatted}}}}}, {star_details}{constellation_part}."
+        return intro
+
+    def _generate_categories(self, exoplanet: Exoplanet) -> str:
+        """Génère les catégories pour l'article."""
+        categories = []
+        planet_type = self._get_planet_type(exoplanet)
+        if planet_type:
+            categories.append(f"[[Catégorie:{planet_type}]]")
+
+        if exoplanet.discovery_date and exoplanet.discovery_date.value:
+            try:
+                # Assuming discovery_date.value is a string like "YYYY-MM-DD" or "YYYY"
+                year = str(exoplanet.discovery_date.value).split('-')[0]
+                if year.isdigit() and len(year) == 4:
+                    categories.append(f"[[Catégorie:Exoplanète découverte en {year}]]")
+            except: #pylint: disable=bare-except
+                pass # Ignore if year parsing fails
+
+        if exoplanet.discovery_method and exoplanet.discovery_method.value:
+            method = str(exoplanet.discovery_method.value)
+            # Simple mapping, can be expanded
+            method_map = {
+                "Transit": "par transit",
+                "Vitesse radiale": "par vitesse radiale",
+                # Add other common methods
+            }
+            if method in method_map:
+                 categories.append(f"[[Catégorie:Exoplanète découverte {method_map[method]}]]")
+            else:
+                 categories.append(f"[[Catégorie:Exoplanète découverte par {method}]]")
+
+
+        if exoplanet.spectral_type and exoplanet.spectral_type.value:
+            spectral_type_full = str(exoplanet.spectral_type.value)
+            # Extract the main star type (e.g., G from G5V)
+            if len(spectral_type_full) > 0:
+                spectral_class = spectral_type_full[0].upper()
+                if spectral_class in "OBAFGKM":
+                    categories.append(f"[[Catégorie:Exoplanète en orbite autour d'une étoile de type {spectral_class}]]")
+        
+        return "\n".join(categories)
+
     def _get_size_comparison(self, exoplanet: Exoplanet) -> str:
         """
         Génère une comparaison de taille avec Jupiter ou la Terre
