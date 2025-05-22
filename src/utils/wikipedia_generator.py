@@ -4,10 +4,19 @@ from src.models.exoplanet import Exoplanet
 from src.models.reference import SourceType, DataPoint
 import datetime
 import locale
+import re
+from typing import Optional
+from .infobox_generator import InfoboxGenerator
+from .introduction_generator import IntroductionGenerator
+from .category_generator import CategoryGenerator
+from .reference_utils import ReferenceUtils
+from .star_utils import StarUtils
+from .format_utils import FormatUtils
+from .comparison_utils import ComparisonUtils
 
 class WikipediaGenerator:
     """
-    Classe pour générer le contenu wikitexte des articles d'exoplanètes
+    Classe pour générer les articles Wikipedia des exoplanètes
     """
     FIELD_DEFAULT_UNITS = {
         "masse": "M_J",
@@ -38,6 +47,13 @@ class WikipediaGenerator:
         self._used_refs = set()
         self._has_grouped_notes = False # Initialize the new flag
         locale.setlocale(locale.LC_ALL, 'fr_FR.UTF-8')
+        self.format_utils = FormatUtils()
+        self.comparison_utils = ComparisonUtils(self.format_utils)
+        self.reference_utils = ReferenceUtils()
+        self.infobox_generator = InfoboxGenerator(self.reference_utils)
+        self.introduction_generator = IntroductionGenerator(self.comparison_utils, self.format_utils)
+        self.category_generator = CategoryGenerator()
+        self.star_utils = StarUtils(self.format_utils)
 
     def _parsecs_to_lightyears(self, parsecs: float) -> float:
         """Convertit les parsecs en années-lumière."""
@@ -313,9 +329,9 @@ class WikipediaGenerator:
         
         planet_type = self._get_planet_type(exoplanet)
         # Generate introduction sentence
-        introduction = self._generate_introduction_sentence(exoplanet)
+        introduction = self.introduction_generator.generate_introduction(exoplanet)
         # Generate categories
-        categories = self._generate_categories(exoplanet)
+        categories = self.category_generator.generate_categories(exoplanet)
 
         content = f"""{{{{Ébauche|exoplanète|}}}}
 
@@ -358,7 +374,7 @@ Cette planète a été découverte en {self._format_year_field(exoplanet.discove
             star_name_formatted = "son étoile hôte"
 
         # Use _get_star_description for additional details about the star
-        star_details = self._get_star_description(exoplanet) 
+        star_details = self.star_utils.get_star_description(exoplanet) 
 
         # Construct constellation part if available
         constellation_part = ""
@@ -455,19 +471,96 @@ Cette planète a été découverte en {self._format_year_field(exoplanet.discove
                  return f"{value_str} {self._add_reference(ref_name, ref_content_full)}"
         
         return value_str
-
-    def _get_size_comparison(self, exoplanet: Exoplanet) -> str:
-        """
-        Génère une comparaison de taille avec Jupiter ou la Terre
-        """
-        mass_value = exoplanet.mass.value if exoplanet.mass and exoplanet.mass.value else None
-        if mass_value:
-            if mass_value > 10:
-                return f"environ {self._format_numeric_value(mass_value/317.8, 1)} fois plus massif que [[Jupiter (planète)|Jupiter]]"
-            else:
-                return f"environ {self._format_numeric_value(mass_value, 1)} fois plus massif que la [[Terre]]"
-        return ""
+    R_JUPITER_IN_EARTH_RADII = 11.209  # Rayon de Jupiter en rayons terrestres
+    M_JUPITER_IN_EARTH_MASSES = 317.8  # Masse de Jupiter en masses terrestres
     
+    def _get_radius_comparison(self, exoplanet: Exoplanet) -> str:
+        """
+        Génère une comparaison de rayon avec Jupiter ou la Terre.
+        Le rayon de l'exoplanète (exoplanet.radius.value) est supposé être en rayons joviens (R_J).
+        """
+        if not exoplanet.radius or exoplanet.radius.value is None:
+            return ""
+
+        radius_rj = exoplanet.radius.value  # Rayon en rayons de Jupiter (R_J)
+
+        # Seuils de similarité (par exemple, +/- 20% du rayon du corps de référence)
+        SIMILARITY_MARGIN = 0.2  # Marge de 20%
+
+        # Seuils pour Jupiter (le rayon de référence est 1 R_J)
+        JUPITER_SIMILARITY_LOWER_RJ = 1.0 - SIMILARITY_MARGIN  # 0.8 R_J
+        JUPITER_SIMILARITY_UPPER_RJ = 1.0 + SIMILARITY_MARGIN  # 1.2 R_J
+
+        # Cas 1 : Comparaison prioritaire avec Jupiter
+        if radius_rj >= JUPITER_SIMILARITY_LOWER_RJ:
+            if radius_rj <= JUPITER_SIMILARITY_UPPER_RJ:  # Proche du rayon de Jupiter
+                return "d'un rayon environ similaire à celui de [[Jupiter (planète)|Jupiter]]"
+            else:  # Nettement plus grand que Jupiter
+                return f"d'un rayon environ {self._format_numeric_value(radius_rj, 1)} fois celui de [[Jupiter (planète)|Jupiter]]"
+        # Cas 2 : Comparaison avec la Terre (si radius_rj < JUPITER_SIMILARITY_LOWER_RJ)
+        else:
+            radius_re = radius_rj * self.R_JUPITER_IN_EARTH_RADII  # Conversion en rayons terrestres (R_E)
+
+            # Seuils pour la Terre (le rayon de référence est 1 R_E)
+            EARTH_SIMILARITY_LOWER_RE = 1.0 - SIMILARITY_MARGIN  # 0.8 R_E
+            EARTH_SIMILARITY_UPPER_RE = 1.0 + SIMILARITY_MARGIN  # 1.2 R_E
+
+            if radius_re >= EARTH_SIMILARITY_LOWER_RE and radius_re <= EARTH_SIMILARITY_UPPER_RE: # Proche du rayon de la Terre
+                return "d'un rayon environ similaire à celui de la [[Terre]]"
+            elif radius_re > EARTH_SIMILARITY_UPPER_RE:  # Nettement plus grand que la Terre
+                return f"d'un rayon environ {self._format_numeric_value(radius_re, 1)} fois celui de la [[Terre]]"
+            elif radius_re > 0:  # Plus petit que la Terre (et rayon positif)
+                                 # ex: 0.5 R_E -> 1/0.5 = 2 fois plus petit
+                return f"d'un rayon environ {self._format_numeric_value(1 / radius_re, 1)} fois plus petit que celui de la [[Terre]]"
+            else:
+                # Cas où le rayon est nul ou négatif
+                return ""
+            
+    def _get_size_comparison(self, exoplanet) -> str: # exoplanet: Exoplanet (type hint)
+        """
+        Génère une comparaison de masse avec Jupiter ou la Terre.
+        La masse de l'exoplanète (exoplanet.mass.value) est supposée être en masses joviennes.
+        """
+        if not exoplanet.mass or exoplanet.mass.value is None:
+            return ""
+
+        mass_mj = exoplanet.mass.value  # Masse en masses de Jupiter (MJ)
+
+        # Seuils de similarité (par exemple, +/- 20% de la masse du corps de référence)
+        # Une planète est "similaire" si sa masse est dans [MASSE_REF * (1-MARGE), MASSE_REF * (1+MARGE)]
+        SIMILARITY_MARGIN = 0.2  # Marge de 20%
+
+        # Seuils pour Jupiter (la masse de référence est 1 MJ)
+        JUPITER_SIMILARITY_LOWER_MJ = 1.0 - SIMILARITY_MARGIN  # 0.8 MJ
+        JUPITER_SIMILARITY_UPPER_MJ = 1.0 + SIMILARITY_MARGIN  # 1.2 MJ
+
+        # Cas 1 : Comparaison prioritaire avec Jupiter
+        # Si la masse de l'exoplanète est supérieure ou égale à JUPITER_SIMILARITY_LOWER_MJ
+        if mass_mj >= JUPITER_SIMILARITY_LOWER_MJ:
+            if mass_mj <= JUPITER_SIMILARITY_UPPER_MJ:  # Proche de la masse de Jupiter (ex: 0.8 MJ à 1.2 MJ)
+                return "environ la même masse que [[Jupiter (planète)|Jupiter]]"
+            else:  # Nettement plus massive que Jupiter (ex: > 1.2 MJ)
+                return f"environ {self._format_numeric_value(mass_mj, 1)} fois plus massif que [[Jupiter (planète)|Jupiter]]"
+        # Cas 2 : Comparaison avec la Terre (si mass_mj < JUPITER_SIMILARITY_LOWER_MJ, ex: < 0.8 MJ)
+        else:
+            mass_me = mass_mj * self.M_JUPITER_IN_EARTH_MASSES  # Conversion en masses terrestres (ME)
+
+            # Seuils pour la Terre (la masse de référence est 1 ME)
+            EARTH_SIMILARITY_LOWER_ME = 1.0 - SIMILARITY_MARGIN  # 0.8 ME
+            EARTH_SIMILARITY_UPPER_ME = 1.0 + SIMILARITY_MARGIN  # 1.2 ME
+
+            if mass_me >= EARTH_SIMILARITY_LOWER_ME and mass_me <= EARTH_SIMILARITY_UPPER_ME: # Proche de la masse de la Terre
+                return "environ la même masse que la [[Terre]]"
+            elif mass_me > EARTH_SIMILARITY_UPPER_ME:  # Nettement plus massive que la Terre
+                return f"environ {self._format_numeric_value(mass_me, 1)} fois plus massif que la [[Terre]]"
+            elif mass_me > 0:  # Moins massive que la Terre (et masse positive)
+                               # ex: 0.5 ME -> 1/0.5 = 2 fois moins massif
+                # Gérer les cas où 1/mass_me devient très grand, c'est mathématiquement correct.
+                return f"environ {self._format_numeric_value(1 / mass_me, 1)} fois moins massif que la [[Terre]]"
+            else:
+                # Cas où la masse est nulle ou négative (ne devrait pas arriver si mass_mj > 0)
+                return "" # Ou un message approprié comme "Masse non positive"
+            
     def _get_orbital_comparison(self, exoplanet: Exoplanet) -> str:
         """
         Génère une comparaison orbitale avec le système solaire
@@ -486,47 +579,114 @@ Cette planète a été découverte en {self._format_year_field(exoplanet.discove
     
     def _get_star_description(self, exoplanet: Exoplanet) -> str:
         """
-        Génère une description de l'étoile hôte
+        Génère une description de l'étoile hôte avec un lien spécifique selon le type spectral.
         """
         desc = []
+
         if exoplanet.spectral_type and exoplanet.spectral_type.value:
-            desc.append(f"une [[étoile]] de type spectral [[{exoplanet.spectral_type.value}]]")
-        
+            spectral = exoplanet.spectral_type.value
+            link = self._get_spectral_type_link(spectral)
+            if link:
+                desc.append(f"une [[{link}|étoile de type spectral {spectral}]]")
+            else:
+                desc.append(f"une [[étoile]] de type spectral [[{spectral}]]")
+
         if exoplanet.distance and exoplanet.distance.value is not None:
             try:
                 pc_value = float(exoplanet.distance.value)
                 ly_value = self._parsecs_to_lightyears(pc_value)
                 formatted_ly_value = self._format_numeric_value(ly_value, precision=0)
-                # Pass exoplanet.name for context to _format_datapoint
                 formatted_pc_value_with_ref = self._format_datapoint(exoplanet.distance, exoplanet.name)
                 distance_str = f"située à {formatted_ly_value} [[année-lumière|années-lumière]] ({formatted_pc_value_with_ref} [[parsec|pc]]) de la [[Terre]]"
                 desc.append(distance_str)
             except (ValueError, TypeError):
                 original_distance_str = self._format_datapoint(exoplanet.distance, exoplanet.name)
                 if original_distance_str:
-                     desc.append(f"située à {original_distance_str} [[parsec|pc]] de la [[Terre]]")
+                    desc.append(f"située à {original_distance_str} [[parsec|pc]] de la [[Terre]]")
 
         if exoplanet.apparent_magnitude and exoplanet.apparent_magnitude.value:
-            # Pass exoplanet.name for context to _format_datapoint
             desc.append(f"d'une [[magnitude apparente]] de {self._format_datapoint(exoplanet.apparent_magnitude, exoplanet.name)}")
-        
+
         return " ".join(desc) if desc else "une étoile"
-    
+
+    def _parse_spectral_type(self, spectral_type: str) -> tuple[str, Optional[str]]:
+        """
+        Extrait la classe spectrale et la classe de luminosité d'un type spectral complet.
+        Exemple : 'G2V' => ('G', 'V')
+        """
+        match = re.match(r'^([OBAFGKMLTYDCSP])\d?\.?\d*([IV]{1,3})?', spectral_type.upper())
+        if not match:
+            return spectral_type[0].upper(), None  # fallback
+        return match.group(1), match.group(2)
+
+    def _get_spectral_type_link(self, spectral_type: str) -> Optional[str]:
+        """
+        Associe un type spectral (classe + luminosité) à un lien Wikipédia pertinent.
+        """
+        main_class, luminosity_class = self._parse_spectral_type(spectral_type)
+
+        # Mapping composite : (classe spectrale, classe de luminosité) => article Wikipédia
+        mapping = {
+            ("O", "V"): "Étoile_bleue_de_la_séquence_principale",
+            ("B", "V"): "Étoile_bleue-blanche_de_la_séquence_principale",
+            ("A", "V"): "Étoile_blanche_de_la_séquence_principale",
+            ("F", "V"): "Étoile_blanc-jaune_de_la_séquence_principale",
+            ("G", "V"): "Naine_jaune",
+            ("K", "V"): "Naine_orangée",
+            ("M", "V"): "Naine_rouge",
+            ("L", "V"): "Naine_brune",
+            ("T", "V"): "Naine_brune",
+            ("Y", "V"): "Naine_brune",
+            ("D", None): "Naine_blanche",
+            ("C", None): "Étoile_carbone",
+            ("S", None): "Étoile_de_type_S",
+            ("G", "III"): "Géante_jaune",
+            ("M", "III"): "Géante_rouge",
+            ("K", "III"): "Géante_orangée",
+            ("F", "III"): "Géante_blanc-jaune"
+        }
+
+        return mapping.get((main_class, luminosity_class)) or mapping.get((main_class, None))
+
     def _get_planet_description(self, exoplanet: Exoplanet) -> str:
         """
         Génère une description de la planète
         """
         desc = []
-        if exoplanet.mass and exoplanet.mass.value:
-            desc.append(self._get_size_comparison(exoplanet)) # _get_size_comparison uses _format_numeric_value, not _format_datapoint
-        if exoplanet.radius and exoplanet.radius.value:
-            # Pass exoplanet.name for context to _format_datapoint
-            desc.append(f"d'un rayon de {self._format_datapoint(exoplanet.radius, exoplanet.name)} [[rayon jovien|R_J]]")
-        if exoplanet.temperature and exoplanet.temperature.value:
-            # Pass exoplanet.name for context to _format_datapoint
-            desc.append(f"avec une température de {self._format_datapoint(exoplanet.temperature, exoplanet.name)} [[kelvin|K]]")
         
-        return ", ".join(desc) if desc else ""
+        # Comparaison de masse
+        if exoplanet.mass and exoplanet.mass.value is not None: # Vérifier explicitement None
+            mass_comparison = self._get_size_comparison(exoplanet)
+            if mass_comparison: # Ajouter seulement si la comparaison retourne quelque chose
+                desc.append(mass_comparison)
+        
+        # Comparaison de rayon (NOUVEAU)
+        if exoplanet.radius and exoplanet.radius.value is not None: # Vérifier explicitement None
+            radius_comparison = self._get_radius_comparison(exoplanet)
+            if radius_comparison: # Ajouter seulement si la comparaison retourne quelque chose
+                desc.append(radius_comparison)
+            
+        if exoplanet.temperature and exoplanet.temperature.value is not None: # Vérifier explicitement None
+            temp_str = self._format_datapoint(exoplanet.temperature, exoplanet.name)
+            if temp_str: # S'assurer que format_datapoint retourne quelque chose avant d'ajouter
+                 desc.append(f"avec une température de surface estimée à {temp_str} [[kelvin|K]]")
+        
+        # Joindre les descriptions avec des virgules, mais gérer le cas d'une seule description.
+        if not desc:
+            return ""
+        
+        # Construction de la phrase finale
+        # "Elle est {desc[0]}, {desc[1]} et {desc[2]}."
+        # ou "Elle est {desc[0]} et {desc[1]}."
+        # ou "Elle est {desc[0]}."
+
+        if len(desc) == 1:
+            return f"Elle est {desc[0]}."
+        elif len(desc) > 1:
+            # Joindre tous sauf le dernier avec ", " et ajouter " et " avant le dernier.
+            return f"Elle est {', '.join(desc[:-1])} et {desc[-1]}."
+        
+        return "" # Ne devrait pas être atteint si desc n'est pas vide
     
     def _format_references(self, exoplanet: Exoplanet) -> str:
         """Formate les références pour l'article."""
@@ -540,3 +700,32 @@ Cette planète a été découverte en {self._format_year_field(exoplanet.discove
                 f'<ref>{{{{Lien web |langue=en |nom1=NasaGov |titre={exoplanet.name} |url=https://science.nasa.gov/exoplanet-catalog/{exoplanet.name.lower().replace(" ", "-")}/ |site=science.nasa.gov |date=2024-11-1 |consulté le=2025-1-3 }}}}</ref>'
             )
         return " ".join(references) 
+
+    def generate_article(self, exoplanet: Exoplanet) -> str:
+        """
+        Génère l'article Wikipedia complet pour une exoplanète
+        """
+        # Réinitialiser les références pour le nouvel article
+        self.reference_utils.reset_references()
+
+        # Générer les différentes sections
+        infobox = self.infobox_generator.generate_infobox(exoplanet)
+        introduction = self.introduction_generator.generate_introduction(exoplanet)
+        star_description = self.star_utils.get_star_description(exoplanet)
+        categories = self.category_generator.generate_categories(exoplanet)
+        references = self.reference_utils.format_references_section()
+
+        # Assembler l'article
+        article = f"{infobox}\n\n"
+        article += f"{introduction}\n\n"
+        
+        if star_description:
+            article += f"== Étoile hôte ==\n{star_description}\n\n"
+            
+        article += f"== Notes et références ==\n{references}\n\n"
+        
+        # Ajouter les catégories
+        for category in categories:
+            article += f"[[Catégorie:{category}]]\n"
+
+        return article 
