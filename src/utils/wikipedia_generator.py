@@ -81,7 +81,7 @@ class WikipediaGenerator:
             return ref_content 
         return f'<ref name="{ref_name}" />'
     
-    def _format_datapoint(self, datapoint: DataPoint) -> str:
+    def _format_datapoint(self, datapoint: DataPoint, exoplanet_name: str) -> str:
         """Formate un DataPoint pour l'affichage dans l'article"""
         if not datapoint or not datapoint.value:
             return ""
@@ -97,8 +97,9 @@ class WikipediaGenerator:
         if datapoint.reference:
             # Standardized ref_name derivation
             ref_name = str(datapoint.reference.source.value) if hasattr(datapoint.reference.source, 'value') else str(datapoint.reference.source)
-            ref_content = datapoint.reference.to_wiki_ref()
-            return f"{value_str} {self._add_reference(ref_name, ref_content)}"
+            # Pass templates and exoplanet name to to_wiki_ref
+            ref_content_full = datapoint.reference.to_wiki_ref(self.template_refs, exoplanet_name) 
+            return f"{value_str} {self._add_reference(ref_name, ref_content_full)}"
             
         return value_str
     
@@ -125,9 +126,8 @@ class WikipediaGenerator:
             # Assuming ref.source.value gives the string name for the ref.
             ref_name = str(ref.source.value) if hasattr(ref.source, 'value') else str(ref.source)
             
-            # ref.to_wiki_ref() is expected to return the full reference string for the first use,
-            # e.g., <ref name="NasaGov">{{Lien web...}}</ref>
-            ref_content_full = ref.to_wiki_ref()
+            # Pass templates and exoplanet name to to_wiki_ref
+            ref_content_full = ref.to_wiki_ref(self.template_refs, exoplanet.name)
 
             if ref_content_full:
                 # self._add_reference will handle the logic of first vs. subsequent use
@@ -324,10 +324,10 @@ class WikipediaGenerator:
 {introduction}
 
 == Caractéristiques ==
-Cette [[exoplanète]] est un [[{planet_type}]] {self._get_planet_description(exoplanet)}. Elle orbite à {{{{unité|{self._format_datapoint(exoplanet.semi_major_axis)}|[[unité astronomique|unités astronomiques]]}}}} de son étoile{self._get_orbital_comparison(exoplanet)}.
+Cette [[exoplanète]] est un [[{planet_type}]] {self._get_planet_description(exoplanet)}. Elle orbite à {{{{unité|{self._format_datapoint(exoplanet.semi_major_axis, exoplanet.name)}|[[unité astronomique|unités astronomiques]]}}}} de son étoile{self._get_orbital_comparison(exoplanet)}.
 
 == Découverte ==
-Cette planète a été découverte en {self._format_datapoint(exoplanet.discovery_date)} par la méthode de {self._format_datapoint(exoplanet.discovery_method)}.
+Cette planète a été découverte en {self._format_year_field(exoplanet.discovery_date, exoplanet.name)} par la méthode de {self._format_datapoint(exoplanet.discovery_method, exoplanet.name)}.
 
 {self._format_references_section()}
 
@@ -342,20 +342,23 @@ Cette planète a été découverte en {self._format_datapoint(exoplanet.discover
         
         star_name_formatted = ""
         if exoplanet.host_star and exoplanet.host_star.value:
-            # Assuming host_star.value is the name, and we want to link it.
-            # _format_datapoint might add references, which is unusual for a direct star link in intro.
-            # For now, let's just use the value. If it's a DataPoint, we need just the value.
-            star_name = exoplanet.host_star.value
-            star_name_formatted = f"[[{star_name}]]" # Simple link to the star name
-            # If host_star is a DataPoint itself and has a reference for its name,
-            # _format_datapoint(exoplanet.host_star) would include that.
-            # For an intro, usually, we don't ref the star name itself, but its properties.
-            # Using exoplanet.host_star.value directly is safer if it's just a name.
+            # If host_star is a DataPoint, format it. Otherwise, use its value directly.
+            # This assumes host_star could be a simple string or a DataPoint.
+            # For the intro, we might not want references on the star name itself.
+            if isinstance(exoplanet.host_star, DataPoint):
+                 # If we want to use _format_datapoint, it now needs exoplanet_name
+                 # star_name_formatted = self._format_datapoint(exoplanet.host_star, exoplanet.name)
+                 # However, for linking a star name, simpler formatting is usually better.
+                 star_name = exoplanet.host_star.value
+                 star_name_formatted = f"[[{star_name}]]"
+            else: # Assuming it's a direct value like string
+                star_name = str(exoplanet.host_star.value) # Ensure it's a string
+                star_name_formatted = f"[[{star_name}]]"
         else:
             star_name_formatted = "son étoile hôte"
 
         # Use _get_star_description for additional details about the star
-        star_details = self._get_star_description(exoplanet) # This already fetches spectral type, distance, etc.
+        star_details = self._get_star_description(exoplanet) 
 
         # Construct constellation part if available
         constellation_part = ""
@@ -408,7 +411,7 @@ Cette planète a été découverte en {self._format_datapoint(exoplanet.discover
         
         return "\n".join(categories)
 
-    def _format_year_field(self, datapoint: Optional[DataPoint]) -> str:
+    def _format_year_field(self, datapoint: Optional[DataPoint], exoplanet_name: str) -> str:
         """
         Formats a DataPoint assumed to represent a year or a full date.
         Years are formatted as plain integers. Full dates are returned as strings.
@@ -418,18 +421,36 @@ Cette planète a été découverte en {self._format_datapoint(exoplanet.discover
             return ""
 
         value_str = ""
+        # Ensure we are working with a string version of the value first
+        raw_value_str = str(datapoint.value)
+
+        # Attempt to clean known problematic formatting for years
+        # Remove common thousands separators (French non-breaking space, regular space)
+        # Replace comma decimal with period for robust float conversion
+        cleaned_value_str = raw_value_str.replace("\u202F", "").replace(" ", "")
+        if ',' in cleaned_value_str and '.' not in cleaned_value_str: # Handle "2011,00" -> "2011.00"
+            cleaned_value_str = cleaned_value_str.replace(",", ".")
+
         try:
-            numeric_value = float(datapoint.value)
+            numeric_value = float(cleaned_value_str)
             if numeric_value.is_integer():
-                value_str = str(int(numeric_value)) 
+                # Check for plausible year range
+                year_int = int(numeric_value)
+                if 1000 <= year_int <= (datetime.datetime.now().year + 10): # Allow some future years
+                    value_str = str(year_int) # "2011"
+                else:
+                    value_str = raw_value_str # Not a plausible year, use original
             else:
-                value_str = str(datapoint.value) 
+                # It's a float but not an integer (e.g. 2011.5), use original raw string
+                value_str = raw_value_str
         except (ValueError, TypeError):
-            value_str = str(datapoint.value)
+            # Not a number (e.g. "2011-2012", "Unknown", "vers 2011"), use original raw string
+            value_str = raw_value_str
 
         if datapoint.reference:
             ref_name = str(datapoint.reference.source.value) if hasattr(datapoint.reference.source, 'value') else str(datapoint.reference.source)
-            ref_content_full = datapoint.reference.to_wiki_ref()
+            # Pass templates and exoplanet name to to_wiki_ref
+            ref_content_full = datapoint.reference.to_wiki_ref(self.template_refs, exoplanet_name)
             if ref_content_full:
                  return f"{value_str} {self._add_reference(ref_name, ref_content_full)}"
         
@@ -475,31 +496,19 @@ Cette planète a été découverte en {self._format_datapoint(exoplanet.discover
             try:
                 pc_value = float(exoplanet.distance.value)
                 ly_value = self._parsecs_to_lightyears(pc_value)
-                
-                # Format light-years, e.g., to 0 decimal places
                 formatted_ly_value = self._format_numeric_value(ly_value, precision=0)
-                
-                # Format parsecs value (number only, no unit, no ref yet)
-                # _format_datapoint already handles the number formatting and adds the reference.
-                # It returns "value_str <ref_tag>" or just "value_str"
-                formatted_pc_value_with_ref = self._format_datapoint(exoplanet.distance)
-
-                # Construct the string: "XXX années-lumière (YYY pc <ref...>) de la Terre"
-                # The unit "pc" for parsecs needs to be part of the parenthesized expression.
-                # _format_datapoint gives "value<ref>", so we add " pc" after that.
+                # Pass exoplanet.name for context to _format_datapoint
+                formatted_pc_value_with_ref = self._format_datapoint(exoplanet.distance, exoplanet.name)
                 distance_str = f"située à {formatted_ly_value} [[année-lumière|années-lumière]] ({formatted_pc_value_with_ref} [[parsec|pc]]) de la [[Terre]]"
                 desc.append(distance_str)
             except (ValueError, TypeError):
-                # Fallback if conversion fails, though exoplanet.distance.value should be numeric
-                # This could use the original formatting as a fallback if needed.
-                # For now, if conversion fails, it might skip adding distance.
-                # Or, more robustly:
-                original_distance_str = self._format_datapoint(exoplanet.distance)
-                if original_distance_str: # If there's anything to format
+                original_distance_str = self._format_datapoint(exoplanet.distance, exoplanet.name)
+                if original_distance_str:
                      desc.append(f"située à {original_distance_str} [[parsec|pc]] de la [[Terre]]")
 
         if exoplanet.apparent_magnitude and exoplanet.apparent_magnitude.value:
-            desc.append(f"d'une [[magnitude apparente]] de {self._format_datapoint(exoplanet.apparent_magnitude)}")
+            # Pass exoplanet.name for context to _format_datapoint
+            desc.append(f"d'une [[magnitude apparente]] de {self._format_datapoint(exoplanet.apparent_magnitude, exoplanet.name)}")
         
         return " ".join(desc) if desc else "une étoile"
     
@@ -509,11 +518,13 @@ Cette planète a été découverte en {self._format_datapoint(exoplanet.discover
         """
         desc = []
         if exoplanet.mass and exoplanet.mass.value:
-            desc.append(self._get_size_comparison(exoplanet))
+            desc.append(self._get_size_comparison(exoplanet)) # _get_size_comparison uses _format_numeric_value, not _format_datapoint
         if exoplanet.radius and exoplanet.radius.value:
-            desc.append(f"d'un rayon de {self._format_datapoint(exoplanet.radius)} [[rayon jovien|R_J]]")
+            # Pass exoplanet.name for context to _format_datapoint
+            desc.append(f"d'un rayon de {self._format_datapoint(exoplanet.radius, exoplanet.name)} [[rayon jovien|R_J]]")
         if exoplanet.temperature and exoplanet.temperature.value:
-            desc.append(f"avec une température de {self._format_datapoint(exoplanet.temperature)} [[kelvin|K]]")
+            # Pass exoplanet.name for context to _format_datapoint
+            desc.append(f"avec une température de {self._format_datapoint(exoplanet.temperature, exoplanet.name)} [[kelvin|K]]")
         
         return ", ".join(desc) if desc else ""
     
