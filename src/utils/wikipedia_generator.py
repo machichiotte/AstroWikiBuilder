@@ -55,162 +55,79 @@ class WikipediaGenerator:
         self.category_generator = CategoryGenerator()
         self.star_utils = StarUtils(self.format_utils)
 
-    def _get_reference(self, source: str, title: str, id: str) -> str:
+    def _get_reference(self, source: str, title: str) -> str:
         """
-        Retourne la référence formatée pour une source donnée
+        Génère une référence au format Wikipedia
         """
-        template = self.template_refs.get(source, "")
-        return template.format(title=title, id=id)
-    
+        return f"<ref name=\"{source}\">{title}</ref>"
+
     def _add_reference(self, ref_name: str, ref_content: str) -> str:
         """
-        Ajoute une référence et retourne la balise de référence appropriée.
-        ref_content is expected to be the full reference tag for the first use,
-        including the <ref name="..."> wrapper.
-        e.g. <ref name="NasaGov">{{Lien web...}}</ref>
+        Ajoute une référence à la liste des références utilisées
         """
         if ref_name not in self._used_refs:
             self._used_refs.add(ref_name)
-            # Check if the content being added defines a grouped note
-            if isinstance(ref_content, str) and 'group="note"' in ref_content.lower():
-                self._has_grouped_notes = True
-            return ref_content 
-        return f'<ref name="{ref_name}" />'
-    
+            self.template_refs[ref_name] = ref_content
+        return self._get_reference(ref_name, "")
+
+    def _format_year_field(self, field: DataPoint, exoplanet_name: str) -> str:
+        """
+        Formate un champ de type année avec sa référence
+        """
+        if not field or not field.value:
+            return ""
+            
+        year = str(field.value)
+        if not year.isdigit() or len(year) != 4:
+            return year
+            
+        ref = self._add_reference(str(field.reference.source.value), field.reference.to_wiki_ref(self.template_refs, exoplanet_name))
+        return f"{year}{ref}"
+
+    def _format_year_field_with_ref(self, field: DataPoint, exoplanet_name: str) -> str:
+        """
+        Formate un champ de type année avec sa référence
+        """
+        if not field or not field.value:
+            return ""
+            
+        year = str(field.value)
+        if not year.isdigit() or len(year) != 4:
+            return year
+            
+        ref = self._add_reference(str(field.reference.source.value), field.reference.to_wiki_ref(self.template_refs, exoplanet_name))
+        return f"{year}{ref}"
+
     def _format_datapoint(self, datapoint: DataPoint, exoplanet_name: str) -> str:
-        """Formate un DataPoint pour l'affichage dans l'article"""
+        """
+        Formate un datapoint avec sa référence
+        """
         if not datapoint or not datapoint.value:
             return ""
             
-        # Essayer de convertir la valeur en nombre si possible
-        try:
-            value = float(datapoint.value)
-            value_str = self.format_utils.format_numeric_value(value)
-        except (ValueError, TypeError):
-            # Si la conversion échoue, utiliser la valeur telle quelle
-            value_str = str(datapoint.value)
-        
-        if datapoint.reference:
-            # Standardized ref_name derivation
-            ref_name = str(datapoint.reference.source.value) if hasattr(datapoint.reference.source, 'value') else str(datapoint.reference.source)
-            # Pass templates and exoplanet name to to_wiki_ref
-            ref_content_full = datapoint.reference.to_wiki_ref(self.template_refs, exoplanet_name) 
-            return f"{value_str} {self._add_reference(ref_name, ref_content_full)}"
+        value = str(datapoint.value)
+        if not datapoint.reference:
+            return value
             
-        return value_str
-    
-    def generate_infobox_exoplanet(self, exoplanet: Exoplanet) -> str:
+        ref = self._add_reference(str(datapoint.reference.source.value), datapoint.reference.to_wiki_ref(self.template_refs, exoplanet_name))
+        return f"{value}{ref}"
+
+    def _format_references_section(self) -> str:
         """
-        Génère l'infobox pour une exoplanète, conforme au modèle Wikipédia fourni, sans afficher les unités/notes si la valeur principale est absente
+        Génère la section des références
         """
-        def val(attr):
-            return getattr(exoplanet, attr).value if getattr(exoplanet, attr) and hasattr(getattr(exoplanet, attr), 'value') else None
-        def unit(attr):
-            return getattr(exoplanet, attr).unit if getattr(exoplanet, attr) and hasattr(getattr(exoplanet, attr), 'unit') and getattr(exoplanet, attr).unit else None
-        def notes(attr):
-            datapoint = getattr(exoplanet, attr, None)
-            if not datapoint or not hasattr(datapoint, 'reference') or not datapoint.reference:
-                return None
+        if not self._used_refs:
+            return ""
             
-            ref = datapoint.reference
-            # Ensure ref.source and ref.to_wiki_ref are available
-            if not hasattr(ref, 'source') or not ref.source or not hasattr(ref, 'to_wiki_ref'):
-                return None
+        ref_section = "== Notes et références ==\n{{Références}}\n"
+        return ref_section
 
-            # ref_name should be like "NasaGov", "EPE", from ref.source.value
-            # It's crucial that ref.source has a 'value' attribute if it's an Enum or similar.
-            # Assuming ref.source.value gives the string name for the ref.
-            ref_name = str(ref.source.value) if hasattr(ref.source, 'value') else str(ref.source)
-            
-            # Pass templates and exoplanet name to to_wiki_ref
-            ref_content_full = ref.to_wiki_ref(self.template_refs, exoplanet.name)
+    def generate_article(self, exoplanet: Exoplanet) -> str:
+        """
+        Génère l'article complet pour une exoplanète
+        """
+        return self.generate_article_content(exoplanet)
 
-            if ref_content_full:
-                # self._add_reference will handle the logic of first vs. subsequent use
-                return self._add_reference(ref_name, ref_content_full)
-            return None
-
-        def add_field(label, attr): # Removed predefined_default_unit_for_field from signature
-            datapoint = getattr(exoplanet, attr, None)
-            if not datapoint or not datapoint.value:
-                return ""
-                
-            s = ""
-            value_str = self.format_utils.format_datapoint(datapoint, exoplanet.name, self.template_refs, self._add_reference)
-            if value_str:
-                s += f" | {label} = {value_str}\n"
-                
-                actual_unit = unit(attr)
-                expected_default_unit = self.FIELD_DEFAULT_UNITS.get(label)
-
-                if actual_unit:
-                    if expected_default_unit and actual_unit == expected_default_unit:
-                        pass  # Omit unit line: actual unit is same as predefined default
-                    else:
-                        # Add unit line: actual unit is different, or no predefined default for this field
-                        s += f" | {label} unité = {actual_unit}\n"
-                # If actual_unit is None, no unit line is printed.
-            return s
-
-        # REMOVED: self._used_refs = set() # This was resetting global tracking
-
-        infobox = f"{{{{Infobox Exoplanète\n"
-        infobox += f" | nom = {exoplanet.name}\n"
-        infobox += " | image = \n | légende = \n"
-        # Étoile
-        infobox += add_field("étoile", "host_star") # No default unit typically
-        infobox += add_field("époque étoile", "star_epoch") # No default unit
-        infobox += add_field("ascension droite", "right_ascension") # No default unit
-        infobox += add_field("déclinaison", "declination") # No default unit
-        infobox += add_field("distance", "distance") # Default is 'pc' from map
-        infobox += add_field("constellation", "constellation") # No default unit
-        # Add "carte UAI" here, assuming exoplanet.iau_constellation_map holds the image filename
-        if hasattr(exoplanet, 'iau_constellation_map') and exoplanet.iau_constellation_map:
-            infobox += f" | carte = {exoplanet.iau_constellation_map}\n"
-        infobox += add_field("type spectral", "spectral_type") # No default unit
-        infobox += add_field("magnitude apparente", "apparent_magnitude") # No default unit
-        # Planète
-        infobox += f" | type = {self._get_planet_type(exoplanet)}\n"
-        # Caractéristiques orbitales
-        infobox += add_field("demi-grand axe", "semi_major_axis") # Default 'ua'
-        infobox += add_field("périastre", "periastron") # Default 'ua'
-        infobox += add_field("apoastre", "apoastron") # Default 'ua'
-        infobox += add_field("excentricité", "eccentricity") # No default unit
-        infobox += add_field("période", "orbital_period") # Default 'j'
-        infobox += add_field("distance angulaire", "angular_distance") # No default unit (mas, etc.)
-        infobox += add_field("t_peri", "periastron_time") # No default unit
-        infobox += add_field("inclinaison", "inclination") # Default '°'
-        infobox += add_field("arg_péri", "argument_of_periastron") # Default '°'
-        infobox += add_field("époque", "epoch") # No default unit
-        # Caractéristiques physiques
-        infobox += add_field("masse", "mass") # Default 'M_J'
-        infobox += add_field("masse minimale", "minimum_mass") # Default 'M_J'
-        infobox += add_field("rayon", "radius") # Default 'R_J'
-        infobox += add_field("masse volumique", "density") # Default 'kg/m³'
-        infobox += add_field("gravité", "gravity") # Default 'm/s²'
-        infobox += add_field("période de rotation", "rotation_period") # Default 'h'
-        infobox += add_field("température", "temperature") # Default 'K'
-        infobox += add_field("albedo_bond", "bond_albedo") # No default unit
-        # Atmosphère
-        infobox += add_field("pression", "pressure") # No default unit (bar, atm, etc.)
-        infobox += add_field("composition", "composition") # No default unit
-        infobox += add_field("vitesse des vents", "wind_speed") # No default unit (m/s, km/h)
-        # Découverte
-        infobox += add_field("découvreurs", "discoverers") # No default unit
-        infobox += add_field("programme", "discovery_program") # No default unit
-        infobox += add_field("méthode", "discovery_method") # No default unit
-        infobox += add_field("date", "discovery_date") # No default unit
-        infobox += add_field("lieu", "discovery_location") # No default unit
-        infobox += add_field("prédécouverte", "pre_discovery") # No default unit
-        infobox += add_field("détection", "detection_method") # No default unit
-        infobox += add_field("statut", "status") # No default unit
-        # Autres noms
-        other_names_str = ", ".join(exoplanet.other_names) if exoplanet.other_names else None
-        if other_names_str:
-            infobox += f" | autres noms = {other_names_str}\n"
-        infobox += "}}"
-        return infobox
-    
     def _get_planet_type(self, exoplanet: Exoplanet) -> str:
         """
         Détermine le type de planète en fonction de ses caractéristiques physiques
@@ -220,7 +137,7 @@ class WikipediaGenerator:
         temp_value = exoplanet.temperature.value if exoplanet.temperature and exoplanet.temperature.value else None
 
         # Classification des planètes gazeuses
-        if mass_value and mass_value >= 1:  # Masse >= 1 M_J
+        if mass_value and mass_value >= 1:
             if temp_value:
                 if temp_value >= 2200:
                     return "Jupiter ultra-chaud"
@@ -234,7 +151,7 @@ class WikipediaGenerator:
                 return "Géante gazeuse"
 
         # Classification des planètes de glace
-        elif radius_value and radius_value >= 0.8:  # Rayon >= 0.8 R_J
+        elif radius_value and radius_value >= 0.8:
             if temp_value:
                 if temp_value >= 1000:
                     return "Neptune chaud"
@@ -246,7 +163,7 @@ class WikipediaGenerator:
                 return "Géante de glaces"
 
         # Classification des planètes telluriques
-        elif mass_value and mass_value < 1:  # Masse < 1 M_J
+        elif mass_value and mass_value < 1:
             if radius_value:
                 if radius_value >= 1.5:
                     return "Super-Terre"
@@ -257,7 +174,6 @@ class WikipediaGenerator:
             else:
                 return "Planète tellurique"
 
-        # Cas par défaut
         return "Planète tellurique"
     
     def _get_used_references(self, exoplanet: Exoplanet) -> List[str]:
@@ -281,98 +197,65 @@ class WikipediaGenerator:
             
         return list(refs)
 
-    # Chemin du fichier : astro/wiki/ref_utils.py
-
-    def _format_references_section(self) -> str:
-        """
-        Génère la section "Notes et références" avec les sous-sections
-        "Notes" et "Références". The "Notes" subsection is conditional.
-        """
-        notes_section = ""
-        if self._has_grouped_notes:
-            notes_section = """=== Notes ===
-{{références|groupe="note"}}
-"""
-        
-        return f"""
-== Notes et références ==
-{notes_section}
-=== Références ===
-{{Références}}
-"""
-
     def generate_article_content(self, exoplanet: Exoplanet) -> str:
-        """Génère le contenu de l'article Wikipedia"""
-        # Réinitialiser les références pour chaque nouvel article
-        self._used_refs = set()
-        self._has_grouped_notes = False # Reset for the current article
-        
-        planet_type = self._get_planet_type(exoplanet)
-        # Generate introduction sentence
+        """
+        Génère le contenu complet de l'article pour une exoplanète
+        """
+        # Générer l'introduction
         introduction = self.introduction_generator.generate_introduction(exoplanet)
-        # Generate categories
-        categories = self.category_generator.generate_categories(exoplanet)
-
-        content = f"""{{{{Ébauche|exoplanète|}}}}
-
-{self.generate_infobox_exoplanet(exoplanet)}
-
-{introduction}
-
-== Caractéristiques ==
-Cette [[exoplanète]] est un [[{planet_type}]] {self._get_planet_description(exoplanet)}. Elle orbite à {{{{unité|{self.format_utils.format_datapoint(exoplanet.semi_major_axis, exoplanet.name, self.template_refs, self._add_reference)}|[[unité astronomique|unités astronomiques]]}}}} de son étoile{self.comparison_utils.get_orbital_comparison(exoplanet)}.
-
-== Découverte ==
-Cette planète a été découverte en {self.format_utils.format_year_field_with_ref(exoplanet.discovery_date, exoplanet.name, self.template_refs, self._add_reference)} par la méthode de {self.format_utils.format_datapoint(exoplanet.discovery_method, exoplanet.name, self.template_refs, self._add_reference)}.
-
-{self._format_references_section()}
-
-{{{{portail|astronomie|exoplanètes}}}}
-
-{categories}
-"""
-        return content
-    
-    def _generate_introduction_sentence(self, exoplanet: Exoplanet) -> str:
-        """Génère la phrase d'introduction pour l'article."""
         
-        star_name_formatted = ""
-        if exoplanet.host_star and exoplanet.host_star.value:
-            # If host_star is a DataPoint, format it. Otherwise, use its value directly.
-            # This assumes host_star could be a simple string or a DataPoint.
-            # For the intro, we might not want references on the star name itself.
-            if isinstance(exoplanet.host_star, DataPoint):
-                 # If we want to use _format_datapoint, it now needs exoplanet_name
-                 # star_name_formatted = self._format_datapoint(exoplanet.host_star, exoplanet.name)
-                 # However, for linking a star name, simpler formatting is usually better.
-                 star_name = exoplanet.host_star.value
-                 star_name_formatted = f"[[{star_name}]]"
-            else: # Assuming it's a direct value like string
-                star_name = str(exoplanet.host_star.value) # Ensure it's a string
-                star_name_formatted = f"[[{star_name}]]"
-        else:
-            star_name_formatted = "son étoile hôte"
+        # Générer l'infobox
+        infobox = self.infobox_generator.generate_infobox(exoplanet)
+        
+        # Générer les sections
+        sections = []
+        
+        # Section Caractéristiques physiques
+        physical_section = self._generate_physical_section(exoplanet)
+        if physical_section:
+            sections.append(physical_section)
+            
+        # Section Orbite
+        orbit_section = self._generate_orbit_section(exoplanet)
+        if orbit_section:
+            sections.append(orbit_section)
+            
+        # Section Découverte
+        discovery_section = self._generate_discovery_section(exoplanet)
+        if discovery_section:
+            sections.append(discovery_section)
+            
+        # Section Étoile hôte
+        star_section = self._generate_star_section(exoplanet)
+        if star_section:
+            sections.append(star_section)
+            
+        # Section Habitabilité
+        habitability_section = self._generate_habitability_section(exoplanet)
+        if habitability_section:
+            sections.append(habitability_section)
+            
+        # Section Références
+        references_section = self._format_references_section()
+        if references_section:
+            sections.append(references_section)
+            
+        # Assembler le contenu
+        content = f"{infobox}\n\n{introduction}\n\n"
+        content += "\n\n".join(sections)
+        
+        return content
 
-        # Use _get_star_description for additional details about the star
-        star_details = self.star_utils.get_star_description(exoplanet) 
-
-        # Construct constellation part if available
-        constellation_part = ""
-        if exoplanet.constellation and exoplanet.constellation.value:
-            constellation_name = exoplanet.constellation.value
-            constellation_part = f" dans la [[constellation]] de [[{constellation_name}]]"
-            # If constellation itself has a reference via _format_datapoint(exoplanet.constellation), 
-            # it would be complex. Usually, constellation is just a name.
-
-        intro = f"'''{{{{nobr|{exoplanet.name}}}}}''' est une [[exoplanète]] en [[orbite]] autour de {{{{nobr|{star_name_formatted}}}}}, {star_details}{constellation_part}."
-        return intro
-
-    def _get_planet_description(self, exoplanet: Exoplanet) -> str:
+    def _generate_physical_section(self, exoplanet: Exoplanet) -> str:
         """
-        Génère une description de la planète basée sur ses caractéristiques physiques
+        Génère la section des caractéristiques physiques de l'exoplanète
         """
+        planet_type = self._get_planet_type(exoplanet)
         mass_comparison = self.comparison_utils.get_mass_comparison(exoplanet)
         radius_comparison = self.comparison_utils.get_radius_comparison(exoplanet)
+        
+        section = "== Caractéristiques ==\n"
+        section += f"Cette [[exoplanète]] est un [[{planet_type}]]"
         
         description_parts = []
         if mass_comparison:
@@ -381,22 +264,112 @@ Cette planète a été découverte en {self.format_utils.format_year_field_with_
             description_parts.append(radius_comparison)
             
         if description_parts:
-            return ", ".join(description_parts)
+            section += ", " + ", ".join(description_parts)
+            
+        section += "."
+        
+        return section
+
+    def _generate_orbit_section(self, exoplanet: Exoplanet) -> str:
+        """
+        Génère la section de l'orbite de l'exoplanète
+        """
+        orbital_comparison = self.comparison_utils.get_orbital_comparison(exoplanet)
+        semi_major_axis = self.format_utils.format_datapoint(exoplanet.semi_major_axis, exoplanet.name, self.template_refs, self._add_reference)
+        
+        section = "== Orbite ==\n"
+        section += f"Elle orbite à {{{{unité|{semi_major_axis}|[[unité astronomique|unités astronomiques]]}}}} de son étoile{orbital_comparison}."
+        
+        return section
+
+    def _generate_discovery_section(self, exoplanet: Exoplanet) -> str:
+        """
+        Génère la section de la découverte de l'exoplanète
+        """
+        discovery_date = self.format_utils.format_year_field_with_ref(exoplanet.discovery_date, exoplanet.name, self.template_refs, self._add_reference)
+        discovery_method = self.format_utils.format_datapoint(exoplanet.discovery_method, exoplanet.name, self.template_refs, self._add_reference)
+        
+        section = "== Découverte ==\n"
+        section += f"Cette planète a été découverte en {discovery_date} par la méthode de {discovery_method}."
+        
+        return section
+
+    def _generate_star_section(self, exoplanet: Exoplanet) -> str:
+        """
+        Génère la section de l'étoile hôte de l'exoplanète
+        """
+        star_description = self.star_utils.get_star_description(exoplanet)
+        
+        section = "== Étoile hôte ==\n"
+        section += star_description
+        
+        return section
+
+    def _generate_habitability_section(self, exoplanet: Exoplanet) -> str:
+        """
+        Génère la section de l'habitabilité de l'exoplanète
+        """
+        # Pour l'instant, cette section est vide car nous n'avons pas encore implémenté
+        # la logique d'habitabilité
         return ""
 
-    def _format_references(self, exoplanet: Exoplanet) -> str:
+    def _format_references(self) -> str:
         """
         Génère la section des références
         """
-        refs = self._get_used_references(exoplanet)
-        if not refs:
+        if not self._used_refs:
             return ""
             
-        ref_section = "== Notes et références ==\n{{Références}}\n"
-        return ref_section
+        section = "== Références ==\n"
+        section += "{{Références}}\n"
+        
+        return section
 
-    def generate_article(self, exoplanet: Exoplanet) -> str:
+    def generate_article_content(self, exoplanet: Exoplanet) -> str:
         """
-        Génère l'article complet pour une exoplanète
+        Génère le contenu complet de l'article pour une exoplanète
         """
-        return self.generate_article_content(exoplanet) 
+        # Générer l'introduction
+        introduction = self.introduction_generator.generate_introduction(exoplanet)
+        
+        # Générer l'infobox
+        infobox = self.infobox_generator.generate_infobox(exoplanet)
+        
+        # Générer les sections
+        sections = []
+        
+        # Section Caractéristiques physiques
+        physical_section = self._generate_physical_section(exoplanet)
+        if physical_section:
+            sections.append(physical_section)
+            
+        # Section Orbite
+        orbit_section = self._generate_orbit_section(exoplanet)
+        if orbit_section:
+            sections.append(orbit_section)
+            
+        # Section Découverte
+        discovery_section = self._generate_discovery_section(exoplanet)
+        if discovery_section:
+            sections.append(discovery_section)
+            
+        # Section Étoile hôte
+        star_section = self._generate_star_section(exoplanet)
+        if star_section:
+            sections.append(star_section)
+            
+        # Section Habitabilité
+        habitability_section = self._generate_habitability_section(exoplanet)
+        if habitability_section:
+            sections.append(habitability_section)
+            
+        # Section Références
+        references_section = self._format_references_section()
+        if references_section:
+            sections.append(references_section)
+            
+        # Assembler le contenu
+        content = f"{infobox}\n\n{introduction}\n\n"
+        content += "\n\n".join(sections)
+        
+        return content 

@@ -41,9 +41,9 @@ class StarUtils:
 
         # Distance
         if exoplanet.distance and exoplanet.distance.value:
-            distance_ly = self.format_utils.parsec_to_light_years(exoplanet.distance.value)
+            distance_ly = self.format_utils.parsecs_to_lightyears(exoplanet.distance.value)
             if distance_ly:
-                description += f", située à environ {self.format_utils.format_value(distance_ly)} années-lumière"
+                description += f", située à environ {self.format_utils.format_numeric_value(distance_ly)} années-lumière"
 
         # Constellation
         if exoplanet.constellation and exoplanet.constellation.value:
@@ -62,12 +62,12 @@ class StarUtils:
             characteristics["Type spectral"] = exoplanet.spectral_type.value
             
         if exoplanet.apparent_magnitude and exoplanet.apparent_magnitude.value:
-            characteristics["Magnitude apparente"] = self.format_utils.format_value(exoplanet.apparent_magnitude.value)
+            characteristics["Magnitude apparente"] = self.format_utils.format_numeric_value(exoplanet.apparent_magnitude.value)
             
         if exoplanet.distance and exoplanet.distance.value:
-            distance_ly = self.format_utils.parsec_to_light_years(exoplanet.distance.value)
+            distance_ly = self.format_utils.parsecs_to_lightyears(exoplanet.distance.value)
             if distance_ly:
-                characteristics["Distance"] = f"{self.format_utils.format_value(distance_ly)} années-lumière"
+                characteristics["Distance"] = f"{self.format_utils.format_numeric_value(distance_ly)} années-lumière"
                 
         if exoplanet.constellation and exoplanet.constellation.value:
             characteristics["Constellation"] = exoplanet.constellation.value
