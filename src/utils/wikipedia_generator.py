@@ -4,10 +4,19 @@ from src.models.exoplanet import Exoplanet
 from src.models.reference import SourceType, DataPoint
 import datetime
 import locale
+import re
+from typing import Optional
+from .infobox_generator import InfoboxGenerator
+from .introduction_generator import IntroductionGenerator
+from .category_generator import CategoryGenerator
+from .reference_utils import ReferenceUtils
+from .star_utils import StarUtils
+from .format_utils import FormatUtils
+from .comparison_utils import ComparisonUtils
 
 class WikipediaGenerator:
     """
-    Classe pour générer le contenu wikitexte des articles d'exoplanètes
+    Classe pour générer les articles Wikipedia des exoplanètes
     """
     FIELD_DEFAULT_UNITS = {
         "masse": "M_J",
@@ -36,29 +45,16 @@ class WikipediaGenerator:
             'ouvrage': "{{Ouvrage |langue= |auteur= |titre= |éditeur= |année= |pages totales= |passage= |isbn= |lire en ligne= |consulté le= }}"
         }
         self._used_refs = set()
-        self._has_grouped_notes = False # Initialize the new flag
+        self._has_grouped_notes = False
         locale.setlocale(locale.LC_ALL, 'fr_FR.UTF-8')
+        self.format_utils = FormatUtils()
+        self.comparison_utils = ComparisonUtils(self.format_utils)
+        self.reference_utils = ReferenceUtils()
+        self.infobox_generator = InfoboxGenerator(self.reference_utils)
+        self.introduction_generator = IntroductionGenerator(self.comparison_utils, self.format_utils)
+        self.category_generator = CategoryGenerator()
+        self.star_utils = StarUtils(self.format_utils)
 
-    def _parsecs_to_lightyears(self, parsecs: float) -> float:
-        """Convertit les parsecs en années-lumière."""
-        return parsecs * 3.26156
-    
-    def _format_numeric_value(self, value: Optional[float], precision: int = 2) -> str:
-        """
-        Formate une valeur numérique avec le format français
-        """
-        if value is None:
-            return ""
-        return locale.format_string(f"%.{precision}f", value, grouping=True)
-    
-    def _format_value_with_unit(self, value: Optional[float], unit: str, precision: int = 2) -> str:
-        """
-        Formate une valeur avec son unité, gère les valeurs None
-        """
-        if value is None:
-            return ""
-        return f"{self._format_numeric_value(value, precision)} {unit}"
-    
     def _get_reference(self, source: str, title: str, id: str) -> str:
         """
         Retourne la référence formatée pour une source donnée
@@ -89,7 +85,7 @@ class WikipediaGenerator:
         # Essayer de convertir la valeur en nombre si possible
         try:
             value = float(datapoint.value)
-            value_str = self._format_numeric_value(value)
+            value_str = self.format_utils.format_numeric_value(value)
         except (ValueError, TypeError):
             # Si la conversion échoue, utiliser la valeur telle quelle
             value_str = str(datapoint.value)
@@ -135,13 +131,16 @@ class WikipediaGenerator:
             return None
 
         def add_field(label, attr): # Removed predefined_default_unit_for_field from signature
-            v = val(attr)
+            datapoint = getattr(exoplanet, attr, None)
+            if not datapoint or not datapoint.value:
+                return ""
+                
             s = ""
-            if v is not None and v != "":
-                s += f" | {label} = {v}\n"
+            value_str = self.format_utils.format_datapoint(datapoint, exoplanet.name, self.template_refs, self._add_reference)
+            if value_str:
+                s += f" | {label} = {value_str}\n"
                 
                 actual_unit = unit(attr)
-                n = notes(attr)
                 expected_default_unit = self.FIELD_DEFAULT_UNITS.get(label)
 
                 if actual_unit:
@@ -151,9 +150,6 @@ class WikipediaGenerator:
                         # Add unit line: actual unit is different, or no predefined default for this field
                         s += f" | {label} unité = {actual_unit}\n"
                 # If actual_unit is None, no unit line is printed.
-                
-                if n:
-                    s += f" | {label} notes = {n}\n"
             return s
 
         # REMOVED: self._used_refs = set() # This was resetting global tracking
@@ -313,9 +309,9 @@ class WikipediaGenerator:
         
         planet_type = self._get_planet_type(exoplanet)
         # Generate introduction sentence
-        introduction = self._generate_introduction_sentence(exoplanet)
+        introduction = self.introduction_generator.generate_introduction(exoplanet)
         # Generate categories
-        categories = self._generate_categories(exoplanet)
+        categories = self.category_generator.generate_categories(exoplanet)
 
         content = f"""{{{{Ébauche|exoplanète|}}}}
 
@@ -324,10 +320,10 @@ class WikipediaGenerator:
 {introduction}
 
 == Caractéristiques ==
-Cette [[exoplanète]] est un [[{planet_type}]] {self._get_planet_description(exoplanet)}. Elle orbite à {{{{unité|{self._format_datapoint(exoplanet.semi_major_axis, exoplanet.name)}|[[unité astronomique|unités astronomiques]]}}}} de son étoile{self._get_orbital_comparison(exoplanet)}.
+Cette [[exoplanète]] est un [[{planet_type}]] {self._get_planet_description(exoplanet)}. Elle orbite à {{{{unité|{self.format_utils.format_datapoint(exoplanet.semi_major_axis, exoplanet.name, self.template_refs, self._add_reference)}|[[unité astronomique|unités astronomiques]]}}}} de son étoile{self.comparison_utils.get_orbital_comparison(exoplanet)}.
 
 == Découverte ==
-Cette planète a été découverte en {self._format_year_field(exoplanet.discovery_date, exoplanet.name)} par la méthode de {self._format_datapoint(exoplanet.discovery_method, exoplanet.name)}.
+Cette planète a été découverte en {self.format_utils.format_year_field_with_ref(exoplanet.discovery_date, exoplanet.name, self.template_refs, self._add_reference)} par la méthode de {self.format_utils.format_datapoint(exoplanet.discovery_method, exoplanet.name, self.template_refs, self._add_reference)}.
 
 {self._format_references_section()}
 
@@ -358,7 +354,7 @@ Cette planète a été découverte en {self._format_year_field(exoplanet.discove
             star_name_formatted = "son étoile hôte"
 
         # Use _get_star_description for additional details about the star
-        star_details = self._get_star_description(exoplanet) 
+        star_details = self.star_utils.get_star_description(exoplanet) 
 
         # Construct constellation part if available
         constellation_part = ""
@@ -371,172 +367,36 @@ Cette planète a été découverte en {self._format_year_field(exoplanet.discove
         intro = f"'''{{{{nobr|{exoplanet.name}}}}}''' est une [[exoplanète]] en [[orbite]] autour de {{{{nobr|{star_name_formatted}}}}}, {star_details}{constellation_part}."
         return intro
 
-    def _generate_categories(self, exoplanet: Exoplanet) -> str:
-        """Génère les catégories pour l'article."""
-        categories = []
-        planet_type = self._get_planet_type(exoplanet)
-        if planet_type:
-            categories.append(f"[[Catégorie:{planet_type}]]")
-
-        if exoplanet.discovery_date and exoplanet.discovery_date.value:
-            try:
-                # Assuming discovery_date.value is a string like "YYYY-MM-DD" or "YYYY"
-                year = str(exoplanet.discovery_date.value).split('-')[0]
-                if year.isdigit() and len(year) == 4:
-                    categories.append(f"[[Catégorie:Exoplanète découverte en {year}]]")
-            except: #pylint: disable=bare-except
-                pass # Ignore if year parsing fails
-
-        if exoplanet.discovery_method and exoplanet.discovery_method.value:
-            method = str(exoplanet.discovery_method.value)
-            # Simple mapping, can be expanded
-            method_map = {
-                "Transit": "par transit",
-                "Vitesse radiale": "par vitesse radiale",
-                # Add other common methods
-            }
-            if method in method_map:
-                 categories.append(f"[[Catégorie:Exoplanète découverte {method_map[method]}]]")
-            else:
-                 categories.append(f"[[Catégorie:Exoplanète découverte par {method}]]")
-
-
-        if exoplanet.spectral_type and exoplanet.spectral_type.value:
-            spectral_type_full = str(exoplanet.spectral_type.value)
-            # Extract the main star type (e.g., G from G5V)
-            if len(spectral_type_full) > 0:
-                spectral_class = spectral_type_full[0].upper()
-                if spectral_class in "OBAFGKM":
-                    categories.append(f"[[Catégorie:Exoplanète en orbite autour d'une étoile de type {spectral_class}]]")
-        
-        return "\n".join(categories)
-
-    def _format_year_field(self, datapoint: Optional[DataPoint], exoplanet_name: str) -> str:
-        """
-        Formats a DataPoint assumed to represent a year or a full date.
-        Years are formatted as plain integers. Full dates are returned as strings.
-        Includes reference if available.
-        """
-        if not datapoint or datapoint.value is None: # Allow datapoint.value to be 0
-            return ""
-
-        value_str = ""
-        # Ensure we are working with a string version of the value first
-        raw_value_str = str(datapoint.value)
-
-        # Attempt to clean known problematic formatting for years
-        # Remove common thousands separators (French non-breaking space, regular space)
-        # Replace comma decimal with period for robust float conversion
-        cleaned_value_str = raw_value_str.replace("\u202F", "").replace(" ", "")
-        if ',' in cleaned_value_str and '.' not in cleaned_value_str: # Handle "2011,00" -> "2011.00"
-            cleaned_value_str = cleaned_value_str.replace(",", ".")
-
-        try:
-            numeric_value = float(cleaned_value_str)
-            if numeric_value.is_integer():
-                # Check for plausible year range
-                year_int = int(numeric_value)
-                if 1000 <= year_int <= (datetime.datetime.now().year + 10): # Allow some future years
-                    value_str = str(year_int) # "2011"
-                else:
-                    value_str = raw_value_str # Not a plausible year, use original
-            else:
-                # It's a float but not an integer (e.g. 2011.5), use original raw string
-                value_str = raw_value_str
-        except (ValueError, TypeError):
-            # Not a number (e.g. "2011-2012", "Unknown", "vers 2011"), use original raw string
-            value_str = raw_value_str
-
-        if datapoint.reference:
-            ref_name = str(datapoint.reference.source.value) if hasattr(datapoint.reference.source, 'value') else str(datapoint.reference.source)
-            # Pass templates and exoplanet name to to_wiki_ref
-            ref_content_full = datapoint.reference.to_wiki_ref(self.template_refs, exoplanet_name)
-            if ref_content_full:
-                 return f"{value_str} {self._add_reference(ref_name, ref_content_full)}"
-        
-        return value_str
-
-    def _get_size_comparison(self, exoplanet: Exoplanet) -> str:
-        """
-        Génère une comparaison de taille avec Jupiter ou la Terre
-        """
-        mass_value = exoplanet.mass.value if exoplanet.mass and exoplanet.mass.value else None
-        if mass_value:
-            if mass_value > 10:
-                return f"environ {self._format_numeric_value(mass_value/317.8, 1)} fois plus massif que [[Jupiter (planète)|Jupiter]]"
-            else:
-                return f"environ {self._format_numeric_value(mass_value, 1)} fois plus massif que la [[Terre]]"
-        return ""
-    
-    def _get_orbital_comparison(self, exoplanet: Exoplanet) -> str:
-        """
-        Génère une comparaison orbitale avec le système solaire
-        """
-        sma = exoplanet.semi_major_axis.value if exoplanet.semi_major_axis and exoplanet.semi_major_axis.value else None
-        if sma:
-            if sma < 0.1:
-                return ", une distance comparable à celle de [[Mercure (planète)|Mercure]] dans le [[système solaire]]"
-            elif sma < 1:
-                return ", une distance comparable à celle de [[Vénus (planète)|Vénus]] dans le [[système solaire]]"
-            elif sma < 2:
-                return ", une distance comparable à celle de [[Mars (planète)|Mars]] dans le [[système solaire]]"
-            else:
-                return ", une distance comparable à la [[ceinture d'astéroïdes]] (entre [[Mars (planète)|Mars]] et Jupiter) dans le [[système solaire]]"
-        return ""
-    
-    def _get_star_description(self, exoplanet: Exoplanet) -> str:
-        """
-        Génère une description de l'étoile hôte
-        """
-        desc = []
-        if exoplanet.spectral_type and exoplanet.spectral_type.value:
-            desc.append(f"une [[étoile]] de type spectral [[{exoplanet.spectral_type.value}]]")
-        
-        if exoplanet.distance and exoplanet.distance.value is not None:
-            try:
-                pc_value = float(exoplanet.distance.value)
-                ly_value = self._parsecs_to_lightyears(pc_value)
-                formatted_ly_value = self._format_numeric_value(ly_value, precision=0)
-                # Pass exoplanet.name for context to _format_datapoint
-                formatted_pc_value_with_ref = self._format_datapoint(exoplanet.distance, exoplanet.name)
-                distance_str = f"située à {formatted_ly_value} [[année-lumière|années-lumière]] ({formatted_pc_value_with_ref} [[parsec|pc]]) de la [[Terre]]"
-                desc.append(distance_str)
-            except (ValueError, TypeError):
-                original_distance_str = self._format_datapoint(exoplanet.distance, exoplanet.name)
-                if original_distance_str:
-                     desc.append(f"située à {original_distance_str} [[parsec|pc]] de la [[Terre]]")
-
-        if exoplanet.apparent_magnitude and exoplanet.apparent_magnitude.value:
-            # Pass exoplanet.name for context to _format_datapoint
-            desc.append(f"d'une [[magnitude apparente]] de {self._format_datapoint(exoplanet.apparent_magnitude, exoplanet.name)}")
-        
-        return " ".join(desc) if desc else "une étoile"
-    
     def _get_planet_description(self, exoplanet: Exoplanet) -> str:
         """
-        Génère une description de la planète
+        Génère une description de la planète basée sur ses caractéristiques physiques
         """
-        desc = []
-        if exoplanet.mass and exoplanet.mass.value:
-            desc.append(self._get_size_comparison(exoplanet)) # _get_size_comparison uses _format_numeric_value, not _format_datapoint
-        if exoplanet.radius and exoplanet.radius.value:
-            # Pass exoplanet.name for context to _format_datapoint
-            desc.append(f"d'un rayon de {self._format_datapoint(exoplanet.radius, exoplanet.name)} [[rayon jovien|R_J]]")
-        if exoplanet.temperature and exoplanet.temperature.value:
-            # Pass exoplanet.name for context to _format_datapoint
-            desc.append(f"avec une température de {self._format_datapoint(exoplanet.temperature, exoplanet.name)} [[kelvin|K]]")
+        mass_comparison = self.comparison_utils.get_mass_comparison(exoplanet)
+        radius_comparison = self.comparison_utils.get_radius_comparison(exoplanet)
         
-        return ", ".join(desc) if desc else ""
-    
+        description_parts = []
+        if mass_comparison:
+            description_parts.append(mass_comparison)
+        if radius_comparison:
+            description_parts.append(radius_comparison)
+            
+        if description_parts:
+            return ", ".join(description_parts)
+        return ""
+
     def _format_references(self, exoplanet: Exoplanet) -> str:
-        """Formate les références pour l'article."""
-        references = []
-        if exoplanet.source == "exoplanet_eu":
-            references.append(
-                f'<ref>{{{{Lien web |langue=en |nom1=EPE |titre={exoplanet.name} |url=https://exoplanet.eu/catalog/{exoplanet.name.lower().replace(" ", "_")}/ |site=exoplanet.eu |date=2024-8-1 |consulté le=2025-1-3 }}}}</ref>'
-            )
-        if exoplanet.source == "nasa":
-            references.append(
-                f'<ref>{{{{Lien web |langue=en |nom1=NasaGov |titre={exoplanet.name} |url=https://science.nasa.gov/exoplanet-catalog/{exoplanet.name.lower().replace(" ", "-")}/ |site=science.nasa.gov |date=2024-11-1 |consulté le=2025-1-3 }}}}</ref>'
-            )
-        return " ".join(references) 
+        """
+        Génère la section des références
+        """
+        refs = self._get_used_references(exoplanet)
+        if not refs:
+            return ""
+            
+        ref_section = "== Notes et références ==\n{{Références}}\n"
+        return ref_section
+
+    def generate_article(self, exoplanet: Exoplanet) -> str:
+        """
+        Génère l'article complet pour une exoplanète
+        """
+        return self.generate_article_content(exoplanet) 

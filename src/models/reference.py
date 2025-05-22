@@ -2,6 +2,7 @@
 from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
+from typing import Dict
 
 class SourceType(Enum):
     NASA = "NasaGov"
@@ -15,8 +16,13 @@ class Reference:
     url: str = None
     identifier: str = None
 
-    def to_wiki_ref(self) -> str:
+    def to_wiki_ref(self, template_refs: Dict[str, str] = None, exoplanet_name: str = None) -> str:
         """Convertit la référence en format wiki"""
+        if template_refs and exoplanet_name:
+            template = template_refs.get(str(self.source.value).lower(), "")
+            if template:
+                content = template.format(title=exoplanet_name, id=exoplanet_name.lower().replace(" ", "-"))
+                return f"<ref name=\"{self.source.value}\">{content}</ref>"
         return f"<ref name=\"{self.source.value}\"/>"
 
 @dataclass
