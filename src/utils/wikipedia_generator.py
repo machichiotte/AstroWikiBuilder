@@ -9,6 +9,23 @@ class WikipediaGenerator:
     """
     Classe pour générer le contenu wikitexte des articles d'exoplanètes
     """
+    FIELD_DEFAULT_UNITS = {
+        "masse": "M_J",
+        "rayon": "R_J",
+        "température": "K",
+        "distance": "pc",
+        "demi-grand axe": "ua",
+        "période": "j", # jours
+        "inclinaison": "°", # degrés
+        # Add other fields if they have common default units displayed in infoboxes
+        "périastre": "ua",
+        "apoastre": "ua",
+        "masse minimale": "M_J",
+        "masse volumique": "kg/m³", # Though often g/cm³ is also used
+        "gravité": "m/s²",
+        "période de rotation": "h", # heures
+        "arg_péri": "°", # argument of periastron
+    }
     
     def __init__(self):
         self.template_refs = {
@@ -19,7 +36,12 @@ class WikipediaGenerator:
             'ouvrage': "{{Ouvrage |langue= |auteur= |titre= |éditeur= |année= |pages totales= |passage= |isbn= |lire en ligne= |consulté le= }}"
         }
         self._used_refs = set()
+        self._has_grouped_notes = False # Initialize the new flag
         locale.setlocale(locale.LC_ALL, 'fr_FR.UTF-8')
+
+    def _parsecs_to_lightyears(self, parsecs: float) -> float:
+        """Convertit les parsecs en années-lumière."""
+        return parsecs * 3.26156
     
     def _format_numeric_value(self, value: Optional[float], precision: int = 2) -> str:
         """
@@ -53,7 +75,10 @@ class WikipediaGenerator:
         """
         if ref_name not in self._used_refs:
             self._used_refs.add(ref_name)
-            return ref_content # ref_content is already the full <ref name="NasaGov">{{...}}</ref>
+            # Check if the content being added defines a grouped note
+            if isinstance(ref_content, str) and 'group="note"' in ref_content.lower():
+                self._has_grouped_notes = True
+            return ref_content 
         return f'<ref name="{ref_name}" />'
     
     def _format_datapoint(self, datapoint: DataPoint) -> str:
@@ -70,7 +95,8 @@ class WikipediaGenerator:
             value_str = str(datapoint.value)
         
         if datapoint.reference:
-            ref_name = "EPE" if datapoint.reference.source == SourceType.EPE else "NasaGov" if datapoint.reference.source == SourceType.NASA else "OEC"
+            # Standardized ref_name derivation
+            ref_name = str(datapoint.reference.source.value) if hasattr(datapoint.reference.source, 'value') else str(datapoint.reference.source)
             ref_content = datapoint.reference.to_wiki_ref()
             return f"{value_str} {self._add_reference(ref_name, ref_content)}"
             
@@ -108,74 +134,80 @@ class WikipediaGenerator:
                 return self._add_reference(ref_name, ref_content_full)
             return None
 
-        def add_field(label, attr, default_unit=None):
+        def add_field(label, attr): # Removed predefined_default_unit_for_field from signature
             v = val(attr)
             s = ""
             if v is not None and v != "":
                 s += f" | {label} = {v}\n"
-                u = unit(attr)
+                
+                actual_unit = unit(attr)
                 n = notes(attr)
-                if u:
-                    s += f" | {label} unité = {u}\n"
-                elif default_unit:
-                    s += f" | {label} unité = {default_unit}\n"
+                expected_default_unit = self.FIELD_DEFAULT_UNITS.get(label)
+
+                if actual_unit:
+                    if expected_default_unit and actual_unit == expected_default_unit:
+                        pass  # Omit unit line: actual unit is same as predefined default
+                    else:
+                        # Add unit line: actual unit is different, or no predefined default for this field
+                        s += f" | {label} unité = {actual_unit}\n"
+                # If actual_unit is None, no unit line is printed.
+                
                 if n:
                     s += f" | {label} notes = {n}\n"
             return s
 
-        # Réinitialiser les références utilisées pour chaque nouvelle exoplanète
-        self._used_refs = set()
+        # REMOVED: self._used_refs = set() # This was resetting global tracking
 
         infobox = f"{{{{Infobox Exoplanète\n"
         infobox += f" | nom = {exoplanet.name}\n"
         infobox += " | image = \n | légende = \n"
         # Étoile
-        infobox += add_field("étoile", "host_star")
-        infobox += add_field("époque étoile", "star_epoch")
-        infobox += add_field("ascension droite", "right_ascension")
-        infobox += add_field("déclinaison", "declination")
-        infobox += add_field("distance", "distance", "pc")
-        infobox += add_field("constellation", "constellation")
+        infobox += add_field("étoile", "host_star") # No default unit typically
+        infobox += add_field("époque étoile", "star_epoch") # No default unit
+        infobox += add_field("ascension droite", "right_ascension") # No default unit
+        infobox += add_field("déclinaison", "declination") # No default unit
+        infobox += add_field("distance", "distance") # Default is 'pc' from map
+        infobox += add_field("constellation", "constellation") # No default unit
         # Add "carte UAI" here, assuming exoplanet.iau_constellation_map holds the image filename
         if hasattr(exoplanet, 'iau_constellation_map') and exoplanet.iau_constellation_map:
             infobox += f" | carte = {exoplanet.iau_constellation_map}\n"
-        infobox += add_field("type spectral", "spectral_type")
-        infobox += add_field("magnitude apparente", "apparent_magnitude")
+        infobox += add_field("type spectral", "spectral_type") # No default unit
+        infobox += add_field("magnitude apparente", "apparent_magnitude") # No default unit
         # Planète
         infobox += f" | type = {self._get_planet_type(exoplanet)}\n"
         # Caractéristiques orbitales
-        infobox += add_field("demi-grand axe", "semi_major_axis", "ua")
-        infobox += add_field("périastre", "periastron", "ua")
-        infobox += add_field("apoastre", "apoastron", "ua")
-        infobox += add_field("excentricité", "eccentricity")
-        infobox += add_field("période", "orbital_period", "j")
-        infobox += add_field("distance angulaire", "angular_distance")
-        infobox += add_field("t_peri", "periastron_time")
-        infobox += add_field("inclinaison", "inclination", "°")
-        infobox += add_field("arg_péri", "argument_of_periastron", "°")
-        infobox += add_field("époque", "epoch")
+        infobox += add_field("demi-grand axe", "semi_major_axis") # Default 'ua'
+        infobox += add_field("périastre", "periastron") # Default 'ua'
+        infobox += add_field("apoastre", "apoastron") # Default 'ua'
+        infobox += add_field("excentricité", "eccentricity") # No default unit
+        infobox += add_field("période", "orbital_period") # Default 'j'
+        infobox += add_field("distance angulaire", "angular_distance") # No default unit (mas, etc.)
+        infobox += add_field("t_peri", "periastron_time") # No default unit
+        infobox += add_field("inclinaison", "inclination") # Default '°'
+        infobox += add_field("arg_péri", "argument_of_periastron") # Default '°'
+        infobox += add_field("époque", "epoch") # No default unit
         # Caractéristiques physiques
-        infobox += add_field("masse", "mass", "M_J")
-        infobox += add_field("masse minimale", "minimum_mass", "M_J")
-        infobox += add_field("rayon", "radius", "R_J")
-        infobox += add_field("masse volumique", "density", "kg/m³")
-        infobox += add_field("gravité", "gravity", "m/s²")
-        infobox += add_field("période de rotation", "rotation_period", "h")
-        infobox += add_field("température", "temperature", "K")
-        infobox += add_field("albedo_bond", "bond_albedo")
+        infobox += add_field("masse", "mass") # Default 'M_J'
+        infobox += add_field("masse minimale", "minimum_mass") # Default 'M_J'
+        infobox += add_field("rayon", "radius") # Default 'R_J'
+        infobox += add_field("masse volumique", "density") # Default 'kg/m³'
+        infobox += add_field("gravité", "gravity") # Default 'm/s²'
+        infobox += add_field("période de rotation", "rotation_period") # Default 'h'
+        infobox += add_field("température", "temperature") # Default 'K'
+        infobox += add_field("albedo_bond", "bond_albedo") # No default unit
         # Atmosphère
-        infobox += add_field("pression", "pressure")
-        infobox += add_field("composition", "composition")
-        infobox += add_field("vitesse des vents", "wind_speed")
+        infobox += add_field("pression", "pressure") # No default unit (bar, atm, etc.)
+        infobox += add_field("composition", "composition") # No default unit
+        infobox += add_field("vitesse des vents", "wind_speed") # No default unit (m/s, km/h)
         # Découverte
-        infobox += add_field("découvreurs", "discoverers")
-        infobox += add_field("programme", "discovery_program")
-        infobox += add_field("méthode", "discovery_method")
-        infobox += add_field("date", "discovery_date")
-        infobox += add_field("lieu", "discovery_location")
-        infobox += add_field("prédécouverte", "pre_discovery")
-        infobox += add_field("détection", "detection_method")
-        infobox += add_field("statut", "status")
+        infobox += add_field("découvreurs", "discoverers") # No default unit
+        infobox += add_field("programme", "discovery_program") # No default unit
+        infobox += add_field("méthode", "discovery_method") # No default unit
+        infobox += add_field("date", "discovery_date") # No default unit
+        infobox += add_field("lieu", "discovery_location") # No default unit
+        infobox += add_field("prédécouverte", "pre_discovery") # No default unit
+        infobox += add_field("détection", "detection_method") # No default unit
+        infobox += add_field("statut", "status") # No default unit
         # Autres noms
         other_names_str = ", ".join(exoplanet.other_names) if exoplanet.other_names else None
         if other_names_str:
@@ -258,13 +290,17 @@ class WikipediaGenerator:
     def _format_references_section(self) -> str:
         """
         Génère la section "Notes et références" avec les sous-sections
-        "Notes" et "Références".
+        "Notes" et "Références". The "Notes" subsection is conditional.
         """
-        return """
-== Notes et références ==
-=== Notes ===
+        notes_section = ""
+        if self._has_grouped_notes:
+            notes_section = """=== Notes ===
 {{références|groupe="note"}}
-
+"""
+        
+        return f"""
+== Notes et références ==
+{notes_section}
 === Références ===
 {{Références}}
 """
@@ -273,6 +309,7 @@ class WikipediaGenerator:
         """Génère le contenu de l'article Wikipedia"""
         # Réinitialiser les références pour chaque nouvel article
         self._used_refs = set()
+        self._has_grouped_notes = False # Reset for the current article
         
         planet_type = self._get_planet_type(exoplanet)
         # Generate introduction sentence
@@ -371,6 +408,33 @@ Cette planète a été découverte en {self._format_datapoint(exoplanet.discover
         
         return "\n".join(categories)
 
+    def _format_year_field(self, datapoint: Optional[DataPoint]) -> str:
+        """
+        Formats a DataPoint assumed to represent a year or a full date.
+        Years are formatted as plain integers. Full dates are returned as strings.
+        Includes reference if available.
+        """
+        if not datapoint or datapoint.value is None: # Allow datapoint.value to be 0
+            return ""
+
+        value_str = ""
+        try:
+            numeric_value = float(datapoint.value)
+            if numeric_value.is_integer():
+                value_str = str(int(numeric_value)) 
+            else:
+                value_str = str(datapoint.value) 
+        except (ValueError, TypeError):
+            value_str = str(datapoint.value)
+
+        if datapoint.reference:
+            ref_name = str(datapoint.reference.source.value) if hasattr(datapoint.reference.source, 'value') else str(datapoint.reference.source)
+            ref_content_full = datapoint.reference.to_wiki_ref()
+            if ref_content_full:
+                 return f"{value_str} {self._add_reference(ref_name, ref_content_full)}"
+        
+        return value_str
+
     def _get_size_comparison(self, exoplanet: Exoplanet) -> str:
         """
         Génère une comparaison de taille avec Jupiter ou la Terre
@@ -406,8 +470,34 @@ Cette planète a été découverte en {self._format_datapoint(exoplanet.discover
         desc = []
         if exoplanet.spectral_type and exoplanet.spectral_type.value:
             desc.append(f"une [[étoile]] de type spectral [[{exoplanet.spectral_type.value}]]")
-        if exoplanet.distance and exoplanet.distance.value:
-            desc.append(f"située à {self._format_datapoint(exoplanet.distance)} [[parsec|pc]] de la [[Terre]]")
+        
+        if exoplanet.distance and exoplanet.distance.value is not None:
+            try:
+                pc_value = float(exoplanet.distance.value)
+                ly_value = self._parsecs_to_lightyears(pc_value)
+                
+                # Format light-years, e.g., to 0 decimal places
+                formatted_ly_value = self._format_numeric_value(ly_value, precision=0)
+                
+                # Format parsecs value (number only, no unit, no ref yet)
+                # _format_datapoint already handles the number formatting and adds the reference.
+                # It returns "value_str <ref_tag>" or just "value_str"
+                formatted_pc_value_with_ref = self._format_datapoint(exoplanet.distance)
+
+                # Construct the string: "XXX années-lumière (YYY pc <ref...>) de la Terre"
+                # The unit "pc" for parsecs needs to be part of the parenthesized expression.
+                # _format_datapoint gives "value<ref>", so we add " pc" after that.
+                distance_str = f"située à {formatted_ly_value} [[année-lumière|années-lumière]] ({formatted_pc_value_with_ref} [[parsec|pc]]) de la [[Terre]]"
+                desc.append(distance_str)
+            except (ValueError, TypeError):
+                # Fallback if conversion fails, though exoplanet.distance.value should be numeric
+                # This could use the original formatting as a fallback if needed.
+                # For now, if conversion fails, it might skip adding distance.
+                # Or, more robustly:
+                original_distance_str = self._format_datapoint(exoplanet.distance)
+                if original_distance_str: # If there's anything to format
+                     desc.append(f"située à {original_distance_str} [[parsec|pc]] de la [[Terre]]")
+
         if exoplanet.apparent_magnitude and exoplanet.apparent_magnitude.value:
             desc.append(f"d'une [[magnitude apparente]] de {self._format_datapoint(exoplanet.apparent_magnitude)}")
         

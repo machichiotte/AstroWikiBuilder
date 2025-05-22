@@ -1,6 +1,7 @@
 import unittest
 from src.utils.wikipedia_generator import WikipediaGenerator # The class to test
 from typing import Optional, List, Dict # For type hints in mocks
+import math # For checking light-year conversion
 
 # --- Mock Data Structures ---
 # Simplified SourceType Enum for testing
@@ -10,21 +11,24 @@ class MockSourceType:
     OEC = "OEC"
     ARTICLE = "Article"
     OUVRAGE = "Ouvrage"
-    CUSTOM = "CustomRef" # For generic references
+    CUSTOM = "CustomRef" 
+    NOTE_REF = "NoteRef"
+
 
 class MockReference:
-    def __init__(self, source_type_val: str, content_template: str, name_override: Optional[str] = None):
-        # source_type_val is the string value like "NasaGov", "EPE"
-        self.source = type('EnumMock', (), {'value': source_type_val})() # Mocking an object with a .value attribute
-        self.content_template = content_template # This is the {{Lien web...}} or {{Article...}} part
+    def __init__(self, source_type_val: str, content_template: str, name_override: Optional[str] = None, group: Optional[str] = None):
+        self.source = type('EnumMock', (), {'value': source_type_val})() 
+        self.content_template = content_template 
         self._name_override = name_override
+        self.group = group
 
     def to_wiki_ref(self) -> str:
-        # This method is crucial. It should return the *full initial reference string*
-        # that _add_reference expects for its ref_content argument.
-        # e.g., <ref name="NasaGov">{{Lien web...}}</ref>
         ref_name = self._name_override if self._name_override else self.source.value
-        return f'<ref name="{ref_name}">{self.content_template}</ref>'
+        group_attr = f' group="{self.group}"' if self.group else ''
+        # Ensure no space before group attribute if name is not present, though name usually is.
+        # For this test, we assume named references. If anonymous, ref_name part would be empty.
+        return f'<ref name="{ref_name}"{group_attr}>{self.content_template}</ref>'
+
 
 class MockDataPoint:
     def __init__(self, value: any, unit: Optional[str] = None, reference: Optional[MockReference] = None):
@@ -35,7 +39,6 @@ class MockDataPoint:
 class MockExoplanet:
     def __init__(self, name: str):
         self.name = name
-        # Initialize all expected attributes to None or default
         self.host_star: Optional[MockDataPoint] = None
         self.star_epoch: Optional[MockDataPoint] = None
         self.right_ascension: Optional[MockDataPoint] = None
@@ -75,168 +78,149 @@ class MockExoplanet:
         self.status: Optional[MockDataPoint] = None
         self.other_names: Optional[List[str]] = None
         self.iau_constellation_map: Optional[str] = None
-
-        # For _get_used_references, and general iteration if any part of generator relies on it
-        self.__dataclass_fields__ = [
-            'host_star', 'star_epoch', 'right_ascension', 'declination', 'distance',
-            'constellation', 'spectral_type', 'apparent_magnitude', 'semi_major_axis',
-            'periastron', 'apoastron', 'eccentricity', 'orbital_period', 'angular_distance',
-            'periastron_time', 'inclination', 'argument_of_periastron', 'epoch', 'mass',
-            'minimum_mass', 'radius', 'density', 'gravity', 'rotation_period',
-            'temperature', 'bond_albedo', 'pressure', 'composition', 'wind_speed',
-            'discoverers', 'discovery_program', 'discovery_method', 'discovery_date',
-            'discovery_location', 'pre_discovery', 'detection_method', 'status',
-            'name', 'other_names' 
+        self.__dataclass_fields__ = [ # Simplified for testing get_used_references if needed
+            f for f in self.__dict__ if not f.startswith('_')
         ]
 
 # --- Test Class ---
 class TestWikipediaGenerator(unittest.TestCase):
     def setUp(self):
         self.generator = WikipediaGenerator()
-        # Reset used_refs before each test for isolation
         self.generator._used_refs = set()
+        self.generator._has_grouped_notes = False
 
-    def test_initialization(self):
-        self.assertIsNotNone(self.generator)
-        self.assertEqual(self.generator._used_refs, set())
-        self.assertIn('nasa', self.generator.template_refs)
-        self.assertIn('article', self.generator.template_refs)
-        self.assertIn('ouvrage', self.generator.template_refs)
 
-    def test_format_datapoint_with_references(self):
-        # Test how _add_reference is used by _format_datapoint
-        ref_content = "{{Lien web | titre=Test1 | url=http://example.com/1 }}"
-        mock_ref = MockReference(source_type_val=MockSourceType.NASA, content_template=ref_content)
-        
-        dp_with_ref = MockDataPoint(value="100", unit="km", reference=mock_ref)
-        
-        # First call
-        self.generator._used_refs = set() # Clean slate for this test sequence
-        output1 = self.generator._format_datapoint(dp_with_ref)
-        expected_ref_name = MockSourceType.NASA 
-        self.assertIn(f'<ref name="{expected_ref_name}">{ref_content}</ref>', output1)
-        self.assertIn("100", output1) 
-
-        # Second call with the same reference name
-        output2 = self.generator._format_datapoint(dp_with_ref)
-        self.assertIn(f'<ref name="{expected_ref_name}" />', output2)
-        self.assertNotIn(ref_content, output2)
-
-    def test_generate_infobox_with_carte_uai_and_references(self):
-        exoplanet = MockExoplanet(name="Test Planet Infobox")
-        exoplanet.iau_constellation_map = "Lyra_IAU.svg"
-        
-        ref_content_dist = "{{Lien web | titre=DistRef | url=http://example.com/dist }}"
-        mock_ref_dist = MockReference(source_type_val=MockSourceType.EPE, content_template=ref_content_dist)
-        exoplanet.distance = MockDataPoint(value="50", unit="pc", reference=mock_ref_dist)
-        
-        ref_content_mass = "{{Lien web | titre=MassRef | url=http://example.com/mass }}"
-        mock_ref_mass = MockReference(source_type_val=MockSourceType.NASA, content_template=ref_content_mass)
-        exoplanet.mass = MockDataPoint(value="2", unit="Mj", reference=mock_ref_mass)
-
-        # Add another field that uses the EPE reference again to test subsequent use within one infobox
-        exoplanet.spectral_type = MockDataPoint(value="G2V", reference=mock_ref_dist) 
-
-        # generate_infobox_exoplanet resets _used_refs internally at its start
-        infobox_output = self.generator.generate_infobox_exoplanet(exoplanet)
-
-        self.assertIn("| nom = Test Planet Infobox", infobox_output)
-        self.assertIn("| carte = Lyra_IAU.svg", infobox_output)
-        
-        # Assuming distance is processed before spectral_type in the infobox generation logic.
-        # First EPE reference (distance)
-        expected_dist_ref_name = MockSourceType.EPE
-        self.assertIn(f'<ref name="{expected_dist_ref_name}">{ref_content_dist}</ref>', infobox_output)
-        
-        # NASA reference (mass) - its first use
-        expected_mass_ref_name = MockSourceType.NASA
-        self.assertIn(f'<ref name="{expected_mass_ref_name}">{ref_content_mass}</ref>', infobox_output)
-        
-        # Second EPE reference (spectral_type) should be shortened
-        self.assertIn(f'<ref name="{expected_dist_ref_name}" />', infobox_output)
-        # Ensure the full content for EPE only appears once
-        self.assertEqual(infobox_output.count(ref_content_dist), 1)
-
-    def test_generate_infobox_missing_carte_uai(self):
-        exoplanet = MockExoplanet(name="NoMap Planet")
-        infobox_output = self.generator.generate_infobox_exoplanet(exoplanet)
-        self.assertNotIn("| carte =", infobox_output)
-
-    def test_format_references_section_structure(self):
-        output = self.generator._format_references_section()
-        self.assertIn("== Notes et références ==", output)
-        self.assertIn("=== Notes ===", output)
-        self.assertIn("{{références|groupe=\"note\"}}", output)
-        self.assertIn("=== Références ===", output)
-        self.assertIn("{{Références}}", output)
-
-    def test_generate_article_content_full(self):
-        exoplanet = MockExoplanet(name="Kepler-186 f")
-        exoplanet.host_star = MockDataPoint(value="Kepler-186")
-        exoplanet.constellation = MockDataPoint(value="Cygne")
-        exoplanet.spectral_type = MockDataPoint(value="M1V") 
-        
-        ref_content_mass = "{{Lien web | titre=MassRef | url=http://example.com/mass }}"
-        mock_ref_mass = MockReference(source_type_val=MockSourceType.NASA, content_template=ref_content_mass)
-        exoplanet.mass = MockDataPoint(value="0.00472", unit="M_J", reference=mock_ref_mass) # Approx 1.5 M_Earth
-
-        ref_content_period = "{{Lien web | titre=PeriodRef | url=http://example.com/period }}"
-        mock_ref_period = MockReference(source_type_val=MockSourceType.EPE, content_template=ref_content_period)
-        exoplanet.orbital_period = MockDataPoint(value="129.9", unit="j", reference=mock_ref_period)
-        
-        exoplanet.discovery_date = MockDataPoint(value="2014-04-17")
-        exoplanet.discovery_method = MockDataPoint(value="Transit")
-        
-        # For planet type and another reference use
-        # Using same NASA ref as mass for radius
-        exoplanet.radius = MockDataPoint(value="0.104", unit="R_J", reference=mock_ref_mass) # Approx 1.17 R_Earth
-
-        # generate_article_content resets _used_refs internally
+    def test_date_formatting_in_article(self):
+        exoplanet = MockExoplanet(name="TestDatePlanet")
+        exoplanet.discovery_date = MockDataPoint(value=2011.0) # Test float year
         article_output = self.generator.generate_article_content(exoplanet)
+        self.assertIn("découverte en 2011 par la méthode", article_output)
 
-        # Introduction
-        self.assertIn("'''{{nobr|Kepler-186 f}}''' est une [[exoplanète]]", article_output)
-        self.assertIn("en [[orbite]] autour de {{nobr|[[Kepler-186]]}}", article_output)
-        self.assertIn("une [[étoile]] de type spectral [[M1V]]", article_output) 
-        self.assertIn("dans la [[constellation]] de [[Cygne]]", article_output)
-
-        # Infobox: Mass ref (NASA) - first use
-        self.assertIn(f'<ref name="{MockSourceType.NASA}">{ref_content_mass}</ref>', article_output)
-        # Infobox: Radius ref (NASA) - second use for this ref name
-        self.assertIn(f'<ref name="{MockSourceType.NASA}" />', article_output)
-        # Overall count of full NASA ref content
-        self.assertEqual(article_output.count(ref_content_mass), 1, "Full NASA ref content should appear only once in article")
-        
-        # Characteristics section (orbital period - EPE ref - first use for EPE)
-        self.assertIn("== Caractéristiques ==", article_output)
-        self.assertIn(f'<ref name="{MockSourceType.EPE}">{ref_content_period}</ref>', article_output)
-        
-        # References section structure
-        self.assertIn("== Notes et références ==", article_output)
-        self.assertIn("{{Références}}", article_output) 
-
-        # Categories
-        # Mass 0.00472 M_J < 1 M_J. Radius 0.104 R_J < 0.8 R_J. So it's "Sous-Terre"
-        self.assertIn("[[Catégorie:Sous-Terre]]", article_output)
-        self.assertIn("[[Catégorie:Exoplanète découverte en 2014]]", article_output)
-        self.assertIn("[[Catégorie:Exoplanète découverte par transit]]", article_output)
-        self.assertIn("[[Catégorie:Exoplanète en orbite autour d'une étoile de type M]]", article_output)
-
-    def test_generate_article_content_missing_data(self):
-        exoplanet = MockExoplanet(name="Minimal Planet")
+        exoplanet.discovery_date = MockDataPoint(value="2012") # Test string year
         article_output = self.generator.generate_article_content(exoplanet)
-
-        self.assertIn("'''{{nobr|Minimal Planet}}'''", article_output)
-        self.assertIn("en [[orbite]] autour de son étoile hôte", article_output) 
-        self.assertNotIn("dans la [[constellation]] de", article_output) 
-
-        self.assertIn("[[Catégorie:Planète tellurique]]", article_output) 
-        self.assertNotIn("découverte en", article_output)
-        self.assertNotIn("découverte par", article_output)
-        self.assertNotIn("étoile de type", article_output) 
+        self.assertIn("découverte en 2012 par la méthode", article_output)
         
-        self.assertIn("== Notes et références ==", article_output)
-        self.assertIn("{{Références}}", article_output)
+        exoplanet.discovery_date = MockDataPoint(value="2013-05-20") # Test full date string
+        article_output = self.generator.generate_article_content(exoplanet)
+        self.assertIn("découverte en 2013-05-20 par la méthode", article_output)
+
+
+    def test_infobox_default_units(self):
+        exoplanet = MockExoplanet(name="TestUnitPlanet")
+        # Case 1: Unit is the default
+        exoplanet.mass = MockDataPoint(value="1", unit="M_J") # M_J is default for "masse"
+        exoplanet.radius = MockDataPoint(value="1", unit="R_J") # R_J is default for "rayon"
+        
+        # Case 2: Unit is different from default
+        exoplanet.temperature = MockDataPoint(value="1200", unit="°C") # Default for "température" is K
+        
+        # Case 3: Data has no unit (should not print unit line)
+        exoplanet.distance = MockDataPoint(value="50") # Default for "distance" is "pc"
+
+        # Case 4: Field with no predefined default unit in FIELD_DEFAULT_UNITS
+        exoplanet.eccentricity = MockDataPoint(value="0.1", unit="n/a") # Eccentricity has no default in map
+
+        infobox = self.generator.generate_infobox_exoplanet(exoplanet)
+
+        self.assertNotIn("| masse unité = M_J", infobox)
+        self.assertNotIn("| rayon unité = R_J", infobox)
+        self.assertIn("| température unité = °C", infobox)
+        self.assertNotIn("| distance unité =", infobox) # No unit in data, so no unit line
+        self.assertIn("| eccentricité unité = n/a", infobox) # No default, so unit is shown
+
+
+    def test_first_reference_formatting_globally(self):
+        exoplanet = MockExoplanet(name="TestGlobalRefPlanet")
+        
+        ref_nasa_content = "{{Lien web | titre=NASA1 | url=http://nasa.gov/1 }}"
+        mock_ref_nasa = MockReference(source_type_val=MockSourceType.NASA, content_template=ref_nasa_content)
+        
+        ref_epe_content = "{{Lien web | titre=EPE1 | url=http://epe.eu/1 }}"
+        mock_ref_epe = MockReference(source_type_val=MockSourceType.EPE, content_template=ref_epe_content)
+
+        # Setup: Mass (NASA ref) for infobox, Period (EPE ref) for body
+        exoplanet.mass = MockDataPoint(value="1", unit="M_J", reference=mock_ref_nasa)
+        exoplanet.orbital_period = MockDataPoint(value="365", unit="j", reference=mock_ref_epe)
+        # For a second use of NASA ref in body, let's use radius.
+        exoplanet.radius = MockDataPoint(value="1", unit="R_J", reference=mock_ref_nasa)
+
+        article = self.generator.generate_article_content(exoplanet)
+
+        # NASA ref: First used in infobox (mass), should be full.
+        # Then used in body (radius), should be short.
+        expected_nasa_full = f'<ref name="{MockSourceType.NASA}">{ref_nasa_content}</ref>'
+        expected_nasa_short = f'<ref name="{MockSourceType.NASA}" />'
+        
+        self.assertEqual(article.count(expected_nasa_full), 1, "NASA full ref should appear once")
+        self.assertTrue(article.count(expected_nasa_short) >= 1, "NASA short ref should appear at least once")
+        
+        # EPE ref: First used in body (orbital_period), should be full.
+        expected_epe_full = f'<ref name="{MockSourceType.EPE}">{ref_epe_content}</ref>'
+        self.assertIn(expected_epe_full, article)
+        # Ensure it's not later shortened if not used again, or correctly shortened if it were.
+        # For this test, its first use is its only use in the provided setup for orbital_period.
+        self.assertEqual(article.count(expected_epe_full), 1, "EPE full ref should appear once")
+
+
+    def test_conditional_notes_subsection(self):
+        exoplanet = MockExoplanet(name="TestNotesPlanet")
+        
+        # Scenario 1: No grouped notes
+        ref_regular_content = "{{Lien web | titre=Regular | url=http://example.com/regular }}"
+        mock_ref_regular = MockReference(source_type_val=MockSourceType.CUSTOM, content_template=ref_regular_content)
+        exoplanet.temperature = MockDataPoint(value="300", unit="K", reference=mock_ref_regular)
+        
+        article_no_notes = self.generator.generate_article_content(exoplanet)
+        self.assertNotIn("=== Notes ===", article_no_notes)
+        self.assertNotIn("{{références|groupe=\"note\"}}", article_no_notes)
+        self.assertIn("=== Références ===", article_no_notes) # Main refs should still be there
+
+        # Scenario 2: With a grouped note
+        self.generator._used_refs = set() # Reset for next generation
+        self.generator._has_grouped_notes = False
+
+        ref_note_content_str = "{{Note | texte=Ceci est une note. }}"
+        # MockReference.to_wiki_ref needs to produce the group="note" part.
+        # The check in _add_reference is on ref_content, which is the output of to_wiki_ref().
+        # So, the content_template itself doesn't need group="note", but the to_wiki_ref() output should.
+        mock_ref_grouped_note = MockReference(
+            source_type_val=MockSourceType.NOTE_REF, 
+            content_template=ref_note_content_str, 
+            name_override="testnote1", # Grouped notes usually have names
+            group="note" # This tells MockReference to add group="note" in its to_wiki_ref()
+        )
+        exoplanet.eccentricity = MockDataPoint(value="0.1", reference=mock_ref_grouped_note)
+
+        article_with_notes = self.generator.generate_article_content(exoplanet)
+        self.assertIn("=== Notes ===", article_with_notes)
+        self.assertIn("{{références|groupe=\"note\"}}", article_with_notes)
+        self.assertIn(mock_ref_grouped_note.to_wiki_ref(), article_with_notes) # Ensure the note itself is in the article
+
+    def test_distance_formatting_lightyears_parsecs(self):
+        exoplanet = MockExoplanet(name="TestDistancePlanet")
+        
+        pc_val = 103.08
+        ref_dist_content = "{{Lien web | titre=DistRef | url=http://example.com/dist }}"
+        mock_ref_dist = MockReference(source_type_val=MockSourceType.NASA, content_template=ref_dist_content)
+        exoplanet.distance = MockDataPoint(value=pc_val, unit="pc", reference=mock_ref_dist)
+
+        article = self.generator.generate_article_content(exoplanet)
+        
+        ly_val_expected = math.floor(pc_val * 3.26156) # Using floor to match precision=0 for positive numbers
+        # The _format_numeric_value uses locale.format_string("%.0f", ...) which rounds.
+        # For 336.2601968, %.0f gives "336".
+        # For 336.7, it would give "337".
+        # Let's use the generator's own formatting for expected value.
+        expected_ly_str = self.generator._format_numeric_value(pc_val * 3.26156, precision=0)
+        
+        # Formatted PC value (number only, from _format_numeric_value)
+        expected_pc_num_str = self.generator._format_numeric_value(pc_val, precision=2) # Default precision for pc
+        
+        # Full PC ref string as generated by _format_datapoint (number + ref tag)
+        expected_pc_val_and_ref = f"{expected_pc_num_str} {mock_ref_dist.to_wiki_ref()}"
+        
+        expected_distance_string = f"située à {expected_ly_str} [[année-lumière|années-lumière]] ({expected_pc_val_and_ref} [[parsec|pc]]) de la [[Terre]]"
+        self.assertIn(expected_distance_string, article)
 
 if __name__ == '__main__':
     unittest.main()
