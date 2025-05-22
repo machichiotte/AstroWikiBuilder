@@ -236,7 +236,7 @@ class WikipediaGenerator:
             sections.append(habitability_section)
             
         # Section Références
-        references_section = self._format_references_section()
+        references_section = self._generate_references_section()
         if references_section:
             sections.append(references_section)
             
@@ -313,7 +313,7 @@ class WikipediaGenerator:
         # la logique d'habitabilité
         return ""
 
-    def _format_references(self) -> str:
+    def _generate_references_section(self) -> str:
         """
         Génère la section des références
         """
@@ -364,7 +364,7 @@ class WikipediaGenerator:
             sections.append(habitability_section)
             
         # Section Références
-        references_section = self._format_references_section()
+        references_section = self._generate_references_section()
         if references_section:
             sections.append(references_section)
             
