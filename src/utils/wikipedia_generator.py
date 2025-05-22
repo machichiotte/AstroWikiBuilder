@@ -98,20 +98,6 @@ class WikipediaGenerator:
         ref = self._add_reference(str(field.reference.source.value), field.reference.to_wiki_ref(self.template_refs, exoplanet_name))
         return f"{year}{ref}"
 
-    def _format_datapoint(self, datapoint: DataPoint, exoplanet_name: str) -> str:
-        """
-        Formate un datapoint avec sa référence
-        """
-        if not datapoint or not datapoint.value:
-            return ""
-            
-        value = str(datapoint.value)
-        if not datapoint.reference:
-            return value
-            
-        ref = self._add_reference(str(datapoint.reference.source.value), datapoint.reference.to_wiki_ref(self.template_refs, exoplanet_name))
-        return f"{value}{ref}"
-
     def _format_references_section(self) -> str:
         """
         Génère la section des références
@@ -119,8 +105,10 @@ class WikipediaGenerator:
         if not self._used_refs:
             return ""
             
-        ref_section = "== Notes et références ==\n{{Références}}\n"
-        return ref_section
+        section = "== Références ==\n"
+        section += "{{Références}}\n"
+        
+        return section
 
     def generate_article(self, exoplanet: Exoplanet) -> str:
         """
