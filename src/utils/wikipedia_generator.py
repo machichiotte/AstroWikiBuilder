@@ -98,18 +98,6 @@ class WikipediaGenerator:
         ref = self._add_reference(str(field.reference.source.value), field.reference.to_wiki_ref(self.template_refs, exoplanet_name))
         return f"{year}{ref}"
 
-    def _format_references_section(self) -> str:
-        """
-        Génère la section des références
-        """
-        if not self._used_refs:
-            return ""
-            
-        section = "== Références ==\n"
-        section += "{{Références}}\n"
-        
-        return section
-
     def generate_article(self, exoplanet: Exoplanet) -> str:
         """
         Génère l'article complet pour une exoplanète
