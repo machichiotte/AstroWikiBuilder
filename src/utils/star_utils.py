@@ -37,7 +37,7 @@ class StarUtils:
 
         # Magnitude apparente
         if exoplanet.apparent_magnitude and exoplanet.apparent_magnitude.value:
-            description += f" avec une magnitude apparente de {self.format_utils.format_value(exoplanet.apparent_magnitude.value)}"
+            description += f" avec une magnitude apparente de {self.format_utils.format_numeric_value(exoplanet.apparent_magnitude.value)}"
 
         # Distance
         if exoplanet.distance and exoplanet.distance.value:
