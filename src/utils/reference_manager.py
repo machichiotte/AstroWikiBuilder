@@ -1,6 +1,6 @@
 from datetime import datetime
-from typing import Dict, Optional
-from src.models.reference import Reference, SourceType
+from typing import Optional
+from src.models.reference import DataPoint, Reference, SourceType
 
 class ReferenceManager:
     """
@@ -16,6 +16,49 @@ class ReferenceManager:
         }
         self._used_refs: set[str] = set()
         self._has_grouped_notes: bool = False
+        self._unit_mapping = {
+            'R_J': 'M_J',  # Rayon jovien -> Masse jovienne
+            'R_E': 'M_E',  # Rayon terrestre -> Masse terrestre
+            'R_S': 'M_S'   # Rayon solaire -> Masse solaire
+        }
+
+    def get_mass_unit_from_radius_unit(self, radius_unit: str) -> str:
+        """
+        Retourne l'unité de masse correspondante à une unité de rayon
+        """
+        return self._unit_mapping.get(radius_unit, 'M_J')  # Par défaut, on utilise M_J
+
+    def format_datapoint(self, datapoint: DataPoint, exoplanet_name: str) -> str:
+        """
+        Formate un DataPoint pour l'affichage dans l'article
+        """
+        if not datapoint or not datapoint.value:
+            return ""
+            
+        try:
+            value = float(datapoint.value)
+            value_str = f"{value:.2f}"
+        except (ValueError, TypeError):
+            value_str = str(datapoint.value)
+        
+        if datapoint.reference:
+            ref_name = str(datapoint.reference.source.value) if hasattr(datapoint.reference.source, 'value') else str(datapoint.reference.source)
+            ref_content_full = datapoint.reference.to_wiki_ref(self.template_refs, exoplanet_name)
+            
+            # Si c'est une masse et qu'il y a une unité de rayon correspondante
+            if datapoint.unit and datapoint.unit.startswith('M_'):
+                mass_unit = datapoint.unit
+                radius_unit = next((k for k, v in self._unit_mapping.items() if v == mass_unit), None)
+                if radius_unit:
+                    return f"{value_str} {self.add_reference(ref_name, ref_content_full)} [[masse {radius_unit[2:].lower()}|{mass_unit}]]"
+            
+            # Pour les autres cas, utiliser l'unité telle quelle
+            if datapoint.unit:
+                return f"{value_str} {self.add_reference(ref_name, ref_content_full)} [[{datapoint.unit.lower()}|{datapoint.unit}]]"
+            
+            return f"{value_str} {self.add_reference(ref_name, ref_content_full)}"
+            
+        return value_str
 
     def create_reference(self, source: SourceType, update_date: datetime, url: Optional[str] = None, identifier: Optional[str] = None) -> Reference:
         """
@@ -43,12 +86,16 @@ class ReferenceManager:
 
     def add_reference(self, ref_name: str, ref_content: str) -> str:
         """
-        Ajoute une référence et retourne la balise de référence appropriée
+        Ajoute une référence et retourne la balise de référence appropriée.
+        La première occurrence d'une référence doit contenir le template complet.
         """
         if ref_name not in self._used_refs:
             self._used_refs.add(ref_name)
             if isinstance(ref_content, str) and 'group="note"' in ref_content.lower():
                 self._has_grouped_notes = True
+            # S'assurer que la première occurrence contient le template complet
+            if not ref_content.startswith('<ref name="') or not ref_content.endswith('</ref>'):
+                return f'<ref name="{ref_name}">{ref_content}</ref>'
             return ref_content
         return f'<ref name="{ref_name}" />'
 

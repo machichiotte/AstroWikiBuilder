@@ -1,5 +1,6 @@
 from src.models.exoplanet import Exoplanet
 from .reference_utils import ReferenceUtils
+from .planet_type_utils import PlanetTypeUtils
 
 class InfoboxGenerator:
     """
@@ -24,6 +25,7 @@ class InfoboxGenerator:
 
     def __init__(self, reference_utils: ReferenceUtils):
         self.reference_utils = reference_utils
+        self.planet_type_utils = PlanetTypeUtils()
 
     def generate_infobox(self, exoplanet: Exoplanet) -> str:
         """
@@ -90,7 +92,7 @@ class InfoboxGenerator:
         infobox += add_field("magnitude apparente", "apparent_magnitude")
         
         # Planète
-        infobox += f" | type = {self._get_planet_type(exoplanet)}\n"
+        infobox += f" | type = {self.planet_type_utils.get_planet_type(exoplanet)}\n"
         
         # Caractéristiques orbitales
         infobox += add_field("demi-grand axe", "semi_major_axis")
@@ -135,52 +137,4 @@ class InfoboxGenerator:
             infobox += f" | autres noms = {other_names_str}\n"
             
         infobox += "}}"
-        return infobox
-
-    def _get_planet_type(self, exoplanet: Exoplanet) -> str:
-        """
-        Détermine le type de planète en fonction de ses caractéristiques physiques
-        """
-        mass_value = exoplanet.mass.value if exoplanet.mass and exoplanet.mass.value else None
-        radius_value = exoplanet.radius.value if exoplanet.radius and exoplanet.radius.value else None
-        temp_value = exoplanet.temperature.value if exoplanet.temperature and exoplanet.temperature.value else None
-
-        # Classification des planètes gazeuses
-        if mass_value and mass_value >= 1:
-            if temp_value:
-                if temp_value >= 2200:
-                    return "Jupiter ultra-chaud"
-                elif temp_value >= 1000:
-                    return "Jupiter chaud"
-                elif temp_value >= 500:
-                    return "Jupiter tiède"
-                else:
-                    return "Jupiter froid"
-            else:
-                return "Géante gazeuse"
-
-        # Classification des planètes de glace
-        elif radius_value and radius_value >= 0.8:
-            if temp_value:
-                if temp_value >= 1000:
-                    return "Neptune chaud"
-                elif temp_value >= 500:
-                    return "Neptune tiède"
-                else:
-                    return "Neptune froid"
-            else:
-                return "Géante de glaces"
-
-        # Classification des planètes telluriques
-        elif mass_value and mass_value < 1:
-            if radius_value:
-                if radius_value >= 1.5:
-                    return "Super-Terre"
-                elif radius_value >= 0.8:
-                    return "Planète de dimensions terrestres"
-                else:
-                    return "Sous-Terre"
-            else:
-                return "Planète tellurique"
-
-        return "Planète tellurique" 
+        return infobox 

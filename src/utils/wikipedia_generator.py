@@ -130,7 +130,10 @@ class WikipediaGenerator:
         """
         desc = []
         if exoplanet.spectral_type and exoplanet.spectral_type.value:
-            desc.append(f"une [[étoile]] de type spectral [[{exoplanet.spectral_type.value}]]")
+            spectral_type = exoplanet.spectral_type.value
+            spectral_class = spectral_type[0] if spectral_type else None
+            description = self.star_utils.spectral_type_descriptions.get(spectral_class, "étoile")
+            desc.append(f"une [[étoile]] de type spectral [[{spectral_type}|{description}]]")
 
         if exoplanet.distance and exoplanet.distance.value is not None:
             try:
@@ -204,13 +207,14 @@ class WikipediaGenerator:
         """
         desc = []
         if exoplanet.mass and exoplanet.mass.value:
-            desc.append(self.comparison_utils.get_mass_comparison(exoplanet)) # get_mass_comparison uses format_utils.format_numeric_value, not _format_datapoint
+            mass_str = self.format_utils.format_datapoint(exoplanet.mass, exoplanet.name, self.reference_manager.template_refs, self.reference_manager.add_reference)
+            desc.append(f"d'une masse de {mass_str}")
         if exoplanet.radius and exoplanet.radius.value:
-            # Pass exoplanet.name for context to _format_datapoint
-            desc.append(f"d'un rayon de {self.format_utils.format_datapoint(exoplanet.radius, exoplanet.name, self.reference_manager.template_refs, self.reference_manager.add_reference)} [[rayon jovien|R_J]]")
+            radius_str = self.format_utils.format_datapoint(exoplanet.radius, exoplanet.name, self.reference_manager.template_refs, self.reference_manager.add_reference)
+            desc.append(f"d'un rayon de {radius_str}")
         if exoplanet.temperature and exoplanet.temperature.value:
-            # Pass exoplanet.name for context to _format_datapoint
-            desc.append(f"avec une température de {self.format_utils.format_datapoint(exoplanet.temperature, exoplanet.name, self.reference_manager.template_refs, self.reference_manager.add_reference)} [[kelvin|K]]")
+            temp_str = self.format_utils.format_datapoint(exoplanet.temperature, exoplanet.name, self.reference_manager.template_refs, self.reference_manager.add_reference)
+            desc.append(f"avec une température de {temp_str}")
         
         return ", ".join(desc) if desc else ""
     
