@@ -1,6 +1,4 @@
-from typing import Dict, Optional
 from src.models.exoplanet import Exoplanet
-from src.models.reference import DataPoint
 from .reference_utils import ReferenceUtils
 
 class InfoboxGenerator:

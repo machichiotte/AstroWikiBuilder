@@ -1,5 +1,7 @@
-from typing import Dict, Set
-from src.models.reference import SourceType, DataPoint
+from typing import Set, List
+from src.models.reference import DataPoint
+from src.models.exoplanet import Exoplanet
+from src.models.reference import SourceType
 
 class ReferenceUtils:
     """
@@ -74,3 +76,24 @@ class ReferenceUtils:
         """Réinitialise les références pour un nouvel article"""
         self._used_refs = set()
         self._has_grouped_notes = False 
+        
+    def get_used_references(self, exoplanet: Exoplanet) -> List[str]:
+        """
+        Retourne la liste des références utilisées pour l'exoplanète
+        """
+        refs = set()
+        
+        # Parcourir tous les attributs de l'exoplanète
+        for field_name in exoplanet.__dataclass_fields__:
+            if field_name == 'name' or field_name == 'other_names':
+                continue
+                
+            value = getattr(exoplanet, field_name)
+            if value and hasattr(value, 'reference') and value.reference:
+                if isinstance(value.reference.source, SourceType):
+                    refs.add(value.reference.source.value)
+        
+        # Si aucune référence n'a été trouvée, ajouter au moins EPE par défaut
+        # Ne rien ajouter si pas de référence
+            
+        return list(refs)

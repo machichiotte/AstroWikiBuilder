@@ -2,6 +2,7 @@ import locale
 import datetime
 from typing import Optional, Dict
 from src.models.reference import DataPoint
+from src.models.exoplanet import Exoplanet
 
 class FormatUtils:
     """
@@ -92,3 +93,16 @@ class FormatUtils:
                  return f"{value_str} {add_reference_func(ref_name, ref_content_full)}"
         
         return value_str 
+
+    def _format_references(self, exoplanet: Exoplanet) -> str:
+        """Formate les références pour l'article."""
+        references = []
+        if exoplanet.source == "exoplanet_eu":
+            references.append(
+                f'<ref>{{{{Lien web |langue=en |nom1=EPE |titre={exoplanet.name} |url=https://exoplanet.eu/catalog/{exoplanet.name.lower().replace(" ", "_")}/ |site=exoplanet.eu |date=2024-8-1 |consulté le=2025-1-3 }}}}</ref>'
+            )
+        if exoplanet.source == "nasa":
+            references.append(
+                f'<ref>{{{{Lien web |langue=en |nom1=NasaGov |titre={exoplanet.name} |url=https://science.nasa.gov/exoplanet-catalog/{exoplanet.name.lower().replace(" ", "-")}/ |site=science.nasa.gov |date=2024-11-1 |consulté le=2025-1-3 }}}}</ref>'
+            )
+        return " ".join(references) 

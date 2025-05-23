@@ -1,4 +1,3 @@
-from typing import Optional
 from src.models.exoplanet import Exoplanet
 from .comparison_utils import ComparisonUtils
 from .format_utils import FormatUtils

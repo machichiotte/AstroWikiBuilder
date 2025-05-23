@@ -1,11 +1,6 @@
 # src/utils/wikipedia_generator.py
-from typing import Dict, List, Optional, Set
-from src.models.exoplanet import Exoplanet
-from src.models.reference import SourceType, DataPoint
-import datetime
 import locale
-import re
-from typing import Optional
+from src.models.exoplanet import Exoplanet
 from .infobox_generator import InfoboxGenerator
 from .introduction_generator import IntroductionGenerator
 from .category_generator import CategoryGenerator
@@ -48,11 +43,13 @@ class WikipediaGenerator:
         self._has_grouped_notes = False
         locale.setlocale(locale.LC_ALL, 'fr_FR.UTF-8')
         self.format_utils = FormatUtils()
+        self.category_utils = CategoryGenerator()
         self.comparison_utils = ComparisonUtils(self.format_utils)
         self.star_utils = StarUtils(self.format_utils)
         self.reference_utils = ReferenceUtils()
         self.infobox_generator = InfoboxGenerator(self.reference_utils)
-
+        self.introduction_generator = IntroductionGenerator(self.comparison_utils, self.format_utils)
+    
     def _get_planet_type(self, exoplanet: Exoplanet) -> str:
         """
         Détermine le type de planète en fonction de ses caractéristiques physiques
@@ -101,32 +98,11 @@ class WikipediaGenerator:
 
         return "Planète tellurique"
     
-    def _get_used_references(self, exoplanet: Exoplanet) -> List[str]:
-        """
-        Retourne la liste des références utilisées pour l'exoplanète
-        """
-        refs = set()
-        
-        # Parcourir tous les attributs de l'exoplanète
-        for field_name in exoplanet.__dataclass_fields__:
-            if field_name == 'name' or field_name == 'other_names':
-                continue
-                
-            value = getattr(exoplanet, field_name)
-            if value and hasattr(value, 'reference') and value.reference:
-                if isinstance(value.reference.source, SourceType):
-                    refs.add(value.reference.source.value)
-        
-        # Si aucune référence n'a été trouvée, ajouter au moins EPE par défaut
-        # Ne rien ajouter si pas de référence
-            
-        return list(refs)
-
     def generate_article_content(self, exoplanet: Exoplanet) -> str:
         """Génère le contenu complet d'un article Wikipedia pour une exoplanète."""
         content = f"""
 {self.infobox_generator.generate_infobox(exoplanet)}
-{self._generate_introduction_sentence(exoplanet)}
+{self.introduction_generator.generate_introduction(exoplanet)}
 {self._generate_physical_section(exoplanet)}
 {self._generate_orbit_section(exoplanet)}
 {self._generate_discovery_section(exoplanet)}
@@ -135,55 +111,6 @@ class WikipediaGenerator:
 {self._generate_references_section(exoplanet)}
 """
         return content.strip()
-    
-    def _generate_introduction_sentence(self, exoplanet: Exoplanet) -> str:
-        """Génère la phrase d'introduction pour l'article."""
-        
-        star_name_formatted = ""
-        if exoplanet.host_star and exoplanet.host_star.value:
-            if isinstance(exoplanet.host_star, DataPoint):
-                 star_name = exoplanet.host_star.value
-                 star_name_formatted = f"[[{star_name}]]"
-            else: 
-                star_name = str(exoplanet.host_star.value) 
-                star_name_formatted = f"[[{star_name}]]"
-        else:
-            star_name_formatted = "son étoile hôte"
-
-        # Use star_utils.get_star_description for additional details about the star
-        star_details = self.star_utils.get_star_description(exoplanet) 
-
-        # Construct constellation part if available
-        constellation_part = ""
-        if exoplanet.constellation and exoplanet.constellation.value:
-            constellation_name = exoplanet.constellation.value
-            constellation_part = f" dans la [[constellation]] de [[{constellation_name}]]"
-
-        intro = f"'''{{{{nobr|{exoplanet.name}}}}}''' est une [[exoplanète]] en [[orbite]] autour de {{{{nobr|{star_name_formatted}}}}}, {star_details}{constellation_part}."
-        return intro
-
-    def _generate_categories(self, exoplanet: Exoplanet) -> str:
-        """Génère les catégories pour l'article."""
-        categories = []
-        planet_type = self._get_planet_type(exoplanet)
-        mass_comparison = self.comparison_utils.get_mass_comparison(exoplanet)
-        radius_comparison = self.comparison_utils.get_radius_comparison(exoplanet)
-        
-        section = "== Caractéristiques ==\n"
-        section += f"Cette [[exoplanète]] est un [[{planet_type}]]"
-        
-        description_parts = []
-        if mass_comparison:
-            description_parts.append(mass_comparison)
-        if radius_comparison:
-            description_parts.append(radius_comparison)
-            
-        if description_parts:
-            section += ", " + ", ".join(description_parts)
-            
-        section += "."
-        
-        return section
 
     def _generate_orbit_section(self, exoplanet: Exoplanet) -> str:
         """
@@ -208,26 +135,6 @@ class WikipediaGenerator:
         section += f"Cette planète a été découverte en {discovery_date} par la méthode de {discovery_method}."
         
         return section
-
-    def _get_size_comparison(self, exoplanet: Exoplanet) -> str:
-        """
-        Génère une comparaison de taille avec Jupiter ou la Terre
-        """
-        mass_value = exoplanet.mass.value if exoplanet.mass and exoplanet.mass.value else None
-        if mass_value:
-            if mass_value > 10:
-                return f"environ {self.format_utils.format_numeric_value(mass_value/317.8, 1)} fois plus massif que [[Jupiter (planète)|Jupiter]]"
-            else:
-                return f"environ {self.format_utils.format_numeric_value(mass_value, 1)} fois plus massif que la [[Terre]]"
-        return ""
-    
-    def _get_orbital_comparison(self, exoplanet: Exoplanet) -> str:
-        """
-        Génère la section de l'habitabilité de l'exoplanète
-        """
-        # Pour l'instant, cette section est vide car nous n'avons pas encore implémenté
-        # la logique d'habitabilité
-        return ""
 
     def _generate_references_section(self, exoplanet: Exoplanet) -> str:
         """
@@ -257,35 +164,6 @@ class WikipediaGenerator:
         
         return " ".join(desc) if desc else "une étoile"
     
-    def _get_planet_description(self, exoplanet: Exoplanet) -> str:
-        """
-        Génère une description de la planète
-        """
-        desc = []
-        if exoplanet.mass and exoplanet.mass.value:
-            desc.append(self._get_size_comparison(exoplanet)) # _get_size_comparison uses format_utils.format_numeric_value, not _format_datapoint
-        if exoplanet.radius and exoplanet.radius.value:
-            # Pass exoplanet.name for context to _format_datapoint
-            desc.append(f"d'un rayon de {self.format_utils.format_datapoint(exoplanet.radius, exoplanet.name, self.template_refs, self.reference_utils.add_reference)} [[rayon jovien|R_J]]")
-        if exoplanet.temperature and exoplanet.temperature.value:
-            # Pass exoplanet.name for context to _format_datapoint
-            desc.append(f"avec une température de {self.format_utils.format_datapoint(exoplanet.temperature, exoplanet.name, self.template_refs, self.reference_utils.add_reference)} [[kelvin|K]]")
-        
-        return ", ".join(desc) if desc else ""
-    
-    def _format_references(self, exoplanet: Exoplanet) -> str:
-        """Formate les références pour l'article."""
-        references = []
-        if exoplanet.source == "exoplanet_eu":
-            references.append(
-                f'<ref>{{{{Lien web |langue=en |nom1=EPE |titre={exoplanet.name} |url=https://exoplanet.eu/catalog/{exoplanet.name.lower().replace(" ", "_")}/ |site=exoplanet.eu |date=2024-8-1 |consulté le=2025-1-3 }}}}</ref>'
-            )
-        if exoplanet.source == "nasa":
-            references.append(
-                f'<ref>{{{{Lien web |langue=en |nom1=NasaGov |titre={exoplanet.name} |url=https://science.nasa.gov/exoplanet-catalog/{exoplanet.name.lower().replace(" ", "-")}/ |site=science.nasa.gov |date=2024-11-1 |consulté le=2025-1-3 }}}}</ref>'
-            )
-        return " ".join(references) 
-
     def _generate_physical_section(self, exoplanet: Exoplanet) -> str:
         """
         Génère la section des caractéristiques physiques de l'exoplanète
@@ -293,7 +171,7 @@ class WikipediaGenerator:
         section = "== Caractéristiques physiques ==\n"
         
         # Description de la planète
-        planet_desc = self._get_planet_description(exoplanet)
+        planet_desc = self._generate_planet_description(exoplanet)
         if planet_desc:
             section += f"{planet_desc}.\n"
             
@@ -331,3 +209,20 @@ class WikipediaGenerator:
         section = "== Habitabilité ==\n"
         section += "Les conditions d'habitabilité de cette exoplanète ne sont pas déterminées ou ne sont pas connues.\n"
         return section 
+    
+    def _generate_planet_description(self, exoplanet: Exoplanet) -> str:
+        """
+        Génère une description de la planète
+        """
+        desc = []
+        if exoplanet.mass and exoplanet.mass.value:
+            desc.append(self.comparison_utils.get_mass_comparison(exoplanet)) # get_mass_comparison uses format_utils.format_numeric_value, not _format_datapoint
+        if exoplanet.radius and exoplanet.radius.value:
+            # Pass exoplanet.name for context to _format_datapoint
+            desc.append(f"d'un rayon de {self.format_utils.format_datapoint(exoplanet.radius, exoplanet.name, self.template_refs, self.reference_utils.add_reference)} [[rayon jovien|R_J]]")
+        if exoplanet.temperature and exoplanet.temperature.value:
+            # Pass exoplanet.name for context to _format_datapoint
+            desc.append(f"avec une température de {self.format_utils.format_datapoint(exoplanet.temperature, exoplanet.name, self.template_refs, self.reference_utils.add_reference)} [[kelvin|K]]")
+        
+        return ", ".join(desc) if desc else ""
+    

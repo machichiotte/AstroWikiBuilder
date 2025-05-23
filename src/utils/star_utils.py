@@ -1,4 +1,4 @@
-from typing import Optional, Dict
+from typing import Dict
 from src.models.exoplanet import Exoplanet
 from .format_utils import FormatUtils
 

@@ -1,7 +1,6 @@
 # src/utils/wikipedia_checker.py
 import requests
-from typing import Dict, List, Optional, Tuple, Any
-import time
+from typing import Dict, List, Optional, Any
 from dataclasses import dataclass
 import unicodedata
 import re
