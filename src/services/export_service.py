@@ -32,8 +32,8 @@ class ExportService:
                     data[field_name] = attr_value.value
                     if attr_value.reference and attr_value.reference.source:
                         data[f"{field_name}_source"] = attr_value.reference.source.value
-                    if attr_value.reference and attr_value.reference.date:
-                         data[f"{field_name}_ref_date"] = attr_value.reference.date.isoformat()
+                    if attr_value.reference and attr_value.reference.update_date:
+                         data[f"{field_name}_ref_date"] = attr_value.reference.update_date.isoformat()
             elif attr_value is not None: # For any direct attributes not DataPoint (if any added later)
                 data[field_name] = attr_value
         
