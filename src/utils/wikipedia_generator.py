@@ -1,5 +1,6 @@
 # src/utils/wikipedia_generator.py
 import locale
+from typing import Literal
 from src.models.exoplanet import Exoplanet
 from .infobox_generator import InfoboxGenerator
 from .introduction_generator import IntroductionGenerator
@@ -50,10 +51,33 @@ class WikipediaGenerator:
         self.infobox_generator = InfoboxGenerator(self.reference_utils)
         self.introduction_generator = IntroductionGenerator(self.comparison_utils, self.format_utils)
     
+    def _is_ultra_short_period_planet(self, exoplanet: Exoplanet) -> bool:
+        """
+        Détermine si une planète est une planète à période de révolution ultra-courte (USPP)
+        Une USPP a une période orbitale inférieure à 1 jour terrestre et orbite autour d'une étoile
+        dont la masse n'excède pas 0.88 fois celle du Soleil.
+        """
+        if not exoplanet.orbital_period or not exoplanet.orbital_period.value:
+            return False
+            
+        # Vérifier si la période est inférieure à 1 jour
+        if exoplanet.orbital_period.value >= 1:
+            return False
+            
+        # Vérifier la masse de l'étoile hôte
+        if not exoplanet.star_mass or not exoplanet.star_mass.value:
+            return False
+            
+        # La masse de l'étoile doit être inférieure ou égale à 0.88 masses solaires
+        return exoplanet.star_mass.value <= 0.88
+
     def _get_planet_type(self, exoplanet: Exoplanet) -> str:
         """
         Détermine le type de planète en fonction de ses caractéristiques physiques
         """
+        is_uspp = self._is_ultra_short_period_planet(exoplanet)
+        uspp_suffix = " à période de révolution ultra-courte" if is_uspp else ""
+
         mass_value = exoplanet.mass.value if exoplanet.mass and exoplanet.mass.value else None
         radius_value = exoplanet.radius.value if exoplanet.radius and exoplanet.radius.value else None
         temp_value = exoplanet.temperature.value if exoplanet.temperature and exoplanet.temperature.value else None
@@ -62,41 +86,41 @@ class WikipediaGenerator:
         if mass_value and mass_value >= 1:
             if temp_value:
                 if temp_value >= 2200:
-                    return "Jupiter ultra-chaud"
+                    return f"Jupiter ultra-chaud{uspp_suffix}"
                 elif temp_value >= 1000:
-                    return "Jupiter chaud"
+                    return f"Jupiter chaud{uspp_suffix}"
                 elif temp_value >= 500:
-                    return "Jupiter tiède"
+                    return f"Jupiter tiède{uspp_suffix}"
                 else:
-                    return "Jupiter froid"
+                    return f"Jupiter froid{uspp_suffix}"
             else:
-                return "Géante gazeuse"
+                return f"Géante gazeuse{uspp_suffix}"
 
         # Classification des planètes de glace
         elif radius_value and radius_value >= 0.8:
             if temp_value:
                 if temp_value >= 1000:
-                    return "Neptune chaud"
+                    return f"Neptune chaud{uspp_suffix}"
                 elif temp_value >= 500:
-                    return "Neptune tiède"
+                    return f"Neptune tiède{uspp_suffix}"
                 else:
-                    return "Neptune froid"
+                    return f"Neptune froid{uspp_suffix}"
             else:
-                return "Géante de glaces"
+                return f"Géante de glaces{uspp_suffix}"
 
         # Classification des planètes telluriques
         elif mass_value and mass_value < 1:
             if radius_value:
                 if radius_value >= 1.5:
-                    return "Super-Terre"
+                    return f"Super-Terre{uspp_suffix}"
                 elif radius_value >= 0.8:
-                    return "Planète de dimensions terrestres"
+                    return f"Planète de dimensions terrestres{uspp_suffix}"
                 else:
-                    return "Sous-Terre"
+                    return f"Sous-Terre{uspp_suffix}"
             else:
-                return "Planète tellurique"
+                return f"Planète tellurique{uspp_suffix}"
 
-        return "Planète tellurique"
+        return f"Planète tellurique{uspp_suffix}"
     
     def generate_article_content(self, exoplanet: Exoplanet) -> str:
         """Génère le contenu complet d'un article Wikipedia pour une exoplanète."""
