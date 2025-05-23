@@ -54,28 +54,10 @@ class ReferenceUtils:
             
         return value_str
 
-    def format_references_section(self) -> str:
-        """
-        Génère la section "Notes et références" avec les sous-sections
-        "Notes" et "Références"
-        """
-        notes_section = ""
-        if self._has_grouped_notes:
-            notes_section = """=== Notes ===
-{{références|groupe="note"}}
-"""
-        
-        return f"""
-== Notes et références ==
-{notes_section}
-=== Références ===
-{{Références}}
-"""
-
     def reset_references(self):
         """Réinitialise les références pour un nouvel article"""
         self._used_refs = set()
-        self._has_grouped_notes = False 
+        self._has_grouped_notes = False
         
     def get_used_references(self, exoplanet: Exoplanet) -> List[str]:
         """
