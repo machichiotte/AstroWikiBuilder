@@ -17,6 +17,15 @@ class FormatUtils:
         """
         if value is None:
             return ""
+            
+        # Si c'est une date (année), on ne garde pas de décimales
+        if isinstance(value, (int, float)) and value.is_integer() and 1000 <= value <= 2100:
+            return str(int(value))
+            
+        # Si c'est une température avec des décimales nulles, on affiche en entier
+        if isinstance(value, float) and value.is_integer():
+            return str(int(value))
+            
         return locale.format_string(f"%.{precision}f", value, grouping=True)
     
     def format_value_with_unit(self, value: Optional[float], unit: str, precision: int = 2) -> str:
