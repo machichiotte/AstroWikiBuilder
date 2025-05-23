@@ -50,7 +50,7 @@ class WikipediaGenerator:
         'HOT': 1000,        # Température en K
         'WARM': 500         # Température en K
     }
-
+    
     def __init__(self):
         locale.setlocale(locale.LC_ALL, 'fr_FR.UTF-8')
 
@@ -196,7 +196,7 @@ class WikipediaGenerator:
         """
         section = "== Habitabilité ==\n"
         section += "Les conditions d'habitabilité de cette exoplanète ne sont pas déterminées ou ne sont pas connues.\n"
-        return section 
+        return section  
     
     def _generate_planet_description(self, exoplanet: Exoplanet) -> str:
         """
