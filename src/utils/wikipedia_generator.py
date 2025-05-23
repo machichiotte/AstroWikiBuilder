@@ -175,29 +175,29 @@ class WikipediaGenerator:
         if mass is not None:
             mass_value = self.format_utils.format_numeric_value(mass)
             if mass < 0.1:
-                desc_parts.append(f"sa masse, relativement faible, est de {mass_value} M_J")
+                desc_parts.append(f"sa masse, relativement faible, est de {mass_value} [[Masse_jovienne|''M''{{{{ind|J}}}}]]")
             elif mass < 1:
-                desc_parts.append(f"sa masse modérée de {mass_value} M_J")
+                desc_parts.append(f"sa masse modérée de {mass_value} [[Masse_jovienne|''M''{{{{ind|J}}}}]]")
             else:
-                desc_parts.append(f"sa masse imposante de {mass_value} M_J")
+                desc_parts.append(f"sa masse imposante de {mass_value} [[Masse_jovienne|''M''{{{{ind|J}}}}]]")
                 
         if radius is not None:
             radius_value = self.format_utils.format_numeric_value(radius)
             if radius < 0.5:
-                desc_parts.append(f"son rayon compact de {radius_value} R_J")
+                desc_parts.append(f"son rayon compact de {radius_value} [[Rayon_jovien|''R''{{{{ind|J}}}}]]")
             elif radius < 1.5:
-                desc_parts.append(f"son rayon de {radius_value} R_J")
+                desc_parts.append(f"son rayon de {radius_value} [[Rayon_jovien|''R''{{{{ind|J}}}}]]")
             else:
-                desc_parts.append(f"son rayon étendu de {radius_value} R_J")
+                desc_parts.append(f"son rayon étendu de {radius_value} [[Rayon_jovien|''R''{{{{ind|J}}}}]]")
                 
         if temp is not None:
             temp_value = self.format_utils.format_numeric_value(temp)
             if temp < 500:
-                desc_parts.append(f"sa température de surface de {temp_value} K")
+                desc_parts.append(f"sa température de surface de {temp_value} [[Kelvin|K]]")
             elif temp < 1000:
-                desc_parts.append(f"sa température élevée de {temp_value} K")
+                desc_parts.append(f"sa température élevée de {temp_value} [[Kelvin|K]]")
             else:
-                desc_parts.append(f"sa température extrême de {temp_value} K")
+                desc_parts.append(f"sa température extrême de {temp_value} [[Kelvin|K]]")
         
         if desc_parts:
             section += f"L'exoplanète se distingue par {', '.join(desc_parts[:-1])} et {desc_parts[-1]}.\n"
