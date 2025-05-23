@@ -76,8 +76,6 @@ class WikipediaGenerator:
         orbit = self._generate_orbit_section(exoplanet)
         discovery = self._generate_discovery_section(exoplanet)
         habitability = self._generate_habitability_section(exoplanet)
-        references = self.reference_manager.format_references_section()
-        categories = self.category_utils.generate_categories(exoplanet)
         
         # Assembler l'article
         article = f"""{{{{Ébauche|exoplanète|}}}}
@@ -94,10 +92,17 @@ class WikipediaGenerator:
 
 {habitability}
 
-{references}
+== Références ==
+{{{{références}}}}
 
-{categories}"""
-        
+{{{{Portail|astronomie|exoplanètes}}}}
+
+"""
+        # Ajouter les catégories
+        categories = self.category_utils.generate_categories(exoplanet)
+        for category in categories:
+            article += f"[[Catégorie:{category}]]\n"
+            
         return article
 
     def _generate_orbit_section(self, exoplanet: Exoplanet) -> str:
