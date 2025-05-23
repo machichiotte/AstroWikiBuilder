@@ -14,7 +14,7 @@ class StarUtils:
         'B': "étoile bleu-blanc de la séquence principale",
         'A': "étoile blanche de la séquence principale",
         'F': "étoile blanc-jaune de la séquence principale",
-        'G': "étoile jaune de la séquence principale",
+        'G': "Naine jaune",
         'K': "étoile orange de la séquence principale",
         'M': "étoile rouge de la séquence principale",
         'L': "naine brune de type L",
@@ -27,7 +27,7 @@ class StarUtils:
         'B': 'https://fr.wikipedia.org/wiki/%C3%89toile_bleu-blanc_de_la_s%C3%A9quence_principale',
         'A': 'https://fr.wikipedia.org/wiki/%C3%89toile_blanche_de_la_s%C3%A9quence_principale',
         'F': 'https://fr.wikipedia.org/wiki/%C3%89toile_blanc-jaune_de_la_s%C3%A9quence_principale',
-        'G': 'https://fr.wikipedia.org/wiki/%C3%89toile_jaune_de_la_s%C3%A9quence_principale',
+        'G': 'https://fr.wikipedia.org/wiki/Naine_jaune',
         'K': 'https://fr.wikipedia.org/wiki/%C3%89toile_orange_de_la_s%C3%A9quence_principale',
         'M': 'https://fr.wikipedia.org/wiki/%C3%89toile_rouge_de_la_s%C3%A9quence_principale',
         'L': 'https://fr.wikipedia.org/wiki/Naine_brunne_L',
@@ -40,7 +40,7 @@ class StarUtils:
         'B': "étoile bleue chaude",
         'A': "étoile blanche",
         'F': "étoile blanc-jaune",
-        'G': "étoile jaune",
+        'G': "Naine jaune",
         'K': "étoile orange",
         'M': "étoile rouge"
     }

@@ -250,8 +250,11 @@ class WikipediaGenerator:
         # Générer la description de l'étoile hôte
         star_desc = self._generate_references_section(exoplanet)
         
+        # Rendre le type d'astre cliquable
+        planet_type_link = f"[[{planet_type}|{planet_type}]]"
+        
         # Assembler l'introduction
-        intro = f"{exoplanet.name} est {article} {planet_type}, orbitant autour {star_desc}.\n"
+        intro = f"{exoplanet.name} est {article} {planet_type_link}, orbitant autour {star_desc}.\n"
         
         return intro
     
