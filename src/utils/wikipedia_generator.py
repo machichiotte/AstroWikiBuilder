@@ -172,25 +172,29 @@ class WikipediaGenerator:
         # Construction de la description
         desc = []
         if mass:
-            desc.append(f"sa {mass}")
+            desc.append(f"une masse de {mass}")
         if radius:
-            desc.append(f"son {radius}")
+            desc.append(f"un rayon de {radius}")
         if temp:
-            desc.append(f"sa {temp}")
+            desc.append(f"une température de {temp}")
             
         if desc:
             section += f"L'exoplanète a {', '.join(desc)}.\n\n"
             
             # Ajout des comparaisons
+            comparisons = []
             if exoplanet.mass:
                 mass_comp = self.comparison_utils.get_mass_comparison(exoplanet)
                 if mass_comp:
-                    section += f"{mass_comp}\n"
+                    comparisons.append(mass_comp)
                     
             if exoplanet.radius:
                 radius_comp = self.comparison_utils.get_radius_comparison(exoplanet)
                 if radius_comp:
-                    section += f"{radius_comp}\n"
+                    comparisons.append(radius_comp)
+            
+            if comparisons:
+                section += f"{', '.join(comparisons)}.\n"
         
         return section
 
@@ -242,7 +246,7 @@ class WikipediaGenerator:
         star_desc = self._generate_references_section(exoplanet)
         
         # Assembler l'introduction
-        intro = f"{exoplanet.name} est {planet_type} orbitant autour de {star_desc}.\n"
+        intro = f"{exoplanet.name} est une {planet_type}, orbitant autour de {star_desc}.\n"
         
         return intro
     
