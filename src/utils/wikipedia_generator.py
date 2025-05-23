@@ -72,7 +72,7 @@ class WikipediaGenerator:
         # Générer les différentes sections
         infobox = self.infobox_generator.generate_infobox(exoplanet)
         introduction = self._generate_introduction(exoplanet)
-        physical_characteristics = self._generate_physical_section(exoplanet)
+        physical_characteristics = self._generate_physical_characteristics(exoplanet)
         orbit = self._generate_orbit_section(exoplanet)
         discovery = self._generate_discovery_section(exoplanet)
         habitability = self._generate_habitability_section(exoplanet)
@@ -160,41 +160,49 @@ class WikipediaGenerator:
 
         return " ".join(desc) if desc else "une étoile"
 
-    def _generate_physical_section(self, exoplanet: Exoplanet) -> str:
+    def _generate_physical_characteristics(self, exoplanet: Exoplanet) -> str:
         """Génère la section des caractéristiques physiques."""
+        mass = exoplanet.mass.value if exoplanet.mass and exoplanet.mass.value is not None else None
+        radius = exoplanet.radius.value if exoplanet.radius and exoplanet.radius.value is not None else None
+        temp = exoplanet.temperature.value if exoplanet.temperature and exoplanet.temperature.value is not None else None
+        
+        if not any([mass, radius, temp]):
+            return ""
+            
         section = "== Caractéristiques physiques ==\n"
         
-        # Formatage des caractéristiques principales
-        mass = self.format_utils.format_datapoint(exoplanet.mass, exoplanet.name, self.reference_manager.template_refs, self.reference_manager.add_reference)
-        radius = self.format_utils.format_datapoint(exoplanet.radius, exoplanet.name, self.reference_manager.template_refs, self.reference_manager.add_reference)
-        temp = self.format_utils.format_datapoint(exoplanet.temperature, exoplanet.name, self.reference_manager.template_refs, self.reference_manager.add_reference)
+        # Construction d'une description plus naturelle
+        desc_parts = []
         
-        # Construction de la description
-        desc = []
-        if mass:
-            desc.append(f"une masse de {mass}")
-        if radius:
-            desc.append(f"un rayon de {radius}")
-        if temp:
-            desc.append(f"une température de {temp}")
-            
-        if desc:
-            section += f"L'exoplanète a {', '.join(desc)}.\n\n"
-            
-            # Ajout des comparaisons
-            comparisons = []
-            if exoplanet.mass:
-                mass_comp = self.comparison_utils.get_mass_comparison(exoplanet)
-                if mass_comp:
-                    comparisons.append(mass_comp)
-                    
-            if exoplanet.radius:
-                radius_comp = self.comparison_utils.get_radius_comparison(exoplanet)
-                if radius_comp:
-                    comparisons.append(radius_comp)
-            
-            if comparisons:
-                section += f"{', '.join(comparisons)}.\n"
+        if mass is not None:
+            mass_value = self.format_utils.format_numeric_value(mass)
+            if mass < 0.1:
+                desc_parts.append(f"sa masse, relativement faible, est de {mass_value} M_J")
+            elif mass < 1:
+                desc_parts.append(f"sa masse modérée de {mass_value} M_J")
+            else:
+                desc_parts.append(f"sa masse imposante de {mass_value} M_J")
+                
+        if radius is not None:
+            radius_value = self.format_utils.format_numeric_value(radius)
+            if radius < 0.5:
+                desc_parts.append(f"son rayon compact de {radius_value} R_J")
+            elif radius < 1.5:
+                desc_parts.append(f"son rayon de {radius_value} R_J")
+            else:
+                desc_parts.append(f"son rayon étendu de {radius_value} R_J")
+                
+        if temp is not None:
+            temp_value = self.format_utils.format_numeric_value(temp)
+            if temp < 500:
+                desc_parts.append(f"sa température de surface de {temp_value} K")
+            elif temp < 1000:
+                desc_parts.append(f"sa température élevée de {temp_value} K")
+            else:
+                desc_parts.append(f"sa température extrême de {temp_value} K")
+        
+        if desc_parts:
+            section += f"L'exoplanète se distingue par {', '.join(desc_parts[:-1])} et {desc_parts[-1]}.\n"
         
         return section
 
