@@ -71,8 +71,15 @@ class PlanetTypeUtils:
                     return "Neptune tiède"
             return "Neptune"
 
-        # Type Saturne pour masses intermédiaires
-        return "Saturne"
+        # Pour les masses intermédiaires entre Neptune et Jupiter
+        if t:
+            if t >= self.HOT_MIN:
+                return "Jupiter chaud"
+            if t >= self.WARM_MIN:
+                return "Jupiter tiède"
+        if a and a >= 1.0:
+            return "Jupiter froid"
+        return "Jupiter"
 
     def _classify_terrestrial(self, m: Optional[float], r: Optional[float]) -> str:
         if m and m <= self.SUB_EARTH_MAX or r and r <= self.SUB_EARTH_RADIUS_MAX:

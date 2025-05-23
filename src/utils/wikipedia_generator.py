@@ -161,30 +161,38 @@ class WikipediaGenerator:
         return " ".join(desc) if desc else "une étoile"
 
     def _generate_physical_section(self, exoplanet: Exoplanet) -> str:
-        """
-        Génère la section des caractéristiques physiques de l'exoplanète
-        """
+        """Génère la section des caractéristiques physiques."""
         section = "== Caractéristiques physiques ==\n"
         
-        # Description de la planète
-        planet_desc = self._generate_planet_description(exoplanet)
-        if planet_desc:
-            section += f"{planet_desc}.\n"
-            
-        # Comparaisons de taille
-        mass_comparison = self.comparison_utils.get_mass_comparison(exoplanet)
-        radius_comparison = self.comparison_utils.get_radius_comparison(exoplanet)
+        # Formatage des caractéristiques principales
+        mass = self.format_utils.format_datapoint(exoplanet.mass, exoplanet.name, self.reference_manager.template_refs, self.reference_manager.add_reference)
+        radius = self.format_utils.format_datapoint(exoplanet.radius, exoplanet.name, self.reference_manager.template_refs, self.reference_manager.add_reference)
+        temp = self.format_utils.format_datapoint(exoplanet.temperature, exoplanet.name, self.reference_manager.template_refs, self.reference_manager.add_reference)
         
-        comparisons = []
-        if mass_comparison:
-            comparisons.append(mass_comparison)
-        if radius_comparison:
-            comparisons.append(radius_comparison)
+        # Construction de la description
+        desc = []
+        if mass:
+            desc.append(f"sa {mass}")
+        if radius:
+            desc.append(f"son {radius}")
+        if temp:
+            desc.append(f"sa {temp}")
             
-        if comparisons:
-            section += " ".join(comparisons) + ".\n"
+        if desc:
+            section += f"L'exoplanète a {', '.join(desc)}.\n\n"
             
-        return section 
+            # Ajout des comparaisons
+            if exoplanet.mass:
+                mass_comp = self.comparison_utils.get_mass_comparison(exoplanet)
+                if mass_comp:
+                    section += f"{mass_comp}\n"
+                    
+            if exoplanet.radius:
+                radius_comp = self.comparison_utils.get_radius_comparison(exoplanet)
+                if radius_comp:
+                    section += f"{radius_comp}\n"
+        
+        return section
 
     def _generate_star_section(self, exoplanet: Exoplanet) -> str:
         """
