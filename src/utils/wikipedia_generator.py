@@ -137,15 +137,14 @@ class WikipediaGenerator:
         if exoplanet.spectral_type and exoplanet.spectral_type.value:
             spectral_type = exoplanet.spectral_type.value
             spectral_class = spectral_type[0] if spectral_type else None
-            description = self.star_utils.spectral_type_descriptions.get(spectral_class, "étoile")
-            desc.append(f"d'une [[{spectral_type}|{description}]]")
+            description = self.star_utils.SPECTRAL_TYPE_DESCRIPTIONS.get(spectral_class, "étoile")
+            desc.append(f"d'une [[{description}|{description}]]")
 
         if exoplanet.distance and exoplanet.distance.value is not None:
             try:
                 pc_value = float(exoplanet.distance.value)
                 ly_value = self.format_utils.parsecs_to_lightyears(pc_value)
                 formatted_ly_value = self.format_utils.format_numeric_value(ly_value, precision=0)
-                # Pass exoplanet.name for context to _format_datapoint
                 formatted_pc_value_with_ref = self.format_utils.format_datapoint(exoplanet.distance, exoplanet.name, self.reference_manager.template_refs, self.reference_manager.add_reference)
                 distance_str = f"située à environ {formatted_ly_value} [[année-lumière|années-lumière]] ({formatted_pc_value_with_ref} [[parsec|pc]]) de la [[Terre]]"
                 desc.append(distance_str)
@@ -155,7 +154,6 @@ class WikipediaGenerator:
                     desc.append(f"située à {original_distance_str} [[parsec|pc]] de la [[Terre]]")
 
         if exoplanet.apparent_magnitude and exoplanet.apparent_magnitude.value:
-            # Pass exoplanet.name for context to _format_datapoint
             desc.append(f"avec une [[magnitude apparente]] de {self.format_utils.format_datapoint(exoplanet.apparent_magnitude, exoplanet.name, self.reference_manager.template_refs, self.reference_manager.add_reference)}")
 
         return " ".join(desc) if desc else "une étoile"
@@ -250,16 +248,19 @@ class WikipediaGenerator:
         # Obtenir le type de planète
         planet_type = self.planet_type_utils.get_planet_type(exoplanet)
         
-        # Déterminer l'article approprié
-        article = "une"
-        if planet_type.startswith(("Jupiter", "Neptune")):
-            article = "un" if planet_type.startswith("Jupiter") else "une"
+        # Déterminer l'article approprié et le lien
+        if planet_type.startswith("Jupiter"):
+            article = "un"
+            planet_type_link = f"[[Jupiter chaud|{planet_type}]]"
+        elif planet_type.startswith("Neptune"):
+            article = "une"
+            planet_type_link = f"[[Neptune chaud|{planet_type}]]"
+        else:
+            article = "une"
+            planet_type_link = f"[[{planet_type}|{planet_type}]]"
         
         # Générer la description de l'étoile hôte
         star_desc = self._generate_references_section(exoplanet)
-        
-        # Rendre le type d'astre cliquable
-        planet_type_link = f"[[{planet_type}|{planet_type}]]"
         
         # Assembler l'introduction
         intro = f"{exoplanet.name} est {article} {planet_type_link}, orbitant autour {star_desc}.\n"
