@@ -1,11 +1,13 @@
 # src/data_collectors/nasa_exoplanet.py
 import pandas as pd
+import requests
 from typing import List, Optional
 from datetime import datetime
 import logging
 import os
 from src.models.exoplanet import Exoplanet
 from src.models.reference import DataPoint, Reference, SourceType
+from src.utils.reference_manager import ReferenceManager
 
 # Configuration du logging
 logging.basicConfig(level=logging.INFO)
@@ -18,6 +20,8 @@ class NASAExoplanetCollector:
     def __init__(self, use_mock_data: bool = False):
         self.required_columns = ['pl_name', 'hostname', 'discoverymethod', 'disc_year']
         self.use_mock_data = use_mock_data
+        self.reference_manager = ReferenceManager()
+        self.last_update_date = datetime.now()  # Par défaut, on utilise la date actuelle
         
         # Créer le dossier data s'il n'existe pas
         os.makedirs("data", exist_ok=True)
@@ -34,9 +38,16 @@ class NASAExoplanetCollector:
                 df = pd.read_csv(self.MOCK_DATA_PATH)
                 logger.info("Utilisation des données mockées")
             else:
-                df = pd.read_csv(self.BASE_URL)
-                # Sauvegarder les données pour une utilisation future
-                df.to_csv(self.MOCK_DATA_PATH, index=False)
+                # Télécharger les données
+                response = requests.get(self.BASE_URL)
+                response.raise_for_status()
+                
+                # Sauvegarder les données brutes
+                with open(self.MOCK_DATA_PATH, 'w', encoding='utf-8') as f:
+                    f.write(response.text)
+                
+                # Lire les données avec pandas
+                df = pd.read_csv(self.MOCK_DATA_PATH)
                 logger.info(f"Données sauvegardées dans {self.MOCK_DATA_PATH}")
             
             logger.info(f"Colonnes trouvées dans le CSV NASA : {list(df.columns)}")
@@ -65,9 +76,9 @@ class NASAExoplanetCollector:
     
     def _create_reference(self) -> Reference:
         """Crée une référence pour les données NASA"""
-        return Reference(
+        return self.reference_manager.create_reference(
             source=SourceType.NASA,
-            date=datetime.now(),
+            update_date=self.last_update_date,
             url="https://exoplanetarchive.ipac.caltech.edu/"
         )
     

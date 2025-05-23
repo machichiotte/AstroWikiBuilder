@@ -5,6 +5,7 @@ from datetime import datetime
 import logging
 from src.models.exoplanet import Exoplanet
 from src.models.reference import DataPoint, Reference, SourceType
+from src.utils.reference_manager import ReferenceManager
 
 # Configuration du logging
 logging.basicConfig(level=logging.INFO)
@@ -16,43 +17,15 @@ class ExoplanetEUCollector:
         Initialize the collector with the path to the downloaded CSV file
         """
         self.csv_path = csv_path
+        self.reference_manager = ReferenceManager()
+        self.last_update_date = datetime.now()  # Par défaut, on utilise la date actuelle
         self.required_columns = ['name', 'star_name', 'detection_type', 'discovered']
-    
-    def fetch_data(self) -> List[Exoplanet]:
-        """
-        Fetch data from Exoplanet.eu CSV file and convert to Exoplanet objects
-        """
-        try:
-            df = pd.read_csv(self.csv_path)
-            logger.info(f"Colonnes trouvées dans le CSV EPE : {list(df.columns)}")
-            
-            # Vérification des colonnes requises
-            missing_columns = [col for col in self.required_columns if col not in df.columns]
-            if missing_columns:
-                raise ValueError(f"Colonnes manquantes dans le CSV : {missing_columns}")
-            
-            exoplanets = []
-            for index, row in df.iterrows():
-                try:
-                    exoplanet = self._convert_row_to_exoplanet(row)
-                    if exoplanet:
-                        exoplanets.append(exoplanet)
-                except Exception as e:
-                    logger.error(f"Erreur sur la ligne {index}: {str(e)}")
-                    logger.debug(f"Données de la ligne : {row.to_dict()}")
-            
-            logger.info(f"Nombre d'exoplanètes traitées avec succès : {len(exoplanets)}")
-            return exoplanets
-            
-        except Exception as e:
-            logger.error(f"Erreur lors de la lecture du CSV EPE : {str(e)}")
-            return []
     
     def _create_reference(self) -> Reference:
         """Crée une référence pour les données EPE"""
-        return Reference(
+        return self.reference_manager.create_reference(
             source=SourceType.EPE,
-            date=datetime.now(),
+            update_date=self.last_update_date,
             url="https://exoplanet.eu/"
         )
     
@@ -138,5 +111,26 @@ class ExoplanetEUCollector:
             return exoplanet
             
         except Exception as e:
-            logger.error(f"Erreur lors de la conversion de la ligne en Exoplanet : {str(e)}")
-            return None 
+            logger.error(f"Erreur lors de la conversion de la ligne : {e}")
+            return None
+    
+    def collect_data(self) -> List[Exoplanet]:
+        """
+        Collecte les données des exoplanètes depuis le fichier CSV
+        """
+        try:
+            # Lire les données avec pandas
+            df = pd.read_csv(self.csv_path)
+            
+            # Convertir les lignes en objets Exoplanet
+            exoplanets = []
+            for _, row in df.iterrows():
+                exoplanet = self._convert_row_to_exoplanet(row)
+                if exoplanet:
+                    exoplanets.append(exoplanet)
+            
+            return exoplanets
+            
+        except Exception as e:
+            logger.error(f"Erreur lors de la collecte des données : {e}")
+            return [] 
