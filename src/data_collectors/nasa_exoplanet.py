@@ -112,42 +112,42 @@ class NASAExoplanetCollector:
             )
             
             # Caractéristiques orbitales
-            for field, csv_field in [
-                ('semi_major_axis', 'pl_orbsmax'),
-                ('eccentricity', 'pl_orbeccen'),
-                ('orbital_period', 'pl_orbper'),
-                ('inclination', 'pl_orbincl'),
-                ('argument_of_periastron', 'pl_orblper'),
-                ('periastron_time', 'pl_orbtper')
+            for field, csv_field, unit in [
+                ('semi_major_axis', 'pl_orbsmax', 'ua'),
+                ('eccentricity', 'pl_orbeccen', None),  # Pas d'unité pour l'excentricité
+                ('orbital_period', 'pl_orbper', 'j'),  # jours
+                ('inclination', 'pl_orbincl', '°'),  # degrés
+                ('argument_of_periastron', 'pl_orblper', '°'),  # degrés
+                ('periastron_time', 'pl_orbtper', 'j')  # jours
             ]:
                 value = self._safe_float_conversion(row.get(csv_field))
                 if value is not None:
-                    setattr(exoplanet, field, DataPoint(value, ref))
+                    setattr(exoplanet, field, DataPoint(value, ref, unit))
             
             # Caractéristiques physiques
-            for field, csv_field in [
-                ('mass', 'pl_bmassj'),
-                ('radius', 'pl_radj'),
-                ('temperature', 'pl_eqt')
+            for field, csv_field, unit in [
+                ('mass', 'pl_bmassj', 'M_J'),  # masses joviennes
+                ('radius', 'pl_radj', 'R_J'),  # rayons joviens
+                ('temperature', 'pl_eqt', 'K')  # kelvins
             ]:
                 value = self._safe_float_conversion(row.get(csv_field))
                 if value is not None:
-                    setattr(exoplanet, field, DataPoint(value, ref))
+                    setattr(exoplanet, field, DataPoint(value, ref, unit))
             
             # Informations sur l'étoile
-            for field, csv_field in [
-                ('spectral_type', 'st_spectype'),
-                ('star_temperature', 'st_teff'),
-                ('star_radius', 'st_rad'),
-                ('star_mass', 'st_mass'),
-                ('distance', 'sy_dist'),
-                ('apparent_magnitude', 'sy_vmag')
+            for field, csv_field, unit in [
+                ('spectral_type', 'st_spectype', None),  # Pas d'unité pour le type spectral
+                ('star_temperature', 'st_teff', 'K'),  # kelvins
+                ('star_radius', 'st_rad', 'R_S'),  # rayons solaires
+                ('star_mass', 'st_mass', 'M_S'),  # masses solaires
+                ('distance', 'sy_dist', 'pc'),  # parsecs
+                ('apparent_magnitude', 'sy_vmag', None)  # Pas d'unité pour la magnitude
             ]:
                 value = row.get(csv_field)
                 if pd.notna(value):
                     if isinstance(value, (int, float)):
                         value = self._safe_float_conversion(value)
-                    setattr(exoplanet, field, DataPoint(value, ref))
+                    setattr(exoplanet, field, DataPoint(value, ref, unit))
             
             # Autres noms
             if pd.notna(row.get('pl_altname')):

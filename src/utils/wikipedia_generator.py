@@ -72,7 +72,7 @@ class WikipediaGenerator:
         # Générer les différentes sections
         infobox = self.infobox_generator.generate_infobox(exoplanet)
         introduction = self._generate_introduction(exoplanet)
-        physical_characteristics = self._generate_physical_characteristics(exoplanet)
+        physical_characteristics = self._generate_physical_section(exoplanet)
         orbit = self._generate_orbit_section(exoplanet)
         discovery = self._generate_discovery_section(exoplanet)
         habitability = self._generate_habitability_section(exoplanet)

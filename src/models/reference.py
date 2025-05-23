@@ -40,6 +40,7 @@ class DataPoint:
     """Classe pour stocker une valeur et sa référence"""
     value: any
     reference: Reference = None
+    unit: str = None  # Unité de mesure (ex: M_J, R_J, K, etc.)
 
     def to_wiki_value(self) -> str:
         """Convertit la valeur en format wiki avec sa référence"""
