@@ -61,19 +61,18 @@ class ComparisonUtils:
         JUPITER_SIMILARITY_LOWER_MJ = 1.0 - self.SIMILARITY_MARGIN
         JUPITER_SIMILARITY_UPPER_MJ = 1.0 + self.SIMILARITY_MARGIN
 
+        # Comparaison avec la Terre
+        mass_me = mass_mj * self.M_JUPITER_IN_EARTH_MASSES
+        EARTH_SIMILARITY_LOWER_ME = 1.0 - self.SIMILARITY_MARGIN
+        EARTH_SIMILARITY_UPPER_ME = 1.0 + self.SIMILARITY_MARGIN
+        
         # Comparaison avec Jupiter
         if mass_mj >= JUPITER_SIMILARITY_LOWER_MJ:
             if mass_mj <= JUPITER_SIMILARITY_UPPER_MJ:
                 return "environ la même masse que [[Jupiter (planète)|Jupiter]]"
             else:
                 return f"environ {self.format_utils.format_numeric_value(mass_mj, 1)} fois plus massif que [[Jupiter (planète)|Jupiter]]"
-        
-        # Comparaison avec la Terre
-        mass_me = mass_mj * self.M_JUPITER_IN_EARTH_MASSES
-        EARTH_SIMILARITY_LOWER_ME = 1.0 - self.SIMILARITY_MARGIN
-        EARTH_SIMILARITY_UPPER_ME = 1.0 + self.SIMILARITY_MARGIN
-
-        if mass_me >= EARTH_SIMILARITY_LOWER_ME and mass_me <= EARTH_SIMILARITY_UPPER_ME:
+        elif mass_me >= EARTH_SIMILARITY_LOWER_ME and mass_me <= EARTH_SIMILARITY_UPPER_ME:
             return "environ la même masse que la [[Terre]]"
         elif mass_me > EARTH_SIMILARITY_UPPER_ME:
             return f"environ {self.format_utils.format_numeric_value(mass_me, 1)} fois plus massif que la [[Terre]]"
