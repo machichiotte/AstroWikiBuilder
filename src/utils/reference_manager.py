@@ -87,16 +87,15 @@ class ReferenceManager:
     def add_reference(self, ref_name: str, ref_content: str) -> str:
         """
         Ajoute une référence et retourne la balise de référence appropriée.
-        La première occurrence d'une référence doit contenir le template complet.
+        Si c'est la première occurrence, retourne la référence complète.
+        Sinon, retourne une référence courte.
         """
         if ref_name not in self._used_refs:
             self._used_refs.add(ref_name)
-            if isinstance(ref_content, str) and 'group="note"' in ref_content.lower():
-                self._has_grouped_notes = True
-            # S'assurer que la première occurrence contient le template complet
-            if not ref_content.startswith('<ref name="') or not ref_content.endswith('</ref>'):
-                return f'<ref name="{ref_name}">{ref_content}</ref>'
-            return ref_content
+            # Vérifier si le contenu est déjà encapsulé dans une balise ref
+            if ref_content.startswith('<ref') and ref_content.endswith('</ref>'):
+                return ref_content
+            return f'<ref name="{ref_name}">{ref_content}</ref>'
         return f'<ref name="{ref_name}" />'
 
     def reset_references(self):

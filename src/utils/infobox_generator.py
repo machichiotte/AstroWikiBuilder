@@ -70,7 +70,11 @@ class InfoboxGenerator:
                         s += f" | {label} unité = {actual_unit}\n"
                 
                 if n:
-                    s += f" | {label} notes = {n}\n"
+                    # Vérifier si la référence est déjà encapsulée dans une balise ref
+                    if n.startswith('<ref') and n.endswith('</ref>'):
+                        s += f" | {label} notes = {n}\n"
+                    else:
+                        s += f" | {label} notes = {n}\n"
             return s
 
         infobox = f"{{{{Infobox Exoplanète\n"
