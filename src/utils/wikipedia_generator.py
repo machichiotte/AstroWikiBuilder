@@ -233,3 +233,68 @@ class WikipediaGenerator:
         
         return intro
     
+    def generate_infobox(self, exoplanet: Exoplanet) -> str:
+        """
+        Génère l'infobox pour l'exoplanète
+        """
+        infobox = """{{Infobox Exoplanète
+ | nom = {name}
+ | image = 
+ | légende = 
+ | étoile = {star}
+ | distance = {distance}
+ | distance notes = {distance_ref}
+ | type spectral = {spectral_type}
+ | type spectral notes = {spectral_type_ref}
+ | magnitude apparente = {apparent_magnitude}
+ | magnitude apparente notes = {apparent_magnitude_ref}
+ | type = {type}
+ | demi-grand axe = {semi_major_axis}
+ | demi-grand axe notes = {semi_major_axis_ref}
+ | excentricité = {eccentricity}
+ | excentricité notes = {eccentricity_ref}
+ | période = {period}
+ | période notes = {period_ref}
+ | inclinaison = {inclination}
+ | inclinaison notes = {inclination_ref}
+ | masse = {mass}
+ | masse notes = {mass_ref}
+ | rayon = {radius}
+ | rayon notes = {radius_ref}
+ | température = {temperature}
+ | température notes = {temperature_ref}
+ | méthode = {method}
+ | méthode notes = {method_ref}
+ | date = {discovery_date}
+ | date notes = {discovery_date_ref}
+}}""".format(
+            name=exoplanet.name,
+            star=exoplanet.star_name,
+            distance=exoplanet.distance.value if exoplanet.distance else "",
+            distance_ref=self.reference_manager.format_datapoint(exoplanet.distance, exoplanet.name) if exoplanet.distance else "",
+            spectral_type=exoplanet.spectral_type.value if exoplanet.spectral_type else "",
+            spectral_type_ref=self.reference_manager.format_datapoint(exoplanet.spectral_type, exoplanet.name) if exoplanet.spectral_type else "",
+            apparent_magnitude=exoplanet.apparent_magnitude.value if exoplanet.apparent_magnitude else "",
+            apparent_magnitude_ref=self.reference_manager.format_datapoint(exoplanet.apparent_magnitude, exoplanet.name) if exoplanet.apparent_magnitude else "",
+            type=exoplanet.type.value if exoplanet.type else "",
+            semi_major_axis=exoplanet.semi_major_axis.value if exoplanet.semi_major_axis else "",
+            semi_major_axis_ref=self.reference_manager.format_datapoint(exoplanet.semi_major_axis, exoplanet.name) if exoplanet.semi_major_axis else "",
+            eccentricity=exoplanet.eccentricity.value if exoplanet.eccentricity else "",
+            eccentricity_ref=self.reference_manager.format_datapoint(exoplanet.eccentricity, exoplanet.name) if exoplanet.eccentricity else "",
+            period=exoplanet.period.value if exoplanet.period else "",
+            period_ref=self.reference_manager.format_datapoint(exoplanet.period, exoplanet.name) if exoplanet.period else "",
+            inclination=exoplanet.inclination.value if exoplanet.inclination else "",
+            inclination_ref=self.reference_manager.format_datapoint(exoplanet.inclination, exoplanet.name) if exoplanet.inclination else "",
+            mass=exoplanet.mass.value if exoplanet.mass else "",
+            mass_ref=self.reference_manager.format_datapoint(exoplanet.mass, exoplanet.name) if exoplanet.mass else "",
+            radius=exoplanet.radius.value if exoplanet.radius else "",
+            radius_ref=self.reference_manager.format_datapoint(exoplanet.radius, exoplanet.name) if exoplanet.radius else "",
+            temperature=exoplanet.temperature.value if exoplanet.temperature else "",
+            temperature_ref=self.reference_manager.format_datapoint(exoplanet.temperature, exoplanet.name) if exoplanet.temperature else "",
+            method=exoplanet.discovery_method.value if exoplanet.discovery_method else "",
+            method_ref=self.reference_manager.format_datapoint(exoplanet.discovery_method, exoplanet.name) if exoplanet.discovery_method else "",
+            discovery_date=exoplanet.discovery_date.value if exoplanet.discovery_date else "",
+            discovery_date_ref=self.reference_manager.format_datapoint(exoplanet.discovery_date, exoplanet.name) if exoplanet.discovery_date else ""
+        )
+        return infobox
+    

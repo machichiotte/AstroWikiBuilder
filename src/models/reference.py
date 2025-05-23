@@ -17,23 +17,29 @@ class Reference:
     url: Optional[str] = None
     identifier: Optional[str] = None
 
-    def to_wiki_ref(self, template_refs: Dict[str, str] = None, exoplanet_name: str = None) -> str:
-        """Convertit la référence en format wiki"""
+    def to_wiki_ref(self, template_refs: Optional[Dict[str, str]] = None, exoplanet_name: Optional[str] = None) -> str:
+        """
+        Convertit la référence en format wiki.
+        Si un template et un nom d'exoplanète sont fournis, utilise le template.
+        Sinon, utilise le format {{Lien web}} par défaut.
+        """
         if template_refs and exoplanet_name:
             template = template_refs.get(str(self.source.value).lower(), "")
             if template:
-                # Formater les dates pour le template
-                update_date_str = self.update_date.strftime("%Y-%m-%d")
-                consultation_date_str = self.consultation_date.strftime("%Y-%m-%d")
-                
-                content = template.format(
-                    title=exoplanet_name,
+                return template.format(
+                    title=f"NASA Exoplanet Archive - {exoplanet_name}",
                     id=exoplanet_name.lower().replace(" ", "-"),
-                    update_date=update_date_str,
-                    consultation_date=consultation_date_str
+                    update_date=self.update_date.strftime("%Y-%m-%d"),
+                    consultation_date=self.consultation_date.strftime("%Y-%m-%d")
                 )
-                return f"<ref name=\"{self.source.value}\">{content}</ref>"
-        return f"<ref name=\"{self.source.value}\"/>"
+        
+        # Format par défaut avec {{Lien web}}
+        ref_content = f"""{{{{Lien web |langue=en |nom1=NasaGov|titre=NASA Exoplanet Archive{f" - {exoplanet_name}" if exoplanet_name else ""}
+  |url=https://science.nasa.gov/exoplanet-catalog/{exoplanet_name.lower().replace(" ", "-") if exoplanet_name else ""} |site=science.nasa.gov
+  |date={self.update_date.strftime("%Y-%m-%d")} |consulté le={self.consultation_date.strftime("%Y-%m-%d")} }}}}"""
+        
+        # Encapsuler dans les balises ref
+        return f'<ref name="{self.source.value}" >{ref_content}</ref>'
 
 @dataclass
 class DataPoint:

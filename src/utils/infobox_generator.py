@@ -38,6 +38,10 @@ class InfoboxGenerator:
             return getattr(exoplanet, attr).unit if getattr(exoplanet, attr) and hasattr(getattr(exoplanet, attr), 'unit') and getattr(exoplanet, attr).unit else None
         
         def notes(attr):
+            # Ne pas ajouter de notes pour le champ étoile
+            if attr == "host_star":
+                return None
+                
             datapoint = getattr(exoplanet, attr, None)
             if not datapoint or not hasattr(datapoint, 'reference') or not datapoint.reference:
                 return None

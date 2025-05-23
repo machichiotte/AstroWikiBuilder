@@ -95,7 +95,8 @@ class ReferenceManager:
             # Vérifier si le contenu est déjà encapsulé dans une balise ref
             if ref_content.startswith('<ref') and ref_content.endswith('</ref>'):
                 return ref_content
-            return f'<ref name="{ref_name}">{ref_content}</ref>'
+            # S'assurer que le contenu est correctement formaté avec les espaces
+            return f'<ref name="{ref_name}" >{ref_content}</ref>'
         return f'<ref name="{ref_name}" />'
 
     def reset_references(self):
