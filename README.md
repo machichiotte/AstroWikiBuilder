@@ -26,29 +26,69 @@ AstroWikiBuilder/
 ├── src/
 │   ├── data_collectors/     # Collecteurs de données pour différentes sources
 │   ├── models/             # Modèles de données
-│   ├── utils/              # Utilitaires
-│   └── main.py            # Point d'entrée principal
-├── data/                   # Données téléchargées (ex: exoplanet_eu.csv)
-├── output/                 # Données consolidées exportées
-└── requirements.txt        # Dépendances Python
+│   ├── services/          # Services de gestion des données et génération
+│   ├── utils/             # Utilitaires et générateurs
+│   └── main.py           # Point d'entrée principal
+├── data/                  # Données téléchargées et mock data
+├── output/               # Données consolidées et exports
+├── drafts/              # Projets d'articles générés
+└── requirements.txt     # Dépendances Python
 ```
+
+## Fonctionnalités
+
+### Collecte et Consolidation des Données
+
+- Collecte automatique depuis plusieurs sources :
+  - NASA Exoplanet Archive
+  - The Extrasolar Planets Encyclopaedia
+  - Open Exoplanet Catalogue
+- Consolidation intelligente des données
+- Gestion des références et des sources
+- Export des données en CSV et JSON
+
+### Génération d'Articles Wikipedia
+
+- Vérification automatique des articles existants
+- Génération de projets d'articles complets incluant :
+  - Infobox détaillée
+  - Introduction
+  - Caractéristiques physiques
+  - Orbite
+  - Découverte
+  - Habitabilité
+  - Notes et références
+- Support multilingue (articles en français)
+- Gestion automatique des références et notes
+- Classification des planètes selon les standards Wikipedia
 
 ## Utilisation
 
-1. Placez votre fichier CSV d'Exoplanet.eu dans le dossier `data/` (nommé `exoplanet_eu.csv`)
-
-2. Exécutez le script principal :
+1. Collecte et consolidation des données :
 
 ```bash
-python src/main.py
+python src/main.py --collect
 ```
 
 Le script va :
 
-- Collecter les données des trois sources (NASA Exoplanet Archive, Exoplanet.eu, Open Exoplanet Catalogue)
+- Collecter les données des sources
 - Consolider les données en gérant les doublons
-- Exporter les données consolidées en CSV et JSON dans le dossier `output/`
+- Exporter les données consolidées en CSV et JSON dans `output/`
 - Afficher des statistiques sur les données collectées
+
+2. Génération d'articles :
+
+```bash
+python src/main.py --generate
+```
+
+Le script va :
+
+- Vérifier les articles existants sur Wikipedia
+- Générer des projets d'articles pour les exoplanètes sans article
+- Sauvegarder les projets dans le dossier `drafts/`
+- Exporter les statistiques sur les articles existants/missing
 
 ## Sources de Données
 
