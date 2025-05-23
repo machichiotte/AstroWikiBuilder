@@ -118,14 +118,39 @@ class WikipediaGenerator:
         return section
 
     def _generate_discovery_section(self, exoplanet: Exoplanet) -> str:
-        """
-        Génère la section de la découverte de l'exoplanète
-        """
-        discovery_date = self.format_utils.format_year_field_with_ref(exoplanet.discovery_date, exoplanet.name, self.reference_manager.template_refs, self.reference_manager.add_reference)
-        discovery_method = self.format_utils.format_datapoint(exoplanet.discovery_method, exoplanet.name, self.reference_manager.template_refs, self.reference_manager.add_reference)
-        
+        """Génère la section de découverte."""
+        if not exoplanet.discovery_date:
+            return ""
+            
         section = "== Découverte ==\n"
-        section += f"Cette planète a été découverte en {discovery_date} par la méthode de {discovery_method}."
+        
+        # Traduction des méthodes de découverte
+        method_translations = {
+            "Transit": "du transit",
+            "Radial Velocity": "des vitesses radiales",
+            "Imaging": "de l'imagerie directe",
+            "Microlensing": "de la microlentille gravitationnelle",
+            "Timing": "du chronométrage",
+            "Astrometry": "de l'astrométrie",
+            "Orbital Brightness Modulation": "de la modulation de luminosité orbitale",
+            "Eclipse Timing Variations": "des variations temporelles d'éclipses",
+            "Pulsar Timing": "du chronométrage de pulsar",
+            "Pulsation Timing Variations": "des variations temporelles de pulsation",
+            "Disk Kinematics": "de la cinématique du disque",
+            "Transit Timing Variations": "des variations temporelles de transit"
+        }
+        
+        discovery_method = exoplanet.discovery_method.value if exoplanet.discovery_method else ""
+        discovery_method = method_translations.get(discovery_method, f"de {discovery_method.lower()}")
+        
+        # Gestion robuste de la date
+        date_value = exoplanet.discovery_date.value if hasattr(exoplanet.discovery_date, 'value') else exoplanet.discovery_date
+        if hasattr(date_value, 'year'):
+            date_str = f"en {date_value.year}"
+        else:
+            date_str = f"en {str(date_value)}"
+        
+        section += f"L'exoplanète a été découverte par la méthode {discovery_method} {date_str}.\n"
         
         return section
 
@@ -173,16 +198,16 @@ class WikipediaGenerator:
         desc_parts = []
         
         if mass is not None:
-            mass_value = self.format_utils.format_numeric_value(mass)
+            mass_value = self.format_utils.format_numeric_value(mass, precision=2)
             if mass < 0.1:
-                desc_parts.append(f"sa masse, relativement faible, est de {mass_value} [[Masse_jovienne|''M''{{{{ind|J}}}}]]")
+                desc_parts.append(f"sa masse faible de {mass_value} [[Masse_jovienne|''M''{{{{ind|J}}}}]]")
             elif mass < 1:
                 desc_parts.append(f"sa masse modérée de {mass_value} [[Masse_jovienne|''M''{{{{ind|J}}}}]]")
             else:
                 desc_parts.append(f"sa masse imposante de {mass_value} [[Masse_jovienne|''M''{{{{ind|J}}}}]]")
                 
         if radius is not None:
-            radius_value = self.format_utils.format_numeric_value(radius)
+            radius_value = self.format_utils.format_numeric_value(radius, precision=2)
             if radius < 0.5:
                 desc_parts.append(f"son rayon compact de {radius_value} [[Rayon_jovien|''R''{{{{ind|J}}}}]]")
             elif radius < 1.5:
@@ -191,16 +216,19 @@ class WikipediaGenerator:
                 desc_parts.append(f"son rayon étendu de {radius_value} [[Rayon_jovien|''R''{{{{ind|J}}}}]]")
                 
         if temp is not None:
-            temp_value = self.format_utils.format_numeric_value(temp)
+            temp_value = self.format_utils.format_numeric_value(temp, precision=0)
             if temp < 500:
-                desc_parts.append(f"sa température de surface de {temp_value} [[Kelvin|K]]")
+                desc_parts.append(f"sa température de {temp_value} [[Kelvin|K]]")
             elif temp < 1000:
                 desc_parts.append(f"sa température élevée de {temp_value} [[Kelvin|K]]")
             else:
                 desc_parts.append(f"sa température extrême de {temp_value} [[Kelvin|K]]")
         
         if desc_parts:
-            section += f"L'exoplanète se distingue par {', '.join(desc_parts[:-1])} et {desc_parts[-1]}.\n"
+            if len(desc_parts) == 1:
+                section += f"L'exoplanète se distingue par {desc_parts[0]}.\n"
+            else:
+                section += f"L'exoplanète se distingue par {', '.join(desc_parts[:-1])} et {desc_parts[-1]}.\n"
         
         return section
 
@@ -242,30 +270,34 @@ class WikipediaGenerator:
         return ", ".join(desc) if desc else ""
     
     def _generate_introduction(self, exoplanet: Exoplanet) -> str:
-        """
-        Génère l'introduction de l'article Wikipedia
-        """
+        """Génère l'introduction de l'article Wikipedia."""
         # Obtenir le type de planète
         planet_type = self.planet_type_utils.get_planet_type(exoplanet)
         
-        # Déterminer l'article approprié et le lien
-        if planet_type.startswith("Jupiter"):
-            article = "un"
-            planet_type_link = f"[[Jupiter chaud|{planet_type}]]"
-        elif planet_type.startswith("Neptune"):
-            article = "une"
-            planet_type_link = f"[[Neptune chaud|{planet_type}]]"
-        else:
-            article = "une"
-            planet_type_link = f"[[{planet_type}|{planet_type}]]"
+        # Obtenir la description de l'étoile
+        star_desc = self.star_utils.get_star_description(exoplanet.spectral_type.value if exoplanet.spectral_type else None)
         
-        # Générer la description de l'étoile hôte
-        star_desc = self._generate_references_section(exoplanet)
+        # Construire l'introduction
+        introduction = f"{exoplanet.name} est un [[{planet_type}|{planet_type}]], orbitant autour de {star_desc}"
         
-        # Assembler l'introduction
-        intro = f"{exoplanet.name} est {article} {planet_type_link}, orbitant autour {star_desc}.\n"
-        
-        return intro
+        # Ajouter la distance si disponible
+        if exoplanet.distance and exoplanet.distance.value is not None:
+            try:
+                pc_value = float(exoplanet.distance.value)
+                ly_value = self.format_utils.parsecs_to_lightyears(pc_value)
+                formatted_ly_value = self.format_utils.format_numeric_value(ly_value, precision=0)
+                formatted_pc_value = self.format_utils.format_numeric_value(pc_value, precision=2)
+                introduction += f" située à environ {formatted_ly_value} [[année-lumière|années-lumière]] ({formatted_pc_value} [[parsec|pc]]) de la [[Terre]]"
+            except (ValueError, TypeError):
+                pass
+                
+        # Ajouter la magnitude apparente si disponible
+        if exoplanet.apparent_magnitude and exoplanet.apparent_magnitude.value is not None:
+            mag_value = self.format_utils.format_numeric_value(exoplanet.apparent_magnitude.value, precision=2)
+            introduction += f" avec une [[magnitude apparente]] de {mag_value}"
+            
+        introduction += "."
+        return introduction
     
     def generate_infobox(self, exoplanet: Exoplanet) -> str:
         """

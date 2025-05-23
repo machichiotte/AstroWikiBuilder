@@ -9,14 +9,14 @@ class StarUtils:
     avec descriptions et liens Wikipedia en français vers le type d'astre correspondant.
     """
     # Descriptions des types spectraux selon Morgan-Keenan
-    SPECTRAL_TYPE_DESCRIPTIONS: Dict[str, str] = {
-        'O': "étoile bleue de la séquence principale",
-        'B': "étoile bleu-blanc de la séquence principale",
-        'A': "étoile blanche de la séquence principale",
-        'F': "étoile blanc-jaune de la séquence principale",
-        'G': "Naine jaune",
-        'K': "étoile orange de la séquence principale",
-        'M': "étoile rouge de la séquence principale",
+    SPECTRAL_TYPE_DESCRIPTIONS = {
+        'O': "étoile bleue de type O",
+        'B': "étoile bleue de type B",
+        'A': "étoile blanche de type A",
+        'F': "étoile blanc-jaune de type F",
+        'G': "naine jaune",
+        'K': "naine orange",
+        'M': "naine rouge",
         'L': "naine brune de type L",
         'T': "naine brune de type T",
         'Y': "naine brune de type Y"
@@ -100,3 +100,13 @@ class StarUtils:
         if exoplanet.constellation and exoplanet.constellation.value:
             chars["Constellation"] = exoplanet.constellation.value
         return chars
+
+    def get_star_description(self, spectral_type: str) -> str:
+        """Génère une description de l'étoile avec le type spectral."""
+        if not spectral_type:
+            return "son étoile hôte"
+            
+        spectral_class = spectral_type[0].upper()
+        description = self.SPECTRAL_TYPE_DESCRIPTIONS.get(spectral_class, "son étoile hôte")
+        
+        return f"[[{spectral_class} (type spectral)|{description}]]"

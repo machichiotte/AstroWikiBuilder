@@ -11,6 +11,11 @@ class ComparisonUtils:
 
     def __init__(self, format_utils: FormatUtils):
         self.format_utils = format_utils
+        self.earth_orbit = 1.0  # 1 UA
+        self.mercury_orbit = 0.387  # UA
+        self.venus_orbit = 0.723  # UA
+        self.mars_orbit = 1.524  # UA
+        self.jupiter_orbit = 5.203  # UA
 
     def get_radius_comparison(self, exoplanet: Exoplanet) -> str:
         """
@@ -95,4 +100,25 @@ class ComparisonUtils:
                 return ", une distance comparable à celle de [[Mars (planète)|Mars]] dans le [[système solaire]]"
             else:
                 return ", une distance comparable à la [[ceinture d'astéroïdes]] (entre [[Mars (planète)|Mars]] et Jupiter) dans le [[système solaire]]"
-        return "" 
+        return ""
+
+    def get_orbit_comparison(self, orbit_value: float) -> str:
+        """Génère une comparaison orbitale pertinente."""
+        if not orbit_value:
+            return ""
+            
+        # Arrondir à 3 décimales pour éviter les comparaisons trop précises
+        orbit_value = round(orbit_value, 3)
+        
+        if orbit_value < self.mercury_orbit:
+            return f"Son orbite est plus proche de son étoile que celle de [[Mercure (planète)|Mercure]] autour du [[Soleil]]."
+        elif orbit_value < self.venus_orbit:
+            return f"Son orbite est similaire à celle de [[Mercure (planète)|Mercure]] autour du [[Soleil]]."
+        elif orbit_value < self.earth_orbit:
+            return f"Son orbite est similaire à celle de [[Vénus (planète)|Vénus]] autour du [[Soleil]]."
+        elif orbit_value < self.mars_orbit:
+            return f"Son orbite est similaire à celle de la [[Terre]] autour du [[Soleil]]."
+        elif orbit_value < self.jupiter_orbit:
+            return f"Son orbite est similaire à celle de [[Mars (planète)|Mars]] autour du [[Soleil]]."
+        else:
+            return f"Son orbite est plus éloignée de son étoile que celle de [[Jupiter (planète)|Jupiter]] autour du [[Soleil]]." 
