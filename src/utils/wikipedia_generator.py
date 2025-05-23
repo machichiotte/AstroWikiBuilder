@@ -138,7 +138,7 @@ class WikipediaGenerator:
             spectral_type = exoplanet.spectral_type.value
             spectral_class = spectral_type[0] if spectral_type else None
             description = self.star_utils.spectral_type_descriptions.get(spectral_class, "étoile")
-            desc.append(f"une [[étoile]] de type spectral [[{spectral_type}|{description}]]")
+            desc.append(f"d'une [[{spectral_type}|{description}]]")
 
         if exoplanet.distance and exoplanet.distance.value is not None:
             try:
@@ -147,7 +147,7 @@ class WikipediaGenerator:
                 formatted_ly_value = self.format_utils.format_numeric_value(ly_value, precision=0)
                 # Pass exoplanet.name for context to _format_datapoint
                 formatted_pc_value_with_ref = self.format_utils.format_datapoint(exoplanet.distance, exoplanet.name, self.reference_manager.template_refs, self.reference_manager.add_reference)
-                distance_str = f"située à {formatted_ly_value} [[année-lumière|années-lumière]] ({formatted_pc_value_with_ref} [[parsec|pc]]) de la [[Terre]]"
+                distance_str = f"située à environ {formatted_ly_value} [[année-lumière|années-lumière]] ({formatted_pc_value_with_ref} [[parsec|pc]]) de la [[Terre]]"
                 desc.append(distance_str)
             except (ValueError, TypeError):
                 original_distance_str = self.format_utils.format_datapoint(exoplanet.distance, exoplanet.name, self.reference_manager.template_refs, self.reference_manager.add_reference)
@@ -156,7 +156,7 @@ class WikipediaGenerator:
 
         if exoplanet.apparent_magnitude and exoplanet.apparent_magnitude.value:
             # Pass exoplanet.name for context to _format_datapoint
-            desc.append(f"d'une [[magnitude apparente]] de {self.format_utils.format_datapoint(exoplanet.apparent_magnitude, exoplanet.name, self.reference_manager.template_refs, self.reference_manager.add_reference)}")
+            desc.append(f"avec une [[magnitude apparente]] de {self.format_utils.format_datapoint(exoplanet.apparent_magnitude, exoplanet.name, self.reference_manager.template_refs, self.reference_manager.add_reference)}")
 
         return " ".join(desc) if desc else "une étoile"
 
@@ -242,11 +242,16 @@ class WikipediaGenerator:
         # Obtenir le type de planète
         planet_type = self.planet_type_utils.get_planet_type(exoplanet)
         
+        # Déterminer l'article approprié
+        article = "une"
+        if planet_type.startswith(("Jupiter", "Neptune")):
+            article = "un" if planet_type.startswith("Jupiter") else "une"
+        
         # Générer la description de l'étoile hôte
         star_desc = self._generate_references_section(exoplanet)
         
         # Assembler l'introduction
-        intro = f"{exoplanet.name} est une {planet_type}, orbitant autour de {star_desc}.\n"
+        intro = f"{exoplanet.name} est {article} {planet_type}, orbitant autour {star_desc}.\n"
         
         return intro
     
