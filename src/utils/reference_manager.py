@@ -8,7 +8,7 @@ class ReferenceManager:
     """
     def __init__(self):
         self.template_refs = {
-            'nasa': "{{Lien web |langue=en |nom1=NasaGov |titre={title} |url=https://science.nasa.gov/exoplanet-catalog/{id}/ |site=science.nasa.gov |date={update_date} |consulté le={consultation_date} }}",
+            'nasa': "{{Lien web |langue=en |nom1=NEA |titre={title} |url=https://science.nasa.gov/exoplanet-catalog/{id}/ |site=science.nasa.gov |date={update_date} |consulté le={consultation_date} }}",
             'exoplanet_eu': "{{Lien web |langue=en |nom1=EPE |titre={title} |url=https://exoplanet.eu/catalog/{id}/ |site=exoplanet.eu |date={update_date} |consulté le={consultation_date} }}",
             'open_exoplanet': "{{Lien web |langue=en |nom1=OEC |titre={title} |url=https://github.com/OpenExoplanetCatalogue/open_exoplanet_catalogue |site=Open Exoplanet Catalogue |date={update_date} |consulté le={consultation_date} }}",
             'article': "{{Article |langue= |auteur= |titre= |périodique= |année= |volume= |numéro= |pages= |lire en ligne= |consulté le={consultation_date} }}",

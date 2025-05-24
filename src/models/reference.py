@@ -5,7 +5,7 @@ from enum import Enum
 from typing import Dict, Optional
 
 class SourceType(Enum):
-    NASA = "NasaGov"
+    NEA = "NEA" # Nasa Exoplanet Archive
     EPE = "EPE"  # Exoplanet.eu
     OEC = "OEC"  # Open Exoplanet Catalogue
 
@@ -34,7 +34,7 @@ class Reference:
                 )
         
         # Format par défaut avec {{Lien web}}
-        ref_content = f"""{{{{Lien web |langue=en |nom1=NasaGov|titre=NASA Exoplanet Archive{f" - {exoplanet_name}" if exoplanet_name else ""}
+        ref_content = f"""{{{{Lien web |langue=en |nom1=NEA|titre=NASA Exoplanet Archive{f" - {exoplanet_name}" if exoplanet_name else ""}
   |url=https://science.nasa.gov/exoplanet-catalog/{exoplanet_name.lower().replace(" ", "-") if exoplanet_name else ""} |site=science.nasa.gov
   |date={self.update_date.strftime("%Y-%m-%d")} |consulté le={self.consultation_date.strftime("%Y-%m-%d")} }}}}"""
         

@@ -40,7 +40,7 @@ class StatisticsService:
                 
                 value_attr = getattr(exoplanet, field_name)
                 if isinstance(value_attr, DataPoint) and value_attr.reference and value_attr.reference.source:
-                    source_key = value_attr.reference.source.value # e.g., "NasaGov"
+                    source_key = value_attr.reference.source.value # e.g., "NEA"
                     stats['data_points_by_source'][source_key] = stats['data_points_by_source'].get(source_key, 0) + 1
             
             # Statistiques pour other_names - EPE specific in original code, now more generic

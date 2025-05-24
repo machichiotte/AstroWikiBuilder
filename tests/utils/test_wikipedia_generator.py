@@ -6,7 +6,7 @@ import math # For checking light-year conversion
 # --- Mock Data Structures ---
 # Simplified SourceType Enum for testing
 class MockSourceType:
-    NASA = "NasaGov"
+    NEA = "NEA"
     EPE = "EPE"
     OEC = "OEC"
     ARTICLE = "Article"
@@ -133,7 +133,7 @@ class TestWikipediaGenerator(unittest.TestCase):
         exoplanet = MockExoplanet(name="TestGlobalRefPlanet")
         
         ref_nasa_content = "{{Lien web | titre=NASA1 | url=http://nasa.gov/1 }}"
-        mock_ref_nasa = MockReference(source_type_val=MockSourceType.NASA, content_template=ref_nasa_content)
+        mock_ref_nasa = MockReference(source_type_val=MockSourceType.NEA, content_template=ref_nasa_content)
         
         ref_epe_content = "{{Lien web | titre=EPE1 | url=http://epe.eu/1 }}"
         mock_ref_epe = MockReference(source_type_val=MockSourceType.EPE, content_template=ref_epe_content)
@@ -148,8 +148,8 @@ class TestWikipediaGenerator(unittest.TestCase):
 
         # NASA ref: First used in infobox (mass), should be full.
         # Then used in body (radius), should be short.
-        expected_nasa_full = f'<ref name="{MockSourceType.NASA}">{ref_nasa_content}</ref>'
-        expected_nasa_short = f'<ref name="{MockSourceType.NASA}" />'
+        expected_nasa_full = f'<ref name="{MockSourceType.NEA}">{ref_nasa_content}</ref>'
+        expected_nasa_short = f'<ref name="{MockSourceType.NEA}" />'
         
         self.assertEqual(article.count(expected_nasa_full), 1, "NASA full ref should appear once")
         self.assertTrue(article.count(expected_nasa_short) >= 1, "NASA short ref should appear at least once")
@@ -201,7 +201,7 @@ class TestWikipediaGenerator(unittest.TestCase):
         
         pc_val = 103.08
         ref_dist_content = "{{Lien web | titre=DistRef | url=http://example.com/dist }}"
-        mock_ref_dist = MockReference(source_type_val=MockSourceType.NASA, content_template=ref_dist_content)
+        mock_ref_dist = MockReference(source_type_val=MockSourceType.NEA, content_template=ref_dist_content)
         exoplanet.distance = MockDataPoint(value=pc_val, unit="pc", reference=mock_ref_dist)
 
         article = self.generator.generate_article_content(exoplanet)

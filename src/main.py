@@ -8,7 +8,7 @@ from typing import List, Tuple, Dict, Any # Added Dict, Any
 import logging # Added logging
 
 # Project imports
-from src.data_collectors.nasa_exoplanet import NASAExoplanetCollector
+from src.data_collectors.nasa_exoplanet_archive import NASAExoplanetArchiveCollector
 # from src.data_collectors.exoplanet_eu import ExoplanetEUCollector # Still commented
 # from src.data_collectors.open_exoplanet import OpenExoplanetCollector # Still commented
 
@@ -68,7 +68,7 @@ def main():
     
     collectors = {}
     if 'nasa' in args.sources:
-        collectors['nasa'] = NASAExoplanetCollector(use_mock_data=args.use_mock_data)
+        collectors['nasa'] = NASAExoplanetArchiveCollector(use_mock_data=args.use_mock_data)
         
     # if 'exoplanet_eu' in args.sources:
     #     collectors['exoplanet_eu'] = ExoplanetEUCollector("data/exoplanet_eu.csv")

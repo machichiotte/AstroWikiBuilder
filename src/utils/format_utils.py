@@ -112,6 +112,59 @@ class FormatUtils:
             )
         if exoplanet.source == "nasa":
             references.append(
-                f'<ref>{{{{Lien web |langue=en |nom1=NasaGov |titre={exoplanet.name} |url=https://science.nasa.gov/exoplanet-catalog/{exoplanet.name.lower().replace(" ", "-")}/ |site=science.nasa.gov |date=2024-11-1 |consulté le=2025-1-3 }}}}</ref>'
+                f'<ref>{{{{Lien web |langue=en |nom1=NEA |titre={exoplanet.name} |url=https://science.nasa.gov/exoplanet-catalog/{exoplanet.name.lower().replace(" ", "-")}/ |site=science.nasa.gov |date=2024-11-1 |consulté le=2025-1-3 }}}}</ref>'
             )
         return " ".join(references) 
+
+    def format_value(value, field_type):
+        if value is None or value == "":
+            return None
+        try:
+            value = float(value)
+            if field_type == "distance":  # parsec
+                return f"{value:.2f}"
+            elif field_type == "mass":  # MJ
+                if value < 0.1:
+                    return f"{value:.3f}"
+                elif value < 1:
+                    return f"{value:.2f}"
+                else:
+                    return f"{value:.1f}"
+            elif field_type == "radius":  # RJ
+                if value < 0.1:
+                    return f"{value:.3f}"
+                elif value < 1:
+                    return f"{value:.2f}"
+                else:
+                    return f"{value:.1f}"
+            elif field_type == "temperature":  # K
+                if value < 100:
+                    return f"{value:.1f}"
+                else:
+                    return f"{value:.0f}"
+            elif field_type == "semi_major_axis":  # UA
+                if value < 0.1:
+                    return f"{value:.3f}"
+                elif value < 1:
+                    return f"{value:.2f}"
+                else:
+                    return f"{value:.1f}"
+            elif field_type == "period":  # jours
+                if value < 1:
+                    return f"{value:.3f}"
+                elif value < 10:
+                    return f"{value:.2f}"
+                else:
+                    return f"{value:.1f}"
+            elif field_type == "eccentricity":
+                return f"{value:.2f}"
+            elif field_type == "inclination":  # degrés
+                return f"{value:.1f}"
+            elif field_type == "apparent_magnitude":
+                return f"{value:.2f}"
+            elif field_type in ["t_peri", "arg_péri", "date"]:  # valeurs entières
+                return f"{value:.0f}"
+            else:
+                return str(value)
+        except (ValueError, TypeError):
+            return str(value)

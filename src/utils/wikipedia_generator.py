@@ -198,14 +198,7 @@ class WikipediaGenerator:
         desc_parts = []
         
         if mass is not None:
-            # Ajuster la précision en fonction de l'ordre de grandeur
-            if mass < 0.1:
-                mass_value = self.format_utils.format_numeric_value(mass, precision=3)
-            elif mass < 1:
-                mass_value = self.format_utils.format_numeric_value(mass, precision=2)
-            else:
-                mass_value = self.format_utils.format_numeric_value(mass, precision=1)
-                
+            mass_value = self.format_utils.format_numeric_value(mass, precision=3 if mass < 0.1 else (2 if mass < 1 else 1))
             if mass < 0.1:
                 desc_parts.append(f"sa masse faible de {mass_value} [[Masse_jovienne|''M''{{{{ind|J}}}}]]")
             elif mass < 1:
@@ -214,14 +207,7 @@ class WikipediaGenerator:
                 desc_parts.append(f"sa masse imposante de {mass_value} [[Masse_jovienne|''M''{{{{ind|J}}}}]]")
                 
         if radius is not None:
-            # Ajuster la précision en fonction de l'ordre de grandeur
-            if radius < 0.1:
-                radius_value = self.format_utils.format_numeric_value(radius, precision=3)
-            elif radius < 1:
-                radius_value = self.format_utils.format_numeric_value(radius, precision=2)
-            else:
-                radius_value = self.format_utils.format_numeric_value(radius, precision=1)
-                
+            radius_value = self.format_utils.format_numeric_value(radius, precision=3 if radius < 0.1 else (2 if radius < 1 else 1))
             if radius < 0.5:
                 desc_parts.append(f"son rayon compact de {radius_value} [[Rayon_jovien|''R''{{{{ind|J}}}}]]")
             elif radius < 1.5:
@@ -230,14 +216,7 @@ class WikipediaGenerator:
                 desc_parts.append(f"son rayon étendu de {radius_value} [[Rayon_jovien|''R''{{{{ind|J}}}}]]")
                 
         if temp is not None:
-            # Ajuster la précision en fonction de l'ordre de grandeur
-            if temp < 100:
-                temp_value = self.format_utils.format_numeric_value(temp, precision=1)
-            elif temp < 1000:
-                temp_value = self.format_utils.format_numeric_value(temp, precision=0)
-            else:
-                temp_value = self.format_utils.format_numeric_value(temp, precision=0)
-                
+            temp_value = self.format_utils.format_numeric_value(temp, precision=1 if temp < 100 else 0)
             if temp < 500:
                 desc_parts.append(f"sa température de {temp_value} [[Kelvin|K]]")
             elif temp < 1000:
@@ -324,113 +303,43 @@ class WikipediaGenerator:
         """
         Génère l'infobox pour l'exoplanète
         """
-        def format_value(value, field_type):
-            if value is None or value == "":
-                return ""
-            try:
-                value = float(value)
-                if field_type == "mass":
-                    if value < 0.1:
-                        return f"{value:.3f}"
-                    elif value < 1:
-                        return f"{value:.2f}"
-                    else:
-                        return f"{value:.1f}"
-                elif field_type == "radius":
-                    if value < 0.1:
-                        return f"{value:.3f}"
-                    elif value < 1:
-                        return f"{value:.2f}"
-                    else:
-                        return f"{value:.1f}"
-                elif field_type == "temperature":
-                    if value < 100:
-                        return f"{value:.1f}"
-                    else:
-                        return f"{value:.0f}"
-                elif field_type == "distance":
-                    return f"{value:.2f}"
-                elif field_type == "semi_major_axis":
-                    if value < 0.1:
-                        return f"{value:.3f}"
-                    elif value < 1:
-                        return f"{value:.2f}"
-                    else:
-                        return f"{value:.1f}"
-                elif field_type == "period":
-                    if value < 1:
-                        return f"{value:.3f}"
-                    elif value < 10:
-                        return f"{value:.2f}"
-                    else:
-                        return f"{value:.1f}"
-                elif field_type == "inclination":
-                    return f"{value:.1f}"
-                elif field_type == "eccentricity":
-                    return f"{value:.2f}"
-                else:
-                    return str(value)
-            except (ValueError, TypeError):
-                return str(value)
+        fields = {
+            "nom": exoplanet.name,
+            "image": "",
+            "légende": "",
+            "étoile": exoplanet.star_name,
+            "distance": self.format_utils.format_value(exoplanet.distance.value if exoplanet.distance else None, "distance"),
+            "distance notes": self.reference_manager.format_datapoint(exoplanet.distance, exoplanet.name) if exoplanet.distance else None,
+            "type spectral": exoplanet.spectral_type.value if exoplanet.spectral_type else None,
+            "type spectral notes": self.reference_manager.format_datapoint(exoplanet.spectral_type, exoplanet.name) if exoplanet.spectral_type else None,
+            "magnitude apparente": self.format_utils.format_value(exoplanet.apparent_magnitude.value if exoplanet.apparent_magnitude else None, "apparent_magnitude"),
+            "magnitude apparente notes": self.reference_manager.format_datapoint(exoplanet.apparent_magnitude, exoplanet.name) if exoplanet.apparent_magnitude else None,
+            "type": exoplanet.type.value if exoplanet.type else None,
+            "demi-grand axe": self.format_utils.format_value(exoplanet.semi_major_axis.value if exoplanet.semi_major_axis else None, "semi_major_axis"),
+            "demi-grand axe notes": self.reference_manager.format_datapoint(exoplanet.semi_major_axis, exoplanet.name) if exoplanet.semi_major_axis else None,
+            "excentricité": self.format_utils.format_value(exoplanet.eccentricity.value if exoplanet.eccentricity else None, "eccentricity"),
+            "excentricité notes": self.reference_manager.format_datapoint(exoplanet.eccentricity, exoplanet.name) if exoplanet.eccentricity else None,
+            "période": self.format_utils.format_value(exoplanet.period.value if exoplanet.period else None, "period"),
+            "période notes": self.reference_manager.format_datapoint(exoplanet.period, exoplanet.name) if exoplanet.period else None,
+            "inclinaison": self.format_utils.format_value(exoplanet.inclination.value if exoplanet.inclination else None, "inclination"),
+            "inclinaison notes": self.reference_manager.format_datapoint(exoplanet.inclination, exoplanet.name) if exoplanet.inclination else None,
+            "masse": self.format_utils.format_value(exoplanet.mass.value if exoplanet.mass else None, "mass"),
+            "masse notes": self.reference_manager.format_datapoint(exoplanet.mass, exoplanet.name) if exoplanet.mass else None,
+            "rayon": self.format_utils.format_value(exoplanet.radius.value if exoplanet.radius else None, "radius"),
+            "rayon notes": self.reference_manager.format_datapoint(exoplanet.radius, exoplanet.name) if exoplanet.radius else None,
+            "température": self.format_utils.format_value(exoplanet.temperature.value if exoplanet.temperature else None, "temperature"),
+            "température notes": self.reference_manager.format_datapoint(exoplanet.temperature, exoplanet.name) if exoplanet.temperature else None,
+            "méthode": exoplanet.discovery_method.value if exoplanet.discovery_method else None,
+            "méthode notes": self.reference_manager.format_datapoint(exoplanet.discovery_method, exoplanet.name) if exoplanet.discovery_method else None,
+            "date": self.format_utils.format_value(exoplanet.discovery_date.value if exoplanet.discovery_date else None, "date"),
+            "date notes": self.reference_manager.format_datapoint(exoplanet.discovery_date, exoplanet.name) if exoplanet.discovery_date else None
+        }
 
-        infobox = """{{Infobox Exoplanète
- | nom = {name}
- | image = 
- | légende = 
- | étoile = {star}
- | distance = {distance}
- | distance notes = {distance_ref}
- | type spectral = {spectral_type}
- | type spectral notes = {spectral_type_ref}
- | magnitude apparente = {apparent_magnitude}
- | magnitude apparente notes = {apparent_magnitude_ref}
- | type = {type}
- | demi-grand axe = {semi_major_axis}
- | demi-grand axe notes = {semi_major_axis_ref}
- | excentricité = {eccentricity}
- | excentricité notes = {eccentricity_ref}
- | période = {period}
- | période notes = {period_ref}
- | inclinaison = {inclination}
- | inclinaison notes = {inclination_ref}
- | masse = {mass}
- | masse notes = {mass_ref}
- | rayon = {radius}
- | rayon notes = {radius_ref}
- | température = {temperature}
- | température notes = {temperature_ref}
- | méthode = {method}
- | méthode notes = {method_ref}
- | date = {discovery_date}
- | date notes = {discovery_date_ref}
-}}""".format(
-            name=exoplanet.name,
-            star=exoplanet.star_name,
-            distance=format_value(exoplanet.distance.value if exoplanet.distance else None, "distance"),
-            distance_ref=self.reference_manager.format_datapoint(exoplanet.distance, exoplanet.name) if exoplanet.distance else "",
-            spectral_type=exoplanet.spectral_type.value if exoplanet.spectral_type else "",
-            spectral_type_ref=self.reference_manager.format_datapoint(exoplanet.spectral_type, exoplanet.name) if exoplanet.spectral_type else "",
-            apparent_magnitude=format_value(exoplanet.apparent_magnitude.value if exoplanet.apparent_magnitude else None, "apparent_magnitude"),
-            apparent_magnitude_ref=self.reference_manager.format_datapoint(exoplanet.apparent_magnitude, exoplanet.name) if exoplanet.apparent_magnitude else "",
-            type=exoplanet.type.value if exoplanet.type else "",
-            semi_major_axis=format_value(exoplanet.semi_major_axis.value if exoplanet.semi_major_axis else None, "semi_major_axis"),
-            semi_major_axis_ref=self.reference_manager.format_datapoint(exoplanet.semi_major_axis, exoplanet.name) if exoplanet.semi_major_axis else "",
-            eccentricity=format_value(exoplanet.eccentricity.value if exoplanet.eccentricity else None, "eccentricity"),
-            eccentricity_ref=self.reference_manager.format_datapoint(exoplanet.eccentricity, exoplanet.name) if exoplanet.eccentricity else "",
-            period=format_value(exoplanet.period.value if exoplanet.period else None, "period"),
-            period_ref=self.reference_manager.format_datapoint(exoplanet.period, exoplanet.name) if exoplanet.period else "",
-            inclination=format_value(exoplanet.inclination.value if exoplanet.inclination else None, "inclination"),
-            inclination_ref=self.reference_manager.format_datapoint(exoplanet.inclination, exoplanet.name) if exoplanet.inclination else "",
-            mass=format_value(exoplanet.mass.value if exoplanet.mass else None, "mass"),
-            mass_ref=self.reference_manager.format_datapoint(exoplanet.mass, exoplanet.name) if exoplanet.mass else "",
-            radius=format_value(exoplanet.radius.value if exoplanet.radius else None, "radius"),
-            radius_ref=self.reference_manager.format_datapoint(exoplanet.radius, exoplanet.name) if exoplanet.radius else "",
-            temperature=format_value(exoplanet.temperature.value if exoplanet.temperature else None, "temperature"),
-            temperature_ref=self.reference_manager.format_datapoint(exoplanet.temperature, exoplanet.name) if exoplanet.temperature else "",
-            method=exoplanet.discovery_method.value if exoplanet.discovery_method else "",
-            method_ref=self.reference_manager.format_datapoint(exoplanet.discovery_method, exoplanet.name) if exoplanet.discovery_method else "",
-            discovery_date=exoplanet.discovery_date.value if exoplanet.discovery_date else "",
-            discovery_date_ref=self.reference_manager.format_datapoint(exoplanet.discovery_date, exoplanet.name) if exoplanet.discovery_date else ""
-        )
-        return infobox
+        infobox_lines = ["{{Infobox Exoplanète"]
+        for key, value in fields.items():
+            if value is not None:
+                infobox_lines.append(f" | {key} = {value}")
+        infobox_lines.append("}}")
+
+        return "\n".join(infobox_lines)
     
