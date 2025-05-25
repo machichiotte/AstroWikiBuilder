@@ -58,7 +58,9 @@ class InfoboxGenerator:
             return None
 
         def add_field(label, attr):
+            
             v = val(attr)
+                        
             s = ""
             if v is not None and v != "":
                 s += f" | {label} = {v}\n"
