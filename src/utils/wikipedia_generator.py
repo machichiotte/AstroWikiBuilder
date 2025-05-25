@@ -275,7 +275,7 @@ class WikipediaGenerator:
         planet_type = self.planet_type_utils.get_planet_type(exoplanet)
         
         # Obtenir la description de l'étoile
-        star_desc = self.star_utils.get_star_description(exoplanet.spectral_type.value if exoplanet.spectral_type else None)
+        star_desc = self.star_utils.get_spectral_type_formatted_description(exoplanet.spectral_type.value if exoplanet.spectral_type else None)
         
         # Construire l'introduction
         introduction = f"{exoplanet.name} est un [[{planet_type}|{planet_type}]], orbitant autour de {star_desc}"

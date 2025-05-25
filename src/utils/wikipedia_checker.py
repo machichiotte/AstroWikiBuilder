@@ -79,7 +79,7 @@ class WikipediaChecker:
         }
         
         try:
-            response = self.session.get(self.BASE_URL, params=params, timeout=10) # Added timeout
+            response = self.session.get(self.BASE_URL, params=params, timeout=10)
             response.raise_for_status()
             data = response.json().get('query', {})
         except requests.RequestException as e:

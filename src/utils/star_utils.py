@@ -101,7 +101,7 @@ class StarUtils:
             chars["Constellation"] = exoplanet.constellation.value
         return chars
 
-    def get_star_description(self, spectral_type: str) -> str:
+    def get_spectral_type_formatted_description(self, spectral_type: str) -> str:
         """Génère une description de l'étoile avec le type spectral."""
         if not spectral_type:
             return "son étoile hôte"
@@ -109,4 +109,4 @@ class StarUtils:
         spectral_class = spectral_type[0].upper()
         description = self.SPECTRAL_TYPE_DESCRIPTIONS.get(spectral_class, "son étoile hôte")
         
-        return f"[[{spectral_class} (type spectral)|{description}]]"
+        return f"[[{description}]]"

@@ -1,6 +1,7 @@
 from src.models.exoplanet import Exoplanet
 from .reference_utils import ReferenceUtils
 from .planet_type_utils import PlanetTypeUtils
+from .format_utils import FormatUtils
 
 class InfoboxGenerator:
     """
@@ -72,6 +73,7 @@ class InfoboxGenerator:
 
     def __init__(self, reference_utils: ReferenceUtils):
         self.reference_utils = reference_utils
+        self.format_utils =  FormatUtils()
         self.planet_type_utils = PlanetTypeUtils()
 
     def generate_infobox(self, exoplanet: Exoplanet) -> str:
@@ -108,7 +110,13 @@ class InfoboxGenerator:
             if v is not None and str(v).strip() != "":
                 processed_v = str(v)
 
-                if label == "méthode":
+                if label == "distance":
+                    try:
+                        processed_v = f"{{{{Parsec|{str(v)}|pc}}}}"
+                    except (ValueError, TypeError):
+                        # fallback si le formatage échoue
+                        processed_v = str(v)
+                elif label == "méthode":
                     # Normaliser la valeur brute (ex: minuscules) pour la recherche dans le mapping
                     # Supposons que v est la chaîne de caractères de la méthode, ex: "Transit"
                     normalized_method_value = str(v).lower().strip()

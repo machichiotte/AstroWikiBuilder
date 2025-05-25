@@ -85,7 +85,7 @@ class PlanetTypeUtils:
                     return "Jupiter tiède"
             if a is not None and a >= 1.0:
                 return "Jupiter froid"
-            return "Jupiter"
+            return "Planète géante gazeuse"
         if m <= self.ICE_GIANT_MAX:
             if insolation is not None:
                 return "Neptune chaud" if insolation > 20 else "Neptune froid"
