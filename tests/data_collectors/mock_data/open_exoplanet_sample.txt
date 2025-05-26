@@ -1,0 +1,19 @@
+# Open Exoplanet Catalogue Data
+name,star_name,discovery_method,discovery_year,mass,radius,semimajoraxis,eccentricity,period,inclination,longitudeofperiastron,periastrontime,spectraltype,star_temperature,star_radius,star_mass,distance,apparentmagnitude,alt_names
+OECPlanetA,OECStarA,Radial Velocity,2020,1.0,1.0,1.0,0.1,365.0,89.0,90.0,2450001.0,G0,5800,1.1,1.1,12.0,6.0,OA1
+OECPlanetB,OECStarB,Transit,2021,0.6,0.9,0.9,0.06,210.0,,,,,,,,,,OB1,OB2
+,OECStarC,Transit,2022,,,,,,,,,,,,,,, # Missing name
+OECPlanetD,,Transit,2023,,,,,,,,,,,,,,, # Missing star_name
+OECPlanetE,OECStarE,Microlensing,2022,1.0,1.0,NaN,0.1,365.0,89.0,90.0,2450000.0,G2V,5700,1.0,1.0,10.0,5.0,OE_Alt1 # NaN value
+OECPlanetF,OECStarF,Astrometry,2023,bad_mass,1.2,2.0,0.2,500.0,,,,,,,,,,OF_Alt2 # Invalid mass
+# Valid row after problematic ones
+OECPlanetG,OECStarG,Pulsar Timing Variations,1995,2.5,1.3,2.8,0.02,1000.0,90.5,80.5,2450002.5,B1V,10000,2.0,2.0,50.0,8.0,OG_Alt3
+OECPlanetH,OECStarH,Transit,2010,text_mass,text_radius,text_sma,text_ecc,text_period,text_inc,text_longperi,text_tperi,F5,text_teff,text_star_rad,text_star_mass,text_dist,text_mag,OH_Alt
+# Row with only name and star_name, other critical for Exoplanet obj are missing (discovery_method, discovery_year)
+OECPlanetI,OECStarI,,,,,,,,,,,,,,,,,,OI_Alt
+# Row that is completely empty after critical fields
+OECPlanetJ,OECStarJ,Radial Velocity,2021,,,,,,,,,,,,,,,,OJ_Alt
+OECPlanetK,OECStarK,Transit,2023,,,,,,,,,,,,,,,OK_Alt # Missing many non-critical values
+OECPlanetL,OECStarL,Imaging,2005,5.0,1.9,50.0,0.3,10000.0,85.0,100.0,2450009.0,A0V,9000,1.8,1.9,70.0,4.0,OL_Alt1,OL_Alt2
+OECPlanetM,OECStarM,Eclipse Timing Variations,2012,0.3,0.7,0.5,0.01,150.0,88.5,70.0,2450012.0,M3V,3300,0.7,0.6,8.0,13.0,OM_Alt
+# End of file

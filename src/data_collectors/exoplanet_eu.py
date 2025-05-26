@@ -3,6 +3,8 @@ import pandas as pd
 from typing import List, Optional
 from datetime import datetime
 import logging
+import os
+import requests
 from src.models.exoplanet import Exoplanet
 from src.models.reference import DataPoint, Reference, SourceType
 from src.utils.reference_manager import ReferenceManager
@@ -12,11 +14,14 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 class ExoplanetEUCollector:
-    def __init__(self, csv_path: str):
+    DOWNLOAD_URL = "http://exoplanet.eu/catalog/exoplanet.eu_catalog.csv"
+
+    def __init__(self, cache_path: str, use_mock_data: bool = False):
         """
         Initialize the collector with the path to the downloaded CSV file
         """
-        self.csv_path = csv_path
+        self.cache_path = cache_path
+        self.use_mock_data = use_mock_data
         self.reference_manager = ReferenceManager()
         self.last_update_date = datetime.now()  # Par défaut, on utilise la date actuelle
         self.required_columns = ['name', 'star_name', 'detection_type', 'discovered']
@@ -114,23 +119,83 @@ class ExoplanetEUCollector:
             logger.error(f"Erreur lors de la conversion de la ligne : {e}")
             return None
     
-    def collect_data(self) -> List[Exoplanet]:
+    def fetch_data(self) -> List[Exoplanet]:
         """
-        Collecte les données des exoplanètes depuis le fichier CSV
+        Collects data from the specified CSV file or downloads it.
+        Handles mock data usage, downloading, saving, and reading data.
         """
-        try:
-            # Lire les données avec pandas
-            df = pd.read_csv(self.csv_path)
+        exoplanets = []
+        df = None
+
+        if self.use_mock_data:
+            logger.info(f"Using mock data from {self.cache_path}")
+            if not os.path.exists(self.cache_path):
+                logger.warning(f"Mock file not found: {self.cache_path}")
+                return []
+            try:
+                df = pd.read_csv(self.cache_path, comment='#')
+            except FileNotFoundError: 
+                logger.warning(f"Mock file not found: {self.cache_path}")
+                return []
+            except pd.errors.EmptyDataError:
+                logger.error(f"No data found in mock file: {self.cache_path}. The file is empty.")
+                return []
+            except Exception as e:
+                logger.error(f"An error occurred while reading mock file {self.cache_path}: {e}")
+                return []
+        else:
+            logger.info(f"Attempting to fetch data from {self.DOWNLOAD_URL} or load from cache {self.cache_path}")
+            if os.path.exists(self.cache_path):
+                logger.info(f"Cache file found at {self.cache_path}. Loading data from cache.")
+                try:
+                    df = pd.read_csv(self.cache_path, comment='#')
+                except pd.errors.EmptyDataError:
+                    logger.warning(f"No data found in cached file: {self.cache_path}. The file is empty. Attempting download.")
+                    df = None 
+                except Exception as e:
+                    logger.error(f"An error occurred while reading cached file {self.cache_path}: {e}. Attempting download.")
+                    df = None 
             
-            # Convertir les lignes en objets Exoplanet
-            exoplanets = []
+            if df is None: 
+                logger.info(f"Fetching data from {self.DOWNLOAD_URL}")
+                try:
+                    response = requests.get(self.DOWNLOAD_URL)
+                    response.raise_for_status()  
+                    
+                    cache_dir = os.path.dirname(self.cache_path)
+                    if cache_dir: 
+                        os.makedirs(cache_dir, exist_ok=True)
+                    
+                    with open(self.cache_path, 'w', encoding='utf-8') as f:
+                        f.write(response.text)
+                    logger.info(f"Successfully downloaded and saved data to {self.cache_path}")
+                    
+                    df = pd.read_csv(self.cache_path, comment='#')
+                    
+                except requests.exceptions.RequestException as e:
+                    logger.error(f"Error downloading data from {self.DOWNLOAD_URL}: {e}")
+                    # Attempt to load from cache if download fails and cache exists
+                    if os.path.exists(self.cache_path):
+                        logger.info(f"Download failed. Attempting to load from existing cache {self.cache_path}")
+                        try:
+                            df = pd.read_csv(self.cache_path, comment='#')
+                        except Exception as cache_e:
+                            logger.error(f"Failed to load from cache after download error: {cache_e}")
+                            return []
+                    else:
+                        return []
+                except pd.errors.EmptyDataError:
+                    logger.error(f"No data found in downloaded file: {self.cache_path}. The file is empty.")
+                    return []
+                except Exception as e: 
+                    logger.error(f"An error occurred while processing downloaded data from {self.cache_path}: {e}")
+                    return []
+
+        if df is not None:
             for _, row in df.iterrows():
                 exoplanet = self._convert_row_to_exoplanet(row)
                 if exoplanet:
                     exoplanets.append(exoplanet)
-            
-            return exoplanets
-            
-        except Exception as e:
-            logger.error(f"Erreur lors de la collecte des données : {e}")
-            return [] 
+            logger.info(f"Successfully processed {len(exoplanets)} exoplanets from {self.cache_path if self.use_mock_data or df is not None else self.DOWNLOAD_URL}.")
+        
+        return exoplanets
