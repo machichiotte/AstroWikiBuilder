@@ -10,63 +10,97 @@ from src.data_collectors.nasa_exoplanet_archive import NASAExoplanetArchiveColle
 from src.data_collectors.exoplanet_eu import ExoplanetEUCollector
 from src.data_collectors.open_exoplanet_collection import OpenExoplanetCollector
 
-from src.models.exoplanet import Exoplanet
 from src.utils.data_processor import DataProcessor
-from src.utils.wikipedia_checker import WikipediaChecker, WikiArticleInfo # Ensuring WikiArticleInfo is available
+from src.utils.wikipedia_checker import (
+    WikipediaChecker,
+    WikiArticleInfo,
+)  # Ensuring WikiArticleInfo is available
 from src.services.exoplanet_repository import ExoplanetRepository
 from src.services.statistics_service import StatisticsService
 from src.services.wikipedia_service import WikipediaService
 from src.services.export_service import ExportService
 from src.utils.draft_utils import generate_draft, save_drafts
 
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
 logger = logging.getLogger(__name__)
+
 
 def setup_arguments() -> argparse.Namespace:
     """Configure et parse les arguments de la ligne de commande."""
-    parser = argparse.ArgumentParser(description='Générateur d\'articles Wikipedia pour les exoplanètes')
+    parser = argparse.ArgumentParser(
+        description="Générateur d'articles Wikipedia pour les exoplanètes"
+    )
 
     # --- Arguments pour les Sources ---
-    parser.add_argument('--sources', nargs='+', choices=['nasa', 'exoplanet_eu', 'open_exoplanet'],
-                        default=['nasa'],
-                        help='Sources de données à utiliser (par défaut: nasa)')
+    parser.add_argument(
+        "--sources",
+        nargs="+",
+        choices=["nasa_exoplanet_archive", "exoplanet_eu", "open_exoplanet"],
+        default=["nasa_exoplanet_archive"],
+        help="Sources de données à utiliser (par défaut: nasa_exoplanet_archive)",
+    )
 
     # --- Arguments pour les Mocks ---
-    parser.add_argument('--use-mock', nargs='+', choices=['nasa', 'exoplanet_eu', 'open_exoplanet'],
-                        default=[], # Par défaut, aucune source n'utilise de mock
-                        help='Utiliser les données mockées pour les sources spécifiées (ex: --use-mock nasa).')
+    parser.add_argument(
+        "--use-mock",
+        nargs="+",
+        choices=["nasa_exoplanet_archive", "exoplanet_eu", "open_exoplanet"],
+        default=[],  # Par défaut, aucune source n'utilise de mock
+        help="Utiliser les données mockées pour les sources spécifiées (ex: --use-mock nasa_exoplanet_archive).",
+    )
 
     # --- Arguments pour le Workflow ---
-    parser.add_argument('--skip-wikipedia-check', action='store_true',
-                        help='Ignorer l\'étape de vérification des articles Wikipedia et la génération de brouillons.')
+    parser.add_argument(
+        "--skip-wikipedia-check",
+        action="store_true",
+        help="Ignorer l'étape de vérification des articles Wikipedia et la génération de brouillons.",
+    )
 
     # --- Arguments for Output Directories ---
-    parser.add_argument('--output-dir', type=str, default='output',
-                        help='Directory for storing output files (consolidated data, logs, etc.). Default: "output"')
-    parser.add_argument('--drafts-dir', type=str, default='drafts',
-                        help='Directory for storing generated Wikipedia draft articles. Default: "drafts"')
+    parser.add_argument(
+        "--output-dir",
+        type=str,
+        default="output",
+        help='Directory for storing output files (consolidated data, logs, etc.). Default: "output"',
+    )
+    parser.add_argument(
+        "--drafts-dir",
+        type=str,
+        default="drafts",
+        help='Directory for storing generated Wikipedia draft articles. Default: "drafts"',
+    )
 
     args = parser.parse_args()
-    logger.info(f"Arguments reçus : Sources={args.sources}, Mocks={args.use_mock}, SkipWikiCheck={args.skip_wikipedia_check}, OutputDir={args.output_dir}, DraftsDir={args.drafts_dir}")
+    logger.info(
+        f"Arguments reçus : Sources={args.sources}, Mocks={args.use_mock}, SkipWikiCheck={args.skip_wikipedia_check}, OutputDir={args.output_dir}, DraftsDir={args.drafts_dir}"
+    )
     return args
 
-def initialize_services() -> Tuple[ExoplanetRepository, StatisticsService, WikipediaService, ExportService]:
+
+def initialize_services() -> Tuple[
+    ExoplanetRepository, StatisticsService, WikipediaService, ExportService
+]:
     """Initialise et retourne les services principaux."""
     repository = ExoplanetRepository()
     stat_service = StatisticsService()
 
-    default_user_agent = 'AstroWikiBuilder/1.1 (bot; machichiotte@gmail.com or your_project_contact_page)'
-    wiki_user_agent = os.environ.get('WIKI_USER_AGENT', default_user_agent)
+    default_user_agent = "AstroWikiBuilder/1.1 (bot; machichiotte@gmail.com or your_project_contact_page)"
+    wiki_user_agent = os.environ.get("WIKI_USER_AGENT", default_user_agent)
     if wiki_user_agent == default_user_agent:
         logger.info(f"Using default Wikipedia User-Agent: {wiki_user_agent}")
     else:
-        logger.info(f"Using Wikipedia User-Agent from environment variable WIKI_USER_AGENT: {wiki_user_agent}")
+        logger.info(
+            f"Using Wikipedia User-Agent from environment variable WIKI_USER_AGENT: {wiki_user_agent}"
+        )
 
     wikipedia_checker = WikipediaChecker(user_agent=wiki_user_agent)
     wiki_service = WikipediaService(wikipedia_checker=wikipedia_checker)
     export_service = ExportService()
     logger.info("Services initialisés.")
     return repository, stat_service, wiki_service, export_service
+
 
 def initialize_collectors(args: argparse.Namespace) -> Dict[str, Any]:
     """Initialise les collecteurs de données basés sur les arguments."""
@@ -76,40 +110,57 @@ def initialize_collectors(args: argparse.Namespace) -> Dict[str, Any]:
     mock_sources = args.use_mock
 
     # Initialise NASA si demandé
-    if 'nasa' in args.sources:
-        use_nasa_mock = 'nasa' in mock_sources
-        collectors['nasa'] = NASAExoplanetArchiveCollector(use_mock_data=use_nasa_mock)
+    if "nasa_exoplanet_archive" in args.sources:
+        use_nasa_mock = "nasa_exoplanet_archive" in mock_sources
+        collectors["nasa_exoplanet_archive"] = NASAExoplanetArchiveCollector(
+            use_mock_data=use_nasa_mock
+        )
         if use_nasa_mock:
             logger.info("Utilisation des données mockées pour NASA.")
 
     # Initialise Exoplanet.eu si demandé
-    if 'exoplanet_eu' in args.sources:
-        use_eu_mock = 'exoplanet_eu' in mock_sources
-        eu_cache_path = "data/exoplanet_eu_mock.csv" if use_eu_mock else "data/exoplanet_eu_downloaded.csv"
-        collectors['exoplanet_eu'] = ExoplanetEUCollector(
-            cache_path=eu_cache_path,
-            use_mock_data=use_eu_mock
+    if "exoplanet_eu" in args.sources:
+        use_eu_mock = "exoplanet_eu" in mock_sources
+        eu_cache_path = (
+            "data/exoplanet_eu_mock.csv"
+            if use_eu_mock
+            else "data/exoplanet_eu_downloaded.csv"
+        )
+        collectors["exoplanet_eu"] = ExoplanetEUCollector(
+            cache_path=eu_cache_path, use_mock_data=use_eu_mock
         )
         if use_eu_mock:
-            logger.info(f"Utilisation des données mockées pour Exoplanet.eu (chargement depuis {eu_cache_path}).")
+            logger.info(
+                f"Utilisation des données mockées pour Exoplanet.eu (chargement depuis {eu_cache_path})."
+            )
         else:
-            logger.info(f"ExoplanetEUCollector initialisé pour télécharger les données (cache dans {eu_cache_path}).")
+            logger.info(
+                f"ExoplanetEUCollector initialisé pour télécharger les données (cache dans {eu_cache_path})."
+            )
 
     # Initialise Open Exoplanet si demandé
-    if 'open_exoplanet' in args.sources:
-        use_open_mock = 'open_exoplanet' in mock_sources
-        open_exoplanet_cache_path = "data/open_exoplanet_mock.csv" if use_open_mock else "data/open_exoplanet_downloaded.txt"
-        collectors['open_exoplanet'] = OpenExoplanetCollector(
-            cache_path=open_exoplanet_cache_path,
-            use_mock_data=use_open_mock
+    if "open_exoplanet" in args.sources:
+        use_open_mock = "open_exoplanet" in mock_sources
+        open_exoplanet_cache_path = (
+            "data/open_exoplanet_mock.csv"
+            if use_open_mock
+            else "data/open_exoplanet_downloaded.txt"
+        )
+        collectors["open_exoplanet"] = OpenExoplanetCollector(
+            cache_path=open_exoplanet_cache_path, use_mock_data=use_open_mock
         )
         if use_open_mock:
-            logger.info(f"Utilisation des données mockées pour Open Exoplanet Catalogue (chargement depuis {open_exoplanet_cache_path}).")
+            logger.info(
+                f"Utilisation des données mockées pour Open Exoplanet Catalogue (chargement depuis {open_exoplanet_cache_path})."
+            )
         else:
-            logger.info(f"OpenExoplanetCollector initialisé pour télécharger les données (cache dans {open_exoplanet_cache_path}).")
+            logger.info(
+                f"OpenExoplanetCollector initialisé pour télécharger les données (cache dans {open_exoplanet_cache_path})."
+            )
 
     logger.info(f"Collecteurs initialisés pour : {list(collectors.keys())}")
     return collectors
+
 
 def fetch_and_process_data(collectors: Dict[str, Any], processor: DataProcessor):
     """Récupère les données des collecteurs et les traite."""
@@ -121,6 +172,7 @@ def fetch_and_process_data(collectors: Dict[str, Any], processor: DataProcessor)
         else:
             logger.warning(f"Aucune exoplanète récupérée depuis {source_name}.")
 
+
 def create_output_directories(output_dir: str = "output", drafts_dir: str = "drafts"):
     """Crée les répertoires de sortie nécessaires."""
     os.makedirs(output_dir, exist_ok=True)
@@ -129,54 +181,79 @@ def create_output_directories(output_dir: str = "output", drafts_dir: str = "dra
     os.makedirs(os.path.join(drafts_dir, "existing"), exist_ok=True)
     # The unknown_status directory is handled by save_drafts in draft_utils.py if that logic was successfully updated.
     # If not, drafts of unknown status are logged and placed in 'missing'.
-    logger.info(f"Répertoires de sortie créés : {output_dir}, {drafts_dir} (missing/existing subdirs created)")
+    logger.info(
+        f"Répertoires de sortie créés : {output_dir}, {drafts_dir} (missing/existing subdirs created)"
+    )
 
 
 def export_consolidated_data(processor: DataProcessor, output_dir: str, timestamp: str):
     """Exporte les données consolidées."""
     logger.info("Export des données consolidées...")
     try:
-        processor.export_exoplanet_data('csv', f"{output_dir}/exoplanets_consolidated_{timestamp}.csv")
-        processor.export_exoplanet_data('json', f"{output_dir}/exoplanets_consolidated_{timestamp}.json")
+        processor.export_exoplanet_data(
+            "csv", f"{output_dir}/exoplanets_consolidated_{timestamp}.csv"
+        )
+        processor.export_exoplanet_data(
+            "json", f"{output_dir}/exoplanets_consolidated_{timestamp}.json"
+        )
     except Exception as e:
         logger.error(f"Erreur lors de l'export des données consolidées : {e}")
+
 
 def log_statistics(stats: Dict[str, Any]):
     """Affiche les statistiques collectées."""
     logger.info("Statistiques des exoplanètes collectées :")
     logger.info(f"  Total : {stats.get('total_exoplanets', 0)}")
     logger.info("  Par source :")
-    for source, count in stats.get('data_points_by_source', {}).items():
+    for source, count in stats.get("data_points_by_source", {}).items():
         logger.info(f"    - {source} : {count}")
     logger.info("  Par méthode de découverte :")
-    for method, count in stats.get('discovery_methods', {}).items():
+    for method, count in stats.get("discovery_methods", {}).items():
         logger.info(f"    - {method} : {count}")
     logger.info("  Par année de découverte :")
-    for year, count in sorted(stats.get('discovery_years', {}).items(), key=lambda x: str(x[0])):
+    for year, count in sorted(
+        stats.get("discovery_years", {}).items(), key=lambda x: str(x[0])
+    ):
         logger.info(f"    - {year} : {count}")
 
-def check_and_export_wikipedia_status(processor: DataProcessor, output_dir: str) -> Tuple[Dict[str, Dict[str, WikiArticleInfo]], Dict[str, Dict[str, WikiArticleInfo]]]:
+
+def check_and_export_wikipedia_status(
+    processor: DataProcessor, output_dir: str
+) -> Tuple[
+    Dict[str, Dict[str, WikiArticleInfo]], Dict[str, Dict[str, WikiArticleInfo]]
+]:
     """Vérifie le statut Wikipedia et exporte les liens."""
     logger.info("Vérification des articles Wikipedia...")
-    existing_map, missing_map = processor.get_and_separate_wikipedia_articles_by_status()
-    logger.info(f"{len(existing_map)} articles existants, {len(missing_map)} articles manquants.")
+    existing_map, missing_map = (
+        processor.get_and_separate_wikipedia_articles_by_status()
+    )
+    logger.info(
+        f"{len(existing_map)} articles existants, {len(missing_map)} articles manquants."
+    )
 
     try:
-        if existing_map: 
-            processor.export_wikipedia_links_data(f"{output_dir}/exoplanet", existing_map, "existing")
-            logger.info(f"Liens Wikipedia existants exportés.")
-        if missing_map: 
-            processor.export_wikipedia_links_data(f"{output_dir}/exoplanet", missing_map, "missing")
-            logger.info(f"Liens Wikipedia manquants exportés.")
+        if existing_map:
+            processor.export_wikipedia_links_data(
+                f"{output_dir}/exoplanet", existing_map, "existing"
+            )
+            logger.info("Liens Wikipedia existants exportés.")
+        if missing_map:
+            processor.export_wikipedia_links_data(
+                f"{output_dir}/exoplanet", missing_map, "missing"
+            )
+            logger.info("Liens Wikipedia manquants exportés.")
     except Exception as e:
         logger.error(f"Erreur lors de l'export des liens Wikipedia : {e}")
     return existing_map, missing_map
 
-def run_draft_generation(processor: DataProcessor,
-                         existing_map: Dict,
-                         missing_map: Dict,
-                         drafts_dir: str,
-                         is_wikipedia_check_skipped: bool):
+
+def run_draft_generation(
+    processor: DataProcessor,
+    existing_map: Dict,
+    missing_map: Dict,
+    drafts_dir: str,
+    is_wikipedia_check_skipped: bool,
+):
     """Génère et sauvegarde les brouillons d'articles."""
     all_exoplanets = processor.get_all_exoplanets()
     if not all_exoplanets:
@@ -185,15 +262,15 @@ def run_draft_generation(processor: DataProcessor,
 
     missing_drafts: List[Tuple[str, str]] = []
     existing_drafts: List[Tuple[str, str]] = []
-    
+
     logger.info("Génération des brouillons...")
     for exoplanet in all_exoplanets:
         draft_content = generate_draft(exoplanet)
-        if exoplanet.name in missing_map: 
+        if exoplanet.name in missing_map:
             missing_drafts.append((exoplanet.name, draft_content))
-        elif exoplanet.name in existing_map: 
+        elif exoplanet.name in existing_map:
             existing_drafts.append((exoplanet.name, draft_content))
-        else:  
+        else:
             if is_wikipedia_check_skipped:
                 logger.info(
                     f"Wikipedia check was skipped. Draft for {exoplanet.name} is of unknown status "
@@ -207,13 +284,15 @@ def run_draft_generation(processor: DataProcessor,
                 )
             missing_drafts.append((exoplanet.name, draft_content))
 
-    logger.info(f"{len(missing_drafts)} brouillons 'manquants' (ou statut inconnu), {len(existing_drafts)} brouillons 'existants'.")
+    logger.info(
+        f"{len(missing_drafts)} brouillons 'manquants' (ou statut inconnu), {len(existing_drafts)} brouillons 'existants'."
+    )
 
     if missing_drafts or existing_drafts:
         # Assuming save_drafts from draft_utils.py handles only two lists as per its original confirmed signature
         # If draft_utils.py was successfully updated to handle three lists, this call would need adjustment.
         # However, the prompt's context implies draft_utils.py might not have been updated.
-        save_drafts(missing_drafts, existing_drafts, drafts_dir) 
+        save_drafts(missing_drafts, existing_drafts, drafts_dir)
         logger.info(f"Brouillons sauvegardés dans {drafts_dir}")
     else:
         logger.info("Aucun brouillon n'a été généré.")
@@ -244,13 +323,26 @@ def main():
     # --- Contrôle du Workflow ---
     if not args.skip_wikipedia_check:
         # Vérification Wikipedia et Génération des brouillons
-        existing_map, missing_map = check_and_export_wikipedia_status(processor, output_dir)
-        run_draft_generation(processor, existing_map, missing_map, drafts_dir, is_wikipedia_check_skipped=False)
+        existing_map, missing_map = check_and_export_wikipedia_status(
+            processor, output_dir
+        )
+        run_draft_generation(
+            processor,
+            existing_map,
+            missing_map,
+            drafts_dir,
+            is_wikipedia_check_skipped=False,
+        )
     else:
-        logger.info("Vérification Wikipedia ignorée. Génération des brouillons pour toutes les exoplanètes.")
-        run_draft_generation(processor, {}, {}, drafts_dir, is_wikipedia_check_skipped=True)
+        logger.info(
+            "Vérification Wikipedia ignorée. Génération des brouillons pour toutes les exoplanètes."
+        )
+        run_draft_generation(
+            processor, {}, {}, drafts_dir, is_wikipedia_check_skipped=True
+        )
 
     logger.info("Traitement principal terminé.")
+
 
 if __name__ == "__main__":
     main()

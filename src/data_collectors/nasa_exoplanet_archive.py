@@ -15,7 +15,8 @@ logger = logging.getLogger(__name__)
 
 class NASAExoplanetArchiveCollector:
     BASE_URL = "https://exoplanetarchive.ipac.caltech.edu/TAP/sync?query=select+*+from+PSCompPars&format=csv"
-    MOCK_DATA_PATH = "data/nasa_mock_data.csv"
+    #MOCK_DATA_PATH = "data/nasa_mock_data.csv"
+    MOCK_DATA_PATH = "data/nasa_mock_data_complete.csv"
     
     def __init__(self, use_mock_data: bool = False):
         self.required_columns = ['pl_name', 'hostname', 'discoverymethod', 'disc_year']

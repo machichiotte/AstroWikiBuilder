@@ -6,45 +6,64 @@ from .star_utils import StarUtils
 from src.constants.field_mappings import (
     FIELD_DEFAULT_UNITS,
     WIKILINK_FIELDS_DIRECT,
-    METHOD_NAME_MAPPING
+    METHOD_NAME_MAPPING,
 )
+
 
 class InfoboxGenerator:
     """
     Classe pour générer l'infobox des articles d'exoplanètes
     """
-    
+
     def __init__(self, reference_utils: ReferenceUtils):
         self.reference_utils = reference_utils
-        self.format_utils =  FormatUtils()
+        self.format_utils = FormatUtils()
         self.planet_type_utils = PlanetTypeUtils()
         self.star_utils = StarUtils(self.format_utils)
 
     def generate_infobox(self, exoplanet: Exoplanet) -> str:
-        
         def val(attr_name):
             attribute_obj = getattr(exoplanet, attr_name, None)
             if attribute_obj is not None:
-                if hasattr(attribute_obj, 'value'):
+                if hasattr(attribute_obj, "value"):
                     return attribute_obj.value
                 return attribute_obj
             return None
-        
+
         def unit(attr_name):
             datapoint = getattr(exoplanet, attr_name, None)
-            return datapoint.unit if datapoint and hasattr(datapoint, 'unit') and datapoint.unit else None
-        
+            return (
+                datapoint.unit
+                if datapoint and hasattr(datapoint, "unit") and datapoint.unit
+                else None
+            )
+
         def notes(attr_name):
             if attr_name == "host_star":
                 return None
             datapoint = getattr(exoplanet, attr_name, None)
-            if not datapoint or not hasattr(datapoint, 'reference') or not datapoint.reference:
+            if (
+                not datapoint
+                or not hasattr(datapoint, "reference")
+                or not datapoint.reference
+            ):
                 return None
             ref = datapoint.reference
-            if not ref or not hasattr(ref, 'source') or not ref.source or not hasattr(ref, 'to_wiki_ref'):
+            if (
+                not ref
+                or not hasattr(ref, "source")
+                or not ref.source
+                or not hasattr(ref, "to_wiki_ref")
+            ):
                 return None
-            ref_name = str(ref.source.value) if hasattr(ref.source, 'value') else str(ref.source)
-            ref_content_full = ref.to_wiki_ref(self.reference_utils.template_refs, exoplanet.name)
+            ref_name = (
+                str(ref.source.value)
+                if hasattr(ref.source, "value")
+                else str(ref.source)
+            )
+            ref_content_full = ref.to_wiki_ref(
+                self.reference_utils.template_refs, exoplanet.name
+            )
             if ref_content_full:
                 return self.reference_utils.add_reference(ref_name, ref_content_full)
             return None
@@ -55,7 +74,6 @@ class InfoboxGenerator:
             if v is not None and str(v).strip() != "":
                 processed_v = str(v)
 
-                
                 if label == "distance":
                     try:
                         processed_v = f"{{{{Parsec|{str(v)}|pc}}}}"
@@ -68,23 +86,29 @@ class InfoboxGenerator:
                     normalized_method_value = str(v).lower().strip()
                     if normalized_method_value in METHOD_NAME_MAPPING:
                         map_entry = METHOD_NAME_MAPPING[normalized_method_value]
-                        processed_v = f"[[{map_entry['article']}|{map_entry['display']}]]"
+                        processed_v = (
+                            f"[[{map_entry['article']}|{map_entry['display']}]]"
+                        )
                     else:
                         # Fallback: si non trouvé, afficher la valeur brute (ou la franciser si possible)
                         # Pour l'instant, on affiche la valeur brute sans lien pour éviter les erreurs.
                         # On pourrait aussi tenter un lien simple: [[{str(v).capitalize()}]] si on pense que v est déjà en français.
-                        processed_v = str(v) 
-                elif label in WIKILINK_FIELDS_DIRECT and str(v).strip(): # Assurer que la valeur n'est pas vide
+                        processed_v = str(v)
+                elif (
+                    label in WIKILINK_FIELDS_DIRECT and str(v).strip()
+                ):  # Assurer que la valeur n'est pas vide
                     processed_v = f"[[{str(v)}]]"
-                
+
                 s += f" | {label} = {processed_v}\n"
-                
+
                 actual_unit = unit(attr_name)
                 n = notes(attr_name)
                 expected_default_unit = FIELD_DEFAULT_UNITS.get(label)
 
                 if actual_unit:
-                    if not (expected_default_unit and actual_unit == expected_default_unit):
+                    if not (
+                        expected_default_unit and actual_unit == expected_default_unit
+                    ):
                         s += f" | {label} unité = {actual_unit}\n"
                 if n:
                     s += f" | {label} notes = {n}\n"
@@ -93,7 +117,7 @@ class InfoboxGenerator:
         infobox = f"{{{{Infobox Exoplanète\n"
         infobox += f" | nom = {exoplanet.name}\n"
         infobox += " | image = \n | légende = \n"
-        
+
         infobox += add_field("étoile", "host_star")
         infobox += add_field("époque étoile", "star_epoch")
         infobox += add_field("ascension droite", "right_ascension")
@@ -103,11 +127,11 @@ class InfoboxGenerator:
         infobox += add_field("magnitude apparente", "apparent_magnitude")
         infobox += f" | carte UAI = {self.star_utils.get_constellation(exoplanet)}\n"
         infobox += f" | constellation = {self.star_utils.get_constellation_formatted(exoplanet)}\n"
-        
+
         planet_type_value = self.planet_type_utils.get_planet_type(exoplanet)
         if planet_type_value:
-            infobox += f" | type = [[{planet_type_value}]]\n" 
-        
+            infobox += f" | type = [[{planet_type_value}]]\n"
+
         infobox += add_field("demi-grand axe", "semi_major_axis")
         infobox += add_field("périastre", "periastron")
         infobox += add_field("apoastre", "apoastron")
@@ -118,7 +142,7 @@ class InfoboxGenerator:
         infobox += add_field("inclinaison", "inclination")
         infobox += add_field("arg_péri", "argument_of_periastron")
         infobox += add_field("époque", "epoch")
-        
+
         infobox += add_field("masse", "mass")
         infobox += add_field("masse minimale", "minimum_mass")
         infobox += add_field("rayon", "radius")
@@ -127,24 +151,32 @@ class InfoboxGenerator:
         infobox += add_field("période de rotation", "rotation_period")
         infobox += add_field("température", "temperature")
         infobox += add_field("albedo_bond", "bond_albedo")
-        
+
         infobox += add_field("pression", "pressure")
         infobox += add_field("composition", "composition")
         infobox += add_field("vitesse des vents", "wind_speed")
-        
+
         infobox += add_field("découvreurs", "discoverers")
-        infobox += add_field("programme", "discovery_program") # Sera lié si dans WIKILINK_FIELDS_DIRECT
-        infobox += add_field("méthode", "discovery_method")   # Logique spéciale via METHOD_NAME_MAPPING
+        infobox += add_field(
+            "programme", "discovery_program"
+        )  # Sera lié si dans WIKILINK_FIELDS_DIRECT
+        infobox += add_field(
+            "méthode", "discovery_method"
+        )  # Logique spéciale via METHOD_NAME_MAPPING
         infobox += add_field("date", "discovery_date")
-        infobox += add_field("lieu", "discovery_location")     # Sera lié si dans WIKILINK_FIELDS_DIRECT
+        infobox += add_field(
+            "lieu", "discovery_location"
+        )  # Sera lié si dans WIKILINK_FIELDS_DIRECT
         infobox += add_field("prédécouverte", "pre_discovery")
-        infobox += add_field("détection", "detection_method") # Peut-être redondant avec "méthode" ou nécessiter un mapping similaire
+        infobox += add_field(
+            "détection", "detection_method"
+        )  # Peut-être redondant avec "méthode" ou nécessiter un mapping similaire
         infobox += add_field("statut", "status")
-        
-        other_names_list = val("other_names") 
+
+        other_names_list = val("other_names")
         if other_names_list:
             other_names_str = ", ".join(other_names_list)
             infobox += f" | autres noms = {other_names_str}\n"
-            
+
         infobox += "}}"
         return infobox
