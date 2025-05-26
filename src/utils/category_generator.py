@@ -3,10 +3,12 @@ from typing import List
 from src.models.exoplanet import Exoplanet
 from src.utils.planet_type_utils import PlanetTypeUtils
 
+
 class CategoryGenerator:
     """
     Classe pour générer les catégories des articles d'exoplanètes.
     """
+
     def __init__(self):
         self.base_categories = ["Exoplanète"]
         self.planet_type_utils = PlanetTypeUtils()
@@ -16,20 +18,26 @@ class CategoryGenerator:
 
         # Catégorie par constellation
         if exoplanet.constellation and exoplanet.constellation.value:
-            categories.append(f"Exoplanète de la constellation du {exoplanet.constellation.value}")
+            categories.append(
+                f"Exoplanète de la constellation du {exoplanet.constellation.value}"
+            )
 
         # Catégorie par type spectral
         if exoplanet.spectral_type and exoplanet.spectral_type.value:
             spectral_class = exoplanet.spectral_type.value[0]
-            categories.append(f"Exoplanète orbitant une étoile de type {spectral_class}")
+            categories.append(
+                f"Exoplanète orbitant une étoile de type {spectral_class}"
+            )
 
         # Catégorie par méthode de découverte
         if exoplanet.discovery_method and exoplanet.discovery_method.value:
             method = exoplanet.discovery_method.value
             if method == "Transit":
-                categories.append("Exoplanète découverte par la méthode du transit")
+                categories.append("Exoplanète découverte par la méthode des transits")
             elif method == "Radial Velocity":
-                categories.append("Exoplanète découverte par la méthode des vitesses radiales")
+                categories.append(
+                    "Exoplanète découverte par la méthode des vitesses radiales"
+                )
             elif method == "Imaging":
                 categories.append("Exoplanète découverte par imagerie directe")
             else:
