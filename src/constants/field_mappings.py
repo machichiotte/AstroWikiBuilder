@@ -2,78 +2,197 @@
 
 # Unités par défaut associées aux champs physiques
 FIELD_DEFAULT_UNITS: dict[str, str] = {
-    "masse": "M_J", 
-    "rayon": "R_J", 
-    "température": "K", 
-    "distance": "pc",
-    "demi-grand axe": 
-    "ua", "période": "j", 
-    "inclinaison": "°", 
-    "périastre": "ua",
-    "apoastre": "ua", 
-    "masse minimale": "M_J", 
-    "masse volumique": "kg/m³",
-    "gravité": "m/s²", 
-    "période de rotation": "h", 
-    "arg_péri": "°",
+  "masse": "M_J", 
+  "rayon": "R_J", 
+  "température": "K", 
+  "distance": "pc",
+  "demi-grand axe": 
+  "ua", "période": "j", 
+  "inclinaison": "°", 
+  "périastre": "ua",
+  "apoastre": "ua", 
+  "masse minimale": "M_J", 
+  "masse volumique": "kg/m³",
+  "gravité": "m/s²", 
+  "période de rotation": "h", 
+  "arg_péri": "°",
 }
 
 # Champs pour lesquels un lien direct vers un article Wikipédia doit être généré
 WIKILINK_FIELDS_DIRECT: list[str] = [
-     "étoile", 
-     "constellation", 
-     "programme", 
-     "lieu"
-        # Ex: "programme": "Programme Kepler" -> [[Programme Kepler]]
-        # Ex: "lieu": "Observatoire de La Silla" -> [[Observatoire de La Silla]]
+  "étoile", 
+  "constellation", 
+  "programme", 
+  "lieu"
+  # Ex: "programme": "Programme Kepler" -> [[Programme Kepler]]
+  # Ex: "lieu": "Observatoire de La Silla" -> [[Observatoire de La Silla]]
 ]
 
 # Dictionnaire pour traduire les méthodes de découverte et lier vers l'article FR
 # Les clés sont les valeurs attendues de la source de données (en anglais, normalisées en minuscules)
 METHOD_NAME_MAPPING: dict[str, str] = {
-    "transit": {
-            "display": "Transits",
-            "article": "Méthode des transits"
-        },
-        "radial velocity": {
-            "display": "Vitesses radiales",
-            "article": "Méthode des vitesses radiales"
-        },
-        "imaging": {
-            "display": "Imagerie directe",
-            "article": "Imagerie directe des exoplanètes" # ou "Imagerie directe" si plus générique
-        },
-        "microlensing": {
-            "display": "Microlentille gravitationnelle",
-            "article": "Microlentille gravitationnelle"
-        },
-        "gravitational microlensing": { # Au cas où la source utiliserait ce terme plus long
-            "display": "Microlentille gravitationnelle",
-            "article": "Microlentille gravitationnelle"
-        },
-        "timing": { # Terme générique, peut nécessiter plus de spécificité
-            "display": "Variations de chronométrage",
-            "article": "Chronométrage (astronomie)" # Exemple, à vérifier pour la pertinence
-        },
-        "pulsar timing": {
-            "display": "Chronométrage de pulsar",
-            "article": "Détection des exoplanètes par chronométrage de pulsar" # Titre d'article possible
-        },
-        "transit timing variations": {
-            "display": "Variations du moment de transit",
-            "article": "Mesure des variations de temps de transit" # TTV
-        },
-        "ttv": { # Acronyme commun pour Transit Timing Variations
-            "display": "Variations du moment de transit (TTV)",
-            "article": "Mesure des variations de temps de transit"
-        },
-        "astrometry": {
-            "display": "Astrométrie",
-            "article": "Astrométrie"
-        },
-        # Ajoutez d'autres méthodes ici au besoin
-        # "primary transit": { # Si vos données ont des variantes
-        # "display": "Transits (primaire)",
-        # "article": "Méthode des transits"
-        # }
+  "transit": {
+    "display": "Transits",
+    "article": "Méthode des transits"
+    },
+  "radial velocity": {
+    "display": "Vitesses radiales",
+    "article": "Méthode des vitesses radiales"
+  },
+  "imaging": {
+    "display": "Imagerie directe",
+    "article": "Imagerie directe des exoplanètes" # ou "Imagerie directe" si plus générique
+  },
+  "microlensing": {
+    "display": "Microlentille gravitationnelle",
+    "article": "Microlentille gravitationnelle"
+  },
+  "gravitational microlensing": { # Au cas où la source utiliserait ce terme plus long
+    "display": "Microlentille gravitationnelle",
+    "article": "Microlentille gravitationnelle"
+  },
+  "timing": { # Terme générique, peut nécessiter plus de spécificité
+    "display": "Variations de chronométrage",
+    "article": "Chronométrage (astronomie)" # Exemple, à vérifier pour la pertinence
+  },
+  "pulsar timing": {
+    "display": "Chronométrage de pulsar",
+    "article": "Détection des exoplanètes par chronométrage de pulsar" # Titre d'article possible
+  },
+  "transit timing variations": {
+    "display": "Variations du moment de transit",
+    "article": "Mesure des variations de temps de transit" # TTV
+  },
+  "ttv": { # Acronyme commun pour Transit Timing Variations
+    "display": "Variations du moment de transit (TTV)",
+    "article": "Mesure des variations de temps de transit"
+  },
+  "astrometry": {
+    "display": "Astrométrie",
+    "article": "Astrométrie"
+  },
+  # Ajoutez d'autres méthodes ici au besoin
+  # "primary transit": { # Si vos données ont des variantes
+  # "display": "Transits (primaire)",
+  # "article": "Méthode des transits"
+  # }
 }
+
+CONSTELLATION_FR: dict[str, str] = {
+    "Andromeda": "Andromède",
+    "Antlia": "Machine pneumatique",
+    "Apus": "Oiseau de paradis",
+    "Aquarius": "Verseau",
+    "Aquila": "Aigle",
+    "Ara": "Autel",
+    "Aries": "Bélier",
+    "Auriga": "Cocher",
+    "Boötes": "Bouvier",
+    "Caelum": "Burin",
+    "Camelopardalis": "Girafe",
+    "Cancer": "Cancer",
+    "Canes Venatici": "Chiens de chasse",
+    "Canis Major": "Grand Chien",
+    "Canis Minor": "Petit Chien",
+    "Capricornus": "Capricorne",
+    "Carina": "Carène",
+    "Cassiopeia": "Cassiopée",
+    "Centaurus": "Centaure",
+    "Cepheus": "Céphée",
+    "Cetus": "Baleine",
+    "Chamaeleon": "Caméléon",
+    "Circinus": "Compas",
+    "Columba": "Colombe",
+    "Coma Berenices": "Chevelure de Bérénice",
+    "Corona Australis": "Couronne australe",
+    "Corona Borealis": "Couronne boréale",
+    "Corvus": "Corbeau",
+    "Crater": "Cratère",
+    "Crux": "Croix du Sud",
+    "Cygnus": "Cygne",
+    "Delphinus": "Dauphin",
+    "Dorado": "Poisson doré",
+    "Draco": "Dragon",
+    "Equuleus": "Petit Cheval",
+    "Eridanus": "Éridan",
+    "Fornax": "Fourneau",
+    "Gemini": "Gémeaux",
+    "Grus": "Grue",
+    "Hercules": "Hercule",
+    "Horologium": "Horloge",
+    "Hydra": "Hydre femelle",
+    "Hydrus": "Hydre mâle",
+    "Indus": "Indien",
+    "Lacerta": "Lézard",
+    "Leo": "Lion",
+    "Leo Minor": "Petit Lion",
+    "Lepus": "Lièvre",
+    "Libra": "Balance",
+    "Lupus": "Loup",
+    "Lynx": "Lynx",
+    "Lyra": "Lyre",
+    "Mensa": "Table",
+    "Microscopium": "Microscope",
+    "Monoceros": "Licorne",
+    "Musca": "Mouche",
+    "Norma": "Règle",
+    "Octans": "Octant",
+    "Ophiuchus": "Serpentaire",
+    "Orion": "Orion",
+    "Pavo": "Paon",
+    "Pegasus": "Pégase",
+    "Perseus": "Persée",
+    "Phoenix": "Phénix",
+    "Pictor": "Peintre",
+    "Pisces": "Poissons",
+    "Piscis Austrinus": "Poisson austral",
+    "Puppis": "Poupe",
+    "Pyxis": "Boussole",
+    "Reticulum": "Réticule",
+    "Sagitta": "Flèche",
+    "Sagittarius": "Sagittaire",
+    "Scorpius": "Scorpion",
+    "Sculptor": "Sculpteur",
+    "Scutum": "Écu",
+    "Serpens": "Serpent",
+    "Sextans": "Sextant",
+    "Taurus": "Taureau",
+    "Telescopium": "Télescope",
+    "Triangulum": "Triangle",
+    "Triangulum Australe": "Triangle austral",
+    "Tucana": "Toucan",
+    "Ursa Major": "Grande Ourse",
+    "Ursa Minor": "Petite Ourse",
+    "Vela": "Voile",
+    "Virgo": "Vierge",
+    "Volans": "Poisson volant",
+    "Vulpecula": "Petit Renard"
+}
+
+# Descriptions des types spectraux selon Morgan-Keenan
+SPECTRAL_TYPE_DESCRIPTIONS: dict[str, str] = { 
+        'O': "étoile bleue de type O",
+        'B': "étoile bleue de type B",
+        'A': "étoile blanche de type A",
+        'F': "étoile blanc-jaune de type F",
+        'G': "naine jaune",
+        'K': "naine orange",
+        'M': "naine rouge",
+        'L': "naine brune de type L",
+        'T': "naine brune de type T",
+        'Y': "naine brune de type Y"
+    }
+
+    # Liens Wikipédia pour chaque "type d'astre" (en français)
+SPECTRAL_TYPE_LINKS: dict[str, str] = {
+        'O': 'https://fr.wikipedia.org/wiki/%C3%89toile_bleue_de_la_s%C3%A9quence_principale',
+        'B': 'https://fr.wikipedia.org/wiki/%C3%89toile_bleu-blanc_de_la_s%C3%A9quence_principale',
+        'A': 'https://fr.wikipedia.org/wiki/%C3%89toile_blanche_de_la_s%C3%A9quence_principale',
+        'F': 'https://fr.wikipedia.org/wiki/%C3%89toile_blanc-jaune_de_la_s%C3%A9quence_principale',
+        'G': 'https://fr.wikipedia.org/wiki/Naine_jaune',
+        'K': 'https://fr.wikipedia.org/wiki/%C3%89toile_orange_de_la_s%C3%A9quence_principale',
+        'M': 'https://fr.wikipedia.org/wiki/%C3%89toile_rouge_de_la_s%C3%A9quence_principale',
+        'L': 'https://fr.wikipedia.org/wiki/Naine_brunne_L',
+        'T': 'https://fr.wikipedia.org/wiki/Naine_brune_T',
+        'Y': 'https://fr.wikipedia.org/wiki/Naine_brune_Y'
+    }

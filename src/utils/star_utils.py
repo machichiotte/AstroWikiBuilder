@@ -1,49 +1,17 @@
 # src/utils/star_utils.py
-from typing import Dict, Optional
+from typing import Dict
+from src.constants.field_mappings import CONSTELLATION_FR, SPECTRAL_TYPE_DESCRIPTIONS, SPECTRAL_TYPE_LINKS
 from src.models.exoplanet import Exoplanet
 from .format_utils import FormatUtils
+
+from astropy.coordinates import SkyCoord
+import astropy.units as u
 
 class StarUtils:
     """
     Classe utilitaire pour décrire et caractériser les étoiles hôtes des exoplanètes,
     avec descriptions et liens Wikipedia en français vers le type d'astre correspondant.
     """
-    # Descriptions des types spectraux selon Morgan-Keenan
-    SPECTRAL_TYPE_DESCRIPTIONS = {
-        'O': "étoile bleue de type O",
-        'B': "étoile bleue de type B",
-        'A': "étoile blanche de type A",
-        'F': "étoile blanc-jaune de type F",
-        'G': "naine jaune",
-        'K': "naine orange",
-        'M': "naine rouge",
-        'L': "naine brune de type L",
-        'T': "naine brune de type T",
-        'Y': "naine brune de type Y"
-    }
-    # Liens Wikipédia pour chaque "type d'astre" (en français)
-    SPECTRAL_TYPE_LINKS: Dict[str, str] = {
-        'O': 'https://fr.wikipedia.org/wiki/%C3%89toile_bleue_de_la_s%C3%A9quence_principale',
-        'B': 'https://fr.wikipedia.org/wiki/%C3%89toile_bleu-blanc_de_la_s%C3%A9quence_principale',
-        'A': 'https://fr.wikipedia.org/wiki/%C3%89toile_blanche_de_la_s%C3%A9quence_principale',
-        'F': 'https://fr.wikipedia.org/wiki/%C3%89toile_blanc-jaune_de_la_s%C3%A9quence_principale',
-        'G': 'https://fr.wikipedia.org/wiki/Naine_jaune',
-        'K': 'https://fr.wikipedia.org/wiki/%C3%89toile_orange_de_la_s%C3%A9quence_principale',
-        'M': 'https://fr.wikipedia.org/wiki/%C3%89toile_rouge_de_la_s%C3%A9quence_principale',
-        'L': 'https://fr.wikipedia.org/wiki/Naine_brunne_L',
-        'T': 'https://fr.wikipedia.org/wiki/Naine_brune_T',
-        'Y': 'https://fr.wikipedia.org/wiki/Naine_brune_Y'
-    }
-
-    spectral_type_descriptions = {
-        'O': "étoile bleue très chaude",
-        'B': "étoile bleue chaude",
-        'A': "étoile blanche",
-        'F': "étoile blanc-jaune",
-        'G': "Naine jaune",
-        'K': "étoile orange",
-        'M': "étoile rouge"
-    }
 
     def __init__(self, format_utils: FormatUtils):
         self.format_utils = format_utils
@@ -58,8 +26,8 @@ class StarUtils:
 
         desc = f"L'étoile hôte, {star_name}, est "
         spectral = exoplanet.spectral_type.value[0] if exoplanet.spectral_type and exoplanet.spectral_type.value else None
-        if spectral in self.SPECTRAL_TYPE_DESCRIPTIONS:
-            desc += self.SPECTRAL_TYPE_DESCRIPTIONS[spectral]
+        if spectral in SPECTRAL_TYPE_DESCRIPTIONS:
+            desc += SPECTRAL_TYPE_DESCRIPTIONS[spectral]
         else:
             full = exoplanet.spectral_type.value or "inconnu"
             desc += f"de type spectral {full}"
@@ -78,6 +46,7 @@ class StarUtils:
 
         return desc + "."
 
+    # ne semble pas utilisé
     def get_star_characteristics(self, exoplanet: Exoplanet) -> Dict[str, str]:
         """
         Retourne un dictionnaire des caractéristiques de l'étoile hôte,
@@ -88,8 +57,8 @@ class StarUtils:
         spectral = exoplanet.spectral_type.value[0] if exoplanet.spectral_type and exoplanet.spectral_type.value else None
         if spectral:
             chars["Type spectral"] = exoplanet.spectral_type.value
-            if spectral in self.SPECTRAL_TYPE_LINKS:
-                chars["Type d'astre"] = self.SPECTRAL_TYPE_LINKS[spectral]
+            if spectral in SPECTRAL_TYPE_LINKS:
+                chars["Type d'astre"] = SPECTRAL_TYPE_LINKS[spectral]
 
         if exoplanet.apparent_magnitude and exoplanet.apparent_magnitude.value is not None:
             chars["Magnitude apparente"] = self.format_utils.format_numeric_value(exoplanet.apparent_magnitude.value)
@@ -107,6 +76,33 @@ class StarUtils:
             return "son étoile hôte"
             
         spectral_class = spectral_type[0].upper()
-        description = self.SPECTRAL_TYPE_DESCRIPTIONS.get(spectral_class, "son étoile hôte")
+        description = SPECTRAL_TYPE_DESCRIPTIONS.get(spectral_class, "son étoile hôte")
         
         return f"[[{description}]]"
+    
+    def get_constellation(self, exoplanet: Exoplanet) -> str:
+        """Trouve la constellation"""
+        right_ascension = exoplanet.right_ascension.value.replace('/', ' ')
+        declination = exoplanet.declination.value.replace('/', ' ')
+        
+        coord = SkyCoord(ra=right_ascension, dec=declination, unit=(u.hourangle, u.deg), frame='icrs')
+        constellation_en = coord.get_constellation()
+    
+        return CONSTELLATION_FR.get(constellation_en, constellation_en)
+    
+    def get_constellation_formatted(self, exoplanet: Exoplanet) -> str:
+        """
+        Génère le lien formaté pour la constellation de l'étoile hôte.
+        Ex: [[Cygne (constellation)|Cygne]]
+        This method now internally calls get_constellation to determine the name.
+        """
+        # Use the astropy-based get_constellation to get the French constellation name
+        constellation_name = self.get_constellation(exoplanet) # This calls the user's new method
+        
+        if constellation_name and constellation_name != "son étoile hôte": # Check if a valid constellation was found
+            # Assuming the French Wikipedia convention for constellations is "Name (constellation)"
+            
+            print(f"[[{constellation_name} (constellation)|{constellation_name}]]")
+            return f"[[{constellation_name} (constellation)|{constellation_name}]]"
+        return "" # Return empty string if no constellation or if it's the default "son étoile hôte"
+    

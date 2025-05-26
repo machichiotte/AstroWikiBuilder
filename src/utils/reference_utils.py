@@ -75,7 +75,7 @@ class ReferenceUtils:
                 if isinstance(value.reference.source, SourceType):
                     refs.add(value.reference.source.value)
         
-        # Si aucune référence n'a été trouvée, ajouter au moins EPE par défaut
+        # Si aucune référence n'a été trouvée, ajouter au moins NEA par défaut
         # Ne rien ajouter si pas de référence
             
         return list(refs)

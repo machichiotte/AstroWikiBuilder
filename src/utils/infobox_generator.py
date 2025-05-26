@@ -2,6 +2,7 @@ from src.models.exoplanet import Exoplanet
 from .reference_utils import ReferenceUtils
 from .planet_type_utils import PlanetTypeUtils
 from .format_utils import FormatUtils
+from .star_utils import StarUtils
 from src.constants.field_mappings import (
     FIELD_DEFAULT_UNITS,
     WIKILINK_FIELDS_DIRECT,
@@ -12,13 +13,15 @@ class InfoboxGenerator:
     """
     Classe pour générer l'infobox des articles d'exoplanètes
     """
-
+    
     def __init__(self, reference_utils: ReferenceUtils):
         self.reference_utils = reference_utils
         self.format_utils =  FormatUtils()
         self.planet_type_utils = PlanetTypeUtils()
+        self.star_utils = StarUtils(self.format_utils)
 
     def generate_infobox(self, exoplanet: Exoplanet) -> str:
+        
         def val(attr_name):
             attribute_obj = getattr(exoplanet, attr_name, None)
             if attribute_obj is not None:
@@ -52,6 +55,7 @@ class InfoboxGenerator:
             if v is not None and str(v).strip() != "":
                 processed_v = str(v)
 
+                
                 if label == "distance":
                     try:
                         processed_v = f"{{{{Parsec|{str(v)}|pc}}}}"
@@ -95,13 +99,10 @@ class InfoboxGenerator:
         infobox += add_field("ascension droite", "right_ascension")
         infobox += add_field("déclinaison", "declination")
         infobox += add_field("distance", "distance")
-        infobox += add_field("constellation", "constellation")
-        
-        if hasattr(exoplanet, 'iau_constellation_map') and exoplanet.iau_constellation_map:
-            infobox += f" | carte = {exoplanet.iau_constellation_map}\n"
-            
         infobox += add_field("type spectral", "spectral_type")
         infobox += add_field("magnitude apparente", "apparent_magnitude")
+        infobox += f" | carte UAI = {self.star_utils.get_constellation(exoplanet)}\n"
+        infobox += f" | constellation = {self.star_utils.get_constellation_formatted(exoplanet)}\n"
         
         planet_type_value = self.planet_type_utils.get_planet_type(exoplanet)
         if planet_type_value:
