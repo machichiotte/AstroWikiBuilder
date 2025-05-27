@@ -58,11 +58,11 @@ METHOD_NAME_MAPPING: dict[str, str] = {
     },
     "transit timing variations": {
         "display": "Variations du moment de transit",
-        "article": "Mesure des variations de temps de transit",  # TTV
+        "article": "Variations du moment de transit",  # TTV
     },
     "ttv": {  # Acronyme commun pour Transit Timing Variations
-        "display": "Variations du moment de transit (TTV)",
-        "article": "Mesure des variations de temps de transit",
+        "display": "Variations du moment de transit",
+        "article": "Variations du moment de transit",
     },
     "astrometry": {"display": "Astrométrie", "article": "Astrométrie"},
     # Ajoutez d'autres méthodes ici au besoin
