@@ -19,7 +19,7 @@ from src.services.exoplanet_repository import ExoplanetRepository
 from src.services.statistics_service import StatisticsService
 from src.services.wikipedia_service import WikipediaService
 from src.services.export_service import ExportService
-from src.utils.draft_utils import generate_draft, save_drafts
+from src.utils.draft_utils import generate_exoplanet_draft, save_exoplanet_drafts
 
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
@@ -265,7 +265,7 @@ def run_draft_generation(
 
     logger.info("Génération des brouillons...")
     for exoplanet in all_exoplanets:
-        draft_content = generate_draft(exoplanet)
+        draft_content = generate_exoplanet_draft(exoplanet)
         if exoplanet.name in missing_map:
             missing_drafts.append((exoplanet.name, draft_content))
         elif exoplanet.name in existing_map:
@@ -292,7 +292,7 @@ def run_draft_generation(
         # Assuming save_drafts from draft_utils.py handles only two lists as per its original confirmed signature
         # If draft_utils.py was successfully updated to handle three lists, this call would need adjustment.
         # However, the prompt's context implies draft_utils.py might not have been updated.
-        save_drafts(missing_drafts, existing_drafts, drafts_dir)
+        save_exoplanet_drafts(missing_drafts, existing_drafts, drafts_dir)
         logger.info(f"Brouillons sauvegardés dans {drafts_dir}")
     else:
         logger.info("Aucun brouillon n'a été généré.")

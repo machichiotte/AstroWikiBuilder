@@ -17,7 +17,7 @@ class IntroductionGenerator:
         self.planet_type_utils = PlanetTypeUtils()
         self.star_utils = StarUtils(self.format_utils)
 
-    def generate_introduction(self, exoplanet: Exoplanet) -> str:
+    def generate_exoplanet_introduction(self, exoplanet: Exoplanet) -> str:
         """
         Génère l'introduction pour une exoplanète
         """

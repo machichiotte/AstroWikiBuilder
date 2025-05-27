@@ -74,8 +74,10 @@ class WikipediaGenerator:
         self.reference_manager.reset_references()
 
         # Générer les différentes sections
-        infobox = self.infobox_generator.generate_infobox(exoplanet)
-        introduction = self.introduction_generator.generate_introduction(exoplanet)
+        infobox = self.infobox_generator.generate_exoplanet_infobox(exoplanet)
+        introduction = self.introduction_generator.generate_exoplanet_introduction(
+            exoplanet
+        )
         physical_characteristics = self._generate_physical_characteristics(exoplanet)
         orbit = self._generate_orbit_section(exoplanet)
         discovery = self._generate_discovery_section(exoplanet)
@@ -114,7 +116,7 @@ class WikipediaGenerator:
         Génère la section de l'orbite de l'exoplanète
         """
         orbital_comparison = self.comparison_utils.get_orbital_comparison(exoplanet)
-        semi_major_axis = self.format_utils.format_datapoint(
+        semi_major_axis_str = self.format_utils.format_datapoint(
             exoplanet.semi_major_axis,
             exoplanet.name,
             self.reference_manager.template_refs,
@@ -123,13 +125,25 @@ class WikipediaGenerator:
 
         section = "== Orbite ==\n"
 
+        cleaned_semi_major_axis_str = (
+            semi_major_axis_str.replace(",", ".").split("<ref")[0].strip()
+        )
+
+        try:
+            semi_major_axis_val = float(cleaned_semi_major_axis_str)
+        except ValueError:
+            # Handle cases where conversion might still fail (e.g., if semi_major_axis is None or non-numeric)
+            # You might want to log this or set a default value, or skip the comparison.
+            # For now, let's assume a default that will likely result in plural if the value is unparseable.
+            semi_major_axis_val = 0.0
+
         # Determine whether to use singular or plural for "unité astronomique"
-        if exoplanet.semi_major_axis and float(semi_major_axis) <= 2:
+        if exoplanet.semi_major_axis is not None and semi_major_axis_val <= 2:
             unit_text = "[[unité astronomique|unité astronomique]]"
         else:
             unit_text = "[[unité astronomique|unités astronomiques]]"
 
-        section += f"Elle orbite à {{{{unité|{semi_major_axis}|{unit_text}}}}} de son étoile{orbital_comparison}."
+        section += f"Elle orbite à {{{{unité|{semi_major_axis_str}|{unit_text}}}}} de son étoile{orbital_comparison}."
 
         return section
 

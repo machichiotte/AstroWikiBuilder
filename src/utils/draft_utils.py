@@ -10,6 +10,7 @@ from src.utils.wikipedia_generator import WikipediaGenerator
 # Configure un logger pour ce module spécifique
 logger = logging.getLogger(__name__)
 
+
 def clean_filename(filename: str) -> str:
     """
     Nettoie un nom de fichier en supprimant les caractères invalides
@@ -17,13 +18,14 @@ def clean_filename(filename: str) -> str:
     """
     invalid_chars = '<>:"/\\|?*\t\n\r'
     for char in invalid_chars:
-        filename = filename.replace(char, '_')
-    while '__' in filename:
-        filename = filename.replace('__', '_')
-    filename = filename.strip('_')
+        filename = filename.replace(char, "_")
+    while "__" in filename:
+        filename = filename.replace("__", "_")
+    filename = filename.strip("_")
     return filename
 
-def generate_draft(exoplanet: Exoplanet) -> str:
+
+def generate_exoplanet_draft(exoplanet: Exoplanet) -> str:
     """
     Génère le contenu d'un brouillon d'article pour une exoplanète.
     """
@@ -35,9 +37,12 @@ def generate_draft(exoplanet: Exoplanet) -> str:
     logger.debug(f"Brouillon pour {exoplanet.name} généré.")
     return content
 
-def save_drafts(missing_drafts: List[Tuple[str, str]],
-                existing_drafts: List[Tuple[str, str]],
-                drafts_dir: str = "drafts") -> None:
+
+def save_exoplanet_drafts(
+    missing_drafts: List[Tuple[str, str]],
+    existing_drafts: List[Tuple[str, str]],
+    drafts_dir: str = "drafts/exoplanet",
+) -> None:
     """
     Sauvegarde les brouillons dans les fichiers et répertoires appropriés.
     """
@@ -46,24 +51,28 @@ def save_drafts(missing_drafts: List[Tuple[str, str]],
     os.makedirs(missing_dir, exist_ok=True)
     os.makedirs(existing_dir, exist_ok=True)
 
-    logger.info(f"Sauvegarde de {len(missing_drafts)} brouillons manquants dans {missing_dir}")
+    logger.info(
+        f"Sauvegarde de {len(missing_drafts)} brouillons manquants dans {missing_dir}"
+    )
     for name, content in missing_drafts:
         safe_filename = clean_filename(name)
         filename = os.path.join(missing_dir, f"{safe_filename}.wiki")
         try:
-            with open(filename, 'w', encoding='utf-8') as f:
+            with open(filename, "w", encoding="utf-8") as f:
                 f.write(content)
         except IOError as e:
             logger.error(f"Impossible de sauvegarder le brouillon {filename}: {e}")
         except Exception as e:
             logger.error(f"Erreur inattendue lors de la sauvegarde de {filename}: {e}")
 
-    logger.info(f"Sauvegarde de {len(existing_drafts)} brouillons existants dans {existing_dir}")
+    logger.info(
+        f"Sauvegarde de {len(existing_drafts)} brouillons existants dans {existing_dir}"
+    )
     for name, content in existing_drafts:
         safe_filename = clean_filename(name)
         filename = os.path.join(existing_dir, f"{safe_filename}.wiki")
         try:
-            with open(filename, 'w', encoding='utf-8') as f:
+            with open(filename, "w", encoding="utf-8") as f:
                 f.write(content)
         except IOError as e:
             logger.error(f"Impossible de sauvegarder le brouillon {filename}: {e}")

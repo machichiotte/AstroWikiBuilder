@@ -1,5 +1,5 @@
 from src.models.exoplanet import Exoplanet
-from .reference_utils import ReferenceUtils
+from src.utils.reference_manager import ReferenceManager
 from .planet_type_utils import PlanetTypeUtils
 from .format_utils import FormatUtils
 from .star_utils import StarUtils
@@ -15,13 +15,13 @@ class InfoboxGenerator:
     Classe pour générer l'infobox des articles d'exoplanètes
     """
 
-    def __init__(self, reference_utils: ReferenceUtils):
-        self.reference_utils = reference_utils
+    def __init__(self, reference_manager: ReferenceManager):
+        self.reference_manager = reference_manager
         self.format_utils = FormatUtils()
         self.planet_type_utils = PlanetTypeUtils()
         self.star_utils = StarUtils(self.format_utils)
 
-    def generate_infobox(self, exoplanet: Exoplanet) -> str:
+    def generate_exoplanet_infobox(self, exoplanet: Exoplanet) -> str:
         def val(attr_name):
             attribute_obj = getattr(exoplanet, attr_name, None)
             if attribute_obj is not None:
@@ -62,10 +62,10 @@ class InfoboxGenerator:
                 else str(ref.source)
             )
             ref_content_full = ref.to_wiki_ref(
-                self.reference_utils.template_refs, exoplanet.name
+                self.reference_manager.template_refs, exoplanet.name
             )
             if ref_content_full:
-                return self.reference_utils.add_reference(ref_name, ref_content_full)
+                return self.reference_manager.add_reference(ref_name, ref_content_full)
             return None
 
         def add_field(label, attr_name):
