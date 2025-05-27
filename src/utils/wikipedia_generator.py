@@ -105,7 +105,7 @@ class WikipediaGenerator:
         # Ajouter les catégories
         categories = self.category_utils.generate_categories(exoplanet)
         for category in categories:
-            article += f"[[Catégorie:{category}]]\n"
+            article += f"{category}\n"
 
         return article
 

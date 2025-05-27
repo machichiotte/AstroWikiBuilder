@@ -1,4 +1,4 @@
-from constants.field_mappings import CONSTELLATION_GENDER
+from src.constants.field_mappings import CONSTELLATION_GENDER
 from src.models.exoplanet import Exoplanet
 from .comparison_utils import ComparisonUtils
 from .planet_type_utils import PlanetTypeUtils
