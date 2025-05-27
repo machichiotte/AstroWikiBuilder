@@ -57,12 +57,12 @@ METHOD_NAME_MAPPING: dict[str, str] = {
         "article": "Détection des exoplanètes par chronométrage de pulsar",  # Titre d'article possible
     },
     "transit timing variations": {
-        "display": "Variations du moment de transit",
-        "article": "Variations du moment de transit",  # TTV
+        "display": "Variation du moment de transit",
+        "article": "Variation du moment de transit",  # TTV
     },
     "ttv": {  # Acronyme commun pour Transit Timing Variations
-        "display": "Variations du moment de transit",
-        "article": "Variations du moment de transit",
+        "display": "Variation du moment de transit",
+        "article": "Variation du moment de transit",
     },
     "astrometry": {"display": "Astrométrie", "article": "Astrométrie"},
     # Ajoutez d'autres méthodes ici au besoin
