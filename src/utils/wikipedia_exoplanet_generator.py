@@ -8,7 +8,7 @@ from .reference_manager import ReferenceManager
 from .star_utils import StarUtils
 from .format_utils import FormatUtils
 from .exoplanet_comparison_utils import ExoplanetComparisonUtils
-from .planet_type_utils import ExoplanetTypeUtils
+from .exoplanet_type_utils import ExoplanetTypeUtils
 
 
 class WikipediaExoplanetGenerator:

@@ -1,6 +1,6 @@
 from src.models.exoplanet import Exoplanet
 from src.utils.reference_manager import ReferenceManager
-from .planet_type_utils import ExoplanetTypeUtils
+from .exoplanet_type_utils import ExoplanetTypeUtils
 from .format_utils import FormatUtils
 from .star_utils import StarUtils
 from src.constants.field_mappings import (

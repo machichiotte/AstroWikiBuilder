@@ -1,7 +1,7 @@
 from src.constants.field_mappings import CONSTELLATION_GENDER
 from src.models.exoplanet import Exoplanet
 from .exoplanet_comparison_utils import ExoplanetComparisonUtils
-from .planet_type_utils import ExoplanetTypeUtils
+from .exoplanet_type_utils import ExoplanetTypeUtils
 from .star_utils import StarUtils
 from .format_utils import FormatUtils
 
