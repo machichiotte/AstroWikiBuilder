@@ -1,15 +1,8 @@
-# src/utils/planet_type_utils.py
 from typing import Optional
 from src.models.exoplanet import Exoplanet
 
 
 class PlanetTypeUtils:
-    """
-    Utility class to classify exoplanets according to French Wikipedia categories,
-    handling missing data by falling back to partial criteria.
-    """
-
-    # Mass thresholds (in Earth masses)
     SUB_EARTH_MAX = 0.5
     EARTH_MAX = 2.0
     SUPER_EARTH_MAX = 10.0
@@ -17,56 +10,31 @@ class PlanetTypeUtils:
     GAS_GIANT_MIN = 10.0
     JUPITER_MASS = 317.8
 
-    # Radius thresholds (in Earth radii)
     SUB_EARTH_RADIUS_MAX = 0.8
     EARTH_RADIUS_MAX = 1.25
     SUPER_PUFF_RADIUS_MIN = 4.0
 
-    # Density threshold (g/cm³)
-    ROCKY_DENSITY_MIN = 3.5
-
-    # Temperature thresholds (K)
     ULTRA_HOT_MIN = 2200
     HOT_MIN = 1000
     WARM_MIN = 500
-
-    # Insolation (relative to Earth)
     HIGH_INSOLATION_MIN = 100
 
     def get_planet_type(self, p: Exoplanet) -> str:
-        """Return planet type in French, with fallback when data is missing."""
         m = self._mass_in_earth(p)
         r = self._radius_in_earth(p)
         d = self._density(p)
         insolation = self._stellar_insolation(p)
 
-        # Super-puff override
         if (
             r is not None
-            and m is not None
             and r >= self.SUPER_PUFF_RADIUS_MIN
-            and m <= self.SUPER_EARTH_MAX
+            and (m is None or m <= self.SUPER_EARTH_MAX)
         ):
             return "Planète super-enflée"
 
-        # If mass known, attempt giant classification
-        if m is not None and m >= self.GAS_GIANT_MIN:
-            return self._classify_giant(
-                m,
-                float(p.temperature.value)
-                if p.temperature and p.temperature.value is not None
-                else None,
-                float(p.semi_major_axis.value)
-                if p.semi_major_axis and p.semi_major_axis.value is not None
-                else None,
-                insolation,
-            )
-
-        # Terrestrial classification by mass+radius when both available
         if m is not None and r is not None:
-            return self._classify_terrestrial(m, r, d)
+            return self._classify_combined(m, r, d, p, insolation)
 
-        # Fallback: only mass available
         if m is not None:
             if m <= self.SUPER_EARTH_MAX:
                 return (
@@ -76,53 +44,83 @@ class PlanetTypeUtils:
                 )
             return "Planète géante de masse élevée"
 
-        # Fallback: only radius available
         if r is not None:
             if r <= self.EARTH_RADIUS_MAX:
                 return "Planète de dimensions terrestres"
             if r >= self.SUPER_PUFF_RADIUS_MIN:
-                return "Planète_super-enflée"
+                return "Planète super-enflée"
             return "Planète géante de rayon modéré"
 
-        # No discriminant data
         return "Type indéfini"
 
-    def _classify_giant(
+    def _classify_combined(
         self,
         m: float,
-        t: Optional[float],
-        a: Optional[float],
+        r: float,
+        d: Optional[float],
+        p: Exoplanet,
         insolation: Optional[float],
     ) -> str:
+        # Petite masse et petit rayon → probablement terrestre
+        if m <= self.SUPER_EARTH_MAX and r <= self.SUPER_PUFF_RADIUS_MIN:
+            return self._classify_terrestrial(m, r)
+
+        # Grande masse ou grand rayon → probablement géante
+        if m >= self.GAS_GIANT_MIN or r >= self.SUPER_PUFF_RADIUS_MIN:
+            return self._classify_giant(m, p, insolation)
+
+        # Masse modérée mais faible densité → tendance gazeuse
+        if d is not None and d < 2.0 and r > 1.5:
+            return self._classify_giant(m, p, insolation)
+
+        # Masse modérée et densité moyenne ou élevée → tendance terrestre
+        return self._classify_terrestrial(m, r)
+
+    def _classify_giant(
+        self, m: float, p: Exoplanet, insolation: Optional[float]
+    ) -> str:
+        t = (
+            float(p.temperature.value)
+            if p.temperature and p.temperature.value
+            else None
+        )
+        a = (
+            float(p.semi_major_axis.value)
+            if p.semi_major_axis and p.semi_major_axis.value
+            else None
+        )
+
         if m >= self.JUPITER_MASS:
-            if insolation is not None and insolation >= self.HIGH_INSOLATION_MIN:
+            if insolation and insolation >= self.HIGH_INSOLATION_MIN:
                 return "Jupiter ultra-chaud"
-            if t is not None:
+            if t:
                 if t >= self.ULTRA_HOT_MIN:
                     return "Jupiter ultra-chaud"
                 if t >= self.HOT_MIN:
                     return "Jupiter chaud"
                 if t >= self.WARM_MIN:
                     return "Jupiter tiède"
-            if a is not None and a >= 1.0:
+            if a and a >= 1.0:
                 return "Jupiter froid"
             return "Planète géante gazeuse"
+
         if m <= self.ICE_GIANT_MAX:
-            if insolation is not None:
+            if insolation:
                 return "Neptune chaud" if insolation > 20 else "Neptune froid"
-            if a is not None:
+            if a:
                 return "Neptune chaud" if a < 1.0 else "Neptune froid"
             return "Planète géante de glaces"
-        if t is not None:
+
+        if t:
             if t >= self.HOT_MIN:
                 return "Jupiter chaud"
             if t >= self.WARM_MIN:
                 return "Jupiter tiède"
-        if a is not None and a >= 1.0:
+        if a and a >= 1.0:
             return "Jupiter froid"
         return "Planète géante gazeuse"
 
-    def _classify_terrestrial(self, m: float, r: float, d: Optional[float]) -> str:
+    def _classify_terrestrial(self, m: float, r: float) -> str:
         if m <= self.SUB_EARTH_MAX or r <= self.SUB_EARTH_RADIUS_MAX:
             return "Sous-Terre"
         if m <= self.EARTH_MAX and r <= self.EARTH_RADIUS_MAX:
@@ -159,7 +157,6 @@ class PlanetTypeUtils:
         return mass_g / vol_cm3
 
     def _stellar_insolation(self, p: Exoplanet) -> Optional[float]:
-        """Estimate incident flux relative to Earth using host star luminosity (DataPoint) and semi-major axis."""
         if (
             not p.host_star
             or p.host_star.value is None
