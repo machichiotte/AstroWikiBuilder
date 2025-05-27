@@ -122,7 +122,14 @@ class WikipediaGenerator:
         )
 
         section = "== Orbite ==\n"
-        section += f"Elle orbite à {{{{unité|{semi_major_axis}|[[unité astronomique|unités astronomiques]]}}}} de son étoile{orbital_comparison}."
+
+        # Determine whether to use singular or plural for "unité astronomique"
+        if exoplanet.semi_major_axis and float(semi_major_axis) <= 2:
+            unit_text = "[[unité astronomique|unité astronomique]]"
+        else:
+            unit_text = "[[unité astronomique|unités astronomiques]]"
+
+        section += f"Elle orbite à {{{{unité|{semi_major_axis}|{unit_text}}}}} de son étoile{orbital_comparison}."
 
         return section
 

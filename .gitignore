@@ -175,4 +175,5 @@ cython_debug/
 
 output/
 drafts/
+drafts copy/
 data/*.json
