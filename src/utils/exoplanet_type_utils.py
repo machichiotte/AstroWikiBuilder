@@ -2,7 +2,7 @@ from typing import Optional
 from src.models.exoplanet import Exoplanet
 
 
-class PlanetTypeUtils:
+class ExoplanetTypeUtils:
     SUB_EARTH_MAX = 0.5
     EARTH_MAX = 2.0
     SUPER_EARTH_MAX = 10.0

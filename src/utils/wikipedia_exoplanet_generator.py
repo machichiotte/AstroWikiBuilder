@@ -8,7 +8,7 @@ from .reference_manager import ReferenceManager
 from .star_utils import StarUtils
 from .format_utils import FormatUtils
 from .exoplanet_comparison_utils import ExoplanetComparisonUtils
-from .planet_type_utils import PlanetTypeUtils
+from .planet_type_utils import ExoplanetTypeUtils
 
 
 class WikipediaExoplanetGenerator:
@@ -61,7 +61,7 @@ class WikipediaExoplanetGenerator:
         self.format_utils = FormatUtils()
         self.star_utils = StarUtils(self.format_utils)
         self.comparison_utils = ExoplanetComparisonUtils(self.format_utils)
-        self.planet_type_utils = PlanetTypeUtils()
+        self.planet_type_utils = ExoplanetTypeUtils()
         self.introduction_generator = ExoplanetIntroductionGenerator(
             self.comparison_utils, self.format_utils
         )

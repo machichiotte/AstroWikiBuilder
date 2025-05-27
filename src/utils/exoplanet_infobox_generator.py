@@ -1,6 +1,6 @@
 from src.models.exoplanet import Exoplanet
 from src.utils.reference_manager import ReferenceManager
-from .planet_type_utils import PlanetTypeUtils
+from .planet_type_utils import ExoplanetTypeUtils
 from .format_utils import FormatUtils
 from .star_utils import StarUtils
 from src.constants.field_mappings import (
@@ -18,7 +18,7 @@ class ExoplanetInfoboxGenerator:
     def __init__(self, reference_manager: ReferenceManager):
         self.reference_manager = reference_manager
         self.format_utils = FormatUtils()
-        self.planet_type_utils = PlanetTypeUtils()
+        self.planet_type_utils = ExoplanetTypeUtils()
         self.star_utils = StarUtils(self.format_utils)
 
     def generate_exoplanet_infobox(self, exoplanet: Exoplanet) -> str:

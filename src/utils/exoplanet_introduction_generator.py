@@ -1,7 +1,7 @@
 from src.constants.field_mappings import CONSTELLATION_GENDER
 from src.models.exoplanet import Exoplanet
 from .exoplanet_comparison_utils import ExoplanetComparisonUtils
-from .planet_type_utils import PlanetTypeUtils
+from .planet_type_utils import ExoplanetTypeUtils
 from .star_utils import StarUtils
 from .format_utils import FormatUtils
 
@@ -16,7 +16,7 @@ class ExoplanetIntroductionGenerator:
     ):
         self.comparison_utils = comparison_utils
         self.format_utils = format_utils
-        self.planet_type_utils = PlanetTypeUtils()
+        self.planet_type_utils = ExoplanetTypeUtils()
         self.star_utils = StarUtils(self.format_utils)
 
     def generate_exoplanet_introduction(self, exoplanet: Exoplanet) -> str:

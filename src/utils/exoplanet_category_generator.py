@@ -1,7 +1,7 @@
 # src/utils/exoplanet_category_generator.py
 from typing import List, Dict
 from src.models.exoplanet import Exoplanet
-from src.utils.planet_type_utils import PlanetTypeUtils
+from src.utils.planet_type_utils import ExoplanetTypeUtils
 from src.utils.category_parser import parse_categories
 import re
 
@@ -14,7 +14,7 @@ class ExoplanetCategoryGenerator:
     def __init__(self):
         self.predefined_categories: Dict[str, List[str]] = parse_categories()
         self.base_categories: List[str] = ["[[Catégorie:Exoplanète]]"]
-        self.planet_type_utils = PlanetTypeUtils()
+        self.planet_type_utils = ExoplanetTypeUtils()
 
         # Mappings from Exoplanet data to predefined category strings
         self.discovery_method_map: Dict[str, str] = {
