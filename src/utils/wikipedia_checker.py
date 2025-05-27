@@ -4,10 +4,6 @@ from typing import Dict, List, Optional, Any
 from dataclasses import dataclass
 import unicodedata
 import re
-import os
-import csv
-import json
-from datetime import datetime
 import logging
 
 # Configuration du logger

@@ -1,22 +1,22 @@
-# src/utils/wikipedia_generator.py
+# src/utils/wikipedia_exoplanet_generator.py
 import locale
 from src.models.exoplanet import Exoplanet
-from .infobox_generator import InfoboxGenerator
-from .introduction_generator import IntroductionGenerator
-from .category_generator import CategoryGenerator
+from .exoplanet_infobox_generator import ExoplanetInfoboxGenerator
+from .exoplanet_introduction_generator import ExoplanetIntroductionGenerator
+from .exoplanet_category_generator import ExoplanetCategoryGenerator
 from .reference_manager import ReferenceManager
 from .star_utils import StarUtils
 from .format_utils import FormatUtils
-from .comparison_utils import ComparisonUtils
+from .exoplanet_comparison_utils import ExoplanetComparisonUtils
 from .planet_type_utils import PlanetTypeUtils
 
 
-class WikipediaGenerator:
+class WikipediaExoplanetGenerator:
     """
     Classe pour générer les articles Wikipedia des exoplanètes
     """
 
-    FIELD_DEFAULT_UNITS = {
+    EXOPLANET_FIELD_DEFAULT_UNITS = {
         "masse": "M_J",
         "rayon": "R_J",
         "température": "K",
@@ -35,18 +35,18 @@ class WikipediaGenerator:
     }
 
     # Constantes de classification des planètes
-    MASS_THRESHOLDS = {
+    EXOPLANET_MASS_THRESHOLDS = {
         "GAS_GIANT": 1.0,  # Masse en M_J
         "TERRESTRIAL": 1.0,  # Masse en M_J
     }
 
-    RADIUS_THRESHOLDS = {
+    EXOPLANET_RADIUS_THRESHOLDS = {
         "ICE_GIANT": 0.8,  # Rayon en R_J
         "SUPER_EARTH": 1.5,  # Rayon en R_J
         "EARTH_LIKE": 0.8,  # Rayon en R_J
     }
 
-    TEMPERATURE_THRESHOLDS = {
+    EXOPLANET_TEMPERATURE_THRESHOLDS = {
         "ULTRA_HOT": 2200,  # Température en K
         "HOT": 1000,  # Température en K
         "WARM": 500,  # Température en K
@@ -56,13 +56,13 @@ class WikipediaGenerator:
         locale.setlocale(locale.LC_ALL, "fr_FR.UTF-8")
 
         self.reference_manager = ReferenceManager()
-        self.category_utils = CategoryGenerator()
-        self.infobox_generator = InfoboxGenerator(self.reference_manager)
+        self.category_utils = ExoplanetCategoryGenerator()
+        self.infobox_generator = ExoplanetInfoboxGenerator(self.reference_manager)
         self.format_utils = FormatUtils()
         self.star_utils = StarUtils(self.format_utils)
-        self.comparison_utils = ComparisonUtils(self.format_utils)
+        self.comparison_utils = ExoplanetComparisonUtils(self.format_utils)
         self.planet_type_utils = PlanetTypeUtils()
-        self.introduction_generator = IntroductionGenerator(
+        self.introduction_generator = ExoplanetIntroductionGenerator(
             self.comparison_utils, self.format_utils
         )
 
@@ -105,7 +105,7 @@ class WikipediaGenerator:
 
 """
         # Ajouter les catégories
-        categories = self.category_utils.generate_categories(exoplanet)
+        categories = self.category_utils.generate_exoplanet_categories(exoplanet)
         for category in categories:
             article += f"{category}\n"
 

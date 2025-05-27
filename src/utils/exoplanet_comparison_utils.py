@@ -2,7 +2,7 @@ from src.models.exoplanet import Exoplanet
 from .format_utils import FormatUtils
 
 
-class ComparisonUtils:
+class ExoplanetComparisonUtils:
     """
     Classe utilitaire pour les comparaisons physiques des exoplanètes
     """
@@ -123,14 +123,16 @@ class ComparisonUtils:
         orbit_value = round(orbit_value, 3)
 
         if orbit_value < self.mercury_orbit:
-            return f"Son orbite est plus proche de son étoile que celle de [[Mercure (planète)|Mercure]] autour du [[Soleil]]."
+            return "Son orbite est plus proche de son étoile que celle de [[Mercure (planète)|Mercure]] autour du [[Soleil]]."
         elif orbit_value < self.venus_orbit:
-            return f"Son orbite est similaire à celle de [[Mercure (planète)|Mercure]] autour du [[Soleil]]."
+            return "Son orbite est similaire à celle de [[Mercure (planète)|Mercure]] autour du [[Soleil]]."
         elif orbit_value < self.earth_orbit:
-            return f"Son orbite est similaire à celle de [[Vénus (planète)|Vénus]] autour du [[Soleil]]."
+            return "Son orbite est similaire à celle de [[Vénus (planète)|Vénus]] autour du [[Soleil]]."
         elif orbit_value < self.mars_orbit:
-            return f"Son orbite est similaire à celle de la [[Terre]] autour du [[Soleil]]."
+            return (
+                "Son orbite est similaire à celle de la [[Terre]] autour du [[Soleil]]."
+            )
         elif orbit_value < self.jupiter_orbit:
-            return f"Son orbite est similaire à celle de [[Mars (planète)|Mars]] autour du [[Soleil]]."
+            return "Son orbite est similaire à celle de [[Mars (planète)|Mars]] autour du [[Soleil]]."
         else:
-            return f"Son orbite est plus éloignée de son étoile que celle de [[Jupiter (planète)|Jupiter]] autour du [[Soleil]]."
+            return "Son orbite est plus éloignée de son étoile que celle de [[Jupiter (planète)|Jupiter]] autour du [[Soleil]]."

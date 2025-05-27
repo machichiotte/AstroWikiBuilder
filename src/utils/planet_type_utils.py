@@ -19,7 +19,7 @@ class PlanetTypeUtils:
     WARM_MIN = 500
     HIGH_INSOLATION_MIN = 100
 
-    def get_planet_type(self, p: Exoplanet) -> str:
+    def get_exoplanet_planet_type(self, p: Exoplanet) -> str:
         m = self._mass_in_earth(p)
         r = self._radius_in_earth(p)
         d = self._density(p)

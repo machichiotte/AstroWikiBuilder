@@ -1,17 +1,19 @@
 from src.constants.field_mappings import CONSTELLATION_GENDER
 from src.models.exoplanet import Exoplanet
-from .comparison_utils import ComparisonUtils
+from .exoplanet_comparison_utils import ExoplanetComparisonUtils
 from .planet_type_utils import PlanetTypeUtils
 from .star_utils import StarUtils
 from .format_utils import FormatUtils
 
 
-class IntroductionGenerator:
+class ExoplanetIntroductionGenerator:
     """
     Classe pour générer l'introduction des articles d'exoplanètes
     """
 
-    def __init__(self, comparison_utils: ComparisonUtils, format_utils: FormatUtils):
+    def __init__(
+        self, comparison_utils: ExoplanetComparisonUtils, format_utils: FormatUtils
+    ):
         self.comparison_utils = comparison_utils
         self.format_utils = format_utils
         self.planet_type_utils = PlanetTypeUtils()
@@ -23,10 +25,10 @@ class IntroductionGenerator:
         """
 
         # Obtenir le type de planète
-        planet_type = self.planet_type_utils.get_planet_type(exoplanet)
+        planet_type = self.planet_type_utils.get_exoplanet_planet_type(exoplanet)
 
         # Obtenir la description de l'étoile
-        star_desc = self.star_utils.get_spectral_type_formatted_description(
+        star_desc = self.star_utils.get_exoplanet_spectral_type_formatted_description(
             exoplanet.spectral_type.value if exoplanet.spectral_type else None
         )
 
@@ -55,14 +57,16 @@ class IntroductionGenerator:
 
         # Ajout de la constellation
         if exoplanet.constellation and exoplanet.constellation.value:
-            const = self.star_utils.get_constellation(exoplanet.constellation.value)
+            const = self.star_utils.get_exoplanet_constellation(
+                exoplanet.constellation.value
+            )
             introduction += f" {self.get_constellation_phrase(const)}"
 
         introduction += "."
         print("intro" + introduction)
         return introduction
 
-    def get_constellation_phrase(nom_fr: str) -> str:
+    def _get_constellation_phrase(nom_fr: str) -> str:
         genre = CONSTELLATION_GENDER.get(nom_fr, "m")  # défaut masculin
         preposition = "de la" if genre == "f" else "du"
 

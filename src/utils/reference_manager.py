@@ -19,17 +19,6 @@ class ReferenceManager:
         }
         self._used_refs: set[str] = set()
         self._has_grouped_notes: bool = False
-        self._unit_mapping = {
-            "R_J": "M_J",  # Rayon jovien -> Masse jovienne
-            "R_E": "M_E",  # Rayon terrestre -> Masse terrestre
-            "R_S": "M_S",  # Rayon solaire -> Masse solaire
-        }
-
-    def get_mass_unit_from_radius_unit(self, radius_unit: str) -> str:
-        """
-        Retourne l'unité de masse correspondante à une unité de rayon
-        """
-        return self._unit_mapping.get(radius_unit, "M_J")  # Par défaut, on utilise M_J
 
     def create_reference(
         self,

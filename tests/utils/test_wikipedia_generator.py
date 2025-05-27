@@ -1,5 +1,7 @@
 import unittest
-from src.utils.wikipedia_generator import WikipediaGenerator  # The class to test
+from utils.wikipedia_exoplanet_generator import (
+    WikipediaExoplanetGenerator,
+)  # The class to test
 from typing import Optional, List, Dict  # For type hints in mocks
 import math  # For checking light-year conversion
 
@@ -99,7 +101,7 @@ class MockExoplanet:
 # --- Test Class ---
 class TestWikipediaGenerator(unittest.TestCase):
     def setUp(self):
-        self.generator = WikipediaGenerator()
+        self.generator = WikipediaExoplanetGenerator()
         self.generator._used_refs = set()
         self.generator._has_grouped_notes = False
 

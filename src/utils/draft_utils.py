@@ -5,7 +5,7 @@ from typing import List, Tuple
 
 # Project imports
 from src.models.exoplanet import Exoplanet
-from src.utils.wikipedia_generator import WikipediaGenerator
+from src.utils.wikipedia_exoplanet_generator import WikipediaExoplanetGenerator
 
 # Configure un logger pour ce module spécifique
 logger = logging.getLogger(__name__)
@@ -31,7 +31,7 @@ def generate_exoplanet_draft(exoplanet: Exoplanet) -> str:
     """
     # Note : Vous pourriez aussi injecter le générateur si vous souhaitez
     # le configurer ou le partager davantage.
-    generator = WikipediaGenerator()
+    generator = WikipediaExoplanetGenerator()
     logger.debug(f"Génération du brouillon pour {exoplanet.name}...")
     content = generator.generate_article_content(exoplanet)
     logger.debug(f"Brouillon pour {exoplanet.name} généré.")

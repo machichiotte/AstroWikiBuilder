@@ -1,12 +1,12 @@
-# src/utils/category_generator.py
-from typing import List, Dict, Optional
+# src/utils/exoplanet_category_generator.py
+from typing import List, Dict
 from src.models.exoplanet import Exoplanet
 from src.utils.planet_type_utils import PlanetTypeUtils
 from src.utils.category_parser import parse_categories
-import re  # For constellation matching
+import re
 
 
-class CategoryGenerator:
+class ExoplanetCategoryGenerator:
     """
     Classe pour générer les catégories des articles d'exoplanètes.
     """
@@ -58,7 +58,7 @@ class CategoryGenerator:
             "CHEOPS": "[[Catégorie:Exoplanète découverte grâce au télescope spatial CHEOPS]]",
         }
 
-    def generate_categories(self, exoplanet: Exoplanet) -> List[str]:
+    def generate_exoplanet_categories(self, exoplanet: Exoplanet) -> List[str]:
         categories = set(
             self.base_categories.copy()
         )  # Use a set to avoid duplicates initially
@@ -171,33 +171,11 @@ class CategoryGenerator:
                                 categories.add(mapped_cat_string)
                                 break  # Add first match
 
-        # --- Preserving and adapting existing logic for other categories ---
-        # These categories are not in categories_notes.md, so they are generated directly.
-        # They should also follow the [[Catégorie:...]] format.
-
-        # Catégorie par type spectral
-        # if (
-        #   hasattr(exoplanet, "spectral_type")
-        #    and exoplanet.spectral_type
-        #    and hasattr(exoplanet.spectral_type, "value")
-        #     and exoplanet.spectral_type.value is not None
-        # ):
-        #  spectral_type_value = exoplanet.spectral_type.value
-
-        ## spectral_class_char = None
-        #  if isinstance(spectral_type_value, str) and len(spectral_type_value) > 0:
-        # spectral_class_char = spectral_type_value[0].upper()
-        # elif isinstance(spectral_type_value, (int, float)):
-        # pass # Or handle if numbers can be spectral types, e.g. str(spectral_type_value)[0]
-
-        #   if spectral_class_char:
-        #  categories.add(
-        # f"[[Catégorie:Exoplanète orbitant une étoile de type {spectral_class_char}]]"
-        #  )
-
         # Catégorie par type de planète (classification physique)
         try:
-            planet_type_value = self.planet_type_utils.get_planet_type(exoplanet)
+            planet_type_value = self.planet_type_utils.get_exoplanet_planet_type(
+                exoplanet
+            )
             if planet_type_value and planet_type_value != "Unknown":
                 # Check if planet_type_value is already a fully wrapped category string
                 if (
@@ -217,206 +195,3 @@ class CategoryGenerator:
             pass
 
         return sorted(list(categories))  # Return as a sorted list
-
-
-if __name__ == "__main__":
-    # Mock Exoplanet object for testing
-    class MockValue:
-        def __init__(self, value):
-            self.value = value
-
-    class MockExoplanet(Exoplanet):
-        # MockExoplanet signature uses 'discovered_by' as per task's final instruction for attribute name.
-        def __init__(
-            self,
-            name,
-            constellation,
-            spectral_type,
-            discovery_method,
-            discovery_date,
-            discovered_by,
-            mass_mj,
-            radius_rj,
-            orbital_period_days,
-            semi_major_axis_au,
-            eccentricity,
-            inclination_deg,
-            stellar_effective_temperature_k,
-            stellar_radius_rsun,
-            stellar_mass_msun,
-            distance_pc,
-        ):
-            # Reverting to fully positional arguments for super().__init__, matching MockExoplanet's own param order.
-            # This relies on defensive coding within generate_categories to handle potential type mismatches if Exoplanet.__init__
-            # has a different internal order causing, e.g., exoplanet.mass_mj.value to receive a string.
-            super().__init__(
-                name,
-                MockValue(constellation),
-                MockValue(spectral_type),
-                MockValue(discovery_method),
-                MockValue(discovery_date),
-                MockValue(discovered_by),
-                MockValue(mass_mj),
-                MockValue(radius_rj),
-                MockValue(orbital_period_days),
-                MockValue(semi_major_axis_au),
-                MockValue(eccentricity),
-                MockValue(inclination_deg),
-                MockValue(stellar_effective_temperature_k),
-                MockValue(stellar_radius_rsun),
-                MockValue(stellar_mass_msun),
-                MockValue(distance_pc),
-            )
-
-    # Test cases
-    generator = CategoryGenerator()
-
-    print("Predefined categories loaded:")
-    for cat_type, cat_list in generator.predefined_categories.items():
-        print(f"  {cat_type}: {len(cat_list)} categories")
-        if cat_type == "Constellations" and cat_list:
-            print(f"    Example: {cat_list[0]}")
-    print("-" * 20)
-
-    # Example 1: Kepler-186 f
-    kepler_186_f = MockExoplanet(
-        name="Kepler-186 f",
-        constellation="Cygne",
-        spectral_type="M1V",
-        discovery_method="Transit",
-        discovery_date="2014",
-        discovered_by="Kepler Space Telescope",  # Changed from discovery_facility
-        mass_mj=0.0044,
-        radius_rj=0.100,
-        orbital_period_days=129.9,
-        semi_major_axis_au=0.356,
-        eccentricity=0.04,
-        inclination_deg=89.9,
-        stellar_effective_temperature_k=3755,
-        stellar_radius_rsun=0.52,
-        stellar_mass_msun=0.54,
-        distance_pc=171.5,
-    )
-    cats1 = generator.generate_categories(kepler_186_f)
-    print(
-        f"Categories for Kepler-186 f ({kepler_186_f.name}):"
-    )  # Changed .name.value to .name
-    for cat in cats1:
-        print(f"  - {cat}")
-    # Expected: Exoplanète, Constellation du Cygne, Type M, Transit, 2014, Kepler, Type Earth-size
-    assert "[[Catégorie:Exoplanète]]" in cats1
-    assert (
-        "[[Catégorie:Constellation du Cygne]]" in cats1
-    )  # Test constellation matching
-    assert "[[Catégorie:Exoplanète orbitant une étoile de type M]]" in cats1
-    assert "[[Catégorie:Exoplanète découverte par la méthode des transits]]" in cats1
-    assert "[[Catégorie:Exoplanète découverte en 2014]]" in cats1
-    assert "[[Catégorie:Exoplanète découverte grâce à Kepler]]" in cats1
-    # Planet type depends on PlanetTypeUtils logic, assuming "Earth-size" or similar
-    # assert "[[Catégorie:Exoplanète de type Earth-size]]" in cats1 # This will depend on the mass/radius thresholds
-
-    print("-" * 20)
-
-    # Example 2: HD 209458 b (Osiris)
-    hd_209458_b = MockExoplanet(
-        name="HD 209458 b",
-        constellation="Pégase",
-        spectral_type="G0V",
-        discovery_method="Transit",
-        discovery_date="1999",
-        discovered_by="Multiple Observatories",  # Changed from discovery_facility
-        mass_mj=0.71,
-        radius_rj=1.38,
-        orbital_period_days=3.52,
-        semi_major_axis_au=0.047,
-        eccentricity=0.01,
-        inclination_deg=86.7,
-        stellar_effective_temperature_k=6091,
-        stellar_radius_rsun=1.20,
-        stellar_mass_msun=1.15,
-        distance_pc=47.0,
-    )
-    cats2 = generator.generate_categories(hd_209458_b)
-    print(
-        f"Categories for HD 209458 b ({hd_209458_b.name}):"
-    )  # Changed .name.value to .name
-    for cat in cats2:
-        print(f"  - {cat}")
-    assert "[[Catégorie:Exoplanète]]" in cats2
-    assert "[[Catégorie:Constellation de Pégase]]" in cats2
-    assert "[[Catégorie:Exoplanète orbitant une étoile de type G]]" in cats2
-    assert "[[Catégorie:Exoplanète découverte par la méthode des transits]]" in cats2
-    assert "[[Catégorie:Exoplanète découverte en 1999]]" in cats2
-    # No specific facility match expected for "Multiple Observatories" unless added to map.
-    # Planet type: Hot Jupiter
-    # assert "[[Catégorie:Exoplanète de type Hot Jupiter]]" in cats2
-
-    print("-" * 20)
-    # Example 3: Test a method not in map (if any left) or facility not in map
-    unknown_method_planet = MockExoplanet(
-        name="Planet X",
-        constellation="Lupus",
-        spectral_type="K2V",
-        discovery_method="Unknown Method",
-        discovery_date="2023",
-        discovered_by="Some New Telescope",  # Changed from discovery_facility
-        mass_mj=1,
-        radius_rj=1,
-        orbital_period_days=100,
-        semi_major_axis_au=0.5,
-        eccentricity=0,
-        inclination_deg=90,
-        stellar_effective_temperature_k=5000,
-        stellar_radius_rsun=1,
-        stellar_mass_msun=1,
-        distance_pc=10,
-    )
-    cats3 = generator.generate_categories(unknown_method_planet)
-    print(
-        f"Categories for Planet X ({unknown_method_planet.name}):"
-    )  # Changed .name.value to .name
-    for cat in cats3:
-        print(f"  - {cat}")
-    assert (
-        "[[Catégorie:Exoplanète découverte en 2023]]" in cats3
-    )  # Assuming 2023 is in range
-    assert "[[Catégorie:Constellation du Loup]]" in cats3  # Lupus -> Loup
-
-    print(
-        "Basic tests in __main__ completed. More comprehensive testing would require actual Exoplanet data and PlanetTypeUtils."
-    )
-    print(
-        "NOTE: Planet type categories depend on PlanetTypeUtils logic and exoplanet mass/radius."
-    )
-    print(
-        "NOTE: Constellation matching logic: looks for ' ConstellationName' or 'ConstellationName' at end of 'Catégorie:Constellation du ConstellationName'."
-    )
-
-    # Test a constellation with "d'"
-    eridani_planet = MockExoplanet(
-        name="Epsilon Eridani b",
-        constellation="Éridan",
-        spectral_type="K2V",
-        discovery_method="Radial Velocity",
-        discovery_date="2000",
-        discovered_by="Multiple Observatories",  # Changed from discovery_facility
-        mass_mj=1.55,
-        radius_rj=1.0,
-        orbital_period_days=2502,
-        semi_major_axis_au=3.38,
-        eccentricity=0.702,
-        inclination_deg=30.1,
-        stellar_effective_temperature_k=5084,
-        stellar_radius_rsun=0.74,
-        stellar_mass_msun=0.82,
-        distance_pc=3.22,
-    )
-    cats_eridani = generator.generate_categories(eridani_planet)
-    print(
-        f"Categories for Epsilon Eridani b ({eridani_planet.name}):"
-    )  # Changed to include .name
-    for cat in cats_eridani:
-        print(f"  - {cat}")
-    assert "[[Catégorie:Constellation de l'Éridan]]" in cats_eridani
-
-    print("All __main__ tests seem to pass based on current logic.")

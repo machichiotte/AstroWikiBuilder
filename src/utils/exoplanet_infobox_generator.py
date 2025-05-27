@@ -10,7 +10,7 @@ from src.constants.field_mappings import (
 )
 
 
-class InfoboxGenerator:
+class ExoplanetInfoboxGenerator:
     """
     Classe pour générer l'infobox des articles d'exoplanètes
     """
@@ -125,10 +125,12 @@ class InfoboxGenerator:
         infobox += add_field("distance", "distance")
         infobox += add_field("type spectral", "spectral_type")
         infobox += add_field("magnitude apparente", "apparent_magnitude")
-        infobox += f" | carte UAI = {self.star_utils.get_constellation(exoplanet)}\n"
-        infobox += f" | constellation = {self.star_utils.get_constellation_formatted(exoplanet)}\n"
+        infobox += (
+            f" | carte UAI = {self.star_utils.get_exoplanet_constellation(exoplanet)}\n"
+        )
+        infobox += f" | constellation = {self.star_utils.get_exoplanet_constellation_formatted(exoplanet)}\n"
 
-        planet_type_value = self.planet_type_utils.get_planet_type(exoplanet)
+        planet_type_value = self.planet_type_utils.get_exoplanet_planet_type(exoplanet)
         if planet_type_value:
             infobox += f" | type = [[{planet_type_value}]]\n"
 
