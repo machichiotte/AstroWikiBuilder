@@ -2,11 +2,13 @@
 from typing import Optional
 from src.models.exoplanet import Exoplanet
 
+
 class PlanetTypeUtils:
     """
     Utility class to classify exoplanets according to French Wikipedia categories,
     handling missing data by falling back to partial criteria.
     """
+
     # Mass thresholds (in Earth masses)
     SUB_EARTH_MAX = 0.5
     EARTH_MAX = 2.0
@@ -39,16 +41,25 @@ class PlanetTypeUtils:
         insolation = self._stellar_insolation(p)
 
         # Super-puff override
-        if r is not None and m is not None and r >= self.SUPER_PUFF_RADIUS_MIN and m <= self.SUPER_EARTH_MAX:
-            return "Super-enflée"
+        if (
+            r is not None
+            and m is not None
+            and r >= self.SUPER_PUFF_RADIUS_MIN
+            and m <= self.SUPER_EARTH_MAX
+        ):
+            return "Planète super-enflée"
 
         # If mass known, attempt giant classification
         if m is not None and m >= self.GAS_GIANT_MIN:
             return self._classify_giant(
                 m,
-                float(p.temperature.value) if p.temperature and p.temperature.value is not None else None,
-                float(p.semi_major_axis.value) if p.semi_major_axis and p.semi_major_axis.value is not None else None,
-                insolation
+                float(p.temperature.value)
+                if p.temperature and p.temperature.value is not None
+                else None,
+                float(p.semi_major_axis.value)
+                if p.semi_major_axis and p.semi_major_axis.value is not None
+                else None,
+                insolation,
             )
 
         # Terrestrial classification by mass+radius when both available
@@ -58,7 +69,11 @@ class PlanetTypeUtils:
         # Fallback: only mass available
         if m is not None:
             if m <= self.SUPER_EARTH_MAX:
-                return "Super-Terre" if m > self.EARTH_MAX else "Planète de dimensions terrestres"
+                return (
+                    "Super-Terre"
+                    if m > self.EARTH_MAX
+                    else "Planète de dimensions terrestres"
+                )
             return "Planète géante de masse élevée"
 
         # Fallback: only radius available
@@ -66,13 +81,19 @@ class PlanetTypeUtils:
             if r <= self.EARTH_RADIUS_MAX:
                 return "Planète de dimensions terrestres"
             if r >= self.SUPER_PUFF_RADIUS_MIN:
-                return "Super-enflée"
+                return "Planète_super-enflée"
             return "Planète géante de rayon modéré"
 
         # No discriminant data
         return "Type indéfini"
 
-    def _classify_giant(self, m: float, t: Optional[float], a: Optional[float], insolation: Optional[float]) -> str:
+    def _classify_giant(
+        self,
+        m: float,
+        t: Optional[float],
+        a: Optional[float],
+        insolation: Optional[float],
+    ) -> str:
         if m >= self.JUPITER_MASS:
             if insolation is not None and insolation >= self.HIGH_INSOLATION_MIN:
                 return "Jupiter ultra-chaud"
@@ -134,12 +155,17 @@ class PlanetTypeUtils:
         if m is None or r is None:
             return None
         mass_g = m * 5.972e27
-        vol_cm3 = 4/3 * 3.1416 * (r * 6.371e8) ** 3
+        vol_cm3 = 4 / 3 * 3.1416 * (r * 6.371e8) ** 3
         return mass_g / vol_cm3
 
     def _stellar_insolation(self, p: Exoplanet) -> Optional[float]:
         """Estimate incident flux relative to Earth using host star luminosity (DataPoint) and semi-major axis."""
-        if not p.host_star or p.host_star.value is None or not p.semi_major_axis or p.semi_major_axis.value is None:
+        if (
+            not p.host_star
+            or p.host_star.value is None
+            or not p.semi_major_axis
+            or p.semi_major_axis.value is None
+        ):
             return None
         try:
             L = float(p.host_star.value)
@@ -148,4 +174,4 @@ class PlanetTypeUtils:
             return None
         if a <= 0:
             return None
-        return L / (a ** 2)
+        return L / (a**2)
