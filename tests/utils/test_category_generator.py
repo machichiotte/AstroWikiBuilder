@@ -3,51 +3,39 @@ from unittest.mock import patch, MagicMock
 
 from src.utils.category_generator import CategoryGenerator
 from src.models.exoplanet import Exoplanet 
-# Assuming Exoplanet and other necessary models can be imported or mocked.
-# If direct import and instantiation of Exoplanet is complex, 
-# consider using MagicMock for the exoplanet object itself,
-# and setting attributes on the mock.
 
-# Minimal mock for Exoplanet attribute holder (like a simple namespace)
 class MockAttribute:
     def __init__(self, value):
         self.value = value
 
 class TestCategoryGenerator(unittest.TestCase):
 
+    def _assert_no_double_wrapping(self, categories):
+        for cat_entry in categories:
+            self.assertFalse(cat_entry.startswith("[[Catégorie:[[Catégorie:") , f"Category '{cat_entry}' is double-wrapped.")
+
     @patch('src.utils.category_generator.parse_categories')
     @patch('src.utils.category_generator.PlanetTypeUtils')
     def test_generate_categories_all_predefined(self, MockPlanetTypeUtils, mock_parse_categories):
-        # Mock `parse_categories` return value
         mock_parse_categories.return_value = {
             "Constellations": ["[[Catégorie:Constellation du Cygne]]"],
             "Discovery Methods": ["[[Catégorie:Exoplanète découverte par la méthode des transits]]"],
             "Discovery Years": ["[[Catégorie:Exoplanète découverte en 2000]]"],
             "Discovery Instruments/Telescopes": ["[[Catégorie:Exoplanète découverte grâce à Kepler]]"]
         }
-
-        # Mock PlanetTypeUtils
         mock_planet_type_instance = MockPlanetTypeUtils.return_value
         mock_planet_type_instance.get_planet_type.return_value = "Jupiter chaud"
-
-        # Create CategoryGenerator instance
         generator = CategoryGenerator()
-
-        # Create a mock Exoplanet object 
         mock_exoplanet = MagicMock(spec=Exoplanet)
         mock_exoplanet.constellation = MockAttribute("Cygne")
         mock_exoplanet.discovery_method = MockAttribute("Transit")
-        
-        # Mocking discovery_date for year extraction
         mock_date_obj = MagicMock()
         mock_date_obj.year = 2000
         mock_exoplanet.discovery_date = MockAttribute(mock_date_obj)
-        
-        mock_exoplanet.discovered_by = MockAttribute("Kepler") # This should match an entry in generator.instrument_map
+        mock_exoplanet.discovered_by = MockAttribute("Kepler")
         mock_exoplanet.spectral_type = MockAttribute("G2V")
         
         categories = generator.generate_categories(mock_exoplanet)
-
         expected_categories = sorted([
             "[[Catégorie:Exoplanète]]",
             "[[Catégorie:Constellation du Cygne]]",
@@ -58,19 +46,19 @@ class TestCategoryGenerator(unittest.TestCase):
             "[[Catégorie:Exoplanète de type Jupiter chaud]]" 
         ])
         self.assertEqual(sorted(categories), expected_categories)
+        self._assert_no_double_wrapping(categories)
 
     @patch('src.utils.category_generator.parse_categories')
     @patch('src.utils.category_generator.PlanetTypeUtils')
     def test_generate_categories_no_predefined_match(self, MockPlanetTypeUtils, mock_parse_categories):
         mock_parse_categories.return_value = {
-            "Constellations": ["[[Catégorie:Constellation de Lyra]]"], # Different constellation
-            "Discovery Methods": ["[[Catégorie:Exoplanète découverte par microlentille gravitationnelle]]"], # Different method
-            "Discovery Years": ["[[Catégorie:Exoplanète découverte en 2010]]"], # Different year
-            "Discovery Instruments/Telescopes": ["[[Catégorie:Exoplanète découverte grâce au télescope spatial Hubble]]"] # Different instrument
+            "Constellations": ["[[Catégorie:Constellation de Lyra]]"],
+            "Discovery Methods": ["[[Catégorie:Exoplanète découverte par microlentille gravitationnelle]]"],
+            "Discovery Years": ["[[Catégorie:Exoplanète découverte en 2010]]"],
+            "Discovery Instruments/Telescopes": ["[[Catégorie:Exoplanète découverte grâce au télescope spatial Hubble]]"]
         }
         mock_planet_type_instance = MockPlanetTypeUtils.return_value
         mock_planet_type_instance.get_planet_type.return_value = "Super-Terre"
-
         generator = CategoryGenerator()
         mock_exoplanet = MagicMock(spec=Exoplanet)
         mock_exoplanet.constellation = MockAttribute("Cygne")
@@ -88,27 +76,27 @@ class TestCategoryGenerator(unittest.TestCase):
             "[[Catégorie:Exoplanète de type Super-Terre]]"
         ])
         self.assertEqual(sorted(categories), expected_categories)
+        self._assert_no_double_wrapping(categories)
 
     @patch('src.utils.category_generator.parse_categories')
     @patch('src.utils.category_generator.PlanetTypeUtils')
     def test_generate_categories_partial_match(self, MockPlanetTypeUtils, mock_parse_categories):
         mock_parse_categories.return_value = {
-            "Constellations": ["[[Catégorie:Constellation du Cygne]]"], # Match
-            "Discovery Methods": ["[[Catégorie:Exoplanète découverte par microlentille gravitationnelle]]"], # No match
-            "Discovery Years": ["[[Catégorie:Exoplanète découverte en 2000]]"], # Match
-            "Discovery Instruments/Telescopes": ["[[Catégorie:Exoplanète découverte grâce au télescope spatial Hubble]]"] # No match
+            "Constellations": ["[[Catégorie:Constellation du Cygne]]"], 
+            "Discovery Methods": ["[[Catégorie:Exoplanète découverte par microlentille gravitationnelle]]"], 
+            "Discovery Years": ["[[Catégorie:Exoplanète découverte en 2000]]"], 
+            "Discovery Instruments/Telescopes": ["[[Catégorie:Exoplanète découverte grâce au télescope spatial Hubble]]"]
         }
         mock_planet_type_instance = MockPlanetTypeUtils.return_value
         mock_planet_type_instance.get_planet_type.return_value = "Naine gazeuse"
-
         generator = CategoryGenerator()
         mock_exoplanet = MagicMock(spec=Exoplanet)
         mock_exoplanet.constellation = MockAttribute("Cygne")
-        mock_exoplanet.discovery_method = MockAttribute("Transit") # Will use internal map, but won't find in predefined
+        mock_exoplanet.discovery_method = MockAttribute("Transit") 
         mock_date_obj = MagicMock()
         mock_date_obj.year = 2000
         mock_exoplanet.discovery_date = MockAttribute(mock_date_obj)
-        mock_exoplanet.discovered_by = MockAttribute("TESS") # Will use internal map, but won't find in predefined
+        mock_exoplanet.discovered_by = MockAttribute("TESS") 
         mock_exoplanet.spectral_type = MockAttribute("K5V")
 
         categories = generator.generate_categories(mock_exoplanet)
@@ -120,21 +108,20 @@ class TestCategoryGenerator(unittest.TestCase):
             "[[Catégorie:Exoplanète de type Naine gazeuse]]"
         ])
         self.assertEqual(sorted(categories), expected_categories)
+        self._assert_no_double_wrapping(categories)
 
     @patch('src.utils.category_generator.parse_categories')
     @patch('src.utils.category_generator.PlanetTypeUtils')
     def test_generate_categories_optional_fields_none(self, MockPlanetTypeUtils, mock_parse_categories):
-        # As per prompt, this test now uses empty predefined lists.
         mock_parse_categories.return_value = { 
             "Constellations": [], "Discovery Methods": [], "Discovery Years": [], "Discovery Instruments/Telescopes": []
         }
         mock_planet_type_instance = MockPlanetTypeUtils.return_value
         mock_planet_type_instance.get_planet_type.return_value = "Rocheuse"
-
         generator = CategoryGenerator()
         mock_exoplanet = MagicMock(spec=Exoplanet)
         mock_exoplanet.constellation = None 
-        mock_exoplanet.discovery_method = MockAttribute("Transit") # Predefined list is empty, internal map will hit but not add
+        mock_exoplanet.discovery_method = MockAttribute("Transit") 
         mock_exoplanet.discovery_date = None
         mock_exoplanet.discovered_by = None
         mock_exoplanet.spectral_type = None 
@@ -145,15 +132,14 @@ class TestCategoryGenerator(unittest.TestCase):
             "[[Catégorie:Exoplanète de type Rocheuse]]"
         ])
         self.assertEqual(sorted(categories), expected_categories)
+        self._assert_no_double_wrapping(categories)
 
     @patch('src.utils.category_generator.parse_categories')
     @patch('src.utils.category_generator.PlanetTypeUtils')
     def test_generate_categories_planet_type_unknown_or_exception(self, MockPlanetTypeUtils, mock_parse_categories):
-        mock_parse_categories.return_value = {} # Empty
-        
+        mock_parse_categories.return_value = {} 
         mock_planet_type_instance = MockPlanetTypeUtils.return_value
-        # generator = CategoryGenerator() # Not strictly needed before setting mock_planet_type_instance behavior
-        generator = CategoryGenerator() # Initialize generator
+        generator = CategoryGenerator()
         mock_exoplanet = MagicMock(spec=Exoplanet)
         mock_exoplanet.constellation = None
         mock_exoplanet.discovery_method = None
@@ -161,22 +147,21 @@ class TestCategoryGenerator(unittest.TestCase):
         mock_exoplanet.discovered_by = None
         mock_exoplanet.spectral_type = None
         
-        # Test with "Unknown" planet type
         mock_planet_type_instance.get_planet_type.return_value = "Unknown"
-        categories = generator.generate_categories(mock_exoplanet)
-        self.assertEqual(sorted(categories), sorted(["[[Catégorie:Exoplanète]]"]))
+        categories_unknown = generator.generate_categories(mock_exoplanet)
+        self.assertEqual(sorted(categories_unknown), sorted(["[[Catégorie:Exoplanète]]"]))
+        self._assert_no_double_wrapping(categories_unknown)
 
-        # Test with get_planet_type raising an exception
         mock_planet_type_instance.get_planet_type.side_effect = Exception("Test error")
-        categories = generator.generate_categories(mock_exoplanet)
-        self.assertEqual(sorted(categories), sorted(["[[Catégorie:Exoplanète]]"]))
+        categories_exception = generator.generate_categories(mock_exoplanet)
+        self.assertEqual(sorted(categories_exception), sorted(["[[Catégorie:Exoplanète]]"]))
+        self._assert_no_double_wrapping(categories_exception)
         
     @patch('src.utils.category_generator.parse_categories')
     @patch('src.utils.category_generator.PlanetTypeUtils')
     def test_discovery_year_as_string(self, MockPlanetTypeUtils, mock_parse_categories):
         mock_parse_categories.return_value = {
             "Discovery Years": ["[[Catégorie:Exoplanète découverte en 2023]]"]
-            # Other lists can be empty or absent for this test's focus
         }
         mock_planet_type_instance = MockPlanetTypeUtils.return_value
         mock_planet_type_instance.get_planet_type.return_value = "TestType"
@@ -184,9 +169,9 @@ class TestCategoryGenerator(unittest.TestCase):
         mock_exoplanet = MagicMock(spec=Exoplanet)
         mock_exoplanet.constellation = None
         mock_exoplanet.discovery_method = None
-        mock_exoplanet.discovery_date = MockAttribute("2023") # Year as string
-        mock_exoplanet.discovered_by = None # Ensure this is None as per prompt's expected list
-        mock_exoplanet.spectral_type = None # Ensure this is None as per prompt's expected list
+        mock_exoplanet.discovery_date = MockAttribute("2023") 
+        mock_exoplanet.discovered_by = None
+        mock_exoplanet.spectral_type = None
 
         categories = generator.generate_categories(mock_exoplanet)
         expected = sorted([
@@ -195,25 +180,22 @@ class TestCategoryGenerator(unittest.TestCase):
             "[[Catégorie:Exoplanète de type TestType]]"
             ])
         self.assertEqual(sorted(categories), expected)
+        self._assert_no_double_wrapping(categories)
 
-    # This test was added in my previous iterations and is good to keep.
     @patch('src.utils.category_generator.parse_categories')
     @patch('src.utils.category_generator.PlanetTypeUtils')
     def test_instrument_partial_match_in_map(self, MockPlanetTypeUtils, mock_parse_categories):
         mock_parse_categories.return_value = {
             "Discovery Instruments/Telescopes": ["[[Catégorie:Exoplanète découverte grâce à Kepler]]"]
-            # Other lists can be empty or absent
         }
         mock_planet_type_instance = MockPlanetTypeUtils.return_value
         mock_planet_type_instance.get_planet_type.return_value = "TestType"
-        
         generator = CategoryGenerator() 
-        
         mock_exoplanet = MagicMock(spec=Exoplanet)
         mock_exoplanet.constellation = None
         mock_exoplanet.discovery_method = None
         mock_exoplanet.discovery_date = None
-        mock_exoplanet.discovered_by = MockAttribute("Kepler Space Telescope") # Partial match case
+        mock_exoplanet.discovered_by = MockAttribute("Kepler Space Telescope") 
         mock_exoplanet.spectral_type = None
 
         categories = generator.generate_categories(mock_exoplanet)
@@ -223,6 +205,50 @@ class TestCategoryGenerator(unittest.TestCase):
             "[[Catégorie:Exoplanète de type TestType]]"
         ])
         self.assertEqual(sorted(categories), expected)
+        self._assert_no_double_wrapping(categories)
+
+    @patch('src.utils.category_generator.parse_categories')
+    @patch('src.utils.category_generator.PlanetTypeUtils')
+    def test_planet_type_formatting_logic(self, MockPlanetTypeUtils, mock_parse_categories):
+        mock_parse_categories.return_value = {} 
+        mock_planet_type_instance = MockPlanetTypeUtils.return_value
+        generator = CategoryGenerator()
+
+        mock_exoplanet_plain = MagicMock(spec=Exoplanet)
+        mock_exoplanet_plain.constellation = None
+        mock_exoplanet_plain.discovery_method = None
+        mock_exoplanet_plain.discovery_date = None
+        mock_exoplanet_plain.discovered_by = None
+        mock_exoplanet_plain.spectral_type = None
+
+        # Scenario 1: PlanetTypeUtils returns a plain string
+        mock_planet_type_instance.get_planet_type.return_value = "Super-Terre"
+        categories_plain = generator.generate_categories(mock_exoplanet_plain)
+        self.assertIn("[[Catégorie:Exoplanète de type Super-Terre]]", categories_plain)
+        for cat in categories_plain:
+            if "Super-Terre" in cat: 
+                self.assertEqual(cat, "[[Catégorie:Exoplanète de type Super-Terre]]")
+        self._assert_no_double_wrapping(categories_plain)
+
+
+        # Scenario 2: PlanetTypeUtils returns an already wrapped string
+        mock_planet_type_instance.get_planet_type.return_value = "[[Catégorie:Custom Planet Type]]"
+        mock_exoplanet_wrapped = MagicMock(spec=Exoplanet)
+        mock_exoplanet_wrapped.constellation = None
+        mock_exoplanet_wrapped.discovery_method = None
+        mock_exoplanet_wrapped.discovery_date = None
+        mock_exoplanet_wrapped.discovered_by = None
+        mock_exoplanet_wrapped.spectral_type = None
+
+        categories_wrapped = generator.generate_categories(mock_exoplanet_wrapped)
+        self.assertIn("[[Catégorie:Custom Planet Type]]", categories_wrapped)
+        for cat in categories_wrapped: 
+            if "Custom Planet Type" in cat:
+                self.assertEqual(cat, "[[Catégorie:Custom Planet Type]]")
+        self._assert_no_double_wrapping(categories_wrapped)
+            
+        self.assertIn("[[Catégorie:Exoplanète]]", categories_plain)
+        self.assertIn("[[Catégorie:Exoplanète]]", categories_wrapped)
 
 if __name__ == '__main__':
     unittest.main()

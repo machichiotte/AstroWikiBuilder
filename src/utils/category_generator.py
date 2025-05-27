@@ -164,12 +164,20 @@ class CategoryGenerator:
 
         # Catégorie par type de planète (classification physique)
         try:
-            planet_type = self.planet_type_utils.get_planet_type(exoplanet)
-            if planet_type and planet_type != "Unknown": # Avoid "Exoplanète de type Unknown"
-                 categories.add(f"[[Catégorie:Exoplanète de type {planet_type}]]")
+            planet_type_value = self.planet_type_utils.get_planet_type(exoplanet)
+            if planet_type_value and planet_type_value != "Unknown":
+                # Check if planet_type_value is already a fully wrapped category string
+                if isinstance(planet_type_value, str) and \
+                   planet_type_value.startswith("[[Catégorie:") and \
+                   planet_type_value.endswith("]]"):
+                    categories.add(planet_type_value)  # Add as-is
+                else:
+                    # If not fully wrapped, or not a string, ensure it's stringified and then wrap it.
+                    # (get_planet_type should ideally return a simple string type name or "Unknown")
+                    categories.add(f"[[Catégorie:Exoplanète de type {str(planet_type_value)}]]")
         except Exception:
             # This could happen if data is missing for get_planet_type (e.g. mass, radius)
-            pass 
+            pass
 
         return sorted(list(categories)) # Return as a sorted list
 
