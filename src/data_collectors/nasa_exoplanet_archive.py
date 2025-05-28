@@ -20,10 +20,9 @@ class NASAExoplanetArchiveCollector(BaseExoplanetCollector):
         use_mock_data: bool = False,
     ):
         super().__init__(cache_dir, use_mock_data)
-        # self.required_columns est maintenant géré par _get_required_columns
 
     def _get_default_cache_filename(self) -> str:
-        return "nasa_mock_data.csv"  # Ou un autre nom de votre choix
+        return "nasa_mock_data.csv"
 
     def _get_download_url(self) -> str:
         return "https://exoplanetarchive.ipac.caltech.edu/TAP/sync?query=select+*+from+PSCompPars&format=csv"

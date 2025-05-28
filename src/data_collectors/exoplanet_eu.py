@@ -42,7 +42,7 @@ class ExoplanetEUCollector(BaseExoplanetCollector):  # MODIFIÉ
 
     def _convert_row_to_exoplanet(
         self, row: pd.Series, ref: Reference
-    ) -> Optional[Exoplanet]:  # MODIFIÉ: ref en paramètre
+    ) -> Optional[Exoplanet]:
         try:
             # Validation des données de base
             if pd.isna(row["name"]) or pd.isna(row["star_name"]):
