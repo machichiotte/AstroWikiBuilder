@@ -1,115 +1,122 @@
-from dataclasses import dataclass, field
-from typing import Optional, List, Dict
+# src/models/star.py
+from dataclasses import dataclass
+from typing import Optional
+from .reference import DataPoint
 
-# Basic DataPoint class (can be refined later or imported)
-@dataclass
-class DataPoint:
-    value: any
-    unit: Optional[str] = None
-    reference: Optional[str] = None # Simplified for now
 
 @dataclass
 class Star:
-    # English Name: French Name (Template Key)
-    name: Optional[DataPoint] = None  # nom
-    image: Optional[DataPoint] = None  # image
-    caption: Optional[DataPoint] = None  # légende
-    epoch: Optional[DataPoint] = None  # époque
-    right_ascension: Optional[DataPoint] = None  # ascension_droite
-    declination: Optional[DataPoint] = None  # déclinaison
-    constellation: Optional[DataPoint] = None  # constellation
-    apparent_magnitude: Optional[DataPoint] = None  # magnitude_apparente (V)
-    spectral_type: Optional[DataPoint] = None  # type_spectral
-    distance: Optional[DataPoint] = None  # distance_pc (parsecs), distance_al (light-years)
-    mass: Optional[DataPoint] = None  # masse
-    radius: Optional[DataPoint] = None  # rayon
-    temperature: Optional[DataPoint] = None  # température (surface)
-    age: Optional[DataPoint] = None  # âge
-    
-    # Designations / Identifiers
-    designations: Optional[DataPoint] = None # autres_désignations (can be a list or comma-separated string)
+    # Identifiants
+    name: Optional[DataPoint] = None
+    image: Optional[DataPoint] = None
+    caption: Optional[DataPoint] = None
+    coord_title: Optional[DataPoint] = None  # Added based on the template
+    upright: Optional[DataPoint] = None  # Added based on the template
+    iau_map: Optional[DataPoint] = None  # Added based on the template
+    designations: Optional[DataPoint] = None
 
-    # TODO: Add other attributes from "Infobox Étoile" as needed
-    # For example:
-    # luminosity: Optional[DataPoint] = None # luminosité
-    # metallicity: Optional[DataPoint] = None # métallicité
-    # rotation_velocity: Optional[DataPoint] = None # vitesse_rotation
-    # proper_motion_ra: Optional[DataPoint] = None # mouvement_propre_ad
-    # proper_motion_dec: Optional[DataPoint] = None # mouvement_propre_dec
-    # radial_velocity: Optional[DataPoint] = None # vitesse_radiale
-    # parallax: Optional[DataPoint] = None # parallaxe
-    
-    # Companion system details (if applicable)
-    # companion_system: Optional[DataPoint] = None # système_planétaire (e.g., "[[Système planétaire de Proxima Centauri]]")
-    # binary_star: Optional[DataPoint] = None # étoile_binaire (e.g. "Alpha Centauri A")
-    # primary_star: Optional[DataPoint] = None # primaire (e.g. "Alpha Centauri B")
-    # secondary_star: Optional[DataPoint] = None # secondaire (e.g. "Proxima Centauri")
+    # Astrometry
+    epoch: Optional[DataPoint] = None
+    right_ascension: Optional[DataPoint] = None
+    right_ascension_2: Optional[DataPoint] = None
+    declination: Optional[DataPoint] = None
+    declination_2: Optional[DataPoint] = None
+    constellation: Optional[DataPoint] = None
+    radial_velocity: Optional[DataPoint] = None
+    radial_velocity_2: Optional[DataPoint] = None
+    proper_motion_ra: Optional[DataPoint] = None
+    proper_motion_ra_2: Optional[DataPoint] = None
+    proper_motion_dec: Optional[DataPoint] = None
+    proper_motion_dec_2: Optional[DataPoint] = None
+    parallax: Optional[DataPoint] = None
+    parallax_2: Optional[DataPoint] = None
+    distance_pc: Optional[DataPoint] = None
+    distance_pc_2: Optional[DataPoint] = None
+    distance_light_years: Optional[DataPoint] = None  # distance al
+    distance_light_years_2: Optional[DataPoint] = None
+    distance_general: Optional[DataPoint] = None  # distance
+    distance_general_2: Optional[DataPoint] = None
 
-    # Database identifiers
-    # simbad_id: Optional[DataPoint] = None # identifiant_Simbad
+    # Photometry
+    apparent_magnitude: Optional[DataPoint] = None
+    apparent_magnitude_2: Optional[DataPoint] = None
+    apparent_magnitude_u_band: Optional[DataPoint] = None
+    apparent_magnitude_u_band_2: Optional[DataPoint] = None
+    apparent_magnitude_b_band: Optional[DataPoint] = None
+    apparent_magnitude_b_band_2: Optional[DataPoint] = None
+    apparent_magnitude_v_band: Optional[DataPoint] = None
+    apparent_magnitude_v_band_2: Optional[DataPoint] = None
+    apparent_magnitude_g_band: Optional[DataPoint] = None
+    apparent_magnitude_g_band_2: Optional[DataPoint] = None
+    apparent_magnitude_r_band: Optional[DataPoint] = None
+    apparent_magnitude_r_band_2: Optional[DataPoint] = None
+    apparent_magnitude_i_band: Optional[DataPoint] = None
+    apparent_magnitude_i_band_2: Optional[DataPoint] = None
+    apparent_magnitude_j_band: Optional[DataPoint] = None
+    apparent_magnitude_j_band_2: Optional[DataPoint] = None
+    apparent_magnitude_h_band: Optional[DataPoint] = None
+    apparent_magnitude_h_band_2: Optional[DataPoint] = None
+    apparent_magnitude_k_band: Optional[DataPoint] = None
+    apparent_magnitude_k_band_2: Optional[DataPoint] = None
+    u_b_color: Optional[DataPoint] = None
+    u_b_color_2: Optional[DataPoint] = None
+    b_v_color: Optional[DataPoint] = None
+    b_v_color_2: Optional[DataPoint] = None
+    v_r_color: Optional[DataPoint] = None
+    v_r_color_2: Optional[DataPoint] = None
+    r_i_color: Optional[DataPoint] = None
+    r_i_color_2: Optional[DataPoint] = None
+    j_k_color: Optional[DataPoint] = None
+    j_k_color_2: Optional[DataPoint] = None
+    j_h_color: Optional[DataPoint] = None
+    j_h_color_2: Optional[DataPoint] = None
+    absolute_magnitude: Optional[DataPoint] = None
+    absolute_magnitude_2: Optional[DataPoint] = None
 
-    def __post_init__(self):
-        # Ensure that 'designations' is a list if it's a string
-        if self.designations and isinstance(self.designations.value, str):
-            self.designations.value = [d.strip() for d in self.designations.value.split(',')]
-        elif self.designations and not isinstance(self.designations.value, list):
-            # If it's not a string and not a list, wrap it in a list
-            # or handle as an error/log it, depending on expected input.
-            # For now, wrapping in a list if it's a single DataPoint value.
-            self.designations.value = [self.designations.value]
-        
-        # Example of how to handle multiple names if 'nom' could be a list
-        # if self.name and isinstance(self.name.value, str):
-        #     self.name.value = [n.strip() for n in self.name.value.split('/')] # Assuming names split by '/'
+    # Physical Characteristics
+    evolutionary_stage: Optional[DataPoint] = None
+    evolutionary_stage_2: Optional[DataPoint] = None
+    spectral_type: Optional[DataPoint] = None
+    spectral_type_2: Optional[DataPoint] = None
+    variability: Optional[DataPoint] = None
+    variability_2: Optional[DataPoint] = None
+    mass: Optional[DataPoint] = None
+    mass_2: Optional[DataPoint] = None
+    radius: Optional[DataPoint] = None
+    radius_2: Optional[DataPoint] = None
+    density: Optional[DataPoint] = None
+    density_2: Optional[DataPoint] = None
+    surface_gravity: Optional[DataPoint] = None
+    surface_gravity_2: Optional[DataPoint] = None
+    luminosity: Optional[DataPoint] = None
+    luminosity_2: Optional[DataPoint] = None
+    temperature: Optional[DataPoint] = None
+    temperature_2: Optional[DataPoint] = None
+    metallicity: Optional[DataPoint] = None
+    metallicity_2: Optional[DataPoint] = None
+    rotation: Optional[DataPoint] = None
+    rotation_2: Optional[DataPoint] = None
+    age: Optional[DataPoint] = None
+    age_2: Optional[DataPoint] = None
 
-# Example usage:
-if __name__ == '__main__':
-    # This is just for demonstration and testing within this file.
-    # Actual instantiation will happen based on data extraction.
+    # System Components
+    stellar_components: Optional[DataPoint] = None
+    planets: Optional[DataPoint] = None
+    companion: Optional[DataPoint] = None
 
-    star_data_example = {
-        "name": DataPoint("Sirius"),
-        "image": DataPoint("Sirius_A_and_B_artwork.jpg"),
-        "caption": DataPoint("Artistic impression of Sirius A and B"),
-        "epoch": DataPoint("J2000.0"),
-        "right_ascension": DataPoint("06h 45m 08.9173s"),
-        "declination": DataPoint("-16° 42′ 58.017″"),
-        "constellation": DataPoint("Grand Chien"),
-        "apparent_magnitude": DataPoint("-1.46"),
-        "spectral_type": DataPoint("A1V + DA2"),
-        "distance": DataPoint(value=2.64, unit="pc"), # 8.6 light years
-        "mass": DataPoint(value=2.063, unit="M☉"),
-        "radius": DataPoint(value=1.711, unit="R☉"),
-        "temperature": DataPoint(value=9940, unit="K (A) / 25000 K (B)"), # Surface temperature
-        "age": DataPoint(value="237–247", unit="Myr"),
-        "designations": DataPoint("Alpha Canis Majoris, α CMa, HD 48915, HR 2491, BD -16°1591, Gl 244 A/B, SAO 151881, HIP 32349")
-    }
+    # Caractéristiques système binaire
+    semi_amplitude_1: Optional[DataPoint] = None
+    semi_amplitude_2: Optional[DataPoint] = None
+    argument_of_periapsis_2: Optional[DataPoint] = (
+        None  # Assuming this refers to the second component's argument of periapsis
+    )
+    epoch_binary: Optional[DataPoint] = None
 
-    sirius = Star(**star_data_example)
-
-    print(f"Star Name: {sirius.name.value if sirius.name else 'N/A'}")
-    print(f"Constellation: {sirius.constellation.value if sirius.constellation else 'N/A'}")
-    print(f"Designations: {sirius.designations.value if sirius.designations else 'N/A'}")
-
-    if sirius.designations:
-        print(f"Type of designations: {type(sirius.designations.value)}")
-
-    # Example with a single designation initially not as a list
-    proxima_data = {
-        "name": DataPoint("Proxima Centauri"),
-        "designations": DataPoint("V645 Cen") # Single string value
-    }
-    proxima = Star(**proxima_data)
-    print(f"Proxima Designations: {proxima.designations.value if proxima.designations else 'N/A'}")
-    if proxima.designations:
-        print(f"Type of Proxima designations: {type(proxima.designations.value)}")
-
-    # Example with designations already as a list
-    sun_data = {
-        "name": DataPoint("Sun"),
-        "designations": DataPoint(["Sol", "Hélios"]) # Already a list
-    }
-    sun = Star(**sun_data)
-    print(f"Sun Designations: {sun.designations.value if sun.designations else 'N/A'}")
-    if sun.designations:
-        print(f"Type of Sun designations: {type(sun.designations.value)}")
+    # Caractéristiques orbitales binaire
+    semi_major_axis: Optional[DataPoint] = None
+    eccentricity: Optional[DataPoint] = None
+    period: Optional[DataPoint] = None
+    inclination: Optional[DataPoint] = None
+    argument_of_periapsis: Optional[DataPoint] = None
+    longitude_of_ascending_node: Optional[DataPoint] = None
+    epoch: Optional[DataPoint] = None
