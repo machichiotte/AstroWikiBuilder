@@ -8,6 +8,8 @@ from bs4 import BeautifulSoup
 
 from src.data_collectors.base_collector import BaseExoplanetCollector
 from src.models.exoplanet import Exoplanet
+from src.models.star import Star
+
 from src.models.reference import DataPoint, Reference, SourceType
 
 logging.basicConfig(level=logging.INFO)
@@ -119,6 +121,37 @@ class NASAExoplanetArchiveCollector(BaseExoplanetCollector):
             except ValueError:
                 logger.warning(f"Unrecognized epoch format: {epoch_str_val}")
                 return None
+
+    def load_data(self) -> tuple[List[Exoplanet], List[Star]]:
+        df = self._get_data_frame()
+        if df is None or df.empty:
+            logger.info("Aucune donnée à traiter.")
+            return [], []
+
+        exoplanets: List[Exoplanet] = []
+        stars: List[Star] = []
+        base_ref = Reference(
+            source=self._get_source_type(),
+            url=self._get_source_reference_url(),
+            consultation_date=pd.Timestamp.now(
+                tz="UTC"
+            ),  # Date de consultation actuelle
+            update_date=self._get_data_update_date(
+                df
+            ),  # Date de mise à jour des données de la source
+        )
+
+        for _, row in df.iterrows():
+            exoplanet = self._convert_row_to_exoplanet(row, base_ref)
+            if exoplanet:
+                exoplanets.append(exoplanet)
+
+            star = self._convert_row_to_star(row, base_ref)
+            if star:
+                # Avoid duplicates if multiple planets for the same star are processed
+                if not any(s.name.value == star.name.value for s in stars):
+                    stars.append(star)
+        return exoplanets, stars
 
     def _convert_row_to_exoplanet(
         self, row: pd.Series, ref: Reference
@@ -265,6 +298,86 @@ class NASAExoplanetArchiveCollector(BaseExoplanetCollector):
         except Exception as e:
             logger.error(
                 f"Erreur NASA lors de la conversion de la ligne : {row.get('pl_name', 'Unknown')}. Erreur: {e}",
+                exc_info=True,
+            )
+            return None
+
+    def _convert_row_to_star(self, row: pd.Series, ref: Reference) -> Optional[Star]:
+        try:
+            hostname_val = row.get("hostname")
+            if pd.isna(hostname_val):
+                logger.warning(
+                    f"Star name (hostname) is missing for a row. Skipping star creation. Row data: {row.to_dict()}"
+                )
+                return None
+
+            star_name = str(hostname_val).strip()
+
+            star_ref = Reference(
+                source=ref.source,
+                update_date=ref.update_date,
+                consultation_date=ref.consultation_date,
+                star_identifier=star_name,
+            )
+
+            designations_list = [star_name]
+            for col in ["hd_name", "hip_name", "tic_id"]:
+                val = row.get(col)
+                if pd.notna(val) and str(val).strip():
+                    designations_list.append(str(val).strip())
+
+            # Format RA and Dec
+            formatted_ra_star = None
+            if pd.notna(row.get("rastr")):
+                rastr_val_star = str(row["rastr"]).strip()
+                formatted_ra_star = (
+                    rastr_val_star.replace("h", "/").replace("m", "/").replace("s", "")
+                )
+
+            formatted_dec_star = None
+            if pd.notna(row.get("decstr")):
+                decstr_val_star = str(row["decstr"]).strip()
+                formatted_dec_star = (
+                    decstr_val_star.replace("d", "/").replace("m", "/").replace("s", "")
+                )
+
+            star = Star(name=DataPoint(star_name, star_ref))
+
+            if formatted_ra_star:
+                star.right_ascension = DataPoint(formatted_ra_star, star_ref)
+            if formatted_dec_star:
+                star.declination = DataPoint(formatted_dec_star, star_ref)
+
+            star.designations = DataPoint(designations_list, star_ref)
+
+            spectral_type_val = row.get("st_spectype")
+            if pd.notna(spectral_type_val):
+                star.spectral_type = DataPoint(str(spectral_type_val).strip(), star_ref)
+
+            # Numeric fields
+            numeric_fields_map = {
+                "temperature": ("st_teff", "K"),
+                "mass": ("st_mass", "M_S"),
+                "radius": ("st_rad", "R_S"),
+                "distance_pc": ("sy_dist", "pc"),
+            }
+
+            for field, (csv_col, unit) in numeric_fields_map.items():
+                value = self._safe_float_conversion(row.get(csv_col))
+                if value is not None:
+                    setattr(star, field, DataPoint(value, star_ref, unit))
+
+            return star
+
+        except KeyError as e:
+            logger.error(
+                f"KeyError while converting row to Star for {row.get('hostname', 'Unknown')}: {e}. Available columns: {row.index.tolist()}",
+                exc_info=True,
+            )
+            return None
+        except Exception as e:
+            logger.error(
+                f"Unexpected error converting row to Star for {row.get('hostname', 'Unknown')}: {e}",
                 exc_info=True,
             )
             return None

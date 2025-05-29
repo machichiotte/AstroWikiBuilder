@@ -63,7 +63,7 @@ class ExoplanetIntroductionGenerator:
             introduction += f" {self.get_constellation_phrase(const)}"
 
         introduction += "."
-        print("intro" + introduction)
+        #### TODO remove after tests print("generate_exoplanet_introduction" + introduction)
         return introduction
 
     def _get_constellation_phrase(nom_fr: str) -> str:

@@ -15,11 +15,20 @@ from src.utils.wikipedia_checker import (
     WikipediaChecker,
     WikiArticleInfo,
 )  # Ensuring WikiArticleInfo is available
+from src.services.star_repository import StarRepository
 from src.services.exoplanet_repository import ExoplanetRepository
 from src.services.statistics_service import StatisticsService
 from src.services.wikipedia_service import WikipediaService
 from src.services.export_service import ExportService
-from src.utils.draft_utils import generate_exoplanet_draft, save_exoplanet_drafts
+
+from src.utils.draft_utils import (
+    generate_exoplanet_draft,
+    generate_star_draft,
+    save_exoplanet_drafts,
+    save_star_drafts,
+)
+from src.utils.wikipedia_star_generator import WikipediaStarGenerator
+from src.models.star import Star  # Ensure Star is imported
 
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
@@ -83,7 +92,8 @@ def initialize_services() -> Tuple[
     ExoplanetRepository, StatisticsService, WikipediaService, ExportService
 ]:
     """Initialise et retourne les services principaux."""
-    repository = ExoplanetRepository()
+    exoplanet_repository = ExoplanetRepository()
+    star_repository = StarRepository()
     stat_service = StatisticsService()
 
     default_user_agent = "AstroWikiBuilder/1.1 (bot; machichiotte@gmail.com or your_project_contact_page)"
@@ -99,7 +109,13 @@ def initialize_services() -> Tuple[
     wiki_service = WikipediaService(wikipedia_checker=wikipedia_checker)
     export_service = ExportService()
     logger.info("Services initialisés.")
-    return repository, stat_service, wiki_service, export_service
+    return (
+        exoplanet_repository,
+        star_repository,
+        stat_service,
+        wiki_service,
+        export_service,
+    )
 
 
 def initialize_collectors(args: argparse.Namespace) -> Dict[str, Any]:
@@ -122,9 +138,9 @@ def initialize_collectors(args: argparse.Namespace) -> Dict[str, Any]:
     if "exoplanet_eu" in args.sources:
         use_eu_mock = "exoplanet_eu" in mock_sources
         eu_cache_path = (
-            "data/exoplanet_eu_mock.csv"
+            "data/cache/exoplanet_eu_mock.csv"
             if use_eu_mock
-            else "data/exoplanet_eu_downloaded.csv"
+            else "data/cache/exoplanet_eu_downloaded.csv"
         )
         collectors["exoplanet_eu"] = ExoplanetEUCollector(
             cache_path=eu_cache_path, use_mock_data=use_eu_mock
@@ -142,9 +158,9 @@ def initialize_collectors(args: argparse.Namespace) -> Dict[str, Any]:
     if "open_exoplanet" in args.sources:
         use_open_mock = "open_exoplanet" in mock_sources
         open_exoplanet_cache_path = (
-            "data/open_exoplanet_mock.csv"
+            "data/cache/open_exoplanet_mock.csv"
             if use_open_mock
-            else "data/open_exoplanet_downloaded.txt"
+            else "data/cache/open_exoplanet_downloaded.txt"
         )
         collectors["open_exoplanet"] = OpenExoplanetCollector(
             cache_path=open_exoplanet_cache_path, use_mock_data=use_open_mock
@@ -166,11 +182,33 @@ def fetch_and_process_data(collectors: Dict[str, Any], processor: DataProcessor)
     """Récupère les données des collecteurs et les traite."""
     for source_name, collector in collectors.items():
         logger.info(f"Collecte des données depuis {source_name}...")
-        exoplanets = collector.fetch_data()
+
+        try:
+            exoplanets, stars = collector.fetch_data()
+
+            if not isinstance(exoplanets, list):
+                raise TypeError(
+                    f"Exoplanets doit être une liste, reçu {type(exoplanets)}"
+                )
+
+            if stars is not None and not isinstance(stars, list):
+                raise TypeError(
+                    f"Stars doit être une liste ou None, reçu {type(stars)}"
+                )
+
+        except Exception as e:
+            logger.warning(f"Erreur lors de la collecte depuis {source_name}: {e}")
+            continue
+
         if exoplanets:
             processor.add_exoplanets_from_source(exoplanets, source_name)
         else:
-            logger.warning(f"Aucune exoplanète récupérée depuis {source_name}.")
+            logger.info(f"Aucune exoplanète récupérée depuis {source_name}.")
+
+        if stars:
+            processor.add_stars_from_source(stars, source_name)
+        elif source_name == "nasa_exoplanet_archive":
+            logger.info(f"Aucune étoile récupérée depuis {source_name}.")
 
 
 def create_output_directories(output_dir: str = "output", drafts_dir: str = "drafts"):
@@ -179,6 +217,10 @@ def create_output_directories(output_dir: str = "output", drafts_dir: str = "dra
     os.makedirs(drafts_dir, exist_ok=True)
     os.makedirs(os.path.join(drafts_dir, "missing"), exist_ok=True)
     os.makedirs(os.path.join(drafts_dir, "existing"), exist_ok=True)
+    os.makedirs(
+        os.path.join(drafts_dir, "stars"), exist_ok=True
+    )  # Added 'stars' subdirectory
+
     # The unknown_status directory is handled by save_drafts in draft_utils.py if that logic was successfully updated.
     # If not, drafts of unknown status are logged and placed in 'missing'.
     logger.info(
@@ -247,7 +289,7 @@ def check_and_export_wikipedia_status(
     return existing_map, missing_map
 
 
-def run_draft_generation(
+def exoplanet_run_draft_generation(
     processor: DataProcessor,
     existing_map: Dict,
     missing_map: Dict,
@@ -260,20 +302,20 @@ def run_draft_generation(
         logger.warning("Aucune exoplanète pour la génération de brouillons.")
         return
 
-    missing_drafts: List[Tuple[str, str]] = []
-    existing_drafts: List[Tuple[str, str]] = []
+    exoplanet_missing_drafts: List[Tuple[str, str]] = []
+    exoplanet_existing_drafts: List[Tuple[str, str]] = []
 
-    logger.info("Génération des brouillons...")
+    logger.info("Génération des brouillons d'exoplanetes...")
     for exoplanet in all_exoplanets:
         draft_content = generate_exoplanet_draft(exoplanet)
         if exoplanet.name in missing_map:
-            missing_drafts.append((exoplanet.name, draft_content))
+            exoplanet_missing_drafts.append((exoplanet.name, draft_content))
         elif exoplanet.name in existing_map:
-            existing_drafts.append((exoplanet.name, draft_content))
+            exoplanet_existing_drafts.append((exoplanet.name, draft_content))
         else:
             if is_wikipedia_check_skipped:
                 logger.info(
-                    f"Wikipedia check was skipped. Draft for {exoplanet.name} is of unknown status "
+                    f"Wikipedia exoplanet check was skipped. Draft for {exoplanet.name} is of unknown status "
                     f"and will be saved in the 'missing' drafts directory by default."
                 )
             else:
@@ -282,17 +324,73 @@ def run_draft_generation(
                     f"(even if Wikipedia check was performed). Draft will be saved in the 'missing' "
                     f"directory by default."
                 )
-            missing_drafts.append((exoplanet.name, draft_content))
+            exoplanet_missing_drafts.append((exoplanet.name, draft_content))
 
     logger.info(
-        f"{len(missing_drafts)} brouillons 'manquants' (ou statut inconnu), {len(existing_drafts)} brouillons 'existants'."
+        f"{len(exoplanet_missing_drafts)} brouillons 'manquants' (ou statut inconnu), {len(exoplanet_existing_drafts)} brouillons 'existants'."
     )
 
-    if missing_drafts or existing_drafts:
+    if exoplanet_missing_drafts or exoplanet_existing_drafts:
         # Assuming save_drafts from draft_utils.py handles only two lists as per its original confirmed signature
         # If draft_utils.py was successfully updated to handle three lists, this call would need adjustment.
         # However, the prompt's context implies draft_utils.py might not have been updated.
-        save_exoplanet_drafts(missing_drafts, existing_drafts, drafts_dir)
+        save_exoplanet_drafts(
+            exoplanet_missing_drafts, exoplanet_existing_drafts, drafts_dir
+        )
+        logger.info(f"Brouillons sauvegardés dans {drafts_dir}")
+    else:
+        logger.info("Aucun brouillon n'a été généré.")
+
+
+def star_run_draft_generation(
+    processor: DataProcessor,
+    existing_map: Dict,
+    missing_map: Dict,
+    drafts_dir: str,
+    is_wikipedia_check_skipped: bool,
+):
+    """Génère et sauvegarde les brouillons d'articles."""
+
+    all_stars = processor.get_all_stars()
+
+    if not all_stars:
+        logger.warning("Aucune exoplanète pour la génération de brouillons.")
+        return
+
+    star_missing_drafts: List[Tuple[str, str]] = []
+    star_existing_drafts: List[Tuple[str, str]] = []
+
+    logger.info("Génération des brouillons d'étoiles ...")
+    for star in all_stars:
+        name = star.name.value
+        draft_content = generate_star_draft(star)
+        if name in missing_map:
+            star_missing_drafts.append((name, draft_content))
+        elif name in existing_map:
+            star_existing_drafts.append((name, draft_content))
+        else:
+            if is_wikipedia_check_skipped:
+                logger.info(
+                    f"Wikipedia star check was skipped. Draft for {name} is of unknown status "
+                    f"and will be saved in the 'missing' drafts directory by default."
+                )
+            else:
+                logger.warning(
+                    f"Star {name} was not found in the provided missing_map or existing_map "
+                    f"(even if Wikipedia check was performed). Draft will be saved in the 'missing' "
+                    f"directory by default."
+                )
+            star_missing_drafts.append((name, draft_content))
+
+    logger.info(
+        f"{len(star_missing_drafts)} brouillons 'manquants' (ou statut inconnu), {len(star_existing_drafts)} brouillons 'existants'."
+    )
+
+    if star_missing_drafts or star_existing_drafts:
+        # Assuming save_drafts from draft_utils.py handles only two lists as per its original confirmed signature
+        # If draft_utils.py was successfully updated to handle three lists, this call would need adjustment.
+        # However, the prompt's context implies draft_utils.py might not have been updated.
+        save_star_drafts(star_missing_drafts, star_existing_drafts, drafts_dir)
         logger.info(f"Brouillons sauvegardés dans {drafts_dir}")
     else:
         logger.info("Aucun brouillon n'a été généré.")
@@ -303,8 +401,21 @@ def main():
     args = setup_arguments()
 
     # Initialisation
-    repository, stat_service, wiki_service, export_service = initialize_services()
-    processor = DataProcessor(repository, stat_service, wiki_service, export_service)
+    (
+        exoplanet_repository,
+        star_repository,
+        stat_service,
+        wiki_service,
+        export_service,
+    ) = initialize_services()
+
+    processor = DataProcessor(
+        exoplanet_repository,
+        star_repository,
+        stat_service,
+        wiki_service,
+        export_service,
+    )
     collectors = initialize_collectors(args)
 
     # Création des répertoires
@@ -316,6 +427,28 @@ def main():
     # Collecte et traitement
     fetch_and_process_data(collectors, processor)
 
+    # Star draft generation
+    # --- Contrôle du Workflow ---
+    if not args.skip_wikipedia_check:
+        # Vérification Wikipedia et Génération des brouillons
+        existing_map, missing_map = check_and_export_wikipedia_status(
+            processor, output_dir
+        )
+        star_run_draft_generation(
+            processor,
+            existing_map,
+            missing_map,
+            drafts_dir,
+            is_wikipedia_check_skipped=False,
+        )
+    else:
+        logger.info(
+            "Vérification Wikipedia ignorée. Génération des brouillons pour toutes les étoiles."
+        )
+        star_run_draft_generation(
+            processor, {}, {}, drafts_dir, is_wikipedia_check_skipped=True
+        )
+
     # Export et statistiques
     export_consolidated_data(processor, output_dir, timestamp)
     log_statistics(processor.get_statistics())
@@ -326,7 +459,7 @@ def main():
         existing_map, missing_map = check_and_export_wikipedia_status(
             processor, output_dir
         )
-        run_draft_generation(
+        exoplanet_run_draft_generation(
             processor,
             existing_map,
             missing_map,
@@ -337,7 +470,7 @@ def main():
         logger.info(
             "Vérification Wikipedia ignorée. Génération des brouillons pour toutes les exoplanètes."
         )
-        run_draft_generation(
+        exoplanet_run_draft_generation(
             processor, {}, {}, drafts_dir, is_wikipedia_check_skipped=True
         )
 

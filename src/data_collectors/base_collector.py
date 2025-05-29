@@ -2,11 +2,12 @@
 import pandas as pd
 import requests
 import os
-from typing import List, Optional, Dict, Any
+from typing import List, Optional, Dict, Any, Tuple
 from datetime import datetime
 import logging
 from abc import ABC, abstractmethod
 
+from src.models.star import Star
 from src.models.exoplanet import Exoplanet
 from src.models.reference import Reference, SourceType
 from src.utils.reference_manager import ReferenceManager
@@ -113,8 +114,9 @@ class BaseExoplanetCollector(ABC):
             )
         return None
 
-    def fetch_data(self) -> List[Exoplanet]:
-        exoplanets = []
+    def fetch_data(self) -> Tuple[List[Exoplanet], List[Star]]:
+        exoplanets: List[Exoplanet] = []
+        stars: List[Star] = []
         df = None
 
         if self.use_mock_data:
@@ -122,37 +124,29 @@ class BaseExoplanetCollector(ABC):
                 f"Utilisation des données mockées/cache depuis {self.cache_path}"
             )
             if not os.path.exists(self.cache_path):
-                logger.warning(
-                    f"Fichier mock/cache non trouvé : {self.cache_path}. Pour utiliser les données mockées, assurez-vous que ce fichier existe."
-                )
-                return []
+                logger.warning(f"Fichier mock/cache non trouvé : {self.cache_path}")
+                return [], []
             df = self._read_csv_from_path(self.cache_path)
         else:
             logger.info(
-                f"Tentative de chargement des données depuis le cache {self.cache_path} ou téléchargement depuis {self._get_download_url()}"
+                "Tentative de chargement des données depuis le cache ou téléchargement."
             )
             if os.path.exists(self.cache_path):
-                logger.info(
-                    f"Fichier cache trouvé à {self.cache_path}. Chargement des données depuis le cache."
-                )
+                logger.info("Fichier cache trouvé. Chargement des données.")
                 df = self._read_csv_from_path(self.cache_path)
-                if df is None:  # Si la lecture du cache a échoué (ex: fichier vide)
+                if df is None:
                     logger.warning(
-                        f"Échec de la lecture du cache {self.cache_path}. Tentative de téléchargement."
+                        "Échec de la lecture du cache. Tentative de téléchargement."
                     )
-
-            if df is None:  # Cache non trouvé, vide, ou lecture échouée
+            if df is None:
                 df = self._download_and_save_data()
-                if df is None and os.path.exists(
-                    self.cache_path
-                ):  # Si le téléchargement échoue mais qu'un ancien cache existe
+                if df is None and os.path.exists(self.cache_path):
                     logger.info(
-                        f"Échec du téléchargement. Tentative de chargement depuis le cache existant {self.cache_path}"
+                        "Échec du téléchargement. Rechargement du cache existant."
                     )
                     df = self._read_csv_from_path(self.cache_path)
 
         if df is not None:
-            # Vérification des colonnes requises
             required_cols = self._get_required_columns()
             if required_cols:
                 missing_columns = [
@@ -160,28 +154,31 @@ class BaseExoplanetCollector(ABC):
                 ]
                 if missing_columns:
                     logger.error(
-                        f"Colonnes manquantes dans le CSV de {self._get_source_type().name}: {missing_columns}. Source: {self.cache_path if os.path.exists(self.cache_path) else self._get_download_url()}"
+                        f"Colonnes manquantes : {missing_columns} (source: {self.cache_path})"
                     )
-                    return []
+                    return [], []
 
-            ref = self._create_reference()  # Créer la référence une seule fois
+            ref = self._create_reference()
             for _, row in df.iterrows():
                 try:
                     exoplanet = self._convert_row_to_exoplanet(row, ref)
                     if exoplanet:
                         exoplanets.append(exoplanet)
+
+                    star = self._convert_row_to_star(row, ref)
+                    if star:
+                        stars.append(star)
+
                 except Exception as e:
                     logger.error(
-                        f"Erreur lors de la conversion de la ligne pour {self._get_source_type().name}: {e}",
+                        f"Erreur de conversion pour {self._get_source_type().name}: {e}",
                         exc_info=True,
                     )
 
             logger.info(
-                f"{len(exoplanets)} exoplanètes traitées avec succès depuis {self._get_source_type().name}."
+                f"{len(exoplanets)} exoplanètes et {len(stars)} étoiles traitées avec succès."
             )
         else:
-            logger.error(
-                f"Impossible de charger ou télécharger les données pour {self._get_source_type().name}."
-            )
+            logger.error("Impossible de charger ou télécharger les données.")
 
-        return exoplanets
+        return exoplanets, stars
