@@ -61,9 +61,7 @@ class ExoplanetInfoboxGenerator:
                 if hasattr(ref.source, "value")
                 else str(ref.source)
             )
-            ref_content_full = ref.to_wiki_ref(
-                self.reference_manager.template_refs, exoplanet.name
-            )
+            ref_content_full = ref.to_wiki_ref(exoplanet.name)
             if ref_content_full:
                 return self.reference_manager.add_reference(ref_name, ref_content_full)
             return None

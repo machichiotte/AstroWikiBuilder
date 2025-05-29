@@ -2,33 +2,44 @@
 from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
-from typing import Dict, Optional
+from typing import Optional
+import re
+
+
+def slugify(name: str) -> str:
+    """Convertit un nom d'exoplanète en identifiant d'URL propre"""
+    return re.sub(r"\s+", "-", name.strip().lower())
 
 
 class SourceType(Enum):
-    NEA = "NEA"  # Nasa Exoplanet Archive
-    EPE = "EPE"  # Exoplanet.eu
-    OEC = "OEC"  # Open Exoplanet Catalogue
+    NEA = "NEA"
+    EPE = "EPE"
+    OEC = "OEC"
 
 
+# Métadonnées et modèles d'URL pour chaque source
 SOURCE_DETAILS = {
     SourceType.NEA: {
-        "name": "NEA",
         "display_title": "NASA Exoplanet Archive",
-        "base_url": "https://science.nasa.gov/exoplanet-catalog/",
+        # Modifié: retrait du slash final pour correspondre à l'URL désirée
+        "url_pattern": "https://science.nasa.gov/exoplanet-catalog/{id}",
         "site": "science.nasa.gov",
+        "wiki_pipe": "nom1=NEA",
+        "template": "{{{{Lien web|langue=en|nom1=NEA|titre={title}|url={url}|site=science.nasa.gov|date={update_date}|consulté le={consultation_date}}}}}",
     },
     SourceType.EPE: {
-        "name": "EPE",
         "display_title": "Exoplanet.eu",
-        "base_url": "http://exoplanet.eu/catalog/",  # Fictional URL, replace with actual
+        "url_pattern": "http://exoplanet.eu/catalog/{id}/",
         "site": "exoplanet.eu",
+        "wiki_pipe": "nom1=EPE",
+        "template": "{{{{Lien web|langue=en|nom1=EPE|titre={title}|url={url}|site=exoplanet.eu|date={update_date}|consulté le={consultation_date}}}}}",
     },
     SourceType.OEC: {
-        "name": "OEC",
         "display_title": "Open Exoplanet Catalogue",
-        "base_url": "http://www.openexoplanetcatalogue.com/planet/",  # Fictional URL
+        "url_pattern": "http://www.openexoplanetcatalogue.com/planet/{id}/",
         "site": "openexoplanetcatalogue.com",
+        "wiki_pipe": "nom1=OEC",
+        "template": "{{{{Lien web|langue=en|nom1=OEC|titre={title}|url={url}|site=openexoplanetcatalogue.com|date={update_date}|consulté le={consultation_date}}}}}",
     },
 }
 
@@ -36,73 +47,37 @@ SOURCE_DETAILS = {
 @dataclass
 class Reference:
     source: SourceType
-    update_date: datetime  # Date de mise à jour des données
-    consultation_date: datetime  # Date de consultation/génération
-    url: Optional[str] = None
-    identifier: Optional[str] = None
+    update_date: datetime
+    consultation_date: datetime
+    identifier: Optional[str] = None  # devient optionnel
 
-    def to_wiki_ref(
-        self,
-        template_refs: Optional[Dict[str, str]] = None,
-        exoplanet_name: Optional[str] = None,
-    ) -> str:
-        source_info = SOURCE_DETAILS.get(self.source)
-        if not source_info:
-            # Fallback or error for unknown source
-            return (
-                f'<ref name="{self.source.value}">Error: Unknown source details</ref>'
-            )
-
-        # Construct URL; this might need to be more flexible based on source
-        # For NEA, it's exoplanet_name.lower().replace(" ", "-")
-        # Other sources might have different ID formats.
-        # You might need a specific URL formatting function or pattern per source.
-        specific_id_part = (
-            exoplanet_name.lower().replace(" ", "-") if exoplanet_name else ""
+    def to_url(self, fallback_name: Optional[str] = None) -> str:
+        details = SOURCE_DETAILS.get(self.source)
+        if not details:
+            raise ValueError(f"Unknown source: {self.source}")
+        final_id = self.identifier or (
+            slugify(fallback_name) if fallback_name else None
         )
-        if self.source == SourceType.EPE and exoplanet_name:
-            specific_id_part = exoplanet_name  # E.g., EPE might use the name directly
-        # Add more conditions for other sources if their URL structure for identifiers differs
+        if not final_id:
+            raise ValueError("Identifier is required for generating the URL")
+        return details["url_pattern"].format(id=final_id)
 
-        full_url = (
-            f"{source_info['base_url']}{specific_id_part}"
-            if exoplanet_name
-            else source_info["base_url"]
+    def to_wiki_ref(self, exoplanet_name: Optional[str] = None) -> str:
+        details = SOURCE_DETAILS.get(self.source)
+        if not details:
+            return f'<ref name="{self.source.value}">Unknown source</ref>'
+
+        url = self.to_url(fallback_name=exoplanet_name)
+        title = f"{details['display_title']}{' - ' + exoplanet_name if exoplanet_name else ''}"
+
+        tpl = details["template"].format(
+            title=title,
+            url=url,
+            update_date=self.update_date.strftime("%Y-%m-%d"),
+            consultation_date=self.consultation_date.strftime("%Y-%m-%d"),
         )
-        if self.url:  # If a specific URL is already provided in the Reference object
-            full_url = self.url
 
-        title_suffix = f" - {exoplanet_name}" if exoplanet_name else ""
-        full_title = f"{source_info['display_title']}{title_suffix}"
-
-        if template_refs and exoplanet_name:
-            template_key = str(self.source.value).lower()
-            template = template_refs.get(template_key, "")
-            if template:
-                # Ensure your templates can handle dynamic titles, ids, etc.
-                # The current template example is hardcoded for NEA title.
-                # You might need to adjust what {title} and {id} mean in the template context.
-                return template.format(
-                    # This title is still NEA specific in your original example template
-                    # You'd need to make the template itself more generic or have source-specific templates
-                    title=full_title,  # Use the dynamically generated title
-                    id=self.identifier
-                    if self.identifier
-                    else specific_id_part,  # Use provided ID or generate one
-                    update_date=self.update_date.strftime("%Y-%m-%d"),
-                    consultation_date=self.consultation_date.strftime("%Y-%m-%d"),
-                )
-
-        # Default format with {{Lien web}}
-        ref_content = f"""{{{{Lien web |langue=en |nom1={source_info["name"]}|titre={full_title}
- |url={full_url} |site={source_info["site"]}
- |date={self.update_date.strftime("%Y-%m-%d")} |consulté le={self.consultation_date.strftime("%Y-%m-%d")} }}}}"""
-
-        ref_name_attr = self.identifier if self.identifier else self.source.value
-        # If you want to include exoplanet_name in ref name for uniqueness:
-        # ref_name_attr = f"{self.source.value}_{exoplanet_name.replace(' ','_')}" if exoplanet_name else self.source.value
-
-        return f'<ref name="{ref_name_attr}" >{ref_content}</ref>'
+        return f'<ref name="{self.source.value}" >{tpl}</ref>'
 
 
 @dataclass

@@ -66,7 +66,6 @@ class BaseExoplanetCollector(ABC):
         return self.reference_manager.create_reference(
             source=self._get_source_type(),
             update_date=self.last_update_date,
-            url=self._get_source_reference_url(),
         )
 
     @abstractmethod
