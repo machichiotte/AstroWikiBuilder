@@ -1,5 +1,7 @@
 # src/utils/wikipedia_exoplanet_generator.py
 import locale
+import datetime
+import pytz
 from src.models.exoplanet import Exoplanet
 from .exoplanet_infobox_generator import ExoplanetInfoboxGenerator
 from .exoplanet_introduction_generator import ExoplanetIntroductionGenerator
@@ -66,6 +68,43 @@ class WikipediaExoplanetGenerator:
             self.comparison_utils, self.format_utils
         )
 
+    def _get_formatted_french_utc_plus_1_date(self) -> str:
+        """
+        Gets the current date formatted as 'month_name year' in French,
+        adjusted for UTC+1 (Paris/France timezone).
+        """
+        # Get current date in UTC
+        utc_now = datetime.datetime.now(datetime.timezone.utc)
+
+        # Define the timezone for Paris (France)
+        # 'Europe/Paris' accounts for daylight saving changes automatically.
+        paris_tz = pytz.timezone("Europe/Paris")
+
+        # Convert UTC time to Paris time
+        paris_time = utc_now.astimezone(paris_tz)
+
+        # French month names mapping
+        french_months = {
+            1: "janvier",
+            2: "février",
+            3: "mars",
+            4: "avril",
+            5: "mai",
+            6: "juin",
+            7: "juillet",
+            8: "août",
+            9: "septembre",
+            10: "octobre",
+            11: "novembre",
+            12: "décembre",
+        }
+
+        # Get the month name and year
+        current_month_french = french_months[paris_time.month]
+        current_year = paris_time.year
+
+        return f"{current_month_french} {current_year}"
+
     def generate_article_content(self, exoplanet: Exoplanet) -> str:
         """
         Génère le contenu complet de l'article Wikipedia
@@ -84,7 +123,7 @@ class WikipediaExoplanetGenerator:
         habitability = self._generate_habitability_section(exoplanet)
 
         # Assembler l'article
-        article = f"""{{{{Ébauche|exoplanète|}}}}
+        article = f"""{{{{Ébauche|exoplanète|}}}}{{{{Source unique|date={self._get_formatted_french_utc_plus_1_date()}}}}}
 
 {infobox}
 

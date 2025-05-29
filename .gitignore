@@ -177,3 +177,4 @@ output/
 drafts/
 drafts copy/
 data/*.json
+data/cache/nasa_exoplanet_archive/

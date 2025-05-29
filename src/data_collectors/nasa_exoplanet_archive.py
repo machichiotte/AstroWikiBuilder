@@ -2,11 +2,15 @@
 import pandas as pd
 from typing import List, Optional, Dict, Any
 import logging
+import re
+
+from bs4 import BeautifulSoup
 
 from src.data_collectors.base_collector import BaseExoplanetCollector
 from src.models.exoplanet import Exoplanet
 from src.models.reference import DataPoint, Reference, SourceType
 
+logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
@@ -22,7 +26,7 @@ class NASAExoplanetArchiveCollector(BaseExoplanetCollector):
         super().__init__(cache_dir, use_mock_data)
 
     def _get_default_cache_filename(self) -> str:
-        return "nasa_mock_data.csv"
+        return "nasa_mock_data_complete.csv"
 
     def _get_download_url(self) -> str:
         return "https://exoplanetarchive.ipac.caltech.edu/TAP/sync?query=select+*+from+PSCompPars&format=csv"
@@ -40,6 +44,81 @@ class NASAExoplanetArchiveCollector(BaseExoplanetCollector):
         # Le fichier téléchargé de NASA n'a pas de lignes de commentaire typiques à ignorer avec '#' au début.
         # Si le fichier que vous sauvegardez/mockez en a, ajustez ici.
         return {}
+
+    def _parse_epoch_string(self, epoch_str: str) -> Optional[str]:
+        """
+        Parses the epoch string (pl_tranmidstr) which can be in several formats:
+        1. "2458950.09242&plusmn0.00076" -> "2458950.09242 ± 0.00076"
+        2. "<div><span class=supersubNumber">2458360.0754</span><span class="superscript">+0.0049</span><span class="subscript">-0.0078</span></div>"
+           -> "2458360.0754{{±|0.0049|0.0078}}"
+        3. "2458360.0754" (a simple numerical value) -> "2458360.0754"
+        4. "&gt789" -> "> 789"
+        5. "&lt1084" -> "< 1084"
+
+        Returns the formatted string or None if parsing fails.
+        """
+        if pd.isna(epoch_str) or not isinstance(epoch_str, str):
+            return None
+
+        epoch_str_val = epoch_str.strip()
+
+        # Case 1: Simple string with &plusmn
+        if "&plusmn" in epoch_str_val:
+            return epoch_str_val.replace("&plusmn", " ± ")
+
+        # Case 2: HTML snippet
+        elif "div" in epoch_str_val and "<span" in epoch_str_val:
+            # Pre-process the HTML to fix the common malformation: class=value" -> class="value"
+            fixed_html_str = re.sub(r'class=(\w+)"', r'class="\1"', epoch_str_val)
+            soup = BeautifulSoup(fixed_html_str, "html5lib")
+
+            base_value_span = soup.find("span", class_="supersubNumber")
+            superscript_span = soup.find("span", class_="superscript")
+            subscript_span = soup.find("span", class_="subscript")
+
+            if base_value_span:
+                formatted_epoch = base_value_span.get_text().strip()
+                error_part = ""
+
+                pos_error = (
+                    superscript_span.get_text().strip().replace("+", "")
+                    if superscript_span
+                    else ""
+                )
+                neg_error = (
+                    subscript_span.get_text().strip().replace("-", "")
+                    if subscript_span
+                    else ""
+                )
+
+                if pos_error and neg_error:
+                    error_part = f"{{{{±|{pos_error}|{neg_error}}}}}"
+                elif pos_error:
+                    error_part = f"{{{{±|{pos_error}|}}}}"
+                elif neg_error:
+                    error_part = f"{{{{±||{neg_error}}}}}"
+
+                return formatted_epoch + error_part
+            else:
+                logger.warning(
+                    f"Could not find base value span in HTML epoch (even after fixing and html5lib): {epoch_str_val}"
+                )
+                return None
+
+        # Case 4 & 5: Greater than or Less than (e.g., "&gt789", "&lt1084")
+        elif epoch_str_val.startswith("&gt"):
+            return f"> {epoch_str_val[3:].strip()}"
+        elif epoch_str_val.startswith("&lt"):
+            return f"< {epoch_str_val[3:].strip()}"
+
+        # Case 3: Simple numerical value (as a last resort)
+        else:
+            try:
+                float(epoch_str_val)
+                return epoch_str_val
+            except ValueError:
+                logger.warning(f"Unrecognized epoch format: {epoch_str_val}")
+                return None
 
     def _convert_row_to_exoplanet(
         self, row: pd.Series, ref: Reference
@@ -84,17 +163,13 @@ class NASAExoplanetArchiveCollector(BaseExoplanetCollector):
                     decstr_val.replace("d", "/").replace("m", "/").replace("s", "")
                 )
             if pd.notna(row.get("pl_tranmidstr")):
-                pl_tranmidstr_val = str(row["pl_tranmidstr"]).strip()
-                formatted_epoch = pl_tranmidstr_val.replace("&plusmn", " ± ")
+                formatted_epoch = self._parse_epoch_string(row.get("pl_tranmidstr"))
+
             if pd.notna(row.get("pl_orbperstr")):
-                pl_orbperstr_val = str(row["pl_orbperstr"]).strip()
-                if "&plusmn" in pl_orbperstr_val:
-                    base_orb_period, error_orb_period = pl_orbperstr_val.split(
-                        "&plusmn"
-                    )
-                    formatted_orbital_period = f"{base_orb_period.strip()}{{±|{error_orb_period.strip()}|{error_orb_period.strip()}}}"
-                else:
-                    formatted_orbital_period = pl_orbperstr_val
+                formatted_orbital_period = self._parse_epoch_string(
+                    row.get("pl_orbperstr")
+                )
+
             if (
                 pd.notna(row.get("pl_orbincl"))
                 and pd.notna(row.get("pl_orbinclerr1"))
@@ -108,7 +183,7 @@ class NASAExoplanetArchiveCollector(BaseExoplanetCollector):
                     self._safe_float_conversion(row["pl_orbinclerr2"])
                 )  # abs car err2 est souvent négatif
                 if pl_orbinclerr1_val is not None and pl_orbinclerr2_val is not None:
-                    formatted_inclination = f"{pl_orbincl_val}{{±|{pl_orbinclerr1_val}|{pl_orbinclerr2_val}}}"
+                    formatted_inclination = f"{pl_orbincl_val}{{{{±|{pl_orbinclerr1_val}|{pl_orbinclerr2_val}}}}}"
 
             exoplanet = Exoplanet(
                 name=str(row["pl_name"]).strip(),
