@@ -21,7 +21,8 @@ class ReferenceManager:
         self,
         source: SourceType,
         update_date: datetime,
-        identifier: Optional[str] = None,
+        planet_identifier: Optional[str] = None,
+        star_identifier: Optional[str] = None,
     ) -> Reference:
         """
         Crée et renvoie une Reference avec date de consultation actuelle.
@@ -30,7 +31,8 @@ class ReferenceManager:
             source=source,
             update_date=update_date,
             consultation_date=datetime.now(),
-            identifier=identifier,
+            planet_identifier=planet_identifier,
+            star_identifier=star_identifier,
         )
 
     def add_reference(self, ref_name: str, ref_content: str) -> str:

@@ -1,9 +1,10 @@
 # src/services/exoplanet_repository.py
 import logging
-from typing import List, Dict, Optional
+from typing import List, Dict
 from src.models.exoplanet import Exoplanet
 
 logger = logging.getLogger(__name__)
+
 
 class ExoplanetRepository:
     def __init__(self):
@@ -16,7 +17,9 @@ class ExoplanetRepository:
         Le paramètre 'source_system' indique le système ou le lot d'où proviennent ces données,
         pas nécessairement la 'SourceType' d'une donnée individuelle.
         """
-        logger.info(f"Attempting to add {len(exoplanets)} exoplanets from source system: {source_system}...")
+        logger.info(
+            f"Attempting to add {len(exoplanets)} exoplanets from source system: {source_system}..."
+        )
         added_count = 0
         merged_count = 0
         for exoplanet in exoplanets:
@@ -30,14 +33,10 @@ class ExoplanetRepository:
             else:
                 logger.debug(f"Adding new exoplanet: {exoplanet.name}")
                 self.exoplanets[exoplanet.name] = exoplanet
-                added_count +=1
-        logger.info(f"Addition from {source_system} complete. Added: {added_count}, Merged: {merged_count}. Total exoplanets: {len(self.exoplanets)}")
-
-    def get_exoplanet_by_name(self, name: str) -> Optional[Exoplanet]:
-        return self.exoplanets.get(name)
+                added_count += 1
+        logger.info(
+            f"Addition from {source_system} complete. Added: {added_count}, Merged: {merged_count}. Total exoplanets: {len(self.exoplanets)}"
+        )
 
     def get_all_exoplanets(self) -> List[Exoplanet]:
         return list(self.exoplanets.values())
-
-    def get_count(self) -> int:
-        return len(self.exoplanets)

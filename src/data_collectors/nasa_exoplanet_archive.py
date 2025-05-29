@@ -45,11 +45,26 @@ class NASAExoplanetArchiveCollector(BaseExoplanetCollector):
         self, row: pd.Series, ref: Reference
     ) -> Optional[Exoplanet]:
         try:
-            if pd.isna(row["pl_name"]) or pd.isna(row["hostname"]):
+            pl_name_val = row.get("pl_name")
+            hostname_val = row.get("hostname")
+
+            if pd.isna(pl_name_val) or pd.isna(hostname_val):
                 logger.warning(
-                    f"Données de base manquantes pour l'exoplanète : {row.get('pl_name', 'Unknown')} (Source: NASA)"
+                    f"Données de base manquantes pour l'exoplanète : {row.get('pl_name', 'Unknown')} (Source: NASA Exoplamet Archive)"
                 )
                 return None
+
+            nea_ref = Reference(
+                source=ref.source,
+                update_date=ref.update_date,  # Utilisez la date de la ref de base
+                consultation_date=ref.consultation_date,  # Utilisez la date de la ref de base
+                planet_identifier=str(
+                    pl_name_val
+                ).strip(),  # Définissez l'identifiant de la planète
+                star_identifier=str(
+                    hostname_val
+                ).strip(),  # Définissez l'identifiant de l'étoile
+            )
 
             (
                 formatted_ra,
@@ -97,52 +112,38 @@ class NASAExoplanetArchiveCollector(BaseExoplanetCollector):
 
             exoplanet = Exoplanet(
                 name=str(row["pl_name"]).strip(),
-                host_star=DataPoint(str(row["hostname"]).strip(), ref),
-                discovery_method=DataPoint(str(row["discoverymethod"]).strip(), ref)
+                host_star=DataPoint(str(row["hostname"]).strip(), nea_ref),
+                discovery_method=DataPoint(str(row["discoverymethod"]).strip(), nea_ref)
                 if pd.notna(row["discoverymethod"])
                 else None,
-                discovery_date=DataPoint(str(row["disc_year"]).strip(), ref)
+                discovery_date=DataPoint(str(row["disc_year"]).strip(), nea_ref)
                 if pd.notna(row["disc_year"])
                 else None,
             )
             # Assignation des valeurs formatées si elles existent
             if formatted_ra:
-                exoplanet.right_ascension = DataPoint(formatted_ra, ref)
+                exoplanet.right_ascension = DataPoint(formatted_ra, nea_ref)
             if formatted_dec:
-                exoplanet.declination = DataPoint(formatted_dec, ref)
+                exoplanet.declination = DataPoint(formatted_dec, nea_ref)
             if formatted_epoch:
-                exoplanet.epoch = DataPoint(formatted_epoch, ref)
+                exoplanet.epoch = DataPoint(formatted_epoch, nea_ref)
 
-            # Pour orbital_period et inclination, NASA a des colonnes spécifiques (pl_orbper, pl_orbincl) pour les valeurs numériques
-            # et des colonnes _str pour les chaînes avec erreurs.
-            # Le code original utilise les versions _str pour ces champs dans Exoplanet.
-            # Si les versions numériques sont préférées pour d'autres champs, il faut clarifier.
-            # Ici, on garde la logique de prendre la version formatée si elle existe.
             if formatted_orbital_period:
-                exoplanet.orbital_period = DataPoint(formatted_orbital_period, ref)
+                exoplanet.orbital_period = DataPoint(formatted_orbital_period, nea_ref)
             if formatted_inclination:
-                exoplanet.inclination = DataPoint(formatted_inclination, ref)
+                exoplanet.inclination = DataPoint(formatted_inclination, nea_ref)
 
-            # Caractéristiques orbitales (numériques, avec unités)
-            # Note : certains champs comme orbital_period et inclination sont déjà settés plus haut avec des formats spécifiques
-            # S'ils ne doivent pas être écrasés, ajuster la logique.
-            # Pour l'instant, on va setter les valeurs numériques si les versions formatées n'ont pas été utilisées.
             orbital_fields_map = {
                 "semi_major_axis": ("pl_orbsmax", "ua"),
                 "eccentricity": ("pl_orbeccen", None),
                 "argument_of_periastron": ("pl_orblper", "°"),
                 "periastron_time": ("pl_orbtper", "j"),
             }
-            # On ajoute orbital_period et inclination seulement s'ils n'ont pas été settés par les versions formatées
-            if not exoplanet.orbital_period and pd.notna(row.get("pl_orbper")):
-                orbital_fields_map["orbital_period"] = ("pl_orbper", "j")
-            if not exoplanet.inclination and pd.notna(row.get("pl_orbincl")):
-                orbital_fields_map["inclination"] = ("pl_orbincl", "°")
 
             for field, (csv_field, unit) in orbital_fields_map.items():
                 value = self._safe_float_conversion(row.get(csv_field))
                 if value is not None:
-                    setattr(exoplanet, field, DataPoint(value, ref, unit))
+                    setattr(exoplanet, field, DataPoint(value, nea_ref, unit))
 
             # Caractéristiques physiques
             for field, csv_field, unit in [
@@ -152,7 +153,7 @@ class NASAExoplanetArchiveCollector(BaseExoplanetCollector):
             ]:
                 value = self._safe_float_conversion(row.get(csv_field))
                 if value is not None:
-                    setattr(exoplanet, field, DataPoint(value, ref, unit))
+                    setattr(exoplanet, field, DataPoint(value, nea_ref, unit))
 
             # Informations sur l'étoile
             for field, csv_field, unit in [
@@ -173,7 +174,9 @@ class NASAExoplanetArchiveCollector(BaseExoplanetCollector):
                         else str(value).strip()
                     )
                     if processed_value is not None:
-                        setattr(exoplanet, field, DataPoint(processed_value, ref, unit))
+                        setattr(
+                            exoplanet, field, DataPoint(processed_value, nea_ref, unit)
+                        )
 
             if pd.notna(row.get("pl_altname")):  # NASA utilise 'pl_altname'
                 names = str(row["pl_altname"]).split(",")
