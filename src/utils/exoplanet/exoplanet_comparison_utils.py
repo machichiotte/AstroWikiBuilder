@@ -7,17 +7,20 @@ class ExoplanetComparisonUtils:
     Classe utilitaire pour les comparaisons physiques des exoplanètes
     """
 
-    R_JUPITER_IN_EARTH_RADII = 11.209  # Rayon de Jupiter en rayons terrestres
-    M_JUPITER_IN_EARTH_MASSES = 317.8  # Masse de Jupiter en masses terrestres
-    SIMILARITY_MARGIN = 0.2  # Marge de 20%
+    R_JUPITER_IN_EARTH_RADII = 11.209
+    M_JUPITER_IN_EARTH_MASSES = 317.8
+    SIMILARITY_MARGIN = 0.2
 
     def __init__(self, format_utils: FormatUtils):
         self.format_utils = format_utils
-        self.earth_orbit = 1.0  # 1 UA
-        self.mercury_orbit = 0.387  # UA
-        self.venus_orbit = 0.723  # UA
-        self.mars_orbit = 1.524  # UA
-        self.jupiter_orbit = 5.203  # UA
+        self.mercury_orbit_au = 0.387
+        self.venus_orbit_au = 0.723
+        self.earth_orbit_au = 1.0
+        self.mars_orbit_au = 1.524
+        self.jupiter_orbit_au = 5.203
+        self.saturn_orbit_au = 9.582
+        self.uranus_orbit_au = 19.229
+        self.neptune_orbit_au = 30.103
 
     def get_radius_comparison(self, exoplanet: Exoplanet) -> str:
         """
@@ -96,43 +99,85 @@ class ExoplanetComparisonUtils:
 
     def get_orbital_comparison(self, exoplanet: Exoplanet) -> str:
         """
-        Génère une comparaison orbitale avec le système solaire
+        Génère une comparaison de l'orbite de l'exoplanète avec les planètes du système solaire.
+        La distance est supposée être en Unités Astronomiques (UA).
         """
         sma = (
             exoplanet.semi_major_axis.value
-            if exoplanet.semi_major_axis and exoplanet.semi_major_axis.value
+            if exoplanet.semi_major_axis and exoplanet.semi_major_axis.value is not None
             else None
         )
-        if sma:
-            if sma < 0.1:
-                return ", une distance comparable à celle de [[Mercure (planète)|Mercure]] dans le [[système solaire]]"
-            elif sma < 1:
-                return ", une distance comparable à celle de [[Vénus (planète)|Vénus]] dans le [[système solaire]]"
-            elif sma < 2:
-                return ", une distance comparable à celle de [[Mars (planète)|Mars]] dans le [[système solaire]]"
-            else:
-                return ", une distance comparable à la [[ceinture d'astéroïdes]] (entre [[Mars (planète)|Mars]] et Jupiter) dans le [[système solaire]]"
-        return ""
 
-    def get_orbit_comparison(self, orbit_value: float) -> str:
-        """Génère une comparaison orbitale pertinente."""
-        if not orbit_value:
+        if sma is None:
             return ""
 
-        # Arrondir à 3 décimales pour éviter les comparaisons trop précises
-        orbit_value = round(orbit_value, 3)
+        # Use a margin for "similar to" comparisons
+        margin = self.SIMILARITY_MARGIN
 
-        if orbit_value < self.mercury_orbit:
-            return "Son orbite est plus proche de son étoile que celle de [[Mercure (planète)|Mercure]] autour du [[Soleil]]."
-        elif orbit_value < self.venus_orbit:
-            return "Son orbite est similaire à celle de [[Mercure (planète)|Mercure]] autour du [[Soleil]]."
-        elif orbit_value < self.earth_orbit:
-            return "Son orbite est similaire à celle de [[Vénus (planète)|Vénus]] autour du [[Soleil]]."
-        elif orbit_value < self.mars_orbit:
-            return (
-                "Son orbite est similaire à celle de la [[Terre]] autour du [[Soleil]]."
-            )
-        elif orbit_value < self.jupiter_orbit:
-            return "Son orbite est similaire à celle de [[Mars (planète)|Mars]] autour du [[Soleil]]."
+        if sma < self.mercury_orbit_au * (1 - margin):
+            return "Son orbite est significativement plus proche de son étoile que celle de [[Mercure (planète)|Mercure]] autour du [[Soleil]]."
+        elif (
+            self.mercury_orbit_au * (1 - margin)
+            <= sma
+            <= self.mercury_orbit_au * (1 + margin)
+        ):
+            return "Son orbite est comparable à celle de [[Mercure (planète)|Mercure]] autour du [[Soleil]]."
+        elif sma < self.venus_orbit_au * (1 - margin):
+            return "Son orbite se situe entre celles de [[Mercure (planète)|Mercure]] et de [[Vénus (planète)|Vénus]] autour du [[Soleil]]."
+        elif (
+            self.venus_orbit_au * (1 - margin)
+            <= sma
+            <= self.venus_orbit_au * (1 + margin)
+        ):
+            return "Son orbite est comparable à celle de [[Vénus (planète)|Vénus]] autour du [[Soleil]]."
+        elif sma < self.earth_orbit_au * (1 - margin):
+            return "Son orbite se situe entre celles de [[Vénus (planète)|Vénus]] et de la [[Terre]] autour du [[Soleil]]."
+        elif (
+            self.earth_orbit_au * (1 - margin)
+            <= sma
+            <= self.earth_orbit_au * (1 + margin)
+        ):
+            return "Son orbite est comparable à celle de la [[Terre]] autour du [[Soleil]]."
+        elif sma < self.mars_orbit_au * (1 - margin):
+            return "Son orbite se situe entre celles de la [[Terre]] et de [[Mars (planète)|Mars]] autour du [[Soleil]]."
+        elif (
+            self.mars_orbit_au * (1 - margin)
+            <= sma
+            <= self.mars_orbit_au * (1 + margin)
+        ):
+            return "Son orbite est comparable à celle de [[Mars (planète)|Mars]] autour du [[Soleil]]."
+        elif sma < self.jupiter_orbit_au * (1 - margin):
+            # This range is where the asteroid belt is located
+            return "Son orbite se situe entre celles de [[Mars (planète)|Mars]] et de [[Jupiter (planète)|Jupiter]], comparable à la [[ceinture d'astéroïdes]] dans le [[système solaire]]."
+        elif (
+            self.jupiter_orbit_au * (1 - margin)
+            <= sma
+            <= self.jupiter_orbit_au * (1 + margin)
+        ):
+            return "Son orbite est comparable à celle de [[Jupiter (planète)|Jupiter]] autour du [[Soleil]]."
+        elif sma < self.saturn_orbit_au * (1 - margin):
+            return "Son orbite se situe entre celles de [[Jupiter (planète)|Jupiter]] et de [[Saturne (planète)|Saturne]] autour du [[Soleil]]."
+        elif (
+            self.saturn_orbit_au * (1 - margin)
+            <= sma
+            <= self.saturn_orbit_au * (1 + margin)
+        ):
+            return "Son orbite est comparable à celle de [[Saturne (planète)|Saturne]] autour du [[Soleil]]."
+        elif sma < self.uranus_orbit_au * (1 - margin):
+            return "Son orbite se situe entre celles de [[Saturne (planète)|Saturne]] et d'[[Uranus (planète)|Uranus]] autour du [[Soleil]]."
+        elif (
+            self.uranus_orbit_au * (1 - margin)
+            <= sma
+            <= self.uranus_orbit_au * (1 + margin)
+        ):
+            return "Son orbite est comparable à celle d'[[Uranus (planète)|Uranus]] autour du [[Soleil]]."
+        elif sma < self.neptune_orbit_au * (1 - margin):
+            return "Son orbite se situe entre celles d'[[Uranus (planète)|Uranus]] et de [[Neptune (planète)|Neptune]] autour du [[Soleil]]."
+        elif (
+            self.neptune_orbit_au * (1 - margin)
+            <= sma
+            <= self.neptune_orbit_au * (1 + margin)
+        ):
+            return "Son orbite est comparable à celle de [[Neptune (planète)|Neptune]] autour du [[Soleil]]."
         else:
-            return "Son orbite est plus éloignée de son étoile que celle de [[Jupiter (planète)|Jupiter]] autour du [[Soleil]]."
+            return "Son orbite est significativement plus éloignée de son étoile que celle de [[Neptune (planète)|Neptune]] autour du [[Soleil]]."
