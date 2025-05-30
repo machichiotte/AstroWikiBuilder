@@ -43,7 +43,6 @@ def generate_exoplanet_draft(exoplanet: Exoplanet) -> str:
 
 
 def generate_star_draft(star: Star) -> str:
-    print(star)
     """
     Génère le contenu d'un brouillon d'article pour une étoile.
 

@@ -66,8 +66,8 @@ class ExoplanetInfoboxGenerator:
                 return self.reference_manager.add_reference(ref_name, ref_content_full)
             return None
 
-        def add_field(label, attr_name):
-            v = val(attr_name)
+        def add_field(label, attribute_name):
+            v = val(attribute_name)
             s = ""
             if v is not None and str(v).strip() != "":
                 processed_v = str(v)
@@ -99,8 +99,8 @@ class ExoplanetInfoboxGenerator:
 
                 s += f" | {label} = {processed_v}\n"
 
-                actual_unit = unit(attr_name)
-                n = notes(attr_name)
+                actual_unit = unit(attribute_name)
+                n = notes(attribute_name)
                 expected_default_unit = FIELD_DEFAULT_UNITS.get(label)
 
                 if actual_unit:
@@ -112,7 +112,7 @@ class ExoplanetInfoboxGenerator:
                     s += f" | {label} notes = {n}\n"
             return s
 
-        infobox = f"{{{{Infobox Exoplanète\n"
+        infobox = "{{Infobox Exoplanète\n"
         infobox += f" | nom = {exoplanet.name}\n"
         infobox += " | image = \n | légende = \n"
 

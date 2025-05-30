@@ -313,17 +313,17 @@ def exoplanet_run_draft_generation(
         elif exoplanet.name in existing_map:
             exoplanet_existing_drafts.append((exoplanet.name, draft_content))
         else:
-            if is_wikipedia_check_skipped:
-                logger.info(
-                    f"Wikipedia exoplanet check was skipped. Draft for {exoplanet.name} is of unknown status "
-                    f"and will be saved in the 'missing' drafts directory by default."
-                )
-            else:
-                logger.warning(
-                    f"Exoplanet {exoplanet.name} was not found in the provided missing_map or existing_map "
-                    f"(even if Wikipedia check was performed). Draft will be saved in the 'missing' "
-                    f"directory by default."
-                )
+            # if is_wikipedia_check_skipped:
+            # logger.info(
+            #    f"Wikipedia exoplanet check was skipped. Draft for {exoplanet.name} is of unknown status "
+            #    f"and will be saved in the 'missing' drafts directory by default."
+            # )
+            # else:
+            # logger.warning(
+            #    f"Exoplanet {exoplanet.name} was not found in the provided missing_map or existing_map "
+            #    f"(even if Wikipedia check was performed). Draft will be saved in the 'missing' "
+            #   f"directory by default."
+            # )
             exoplanet_missing_drafts.append((exoplanet.name, draft_content))
 
     logger.info(

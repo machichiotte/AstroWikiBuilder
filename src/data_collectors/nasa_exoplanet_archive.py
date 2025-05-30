@@ -3,6 +3,7 @@ import pandas as pd
 from typing import List, Optional, Dict, Any
 import logging
 import re
+import math
 
 from bs4 import BeautifulSoup
 
@@ -17,9 +18,6 @@ logger = logging.getLogger(__name__)
 
 
 class NASAExoplanetArchiveCollector(BaseExoplanetCollector):
-    # BASE_URL est maintenant géré par _get_download_url
-    # MOCK_DATA_PATH (qui est le cache_path) est géré par la classe de base
-
     def __init__(
         self,
         cache_dir: str = "data/cache/nasa_exoplanet_archive",
@@ -28,7 +26,7 @@ class NASAExoplanetArchiveCollector(BaseExoplanetCollector):
         super().__init__(cache_dir, use_mock_data)
 
     def _get_default_cache_filename(self) -> str:
-        return "nasa_mock_data_complete.csv"
+        return "nasa_mock_data.csv"
 
     def _get_download_url(self) -> str:
         return "https://exoplanetarchive.ipac.caltech.edu/TAP/sync?query=select+*+from+PSCompPars&format=csv"
@@ -302,17 +300,46 @@ class NASAExoplanetArchiveCollector(BaseExoplanetCollector):
             )
             return None
 
-    def _convert_row_to_star(self, row: pd.Series, ref: Reference) -> Optional[Star]:
+    def _safe_float_conversion(self, value: Any) -> Optional[float]:
+        """
+        Safely converts a value to float, handling potential errors, NaN, and empty strings.
+        """
+        if value is None or (isinstance(value, str) and not value.strip()):
+            return None
+        if pd.isna(value):  # Handles numpy.nan, pandas.NaT, etc.
+            return None
         try:
-            hostname_val = row.get("hostname")
-            if pd.isna(hostname_val):
+            return float(value)
+        except (ValueError, TypeError):
+            # logger.warning(f"Could not convert value '{value}' to float.") # Optional
+            return None
+
+    def _get_optional_float(self, row: pd.Series, col_name: str) -> Optional[float]:
+        """Helper to get a float value from a row, converting safely."""
+        return self._safe_float_conversion(row.get(col_name))
+
+    def _get_optional_string(self, row: pd.Series, col_name: str) -> Optional[str]:
+        """Helper to get a stripped string value from a row if it's not NA."""
+        val = row.get(col_name)
+        if pd.isna(val) or str(val).strip() == "":
+            return None
+        return str(val).strip()
+
+    def _convert_row_to_star(self, row: pd.Series, ref: Reference) -> Optional[Star]:
+        """
+        Converts a pandas Series (row from a CSV/DataFrame) to a Star object,
+        populating it with data based on predefined mappings.
+        """
+        try:
+            hostname_val = self._get_optional_string(row, "hostname")
+            if not hostname_val:
                 logger.warning(
-                    f"Star name (hostname) is missing for a row. Skipping star creation. Row data: {row.to_dict()}"
+                    f"Star name (hostname) is missing or empty for a row. Skipping star creation. Row data: {row.to_dict()}"
                 )
                 return None
+            star_name = hostname_val
 
-            star_name = str(hostname_val).strip()
-
+            # Create a specific reference for this star, derived from the general reference
             star_ref = Reference(
                 source=ref.source,
                 update_date=ref.update_date,
@@ -320,64 +347,234 @@ class NASAExoplanetArchiveCollector(BaseExoplanetCollector):
                 star_identifier=star_name,
             )
 
-            designations_list = [star_name]
-            for col in ["hd_name", "hip_name", "tic_id"]:
-                val = row.get(col)
-                if pd.notna(val) and str(val).strip():
-                    designations_list.append(str(val).strip())
-
-            # Format RA and Dec
-            formatted_ra_star = None
-            if pd.notna(row.get("rastr")):
-                rastr_val_star = str(row["rastr"]).strip()
-                formatted_ra_star = (
-                    rastr_val_star.replace("h", "/").replace("m", "/").replace("s", "")
-                )
-
-            formatted_dec_star = None
-            if pd.notna(row.get("decstr")):
-                decstr_val_star = str(row["decstr"]).strip()
-                formatted_dec_star = (
-                    decstr_val_star.replace("d", "/").replace("m", "/").replace("s", "")
-                )
-
             star = Star(name=DataPoint(star_name, star_ref))
 
-            if formatted_ra_star:
+            # --- Identifiers ---
+            designations_list = [star_name]
+            # Common catalog names to include in designations
+            for col in ["hd_name", "hip_name", "tic_id", "gaia_id"]:
+                val = self._get_optional_string(row, col)
+                if val:
+                    designations_list.append(val)
+            # Remove duplicates by converting to set and back to list
+            star.designations = DataPoint(list(set(designations_list)), star_ref)
+
+            # --- Astrometry ---
+            # Right Ascension (RA) - Preferring string version (e.g., "14h29m42.95s")
+            rastr_val = self._get_optional_string(row, "rastr")
+            if rastr_val:
+                # The formatting "h/m/s" is a placeholder.
+                # Wikipedia templates like {{RA|hh|mm|ss.s}} are common.
+                # Further transformation might be needed in the infobox generator.
+                formatted_ra_star = (
+                    rastr_val.replace("h", "/").replace("m", "/").replace("s", "")
+                )
                 star.right_ascension = DataPoint(formatted_ra_star, star_ref)
-            if formatted_dec_star:
+            else:  # Fallback to decimal degrees if string version is not available
+                ra_deg_val = self._get_optional_float(row, "ra")
+                if ra_deg_val is not None:
+                    star.right_ascension = DataPoint(ra_deg_val, star_ref, "deg")
+
+            # Declination (Dec) - Preferring string version (e.g., "-62d40m46.1s")
+            decstr_val = self._get_optional_string(row, "decstr")
+            if decstr_val:
+                formatted_dec_star = (
+                    decstr_val.replace("d", "/").replace("m", "/").replace("s", "")
+                )
                 star.declination = DataPoint(formatted_dec_star, star_ref)
+            else:  # Fallback to decimal degrees
+                dec_deg_val = self._get_optional_float(row, "dec")
+                if dec_deg_val is not None:
+                    star.declination = DataPoint(dec_deg_val, star_ref, "deg")
 
-            star.designations = DataPoint(designations_list, star_ref)
+            # Epoch (using discovery year as a general epoch for the data)
+            # Note: Coordinate epoch (e.g., J2000) might be different and often isn't in basic CSVs.
+            disc_year_val = self._get_optional_float(row, "disc_year")
+            if disc_year_val is not None:
+                star.epoch = DataPoint(str(int(disc_year_val)), star_ref)
 
-            spectral_type_val = row.get("st_spectype")
-            if pd.notna(spectral_type_val):
-                star.spectral_type = DataPoint(str(spectral_type_val).strip(), star_ref)
-
-            # Numeric fields
-            numeric_fields_map = {
-                "temperature": ("st_teff", "K"),
-                "mass": ("st_mass", "M_S"),
-                "radius": ("st_rad", "R_S"),
-                "distance_pc": ("sy_dist", "pc"),
+            # Other numeric astrometry fields
+            numeric_astro_map = {
+                "radial_velocity": ("st_radv", None),  # Stellar Radial Velocity
+                "proper_motion_ra": ("sy_pmra", None),  # System Proper Motion in RA
+                "proper_motion_dec": (
+                    "sy_pmdec",
+                    "",
+                ),  # System Proper Motion in Dec
+                "parallax": ("sy_plx", None),  # System Parallax
             }
-
-            for field, (csv_col, unit) in numeric_fields_map.items():
-                value = self._safe_float_conversion(row.get(csv_col))
+            for field, (csv_col, unit) in numeric_astro_map.items():
+                value = self._get_optional_float(row, csv_col)
                 if value is not None:
                     setattr(star, field, DataPoint(value, star_ref, unit))
 
-            return star
+            # Distance
+            dist_pc_val = self._get_optional_float(row, "sy_dist")
 
+            star.distance = DataPoint(dist_pc_val, star_ref, "")
+
+            # --- Photometry ---
+            # Apparent magnitudes in various bands
+            photometry_map = {
+                # Star model attribute : (CSV column, unit (None for magnitudes))
+                "apparent_magnitude_u_band": ("sy_umag", None),  # U-band
+                "apparent_magnitude_b_band": ("sy_bmag", None),  # B-band
+                "apparent_magnitude_v_band": ("sy_vmag", None),  # V-band (explicit)
+                "apparent_magnitude_g_band": ("sy_gmag", None),  # Gaia G-band
+                "apparent_magnitude_r_band": ("sy_rmag", None),  # R-band
+                "apparent_magnitude_i_band": ("sy_imag", None),  # I-band
+                "apparent_magnitude_j_band": ("sy_jmag", None),  # J-band
+                "apparent_magnitude_h_band": ("sy_hmag", None),  # H-band
+                "apparent_magnitude_k_band": ("sy_kmag", None),  # K-band
+            }
+            magnitudes_retrieved = {}  # To store successfully retrieved magnitudes for color index calculation
+            for field, (csv_col, unit) in photometry_map.items():
+                value = self._get_optional_float(row, csv_col)
+                if value is not None:
+                    setattr(star, field, DataPoint(value, star_ref, unit))
+                    magnitudes_retrieved[csv_col] = (
+                        value  # Store by CSV column name for easy lookup
+                    )
+
+            # Calculate Color Indices (e.g., B-V)
+            if "sy_umag" in magnitudes_retrieved and "sy_bmag" in magnitudes_retrieved:
+                star.u_b_color = DataPoint(
+                    round(
+                        magnitudes_retrieved["sy_umag"]
+                        - magnitudes_retrieved["sy_bmag"],
+                        3,
+                    ),
+                    star_ref,
+                )
+            if "sy_bmag" in magnitudes_retrieved and "sy_vmag" in magnitudes_retrieved:
+                star.b_v_color = DataPoint(
+                    round(
+                        magnitudes_retrieved["sy_bmag"]
+                        - magnitudes_retrieved["sy_vmag"],
+                        3,
+                    ),
+                    star_ref,
+                )
+            if "sy_vmag" in magnitudes_retrieved and "sy_rmag" in magnitudes_retrieved:
+                star.v_r_color = DataPoint(
+                    round(
+                        magnitudes_retrieved["sy_vmag"]
+                        - magnitudes_retrieved["sy_rmag"],
+                        3,
+                    ),
+                    star_ref,
+                )
+            if "sy_rmag" in magnitudes_retrieved and "sy_imag" in magnitudes_retrieved:
+                star.r_i_color = DataPoint(
+                    round(
+                        magnitudes_retrieved["sy_rmag"]
+                        - magnitudes_retrieved["sy_imag"],
+                        3,
+                    ),
+                    star_ref,
+                )
+            if "sy_jmag" in magnitudes_retrieved and "sy_kmag" in magnitudes_retrieved:
+                star.j_k_color = DataPoint(
+                    round(
+                        magnitudes_retrieved["sy_jmag"]
+                        - magnitudes_retrieved["sy_kmag"],
+                        3,
+                    ),
+                    star_ref,
+                )
+            if "sy_jmag" in magnitudes_retrieved and "sy_hmag" in magnitudes_retrieved:
+                star.j_h_color = DataPoint(
+                    round(
+                        magnitudes_retrieved["sy_jmag"]
+                        - magnitudes_retrieved["sy_hmag"],
+                        3,
+                    ),
+                    star_ref,
+                )
+
+            # Absolute Magnitude (M_V)
+            # Formula: M = m - 5 * (log10(d_pc) - 1)
+            app_mag_v = magnitudes_retrieved.get(
+                "sy_vmag"
+            )  # Use V-band apparent magnitude
+            if app_mag_v is not None and dist_pc_val is not None and dist_pc_val > 0:
+                abs_mag_val = app_mag_v - 5 * (math.log10(dist_pc_val) - 1)
+                star.absolute_magnitude = DataPoint(
+                    round(abs_mag_val, 3), star_ref
+                )  # Unit is implicitly mag
+
+            # --- Physical Characteristics ---
+            spectral_type_val = self._get_optional_string(
+                row, "st_spectype"
+            )  # Stellar Spectral Type
+            if spectral_type_val:
+                star.spectral_type = DataPoint(spectral_type_val, star_ref)
+
+            physical_char_map = {
+                # Star model attribute :
+                "temperature": ("st_teff", None),  # Stellar Effective Temperature
+                "mass": ("st_mass", None),  # Stellar Mass (Solar masses)
+                "radius": ("st_rad", None),  # Stellar Radius (Solar radii)
+                "density": ("st_dens", None),  # Stellar Density
+                "surface_gravity": (
+                    "st_logg",
+                    None,
+                ),  # Stellar Surface Gravity (log10(cm/s^2))
+                "luminosity": (
+                    "st_lum",
+                    None,
+                ),  # Stellar Luminosity (log10(Solar Lum))
+                "metallicity": (
+                    "st_met",
+                    None,
+                ),  # Stellar Metallicity ([Fe/H] ratio)
+                "rotation": (
+                    "st_vsin",
+                    None,
+                ),
+                "age": ("st_age", None),  # Stellar Age
+            }
+            for field, (csv_col, unit) in physical_char_map.items():
+                value = self._get_optional_float(row, csv_col)
+                if value is not None:
+                    setattr(star, field, DataPoint(value, star_ref, unit))
+
+            # --- System Components ---
+            sys_components_map = {
+                "stellar_components": (
+                    "sy_snum",
+                    None,
+                ),
+                "planets": ("sy_pnum", None),
+            }
+            for field, (csv_col, unit) in sys_components_map.items():
+                val_str = self._get_optional_string(row, csv_col)
+                if val_str:
+                    try:
+                        # Convert to float first to handle "2.0", then to int
+                        count_val = int(float(val_str))
+                        setattr(star, field, DataPoint(count_val, star_ref, unit))
+                    except ValueError:
+                        logger.warning(
+                            f"Could not convert system component '{csv_col}' value '{val_str}' to int for {star_name}"
+                        )
+
+            # Note: Fields for secondary stellar components (e.g., mass_2, right_ascension_2) and
+            # binary orbital parameters (e.g., semi_major_axis for star-star binary) are not
+            # typically found in exoplanet host star CSVs like the one described by columns_exo_star.md.
+            # If such data is available under different column names, this mapping would need to be extended.
+
+            return star
         except KeyError as e:
             logger.error(
-                f"KeyError while converting row to Star for {row.get('hostname', 'Unknown')}: {e}. Available columns: {row.index.tolist()}",
-                exc_info=True,
+                f"KeyError while converting row to Star for {row.get('hostname', 'Unknown')}: {e}. "
+                f"Available columns: {row.index.tolist()}",
+                exc_info=True,  # Set to False in production if too verbose
             )
             return None
-        except Exception as e:
+        except Exception as e:  # Catch any other unexpected errors
             logger.error(
                 f"Unexpected error converting row to Star for {row.get('hostname', 'Unknown')}: {e}",
-                exc_info=True,
+                exc_info=True,  # Set to False in production if too verbose
             )
             return None
