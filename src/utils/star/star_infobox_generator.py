@@ -3,8 +3,8 @@ from src.models.star import (
     Star,
     DataPoint,
 )
-from src.utils.format_utils import FormatUtils
-from src.utils.star_utils import StarUtils
+from utils.formatting.format_utils import FormatUtils
+from src.utils.star.star_utils import StarUtils
 
 
 class StarInfoboxGenerator:

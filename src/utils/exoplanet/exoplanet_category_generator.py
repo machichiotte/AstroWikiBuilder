@@ -1,8 +1,8 @@
 # src/utils/exoplanet_category_generator.py
 from typing import List, Dict
 from src.models.exoplanet import Exoplanet
-from src.utils.exoplanet_type_utils import ExoplanetTypeUtils
-from src.utils.category_parser import parse_categories
+from src.utils.exoplanet.exoplanet_type_utils import ExoplanetTypeUtils
+from src.utils.wikipedia.category_parser import parse_categories
 import re
 
 

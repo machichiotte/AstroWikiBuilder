@@ -3,9 +3,10 @@ import locale
 import datetime
 import pytz
 from src.models.star import Star
-from .star_infobox_generator import StarInfoboxGenerator
+from src.utils.star.star_infobox_generator import StarInfoboxGenerator
+from src.utils.formatting.format_utils import FormatUtils
+
 from .reference_manager import ReferenceManager
-from .format_utils import FormatUtils
 
 
 class WikipediaStarGenerator:

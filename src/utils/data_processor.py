@@ -3,12 +3,12 @@ import logging
 from typing import List, Dict, Tuple, Any
 from src.models.star import Star
 from src.models.exoplanet import Exoplanet
-from src.utils.wikipedia_checker import WikiArticleInfo
+from src.utils.wikipedia.wikipedia_checker import WikiArticleInfo
 from src.services.star_repository import StarRepository
 from src.services.exoplanet_repository import ExoplanetRepository
 from src.services.statistics_service import StatisticsService
-from src.services.wikipedia_service import WikipediaService
 from src.services.export_service import ExportService
+from src.services.wikipedia_service import WikipediaService
 
 # Setup basic logging
 logging.basicConfig(

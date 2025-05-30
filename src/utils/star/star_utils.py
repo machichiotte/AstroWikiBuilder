@@ -1,6 +1,6 @@
 # src/utils/star_utils.py
-from src.constants.field_mappings import CONSTELLATION_FR, SPECTRAL_TYPE_DESCRIPTIONS
-from .format_utils import FormatUtils
+from src.constants.field_mappings import CONSTELLATION_FR
+from src.utils.formatting.format_utils import FormatUtils
 
 from astropy.coordinates import SkyCoord
 import astropy.units as u

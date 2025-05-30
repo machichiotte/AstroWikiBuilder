@@ -3,10 +3,11 @@ from src.constants.field_mappings import (
     SPECTRAL_TYPE_DESCRIPTIONS,
 )
 from src.models.exoplanet import Exoplanet
+from src.utils.star.star_utils import StarUtils
+from src.utils.formatting.format_utils import FormatUtils
+
 from .exoplanet_comparison_utils import ExoplanetComparisonUtils
 from .exoplanet_type_utils import ExoplanetTypeUtils
-from .star_utils import StarUtils
-from .format_utils import FormatUtils
 
 
 class ExoplanetIntroductionGenerator:

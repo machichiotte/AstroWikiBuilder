@@ -5,11 +5,13 @@ from typing import List, Tuple
 
 # Project imports
 from src.models.exoplanet import Exoplanet
-from src.models.star import Star  # Added for star drafts
-from src.utils.wikipedia_exoplanet_generator import WikipediaExoplanetGenerator
-from src.utils.wikipedia_star_generator import (
+from src.models.star import Star
+from src.utils.wikipedia.wikipedia_exoplanet_generator import (
+    WikipediaExoplanetGenerator,
+)
+from src.utils.wikipedia.wikipedia_star_generator import (
     WikipediaStarGenerator,
-)  # Added for star drafts
+)
 
 # Configure un logger pour ce module spécifique
 logger = logging.getLogger(__name__)
