@@ -49,7 +49,7 @@ class ExoplanetIntroductionGenerator:
 
         # Ajout de la distance
         if exoplanet.distance and exoplanet.distance.value:
-            distance_ly = self.format_utils.parsecs_to_lightyears(
+            distance_ly = self.format_utils.format_parsecs_to_lightyears(
                 exoplanet.distance.value
             )
             if distance_ly:

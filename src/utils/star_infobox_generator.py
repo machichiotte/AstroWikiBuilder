@@ -2,11 +2,7 @@ from typing import Any, Optional
 from src.models.star import (
     Star,
     DataPoint,
-)  # Assuming DataPoint is in star.py as per previous task
-# If DataPoint was moved to models.reference, this would be:
-# from src.models.star import Star
-# from src.models.reference import DataPoint
-# from src.utils.format_utils import FormatUtils # Will add if complex formatting is needed
+)
 
 
 class StarInfoboxGenerator:
