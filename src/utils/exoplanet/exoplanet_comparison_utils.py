@@ -115,69 +115,69 @@ class ExoplanetComparisonUtils:
         margin = self.SIMILARITY_MARGIN
 
         if sma < self.mercury_orbit_au * (1 - margin):
-            return "Son orbite est significativement plus proche de son étoile que celle de [[Mercure (planète)|Mercure]] autour du [[Soleil]]."
+            return "Son orbite est significativement plus proche de son étoile que la distance orbitale de [[Mercure (planète)|Mercure]] dans notre [[système solaire]]."
         elif (
             self.mercury_orbit_au * (1 - margin)
             <= sma
             <= self.mercury_orbit_au * (1 + margin)
         ):
-            return "Son orbite est comparable à celle de [[Mercure (planète)|Mercure]] autour du [[Soleil]]."
+            return "Son orbite est comparable à celle de [[Mercure (planète)|Mercure]] dans notre [[système solaire]]."
         elif sma < self.venus_orbit_au * (1 - margin):
-            return "Son orbite se situe entre celles de [[Mercure (planète)|Mercure]] et de [[Vénus (planète)|Vénus]] autour du [[Soleil]]."
+            return "Sa distance orbitale est comparable à la région entre [[Mercure (planète)|Mercure]] et [[Vénus (planète)|Vénus]] dans notre [[système solaire]]."
         elif (
             self.venus_orbit_au * (1 - margin)
             <= sma
             <= self.venus_orbit_au * (1 + margin)
         ):
-            return "Son orbite est comparable à celle de [[Vénus (planète)|Vénus]] autour du [[Soleil]]."
+            return "Son orbite est comparable à celle de [[Vénus (planète)|Vénus]] dans notre [[système solaire]]."
         elif sma < self.earth_orbit_au * (1 - margin):
-            return "Son orbite se situe entre celles de [[Vénus (planète)|Vénus]] et de la [[Terre]] autour du [[Soleil]]."
+            return "Sa distance orbitale est comparable à la région entre [[Vénus (planète)|Vénus]] et la [[Terre]] dans notre [[système solaire]]."
         elif (
             self.earth_orbit_au * (1 - margin)
             <= sma
             <= self.earth_orbit_au * (1 + margin)
         ):
-            return "Son orbite est comparable à celle de la [[Terre]] autour du [[Soleil]]."
+            return "Son orbite est comparable à celle de la [[Terre]] dans notre [[système solaire]]."
         elif sma < self.mars_orbit_au * (1 - margin):
-            return "Son orbite se situe entre celles de la [[Terre]] et de [[Mars (planète)|Mars]] autour du [[Soleil]]."
+            return "Sa distance orbitale est comparable à la région entre la [[Terre]] et [[Mars (planète)|Mars]] dans notre [[système solaire]]."
         elif (
             self.mars_orbit_au * (1 - margin)
             <= sma
             <= self.mars_orbit_au * (1 + margin)
         ):
-            return "Son orbite est comparable à celle de [[Mars (planète)|Mars]] autour du [[Soleil]]."
+            return "Son orbite est comparable à celle de [[Mars (planète)|Mars]] dans notre [[système solaire]]."
         elif sma < self.jupiter_orbit_au * (1 - margin):
             # This range is where the asteroid belt is located
-            return "Son orbite se situe entre celles de [[Mars (planète)|Mars]] et de [[Jupiter (planète)|Jupiter]], comparable à la [[ceinture d'astéroïdes]] dans le [[système solaire]]."
+            return "Sa distance orbitale est comparable à la région entre [[Mars (planète)|Mars]] et [[Jupiter (planète)|Jupiter]], similaire à la [[ceinture d'astéroïdes]] dans notre [[système solaire]]."
         elif (
             self.jupiter_orbit_au * (1 - margin)
             <= sma
             <= self.jupiter_orbit_au * (1 + margin)
         ):
-            return "Son orbite est comparable à celle de [[Jupiter (planète)|Jupiter]] autour du [[Soleil]]."
+            return "Son orbite est comparable à celle de [[Jupiter (planète)|Jupiter]] dans notre [[système solaire]]."
         elif sma < self.saturn_orbit_au * (1 - margin):
-            return "Son orbite se situe entre celles de [[Jupiter (planète)|Jupiter]] et de [[Saturne (planète)|Saturne]] autour du [[Soleil]]."
+            return "Sa distance orbitale est comparable à la région entre [[Jupiter (planète)|Jupiter]] et [[Saturne (planète)|Saturne]] dans notre [[système solaire]]."
         elif (
             self.saturn_orbit_au * (1 - margin)
             <= sma
             <= self.saturn_orbit_au * (1 + margin)
         ):
-            return "Son orbite est comparable à celle de [[Saturne (planète)|Saturne]] autour du [[Soleil]]."
+            return "Son orbite est comparable à celle de [[Saturne (planète)|Saturne]] dans notre [[système solaire]]."
         elif sma < self.uranus_orbit_au * (1 - margin):
-            return "Son orbite se situe entre celles de [[Saturne (planète)|Saturne]] et d'[[Uranus (planète)|Uranus]] autour du [[Soleil]]."
+            return "Sa distance orbitale est comparable à la région entre [[Saturne (planète)|Saturne]] et d'[[Uranus (planète)|Uranus]] dans notre [[système solaire]]."
         elif (
             self.uranus_orbit_au * (1 - margin)
             <= sma
             <= self.uranus_orbit_au * (1 + margin)
         ):
-            return "Son orbite est comparable à celle d'[[Uranus (planète)|Uranus]] autour du [[Soleil]]."
+            return "Son orbite est comparable à celle d'[[Uranus (planète)|Uranus]] dans notre [[système solaire]]."
         elif sma < self.neptune_orbit_au * (1 - margin):
-            return "Son orbite se situe entre celles d'[[Uranus (planète)|Uranus]] et de [[Neptune (planète)|Neptune]] autour du [[Soleil]]."
+            return "Sa distance orbitale est comparable à la région entre d'[[Uranus (planète)|Uranus]] et de [[Neptune (planète)|Neptune]] dans notre [[système solaire]]."
         elif (
             self.neptune_orbit_au * (1 - margin)
             <= sma
             <= self.neptune_orbit_au * (1 + margin)
         ):
-            return "Son orbite est comparable à celle de [[Neptune (planète)|Neptune]] autour du [[Soleil]]."
+            return "Son orbite est comparable à celle de [[Neptune (planète)|Neptune]] dans notre [[système solaire]]."
         else:
-            return "Son orbite est significativement plus éloignée de son étoile que celle de [[Neptune (planète)|Neptune]] autour du [[Soleil]]."
+            return "Son orbite est significativement plus éloignée de son étoile que la distance orbitale de [[Neptune (planète)|Neptune]] dans notre [[système solaire]]."
