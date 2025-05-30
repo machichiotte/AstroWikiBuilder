@@ -11,10 +11,10 @@ from src.data_collectors.exoplanet_eu import ExoplanetEUCollector
 from src.data_collectors.open_exoplanet_collection import OpenExoplanetCollector
 
 from src.utils.data_processor import DataProcessor
-from src.utils.wikipedia_checker import (
+from src.utils.wikipedia.wikipedia_checker import (
     WikipediaChecker,
     WikiArticleInfo,
-)  # Ensuring WikiArticleInfo is available
+)
 from src.services.star_repository import StarRepository
 from src.services.exoplanet_repository import ExoplanetRepository
 from src.services.statistics_service import StatisticsService
@@ -27,8 +27,6 @@ from src.utils.draft_utils import (
     save_exoplanet_drafts,
     save_star_drafts,
 )
-from src.utils.wikipedia_star_generator import WikipediaStarGenerator
-from src.models.star import Star  # Ensure Star is imported
 
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
