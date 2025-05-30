@@ -70,6 +70,20 @@ class FormatUtils:
 
         return value_str
 
+    def format_right_ascension(self, rastr_val: str) -> str:
+        """
+        Formats a right ascension string by replacing 'h', 'm', 's'
+        with '/' as needed for Wikipedia formatting.
+
+        Example: "12h34m56s" becomes "12/34/56"
+        """
+        if not isinstance(rastr_val, str):
+            # Handle cases where it might not be a string (e.g., NaN, other types)
+            return str(rastr_val)  # Or raise an error, or return a default value
+
+        formatted_ra = rastr_val.replace("h", "/").replace("m", "/").replace("s", "")
+        return formatted_ra
+
     # TODO check if utile or not
     def format_exoplanet_value(value, field_type):
         if value is None or value == "":

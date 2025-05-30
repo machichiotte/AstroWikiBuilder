@@ -17,16 +17,12 @@ class SourceType(Enum):
     OEC = "OEC"
 
 
-# je me suis trompé d'url pour NEA
-# https://exoplanetarchive.ipac.caltech.edu/overview/Kepler-100#planet_Kepler-100-b_collapsible
-# https://exoplanetarchive.ipac.caltech.edu/overview/{star}#planet_{planet}_collapsible
-
 # Métadonnées et modèles d'URL pour chaque source
 SOURCE_DETAILS = {
     SourceType.NEA: {
         "display_title": "NASA Exoplanet Archive",
-        # Modifié: retrait du slash final pour correspondre à l'URL désirée
-        "url_pattern": "https://exoplanetarchive.ipac.caltech.edu/overview/{star_id}#planet_{planet_id}_collapsible",
+        "url_pattern_star": "https://exoplanetarchive.ipac.caltech.edu/overview/{star_id}",
+        "url_pattern_exo": "https://exoplanetarchive.ipac.caltech.edu/overview/{star_id}#planet_{planet_id}_collapsible",
         "site": "science.nasa.gov",
         "wiki_pipe": "nom1=NEA",
         "template": "{{{{Lien web|langue=en|nom1=NEA|titre={title}|url={url}|site=science.nasa.gov|date={update_date}|consulté le={consultation_date}}}}}",
@@ -53,8 +49,8 @@ class Reference:
     source: SourceType
     update_date: datetime
     consultation_date: datetime
-    planet_identifier: Optional[str] = None
     star_identifier: Optional[str] = None
+    planet_identifier: Optional[str] = None
 
     def to_url(self, fallback_name: Optional[str] = None) -> str:
         details = SOURCE_DETAILS.get(self.source)
@@ -68,7 +64,12 @@ class Reference:
                 raise ValueError(
                     "Both star name and planet identifier are required for NEA"
                 )
-            return details["url_pattern"].format(star_id=star_id, planet_id=planet_id)
+            elif not planet_id:
+                return details["url_pattern_exo"].format(star_id=star_id)
+
+            return details["url_pattern_exo"].format(
+                star_id=star_id, planet_id=planet_id
+            )
 
         planet_id = self.identifier or (
             slugify(fallback_name) if fallback_name else None

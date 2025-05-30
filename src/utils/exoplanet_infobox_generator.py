@@ -123,10 +123,8 @@ class ExoplanetInfoboxGenerator:
         infobox += add_field("distance", "distance")
         infobox += add_field("type spectral", "spectral_type")
         infobox += add_field("magnitude apparente", "apparent_magnitude")
-        infobox += (
-            f" | carte UAI = {self.star_utils.get_exoplanet_constellation(exoplanet)}\n"
-        )
-        infobox += f" | constellation = {self.star_utils.get_exoplanet_constellation_formatted(exoplanet)}\n"
+        infobox += f" | carte UAI = {self.star_utils.get_constellation_name(exoplanet.right_ascension.value, exoplanet.declination.value)}\n"
+        infobox += f" | constellation = {self.star_utils.get_constellation_UAI(exoplanet.right_ascension.value, exoplanet.declination.value)}\n"
 
         planet_type_value = self.planet_type_utils.get_exoplanet_planet_type(exoplanet)
         if planet_type_value:
@@ -157,20 +155,12 @@ class ExoplanetInfoboxGenerator:
         infobox += add_field("vitesse des vents", "wind_speed")
 
         infobox += add_field("découvreurs", "discoverers")
-        infobox += add_field(
-            "programme", "discovery_program"
-        )  # Sera lié si dans WIKILINK_FIELDS_DIRECT
-        infobox += add_field(
-            "méthode", "discovery_method"
-        )  # Logique spéciale via METHOD_NAME_MAPPING
+        infobox += add_field("programme", "discovery_program")
+        infobox += add_field("méthode", "discovery_method")
         infobox += add_field("date", "discovery_date")
-        infobox += add_field(
-            "lieu", "discovery_location"
-        )  # Sera lié si dans WIKILINK_FIELDS_DIRECT
+        infobox += add_field("lieu", "discovery_location")
         infobox += add_field("prédécouverte", "pre_discovery")
-        infobox += add_field(
-            "détection", "detection_method"
-        )  # Peut-être redondant avec "méthode" ou nécessiter un mapping similaire
+        infobox += add_field("détection", "detection_method")
         infobox += add_field("statut", "status")
 
         other_names_list = val("other_names")

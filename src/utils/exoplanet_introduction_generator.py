@@ -1,4 +1,7 @@
-from src.constants.field_mappings import CONSTELLATION_GENDER
+from src.constants.field_mappings import (
+    CONSTELLATION_GENDER,
+    SPECTRAL_TYPE_DESCRIPTIONS,
+)
 from src.models.exoplanet import Exoplanet
 from .exoplanet_comparison_utils import ExoplanetComparisonUtils
 from .exoplanet_type_utils import ExoplanetTypeUtils
@@ -28,7 +31,7 @@ class ExoplanetIntroductionGenerator:
         planet_type = self.planet_type_utils.get_exoplanet_planet_type(exoplanet)
 
         # Obtenir la description de l'étoile
-        star_desc = self.star_utils.get_exoplanet_spectral_type_formatted_description(
+        star_desc = self._get_exoplanet_spectral_type_formatted_description(
             exoplanet.spectral_type.value if exoplanet.spectral_type else None
         )
 
@@ -57,7 +60,7 @@ class ExoplanetIntroductionGenerator:
 
         # Ajout de la constellation
         if exoplanet.constellation and exoplanet.constellation.value:
-            const = self.star_utils.get_exoplanet_constellation(
+            const = self.star_utils.get_constellation_name(
                 exoplanet.constellation.value
             )
             introduction += f" {self.get_constellation_phrase(const)}"
@@ -77,3 +80,15 @@ class ExoplanetIntroductionGenerator:
             if not preposition.endswith("'")
             else f"dans la constellation {preposition}{nom_fr}"
         )
+
+    def _get_exoplanet_spectral_type_formatted_description(
+        self, spectral_type: str
+    ) -> str:
+        """Génère une description de l'étoile avec le type spectral."""
+        if not spectral_type:
+            return "son étoile hôte"
+
+        spectral_class = spectral_type[0].upper()
+        description = SPECTRAL_TYPE_DESCRIPTIONS.get(spectral_class, "son étoile hôte")
+
+        return f"[[{description}]]"

@@ -3,6 +3,8 @@ from src.models.star import (
     Star,
     DataPoint,
 )
+from src.utils.format_utils import FormatUtils
+from src.utils.star_utils import StarUtils
 
 
 class StarInfoboxGenerator:
@@ -11,7 +13,8 @@ class StarInfoboxGenerator:
     """
 
     def __init__(self):
-        # self.format_utils = FormatUtils() # Not strictly needed for this simplified version
+        self.format_utils = FormatUtils()
+        self.star_utils = StarUtils(self.format_utils)
         pass
 
     def _add_field(
@@ -108,7 +111,7 @@ class StarInfoboxGenerator:
             if (
                 infobox_field_name
                 not in [
-                    "métallicité ([Fe/H])",
+                    "métallicité",
                     "type spectral",
                     "époque",
                     "constellation",
@@ -136,13 +139,12 @@ class StarInfoboxGenerator:
         infobox += self._add_field(star, "upright", "upright")  # Image scaling
         infobox += self._add_field(star, "caption", "légende")
         infobox += self._add_field(star, "coord_title", "coord titre")  # oui/non
-        infobox += self._add_field(star, "iau_map", "carte UAI")
+        infobox += f" | carte UAI = {self.star_utils.get_constellation_name(star.right_ascension.value, star.declination.value)}\n"
         infobox += self._add_field(star, "designations", "désignations")
 
         # Section: Données d'observation
         infobox += self._add_field(star, "epoch", "époque")  # Epoch for coordinates
-        infobox += self._add_field(star, "constellation", "constellation")
-
+        infobox += f" | constellation = {self.star_utils.get_constellation_UAI(star.right_ascension.value, star.declination.value)}\n"
         infobox += self._add_field(star, "right_ascension", "ascension droite")
         infobox += self._add_field(star, "right_ascension_2", "ascension droite 2")
         infobox += self._add_field(star, "declination", "déclinaison")

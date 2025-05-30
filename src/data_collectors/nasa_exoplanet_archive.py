@@ -45,81 +45,6 @@ class NASAExoplanetArchiveCollector(BaseExoplanetCollector):
         # Si le fichier que vous sauvegardez/mockez en a, ajustez ici.
         return {}
 
-    def _parse_epoch_string(self, epoch_str: str) -> Optional[str]:
-        """
-        Parses the epoch string (pl_tranmidstr) which can be in several formats:
-        1. "2458950.09242&plusmn0.00076" -> "2458950.09242 ± 0.00076"
-        2. "<div><span class=supersubNumber">2458360.0754</span><span class="superscript">+0.0049</span><span class="subscript">-0.0078</span></div>"
-           -> "2458360.0754{{±|0.0049|0.0078}}"
-        3. "2458360.0754" (a simple numerical value) -> "2458360.0754"
-        4. "&gt789" -> "> 789"
-        5. "&lt1084" -> "< 1084"
-
-        Returns the formatted string or None if parsing fails.
-        """
-        if pd.isna(epoch_str) or not isinstance(epoch_str, str):
-            return None
-
-        epoch_str_val = epoch_str.strip()
-
-        # Case 1: Simple string with &plusmn
-        if "&plusmn" in epoch_str_val:
-            return epoch_str_val.replace("&plusmn", " ± ")
-
-        # Case 2: HTML snippet
-        elif "div" in epoch_str_val and "<span" in epoch_str_val:
-            # Pre-process the HTML to fix the common malformation: class=value" -> class="value"
-            fixed_html_str = re.sub(r'class=(\w+)"', r'class="\1"', epoch_str_val)
-            soup = BeautifulSoup(fixed_html_str, "html5lib")
-
-            base_value_span = soup.find("span", class_="supersubNumber")
-            superscript_span = soup.find("span", class_="superscript")
-            subscript_span = soup.find("span", class_="subscript")
-
-            if base_value_span:
-                formatted_epoch = base_value_span.get_text().strip()
-                error_part = ""
-
-                pos_error = (
-                    superscript_span.get_text().strip().replace("+", "")
-                    if superscript_span
-                    else ""
-                )
-                neg_error = (
-                    subscript_span.get_text().strip().replace("-", "")
-                    if subscript_span
-                    else ""
-                )
-
-                if pos_error and neg_error:
-                    error_part = f"{{{{±|{pos_error}|{neg_error}}}}}"
-                elif pos_error:
-                    error_part = f"{{{{±|{pos_error}|}}}}"
-                elif neg_error:
-                    error_part = f"{{{{±||{neg_error}}}}}"
-
-                return formatted_epoch + error_part
-            else:
-                logger.warning(
-                    f"Could not find base value span in HTML epoch (even after fixing and html5lib): {epoch_str_val}"
-                )
-                return None
-
-        # Case 4 & 5: Greater than or Less than (e.g., "&gt789", "&lt1084")
-        elif epoch_str_val.startswith("&gt"):
-            return f"> {epoch_str_val[3:].strip()}"
-        elif epoch_str_val.startswith("&lt"):
-            return f"< {epoch_str_val[3:].strip()}"
-
-        # Case 3: Simple numerical value (as a last resort)
-        else:
-            try:
-                float(epoch_str_val)
-                return epoch_str_val
-            except ValueError:
-                logger.warning(f"Unrecognized epoch format: {epoch_str_val}")
-                return None
-
     def load_data(self) -> tuple[List[Exoplanet], List[Star]]:
         df = self._get_data_frame()
         if df is None or df.empty:
@@ -166,55 +91,11 @@ class NASAExoplanetArchiveCollector(BaseExoplanetCollector):
 
             nea_ref = Reference(
                 source=ref.source,
-                update_date=ref.update_date,  # Utilisez la date de la ref de base
-                consultation_date=ref.consultation_date,  # Utilisez la date de la ref de base
-                planet_identifier=str(
-                    pl_name_val
-                ).strip(),  # Définissez l'identifiant de la planète
-                star_identifier=str(
-                    hostname_val
-                ).strip(),  # Définissez l'identifiant de l'étoile
+                update_date=ref.update_date,
+                consultation_date=ref.consultation_date,
+                planet_identifier=str(pl_name_val).strip(),
+                star_identifier=str(hostname_val).strip(),
             )
-
-            (
-                formatted_ra,
-                formatted_dec,
-                formatted_epoch,
-                formatted_orbital_period,
-                formatted_inclination,
-            ) = None, None, None, None, None
-            if pd.notna(row.get("rastr")):
-                rastr_val = str(row["rastr"]).strip()
-                formatted_ra = (
-                    rastr_val.replace("h", "/").replace("m", "/").replace("s", "")
-                )
-            if pd.notna(row.get("decstr")):
-                decstr_val = str(row["decstr"]).strip()
-                formatted_dec = (
-                    decstr_val.replace("d", "/").replace("m", "/").replace("s", "")
-                )
-            if pd.notna(row.get("pl_tranmidstr")):
-                formatted_epoch = self._parse_epoch_string(row.get("pl_tranmidstr"))
-
-            if pd.notna(row.get("pl_orbperstr")):
-                formatted_orbital_period = self._parse_epoch_string(
-                    row.get("pl_orbperstr")
-                )
-
-            if (
-                pd.notna(row.get("pl_orbincl"))
-                and pd.notna(row.get("pl_orbinclerr1"))
-                and pd.notna(row.get("pl_orbinclerr2"))
-            ):
-                pl_orbincl_val = row["pl_orbincl"]
-                pl_orbinclerr1_val = abs(
-                    self._safe_float_conversion(row["pl_orbinclerr1"])
-                )
-                pl_orbinclerr2_val = abs(
-                    self._safe_float_conversion(row["pl_orbinclerr2"])
-                )  # abs car err2 est souvent négatif
-                if pl_orbinclerr1_val is not None and pl_orbinclerr2_val is not None:
-                    formatted_inclination = f"{pl_orbincl_val}{{{{±|{pl_orbinclerr1_val}|{pl_orbinclerr2_val}}}}}"
 
             exoplanet = Exoplanet(
                 name=str(row["pl_name"]).strip(),
@@ -226,24 +107,53 @@ class NASAExoplanetArchiveCollector(BaseExoplanetCollector):
                 if pd.notna(row["disc_year"])
                 else None,
             )
-            # Assignation des valeurs formatées si elles existent
+
+            (
+                formatted_ra,
+                formatted_dec,
+                formatted_epoch,
+                formatted_orb_per,
+                formatted_inclination,
+            ) = None, None, None, None, None
+            if pd.notna(row.get("rastr")):
+                formatted_ra = self._format_right_ascension(str(row["rastr"]).strip())
+            if pd.notna(row.get("decstr")):
+                formatted_dec = self._format_declination(str(row["decstr"]).strip())
+            if pd.notna(row.get("pl_tranmidstr")):
+                formatted_epoch = self._parse_epoch_string(row.get("pl_tranmidstr"))
+            if pd.notna(row.get("pl_orbperstr")):
+                formatted_orb_per = self._parse_epoch_string(row.get("pl_orbperstr"))
+            if (
+                pd.notna(row.get("pl_orbincl"))
+                and pd.notna(row.get("pl_orbinclerr1"))
+                and pd.notna(row.get("pl_orbinclerr2"))
+            ):
+                pl_orbincl_val = row["pl_orbincl"]
+                pl_orbinclerr1_val = abs(
+                    self._safe_float_conversion(row["pl_orbinclerr1"])
+                )
+                pl_orbinclerr2_val = abs(
+                    self._safe_float_conversion(row["pl_orbinclerr2"])
+                )
+                if pl_orbinclerr1_val is not None and pl_orbinclerr2_val is not None:
+                    formatted_inclination = f"{pl_orbincl_val}{{{{±|{pl_orbinclerr1_val}|{pl_orbinclerr2_val}}}}}"
+
             if formatted_ra:
                 exoplanet.right_ascension = DataPoint(formatted_ra, nea_ref)
             if formatted_dec:
                 exoplanet.declination = DataPoint(formatted_dec, nea_ref)
             if formatted_epoch:
                 exoplanet.epoch = DataPoint(formatted_epoch, nea_ref)
-
-            if formatted_orbital_period:
-                exoplanet.orbital_period = DataPoint(formatted_orbital_period, nea_ref)
+            if formatted_orb_per:
+                exoplanet.orbital_period = DataPoint(formatted_orb_per, nea_ref)
             if formatted_inclination:
                 exoplanet.inclination = DataPoint(formatted_inclination, nea_ref)
 
             orbital_fields_map = {
-                "semi_major_axis": ("pl_orbsmax", "ua"),
+                "semi_major_axis": ("pl_orbsmax", None),
                 "eccentricity": ("pl_orbeccen", None),
-                "argument_of_periastron": ("pl_orblper", "°"),
-                "periastron_time": ("pl_orbtper", "j"),
+                "argument_of_periastron": ("pl_orblper", None),
+                "periastron_time": ("pl_orbtper", None),
             }
 
             for field, (csv_field, unit) in orbital_fields_map.items():
@@ -253,9 +163,9 @@ class NASAExoplanetArchiveCollector(BaseExoplanetCollector):
 
             # Caractéristiques physiques
             for field, csv_field, unit in [
-                ("mass", "pl_bmassj", "M_J"),
-                ("radius", "pl_radj", "R_J"),
-                ("temperature", "pl_eqt", "K"),
+                ("mass", "pl_bmassj", None),
+                ("radius", "pl_radj", None),
+                ("temperature", "pl_eqt", None),
             ]:
                 value = self._safe_float_conversion(row.get(csv_field))
                 if value is not None:
@@ -264,15 +174,11 @@ class NASAExoplanetArchiveCollector(BaseExoplanetCollector):
             # Informations sur l'étoile
             for field, csv_field, unit in [
                 ("spectral_type", "st_spectype", None),
-                ("star_temperature", "st_teff", "K"),
-                ("star_radius", "st_rad", "R_S"),
-                ("star_mass", "st_mass", "M_S"),
-                ("distance", "sy_dist", "pc"),
+                ("distance", "sy_dist", None),
                 ("apparent_magnitude", "sy_vmag", None),
             ]:
                 value = row.get(csv_field)
                 if pd.notna(value):
-                    # La conversion float est déjà gérée si c'est un nombre, sinon on prend la chaîne
                     processed_value = (
                         self._safe_float_conversion(value)
                         if isinstance(value, (int, float, str))
@@ -284,7 +190,7 @@ class NASAExoplanetArchiveCollector(BaseExoplanetCollector):
                             exoplanet, field, DataPoint(processed_value, nea_ref, unit)
                         )
 
-            if pd.notna(row.get("pl_altname")):  # NASA utilise 'pl_altname'
+            if pd.notna(row.get("pl_altname")):
                 names = str(row["pl_altname"]).split(",")
                 for name in names:
                     name = name.strip()
@@ -363,12 +269,7 @@ class NASAExoplanetArchiveCollector(BaseExoplanetCollector):
             # Right Ascension (RA) - Preferring string version (e.g., "14h29m42.95s")
             rastr_val = self._get_optional_string(row, "rastr")
             if rastr_val:
-                # The formatting "h/m/s" is a placeholder.
-                # Wikipedia templates like {{RA|hh|mm|ss.s}} are common.
-                # Further transformation might be needed in the infobox generator.
-                formatted_ra_star = (
-                    rastr_val.replace("h", "/").replace("m", "/").replace("s", "")
-                )
+                formatted_ra_star = self._format_right_ascension(rastr_val)
                 star.right_ascension = DataPoint(formatted_ra_star, star_ref)
             else:  # Fallback to decimal degrees if string version is not available
                 ra_deg_val = self._get_optional_float(row, "ra")
@@ -378,9 +279,7 @@ class NASAExoplanetArchiveCollector(BaseExoplanetCollector):
             # Declination (Dec) - Preferring string version (e.g., "-62d40m46.1s")
             decstr_val = self._get_optional_string(row, "decstr")
             if decstr_val:
-                formatted_dec_star = (
-                    decstr_val.replace("d", "/").replace("m", "/").replace("s", "")
-                )
+                formatted_dec_star = self._format_declination(decstr_val)
                 star.declination = DataPoint(formatted_dec_star, star_ref)
             else:  # Fallback to decimal degrees
                 dec_deg_val = self._get_optional_float(row, "dec")
@@ -578,3 +477,106 @@ class NASAExoplanetArchiveCollector(BaseExoplanetCollector):
                 exc_info=True,  # Set to False in production if too verbose
             )
             return None
+
+    def _format_right_ascension(self, rastr_val: str) -> str:
+        """
+        Formats a right ascension string by replacing 'h', 'm', 's'
+        with '/' as needed for Wikipedia formatting.
+
+        Example: "12h34m56s" becomes "12/34/56"
+        """
+        if not isinstance(rastr_val, str):
+            # Handle cases where it might not be a string (e.g., NaN, other types)
+            return str(rastr_val)  # Or raise an error, or return a default value
+
+        formatted_ra = rastr_val.replace("h", "/").replace("m", "/").replace("s", "")
+        return formatted_ra
+
+    def _format_declination(self, decstr_val: str) -> str:
+        """
+        Formats a declination string by replacing 'd', 'm', 's'
+        with '/' as needed for Wikipedia formatting.
+
+        Example: "+23d45m01s" becomes "+23/45/01"
+        """
+        if not isinstance(decstr_val, str):
+            # Handle cases where it might not be a string
+            return str(decstr_val)
+
+        formatted_dec = decstr_val.replace("d", "/").replace("m", "/").replace("s", "")
+        return formatted_dec
+
+    def _parse_epoch_string(self, epoch_str: str) -> Optional[str]:
+        """
+        Parses the epoch string (pl_tranmidstr) which can be in several formats:
+        1. "2458950.09242&plusmn0.00076" -> "2458950.09242 ± 0.00076"
+        2. "<div><span class=supersubNumber">2458360.0754</span><span class="superscript">+0.0049</span><span class="subscript">-0.0078</span></div>"
+           -> "2458360.0754{{±|0.0049|0.0078}}"
+        3. "2458360.0754" (a simple numerical value) -> "2458360.0754"
+        4. "&gt789" -> "> 789"
+        5. "&lt1084" -> "< 1084"
+
+        Returns the formatted string or None if parsing fails.
+        """
+        if pd.isna(epoch_str) or not isinstance(epoch_str, str):
+            return None
+
+        epoch_str_val = epoch_str.strip()
+
+        # Case 1: Simple string with &plusmn
+        if "&plusmn" in epoch_str_val:
+            return epoch_str_val.replace("&plusmn", " ± ")
+
+        # Case 2: HTML snippet
+        elif "div" in epoch_str_val and "<span" in epoch_str_val:
+            # Pre-process the HTML to fix the common malformation: class=value" -> class="value"
+            fixed_html_str = re.sub(r'class=(\w+)"', r'class="\1"', epoch_str_val)
+            soup = BeautifulSoup(fixed_html_str, "html5lib")
+
+            base_value_span = soup.find("span", class_="supersubNumber")
+            superscript_span = soup.find("span", class_="superscript")
+            subscript_span = soup.find("span", class_="subscript")
+
+            if base_value_span:
+                formatted_epoch = base_value_span.get_text().strip()
+                error_part = ""
+
+                pos_error = (
+                    superscript_span.get_text().strip().replace("+", "")
+                    if superscript_span
+                    else ""
+                )
+                neg_error = (
+                    subscript_span.get_text().strip().replace("-", "")
+                    if subscript_span
+                    else ""
+                )
+
+                if pos_error and neg_error:
+                    error_part = f"{{{{±|{pos_error}|{neg_error}}}}}"
+                elif pos_error:
+                    error_part = f"{{{{±|{pos_error}|}}}}"
+                elif neg_error:
+                    error_part = f"{{{{±||{neg_error}}}}}"
+
+                return formatted_epoch + error_part
+            else:
+                logger.warning(
+                    f"Could not find base value span in HTML epoch (even after fixing and html5lib): {epoch_str_val}"
+                )
+                return None
+
+        # Case 4 & 5: Greater than or Less than (e.g., "&gt789", "&lt1084")
+        elif epoch_str_val.startswith("&gt"):
+            return f"> {epoch_str_val[3:].strip()}"
+        elif epoch_str_val.startswith("&lt"):
+            return f"< {epoch_str_val[3:].strip()}"
+
+        # Case 3: Simple numerical value (as a last resort)
+        else:
+            try:
+                float(epoch_str_val)
+                return epoch_str_val
+            except ValueError:
+                logger.warning(f"Unrecognized epoch format: {epoch_str_val}")
+                return None
