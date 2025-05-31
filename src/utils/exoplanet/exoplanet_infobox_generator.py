@@ -5,7 +5,7 @@ from src.constants.field_mappings import (
 )
 from src.models.exoplanet import Exoplanet
 from src.utils.wikipedia.reference_manager import ReferenceManager
-from src.utils.formatting.format_utils import FormatUtils
+from src.formatters.format_utils import FormatUtils
 from src.utils.star.star_utils import StarUtils
 
 from .exoplanet_type_utils import ExoplanetTypeUtils

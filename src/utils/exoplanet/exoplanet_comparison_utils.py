@@ -1,5 +1,5 @@
 from src.models.exoplanet import Exoplanet
-from src.utils.formatting.format_utils import FormatUtils
+from src.formatters.format_utils import FormatUtils
 
 
 class ExoplanetComparisonUtils:

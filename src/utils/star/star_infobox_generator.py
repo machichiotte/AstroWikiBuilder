@@ -3,7 +3,7 @@ from src.models.star import (
     Star,
     DataPoint,
 )
-from src.utils.formatting.format_utils import FormatUtils
+from src.formatters.format_utils import FormatUtils
 from src.utils.star.star_utils import StarUtils
 
 

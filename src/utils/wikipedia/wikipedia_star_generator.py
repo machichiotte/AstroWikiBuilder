@@ -3,8 +3,9 @@ import locale
 import datetime
 import pytz
 from src.models.star import Star
-from src.utils.star.star_infobox_generator import StarInfoboxGenerator
-from src.utils.formatting.format_utils import FormatUtils
+
+from src.generators.star_infobox_generator_v2 import StarInfoboxGenerator
+from src.formatters.format_utils import FormatUtils
 
 from .reference_manager import ReferenceManager
 

@@ -4,7 +4,7 @@ import datetime
 import pytz
 from src.models.exoplanet import Exoplanet
 
-from src.utils.formatting.format_utils import FormatUtils
+from src.formatters.format_utils import FormatUtils
 from src.utils.star.star_utils import StarUtils
 
 from src.utils.exoplanet.exoplanet_comparison_utils import ExoplanetComparisonUtils
@@ -31,7 +31,6 @@ class WikipediaExoplanetGenerator:
         "demi-grand axe": "ua",
         "période": "j",  # jours
         "inclinaison": "°",  # degrés
-        # Add other fields if they have common default units displayed in infoboxes
         "périastre": "ua",
         "apoastre": "ua",
         "masse minimale": "M_J",
