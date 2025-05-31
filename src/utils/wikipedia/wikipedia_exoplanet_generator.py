@@ -187,7 +187,9 @@ class WikipediaExoplanetGenerator:
         else:
             unit_text = "[[unité astronomique|unités astronomiques]]"
 
-        section += f"Elle orbite à {{{{unité|{semi_major_axis_str}|{unit_text}}}}} de son étoile{orbital_comparison}."
+        section += f"Elle orbite à {{{{unité|{semi_major_axis_str}|{unit_text}}}}} de son étoile."
+        section += " "
+        section += f"{orbital_comparison}."
 
         return section
 

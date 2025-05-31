@@ -137,7 +137,6 @@ class ExoplanetCategoryGenerator:
                     categories.add(target_category)
 
         # Catégorie par instrument/telescope de découverte
-        # Using exoplanet.discovered_by.value as per task instructions
         if (
             hasattr(exoplanet, "discovered_by")
             and exoplanet.discovered_by
