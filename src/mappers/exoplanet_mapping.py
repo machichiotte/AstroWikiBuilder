@@ -1,4 +1,4 @@
-# src/mappers/star_mapping.py
+# src/mappers/exoplanet_mapping.py
 from typing import List, Optional, Callable, Any
 from dataclasses import dataclass
 from enum import Enum

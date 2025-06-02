@@ -208,7 +208,6 @@ class NasaExoplanetArchiveMapper:
 
     def map_nasa_data_to_exoplanet(self, nasa_data: Dict[str, Any]) -> Exoplanet:
         """Convertit un dictionnaire de données NASA vers un objet Exoplanet"""
-        print("map_nasa_data_to_exoplanet 1")
         exoplanet = Exoplanet()
         # Create a NASA reference for all data points originating from this source
         nasa_reference = Reference(
@@ -218,7 +217,6 @@ class NasaExoplanetArchiveMapper:
             star_identifier=nasa_data.get("hostname"),
             planet_identifier=nasa_data.get("pl_name"),
         )
-        print("map_nasa_data_to_exoplanet 2")
 
         for nasa_field, exoplanet_attribute in self.NASA_TO_EXOPLANET_MAPPING.items():
             if nasa_field in nasa_data:
@@ -312,8 +310,6 @@ class NasaExoplanetArchiveMapper:
                     )
             except (ValueError, TypeError):
                 pass
-        print("map_nasa_data_to_exoplanet 3")
-        print("map_nasa_data_to_exoplanet 4 :: " + str(exoplanet))
 
         return exoplanet
 
