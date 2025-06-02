@@ -30,7 +30,6 @@ class ExoplanetRepository:
                 logger.debug(
                     f"Merging data for existing exoplanet: {exoplanet.name.value}"
                 )
-                # self.exoplanets[exoplanet.name.value].merge_with(exoplanet)
                 merged_count += 1
             else:
                 logger.debug(f"Adding new exoplanet: {exoplanet.name.value}")

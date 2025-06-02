@@ -134,8 +134,15 @@ class ExoplanetIntroductionGenerator:
         planet_type = self.planet_type_utils.get_exoplanet_planet_type(exoplanet)
         # planet_type est supposé être une chaîne comme "Jupiter chaud", pour être utilisé dans "[[Jupiter chaud]]"
 
+        planet_name_str = "Nom inconnu"
+        if hasattr(exoplanet, "name") and exoplanet.name and hasattr(exoplanet.name, "value") and exoplanet.name.value:
+            planet_name_str = exoplanet.name.value
+        elif hasattr(exoplanet, "name") and isinstance(exoplanet.name, str): # Fallback if name is already a string
+            planet_name_str = exoplanet.name
+
+
         base_intro = (
-            f"'''{exoplanet.name}''' est une exoplanète de type [[{planet_type}]]"
+            f"'''{planet_name_str}''' est une exoplanète de type [[{planet_type}]]"
         )
 
         parts = [base_intro]

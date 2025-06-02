@@ -28,7 +28,6 @@ class StarRepository:
                 continue
             if star.name.value in self.stars:
                 logger.debug(f"Merging data for existing star: {star.name.value}")
-                # self.stars[star.name.value].merge_with(star)
                 merged_count += 1
             else:
                 logger.debug(f"Adding new star: {star.name.value}")

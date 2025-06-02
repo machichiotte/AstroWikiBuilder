@@ -98,16 +98,17 @@ class ExoplanetInfoboxGenerator:
             value, unit, mapping.infobox_field, mapping.field_type
         )
 
-        # Build main field line: "| <infobox_field> = <formatted_value>"
-        infobox_block = f"| {mapping.infobox_field} = {formatted_value}"
+        # formatted_value now contains the full " | field_name = value_content"
+        # (potentially multi-line for fields with separate units from FieldFormatter)
+        infobox_block = formatted_value
 
         # 4. Attempt to extract a reference (notes) from datapoint
         notes_ref = self._extract_notes(datapoint, exoplanet)
         if notes_ref:
+            # Append notes as a new, correctly formatted line
             infobox_block += f"\n| {mapping.infobox_field} notes = {notes_ref}"
-
-        # Always add a trailing newline
-        return infobox_block
+        
+        return infobox_block # The calling function (generate_exoplanet_infobox) joins blocks with newlines
 
     def _extract_field_value(
         self, datapoint: DataPoint

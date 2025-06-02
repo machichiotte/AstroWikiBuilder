@@ -13,7 +13,7 @@ class FieldFormatter:
 
         output = f" | {infobox_field} = {value}"
 
-        return output + "\n"
+        return output
 
     @staticmethod
     def format_designations(value: Any, infobox_field: str) -> str:
@@ -22,10 +22,10 @@ class FieldFormatter:
             processed_list = [str(v) for v in value if str(v).strip()]
             if not processed_list:
                 return ""
-            return f" | {infobox_field} = {', '.join(processed_list)}\n"
+            return f" | {infobox_field} = {', '.join(processed_list)}"
 
         if value and str(value).strip():
-            return f" | {infobox_field} = {value}\n"
+            return f" | {infobox_field} = {value}"
 
         return ""
 
@@ -34,7 +34,7 @@ class FieldFormatter:
         """Formate le champ âge avec notation scientifique"""
         if not value:
             return ""
-        return f" | {infobox_field} = {value}×10<sup>9</sup>\n"
+        return f" | {infobox_field} = {value}×10<sup>9</sup>"
 
     @staticmethod
     def format_separate_unit_field(
@@ -44,11 +44,11 @@ class FieldFormatter:
         if not value:
             return ""
 
-        result = f" | {infobox_field} = {value}\n"
+        result = f" | {infobox_field} = {value}"
 
         if unit:
             unit_param = FieldFormatter._get_unit_param_name(infobox_field)
-            result += f" | {unit_param} = {unit}\n"
+            result += f"\n | {unit_param} = {unit}" # Add newline here if unit exists
 
         return result
 
