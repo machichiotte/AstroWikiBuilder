@@ -1,4 +1,4 @@
-# src/utils/wikipedia_star_generator.py
+# File: src/utils/wikipedia_star_generator.py
 import locale
 import datetime
 import pytz
@@ -13,22 +13,24 @@ from .reference_manager import ReferenceManager
 class WikipediaStarGenerator:
     """
     Classe pour générer les articles Wikipedia des étoiles.
-    Actuellement, ne génère que l'infobox.
+    Refactoring inspiré du modèle exoplanète :
+      - fonctions dédiées pour chaque section (infobox, introduction, références, catégories)
+      - placeholders pour les sections futures (ex. : historique, description détaillée)
     """
 
     def __init__(self):
         """
         Initialise le générateur d'article pour une étoile.
         """
-        # Future: Initialize other generators like introduction, categories, etc.
         self.reference_manager = ReferenceManager()
-        # Assuming StarInfoboxGenerator and FormatUtils might need ReferenceManager
         self.infobox_generator = StarInfoboxGenerator()
         self.format_utils = FormatUtils()
         self._setup_locale()
 
     def _setup_locale(self):
-        """Sets up the locale for French date formatting."""
+        """
+        Configure la locale pour un formatage français (dates, etc.).
+        """
         try:
             locale.setlocale(locale.LC_ALL, "fr_FR.UTF-8")
         except locale.Error:
@@ -40,16 +42,14 @@ class WikipediaStarGenerator:
                 except locale.Error:
                     default_locale = locale.getdefaultlocale()[0]
                     locale.setlocale(locale.LC_ALL, default_locale or "C.UTF-8")
+                    # Si la locale française n'est pas disponible, on émet un avertissement
                     print(
-                        f"French locale (fr_FR.UTF-8, fr_FR, french_France) not available. "
-                        f"Using default system locale: {default_locale or 'C.UTF-8'}. "
-                        "Date formatting may not be in French."
+                        f"French locale not available. Using default: {default_locale or 'C.UTF-8'}."
                     )
 
     def _get_formatted_french_utc_plus_1_date(self) -> str:
         """
-        Returns the current date as a string formatted "mois année" in French (e.g., "juillet 2024").
-        Uses Europe/Paris timezone which is UTC+1 or UTC+2 depending on DST.
+        Retourne la date courante formatée "mois année" en français (zone Europe/Paris).
         """
         now_utc = datetime.datetime.now(pytz.utc)
         paris_tz = pytz.timezone("Europe/Paris")
@@ -57,77 +57,115 @@ class WikipediaStarGenerator:
         return now_paris.strftime("%B %Y").lower()
 
     def generate_article_content(self, star: Star) -> str:
+        """
+        Génère l'ensemble du contenu de l'article Wikipédia pour une étoile.
+        Appelle des sous-fonctions dédiées pour chaque partie.
+        """
         self.reference_manager.reset_references()
-        article_parts = []
+        parts = []
 
-        current_date = self._get_formatted_french_utc_plus_1_date()
+        # 1. Templates de base (stub + source)
+        parts.append(self._generate_stub_and_source())
 
-        # Stub and Source Templates
-        article_parts.append("{{Ébauche|étoile}}")
-        article_parts.append(
-            f"{{{{Source unique|date={current_date}}}}}"
-        )  # Ensure double curly braces for template
+        # 2. Infobox
+        parts.append(self._generate_infobox_section(star))
 
-        # Infobox
-        infobox_content = self.infobox_generator.generate_star_infobox(star)
-        if infobox_content:  # Add infobox only if it's not empty
-            article_parts.append(infobox_content)
+        # 3. Introduction
+        parts.append(self._generate_introduction_section(star))
 
-        # Introduction
-        star_name_display = (
-            star.name.value if star.name and star.name.value else "Cette étoile"
+        # 4. Section Placeholder (ex. History, Description détaillée, etc.)
+        parts.append(
+            self._generate_placeholder_section(
+                "Description détaillée", "Contenu à implémenter…"
+            )
         )
-        introduction = f"\n'''{star_name_display}''' est une étoile"
 
+        # 5. Références et portails
+        parts.append(self._generate_references_and_portals())
+
+        # 6. Catégories
+        parts.append(self._generate_categories_section(star))
+
+        # On assemble le tout en filtrant les chaînes vides
+        return "\n\n".join(filter(None, parts))
+
+    def _generate_stub_and_source(self) -> str:
+        """
+        Retourne la ligne {{Ébauche|étoile}} et le template {{Source unique}} avec la date.
+        """
+        current_date = self._get_formatted_french_utc_plus_1_date()
+        stub = "{{Ébauche|étoile}}"
+        source = f"{{{{Source unique|date={current_date}}}}}"
+        return f"{stub}\n{source}"
+
+    def _generate_infobox_section(self, star: Star) -> str:
+        """
+        Génère l'infobox de l'étoile via StarInfoboxGenerator.
+        Si l'infobox est vide, on retourne une chaîne vide.
+        """
+        infobox_content = self.infobox_generator.generate_star_infobox(star)
+        return infobox_content or ""
+
+    def _generate_introduction_section(self, star: Star) -> str:
+        """
+        Génère l'introduction de l'article.
+        Placeholders pour les données manquantes ou non initialisées.
+        """
+        # Nom de l'étoile ou placeholder
+        star_name = star.name.value if star.name and star.name.value else "Cette étoile"
+        intro = f"'''{star_name}''' est une étoile"
+
+        # Type spectral
         if star.spectral_type and star.spectral_type.value:
-            introduction += f" de type spectral {star.spectral_type.value}"
+            intro += f" de type spectral {star.spectral_type.value}"
 
-        introduction += "."
+        intro += "."
 
+        # Constellation
         if star.constellation and star.constellation.value:
-            introduction += f" Elle est située dans la constellation [[{star.constellation.value}]]."
+            intro += (
+                f" Elle se trouve dans la constellation [[{star.constellation.value}]]."
+            )
+        else:
+            intro += " Constellation : {{Placeholder|constellation}}."
 
-        if (
-            star.distance_pc and star.distance_pc.value is not None
-        ):  # Check value is not None
+        # Distance (parsec), formaté ou placeholder
+        if star.distance_pc and star.distance_pc.value is not None:
             try:
-                # Ensure distance_pc.value is float for formatting
-                distance_val = float(star.distance_pc.value)
-                formatted_distance = self.format_utils.format_numeric_value(
-                    distance_val, precision=2
+                dist_val = float(star.distance_pc.value)
+                formatted = self.format_utils.format_numeric_value(
+                    dist_val, precision=2
                 )
-                if (
-                    formatted_distance
-                ):  # Check if formatting returned a non-empty string
-                    introduction += f" Elle se trouve à environ {formatted_distance} [[parsec|parsecs]] de la [[Terre]]."
+                intro += f" Elle est située à environ {formatted} [[parsec|parsecs]] de la [[Terre]]."
             except (ValueError, TypeError):
-                # Handle case where distance_pc.value cannot be converted to float
-                print(
-                    f"Warning: Could not format distance_pc for {star_name_display}, value: {star.distance_pc.value}"
-                )
+                intro += " Distance : {{Placeholder|distance en parsecs}}."
+        else:
+            intro += " Distance : {{Placeholder|distance en parsecs}}."
 
-        article_parts.append(introduction)
+        return intro
 
-        # References Section
-        article_parts.append("\n== Références ==")
-        article_parts.append(
-            "{{références}}"
-        )  # Ensure double curly braces for template
+    def _generate_placeholder_section(self, title: str, placeholder_text: str) -> str:
+        """
+        Génère une section vide avec un titre donné et un placeholder explicite.
+        """
+        return f"== {title} ==\n{placeholder_text}"
 
-        # Portals
-        article_parts.append(
-            "\n{{Portail|astronomie|étoiles}}"
-        )  # Ensure double curly braces for template
+    def _generate_references_and_portals(self) -> str:
+        """
+        Construit la section Références, inclut le portail Astronomie/Étoiles.
+        """
+        refs = "== Références ==\n{{références}}"
+        portals = "{{Portail|astronomie|étoiles}}"
+        return f"{refs}\n\n{portals}"
 
-        # Categories
-        categories = [
-            "\n[[Category:Étoiles]]"
-        ]  # Start with a newline for the first category
+    def _generate_categories_section(self, star: Star) -> str:
+        """
+        Ajoute les catégories associées à l'étoile (au minimum Category:Étoiles).
+        Si la constellation est disponible, on ajoute aussi Category:NomConstellation.
+        """
+        categories = ["[[Category:Étoiles]]"]
         if star.constellation and star.constellation.value:
             categories.append(f"[[Category:{star.constellation.value}]]")
-
-        article_parts.extend(categories)
-
-        return "\n\n".join(
-            filter(None, article_parts)
-        )  # Join with double newlines, filter out empty parts
+        else:
+            categories.append("[[Category:Constellation inconnue]]")  # placeholder
+        return "\n".join(categories)
