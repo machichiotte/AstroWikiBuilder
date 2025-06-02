@@ -1,4 +1,4 @@
-# src/utils/wikipedia_checker.py
+# src/utils/wikipedia/wikipedia_checker.py
 import requests
 from typing import Dict, List, Optional, Any
 from dataclasses import dataclass

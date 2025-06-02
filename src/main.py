@@ -236,9 +236,6 @@ def export_consolidated_data(processor: DataProcessor, output_dir: str, timestam
         processor.export_exoplanet_data(
             "csv", f"{output_dir}/exoplanets_consolidated_{timestamp}.csv"
         )
-        processor.export_exoplanet_data(
-            "json", f"{output_dir}/exoplanets_consolidated_{timestamp}.json"
-        )
     except Exception as e:
         logger.error(f"Erreur lors de l'export des données consolidées : {e}")
 

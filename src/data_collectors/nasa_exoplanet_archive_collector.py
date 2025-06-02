@@ -204,6 +204,32 @@ class NASAExoplanetArchiveCollector(BaseExoplanetCollector):
                 logger.warning(f"Unrecognized epoch format: {epoch_str_val}")
                 return None
 
+    def _convert_row_to_exoplanet(
+        self, row: pd.Series, ref: Reference
+    ) -> Optional[Exoplanet]:
+        """
+        Converts a pandas Series (row from a CSV/DataFrame) to a Star object,
+        populating it with data based on predefined mappings.
+        """
+        try:
+            nasa_data_dict = row.to_dict()
+            # S'assurer que les données essentielles sont présentes avant d'appeler le mapper.
+            if not nasa_data_dict.get("pl_name"):
+                logger.warning(
+                    f"Exoplanet name (pl_name) is missing or empty for a row. Skipping exoplanet creation. Row data: {nasa_data_dict}"
+                )
+                return None
+
+            # Déléguer toute la logique de mappage et de création de l'objet au mapper.
+            star = self.mapper.map_nasa_data_to_exoplanet(nasa_data_dict)
+            return star
+        except Exception as e:
+            logger.error(
+                f"Unexpected error converting row to Exoplanet using mapper for {row.get('pl_name', 'Unknown')}: {e}",
+                exc_info=True,
+            )
+            return None
+
     def _convert_row_to_exoplanet2(
         self, row: pd.Series, ref: Reference
     ) -> Optional[Exoplanet]:
@@ -332,46 +358,6 @@ class NASAExoplanetArchiveCollector(BaseExoplanetCollector):
         except Exception as e:
             logger.error(
                 f"Erreur NASA lors de la conversion de la ligne : {row.get('pl_name', 'Unknown')}. Erreur: {e}",
-                exc_info=True,
-            )
-            return None
-
-    def _safe_float_conversion(self, value: Any) -> Optional[float]:
-        """
-        Safely converts a value to float, handling potential errors, NaN, and empty strings.
-        """
-        if value is None or (isinstance(value, str) and not value.strip()):
-            return None
-        if pd.isna(value):  # Handles numpy.nan, pandas.NaT, etc.
-            return None
-        try:
-            return float(value)
-        except (ValueError, TypeError):
-            # logger.warning(f"Could not convert value '{value}' to float.") # Optional
-            return None
-
-    def _convert_row_to_exoplanet(
-        self, row: pd.Series, ref: Reference
-    ) -> Optional[Exoplanet]:
-        """
-        Converts a pandas Series (row from a CSV/DataFrame) to a Star object,
-        populating it with data based on predefined mappings.
-        """
-        try:
-            nasa_data_dict = row.to_dict()
-            # S'assurer que les données essentielles sont présentes avant d'appeler le mapper.
-            if not nasa_data_dict.get("pl_name"):
-                logger.warning(
-                    f"Exoplanet name (pl_name) is missing or empty for a row. Skipping exoplanet creation. Row data: {nasa_data_dict}"
-                )
-                return None
-
-            # Déléguer toute la logique de mappage et de création de l'objet au mapper.
-            star = self.mapper.map_nasa_data_to_exoplanet(nasa_data_dict)
-            return star
-        except Exception as e:
-            logger.error(
-                f"Unexpected error converting row to Exoplanet using mapper for {row.get('pl_name', 'Unknown')}: {e}",
                 exc_info=True,
             )
             return None

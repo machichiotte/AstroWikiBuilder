@@ -6,11 +6,11 @@ from typing import List, Tuple
 # Project imports
 from src.models.exoplanet import Exoplanet
 from src.models.star import Star
-from src.utils.wikipedia.wikipedia_exoplanet_generator import (
-    WikipediaExoplanetGenerator,
+from src.generators.exoplanet.article_exoplanet_generator import (
+    ArticleExoplanetGenerator,
 )
-from src.utils.wikipedia.wikipedia_star_generator import (
-    WikipediaStarGenerator,
+from src.generators.star.article_star_generator import (
+    ArticleStarGenerator,
 )
 
 # Configure un logger pour ce module spécifique
@@ -37,7 +37,7 @@ def generate_exoplanet_draft(exoplanet: Exoplanet) -> str:
     """
     # Note : Vous pourriez aussi injecter le générateur si vous souhaitez
     # le configurer ou le partager davantage.
-    generator = WikipediaExoplanetGenerator()
+    generator = ArticleExoplanetGenerator()
     logger.debug(f"Génération du brouillon pour l'exoplanète {exoplanet.name}...")
     content = generator.generate_article_content(exoplanet)
     logger.debug(f"Brouillon pour l'exoplanète {exoplanet.name} généré.")
@@ -54,7 +54,7 @@ def generate_star_draft(star: Star) -> str:
     Returns:
         Le contenu du brouillon généré.
     """
-    generator = WikipediaStarGenerator()
+    generator = ArticleStarGenerator()
     # Star.name is a DataPoint object, so access its .value attribute for the actual name string.
     star_name_val = (
         star.name.value if star.name and hasattr(star.name, "value") else "Unknown Star"

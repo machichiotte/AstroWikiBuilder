@@ -1,3 +1,0 @@
-"""
-Star utils package
-"""

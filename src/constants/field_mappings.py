@@ -1,4 +1,4 @@
-# astro_wiki/constants/field_mappings.py
+# astro_wiki/src/constants/field_mappings.py
 
 # Unités par défaut associées aux champs physiques
 FIELD_DEFAULT_UNITS: dict[str, str] = {

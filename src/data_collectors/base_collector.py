@@ -10,7 +10,7 @@ from abc import ABC, abstractmethod
 from src.models.star import Star
 from src.models.exoplanet import Exoplanet
 from src.models.reference import Reference, SourceType
-from src.utils.wikipedia.reference_manager import ReferenceManager
+from src.services.reference_manager import ReferenceManager
 
 logger = logging.getLogger(__name__)
 

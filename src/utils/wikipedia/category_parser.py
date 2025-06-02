@@ -1,3 +1,5 @@
+# src/utils/wikipedia/category_parser.py
+
 import re
 
 
