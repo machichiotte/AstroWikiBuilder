@@ -86,9 +86,10 @@ class ExoplanetIntroductionGenerator:
         self, spectral_type: str
     ) -> str:
         """Génère une description de l'étoile avec le type spectral."""
-        if not spectral_type:
+        if not isinstance(spectral_type, str) or not spectral_type.strip():
             return "son étoile hôte"
 
+        print("spectral_type  :::::::::: " + str(spectral_type))
         spectral_class = spectral_type[0].upper()
         description = SPECTRAL_TYPE_DESCRIPTIONS.get(spectral_class, "son étoile hôte")
 

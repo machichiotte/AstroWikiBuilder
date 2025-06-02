@@ -1,61 +1,61 @@
 # src/models/exoplanet.py
 from dataclasses import dataclass, field
-from typing import List
+from typing import Optional, List
 from .reference import DataPoint, SourceType
 
 
 @dataclass
 class Exoplanet:
     # Identifiants
-    name: str
-    other_names: List[str] = field(default_factory=list)
+    name: Optional[DataPoint] = None
+    other_names: Optional[List[str]] = field(default_factory=list)
 
     # Étoile hôte
-    host_star: DataPoint = None
-    star_epoch: DataPoint = None
-    right_ascension: DataPoint = None
-    declination: DataPoint = None
-    distance: DataPoint = None
-    constellation: DataPoint = None
-    spectral_type: DataPoint = None
-    apparent_magnitude: DataPoint = None
+    host_star: Optional[DataPoint] = None
+    star_epoch: Optional[DataPoint] = None
+    right_ascension: Optional[DataPoint] = None
+    declination: Optional[DataPoint] = None
+    distance: Optional[DataPoint] = None
+    constellation: Optional[DataPoint] = None
+    spectral_type: Optional[DataPoint] = None
+    apparent_magnitude: Optional[DataPoint] = None
 
     # Caractéristiques orbitales
-    semi_major_axis: DataPoint = None
-    periastron: DataPoint = None
-    apoastron: DataPoint = None
-    eccentricity: DataPoint = None
-    orbital_period: DataPoint = None
-    angular_distance: DataPoint = None
-    periastron_time: DataPoint = None
-    inclination: DataPoint = None
-    argument_of_periastron: DataPoint = None
-    epoch: DataPoint = None
+    semi_major_axis: Optional[DataPoint] = None
+    periastron: Optional[DataPoint] = None
+    apoastron: Optional[DataPoint] = None
+    eccentricity: Optional[DataPoint] = None
+    orbital_period: Optional[DataPoint] = None
+    angular_distance: Optional[DataPoint] = None
+    periastron_time: Optional[DataPoint] = None
+    inclination: Optional[DataPoint] = None
+    argument_of_periastron: Optional[DataPoint] = None
+    epoch: Optional[DataPoint] = None
 
     # Caractéristiques physiques
-    mass: DataPoint = None
-    minimum_mass: DataPoint = None
-    radius: DataPoint = None
-    density: DataPoint = None
-    gravity: DataPoint = None
-    rotation_period: DataPoint = None
-    temperature: DataPoint = None
-    bond_albedo: DataPoint = None
+    mass: Optional[DataPoint] = None
+    minimum_mass: Optional[DataPoint] = None
+    radius: Optional[DataPoint] = None
+    density: Optional[DataPoint] = None
+    gravity: Optional[DataPoint] = None
+    rotation_period: Optional[DataPoint] = None
+    temperature: Optional[DataPoint] = None
+    bond_albedo: Optional[DataPoint] = None
 
     # Atmosphère
-    pressure: DataPoint = None
-    composition: DataPoint = None
-    wind_speed: DataPoint = None
+    pressure: Optional[DataPoint] = None
+    composition: Optional[DataPoint] = None
+    wind_speed: Optional[DataPoint] = None
 
     # Découverte
-    discoverers: DataPoint = None
-    discovery_program: DataPoint = None
-    discovery_method: DataPoint = None
-    discovery_date: DataPoint = None
-    discovery_location: DataPoint = None
-    pre_discovery: DataPoint = None
-    detection_method: DataPoint = None
-    status: DataPoint = None
+    discoverers: Optional[DataPoint] = None
+    discovery_program: Optional[DataPoint] = None
+    discovery_method: Optional[DataPoint] = None
+    discovery_date: Optional[DataPoint] = None
+    discovery_location: Optional[DataPoint] = None
+    pre_discovery: Optional[DataPoint] = None
+    detection_method: Optional[DataPoint] = None
+    status: Optional[DataPoint] = None
 
     def merge_with(self, other: "Exoplanet") -> None:
         """Fusionne les données d'une autre exoplanète en respectant la priorité des sources"""

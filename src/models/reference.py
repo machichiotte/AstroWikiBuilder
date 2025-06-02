@@ -83,8 +83,17 @@ class Reference:
         if not details:
             return f'<ref name="{self.source.value}">Unknown source</ref>'
 
-        url = self.to_url(fallback_name=exoplanet_name)
-        title = f"{details['display_title']}{' - ' + exoplanet_name if exoplanet_name else ''}"
+        name_str = ""
+        if exoplanet_name:
+            # Vérifier si l'objet est une instance de DataPoint et extraire sa valeur
+            if hasattr(exoplanet_name, "value"):
+                name_str = exoplanet_name.value
+            else:
+                # S'il s'agit déjà d'une chaîne de caractères, l'utiliser directement
+                name_str = str(exoplanet_name)
+
+        url = self.to_url(fallback_name=name_str)
+        title = f"{details['display_title']}{' - ' + name_str if name_str else ''}"
 
         tpl = details["template"].format(
             title=title,

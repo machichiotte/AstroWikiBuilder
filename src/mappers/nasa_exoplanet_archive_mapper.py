@@ -208,14 +208,27 @@ class NasaExoplanetArchiveMapper:
 
     def map_nasa_data_to_exoplanet(self, nasa_data: Dict[str, Any]) -> Exoplanet:
         """Convertit un dictionnaire de données NASA vers un objet Exoplanet"""
+        print("map_nasa_data_to_exoplanet 1")
         exoplanet = Exoplanet()
         # Create a NASA reference for all data points originating from this source
         nasa_reference = Reference(
             source=SourceType.NEA,
             update_date=datetime.now(),  # TODO ici il faudrait plutot recuperer la dte depuis le retour de l'api, la date de mise a jour des donnees dans l'api
             consultation_date=datetime.now(),
-            star_id=nasa_data.get("hostname"),
+            star_identifier=nasa_data.get("hostname"),
+            planet_identifier=nasa_data.get("pl_name"),
         )
+        print("map_nasa_data_to_exoplanet 2")
+
+        for nasa_field, exoplanet_attribute in self.NASA_TO_EXOPLANET_MAPPING.items():
+            if nasa_field in nasa_data:
+                value = nasa_data[nasa_field]
+
+                # Créer un DataPoint avec la valeur et l'unité par défaut
+                if value is not None and str(value).strip():
+                    unit = self.DEFAULT_UNITS.get(nasa_field)
+                    datapoint = DataPoint(value=value, unit=unit)
+                    setattr(exoplanet, exoplanet_attribute, datapoint)
 
         # Special handling for right_ascension (rastr or ra)
         if "rastr" in nasa_data and nasa_data["rastr"]:
@@ -255,15 +268,52 @@ class NasaExoplanetArchiveMapper:
                 # Handle cases where 'dec' might not be a valid number
                 pass
 
-        for nasa_field, exoplanet_attribute in self.NASA_TO_EXOPLANET_MAPPING.items():
-            if nasa_field in nasa_data:
-                value = nasa_data[nasa_field]
+        if "pl_orbincl" in nasa_data and nasa_data["pl_orbincl"] is not None:
+            try:
+                pl_orbincl_val = float(nasa_data["pl_orbincl"])
+                formatted_inclination = f"{pl_orbincl_val}"
+                if (
+                    "pl_orbinclerr1" in nasa_data
+                    and "pl_orbinclerr2" in nasa_data
+                    and nasa_data["pl_orbinclerr1"] is not None
+                    and nasa_data["pl_orbinclerr2"] is not None
+                ):
+                    pl_orbinclerr1_val = float(nasa_data["pl_orbinclerr1"])
+                    pl_orbinclerr2_val = float(nasa_data["pl_orbinclerr2"])
+                    formatted_inclination = f"{pl_orbincl_val}{{{{±|{pl_orbinclerr1_val}|{pl_orbinclerr2_val}}}}}"
+                    exoplanet.inclination = DataPoint(
+                        value=formatted_inclination, reference=nasa_reference
+                    )
+                else:
+                    exoplanet.inclination = DataPoint(
+                        value=pl_orbincl_val, reference=nasa_reference
+                    )
+            except (ValueError, TypeError):
+                pass
 
-                # Créer un DataPoint avec la valeur et l'unité par défaut
-                if value is not None and str(value).strip():
-                    unit = self.DEFAULT_UNITS.get(nasa_field)
-                    datapoint = DataPoint(value=value, unit=unit)
-                    setattr(exoplanet, exoplanet_attribute, datapoint)
+        if "pl_tranmidstr" in nasa_data and nasa_data["pl_tranmidstr"] is not None:
+            try:
+                pl_tranmidstr = float(nasa_data["pl_tranmidstr"])
+                formatted_epoch = self._parse_epoch_string(pl_tranmidstr)
+                if formatted_epoch:
+                    exoplanet.epoch = DataPoint(
+                        value=formatted_epoch, reference=nasa_reference
+                    )
+            except (ValueError, TypeError):
+                pass
+
+        if "pl_orbperstr" in nasa_data and nasa_data["pl_orbperstr"] is not None:
+            try:
+                pl_orbperstr = float(nasa_data["pl_orbperstr"])
+                formatted_orb_per = self._parse_epoch_string(pl_orbperstr)
+                if formatted_orb_per:
+                    exoplanet.orbital_period = DataPoint(
+                        value=formatted_orb_per, reference=nasa_reference
+                    )
+            except (ValueError, TypeError):
+                pass
+        print("map_nasa_data_to_exoplanet 3")
+        print("map_nasa_data_to_exoplanet 4 :: " + str(exoplanet))
 
         return exoplanet
 

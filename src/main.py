@@ -309,10 +309,10 @@ def exoplanet_run_draft_generation(
     logger.info("Génération des brouillons d'exoplanetes...")
     for exoplanet in all_exoplanets:
         draft_content = generate_exoplanet_draft(exoplanet)
-        if exoplanet.name in missing_map:
-            exoplanet_missing_drafts.append((exoplanet.name, draft_content))
-        elif exoplanet.name in existing_map:
-            exoplanet_existing_drafts.append((exoplanet.name, draft_content))
+        if exoplanet.name.value in missing_map:
+            exoplanet_missing_drafts.append((exoplanet.name.value, draft_content))
+        elif exoplanet.name.value in existing_map:
+            exoplanet_existing_drafts.append((exoplanet.name.value, draft_content))
         else:
             # if is_wikipedia_check_skipped:
             # logger.info(
@@ -325,7 +325,7 @@ def exoplanet_run_draft_generation(
             #    f"(even if Wikipedia check was performed). Draft will be saved in the 'missing' "
             #   f"directory by default."
             # )
-            exoplanet_missing_drafts.append((exoplanet.name, draft_content))
+            exoplanet_missing_drafts.append((exoplanet.name.value, draft_content))
 
     logger.info(
         f"{len(exoplanet_missing_drafts)} brouillons 'manquants' (ou statut inconnu), {len(exoplanet_existing_drafts)} brouillons 'existants'."
@@ -455,25 +455,25 @@ def main():
     log_statistics(processor.get_statistics())
 
     # --- Contrôle du Workflow ---
-    #    if not args.skip_wikipedia_check:
-    #       # Vérification Wikipedia et Génération des brouillons
-    #      existing_map, missing_map = check_and_export_wikipedia_status(
-    #         processor, output_dir
-    #    )
-    #   exoplanet_run_draft_generation(
-    #      processor,
-    #     existing_map,
-    #    missing_map,
-    #   drafts_dir,
-    #  is_wikipedia_check_skipped=False,
-    #        )
-    #   else:
-    #      logger.info(
-    #         "Vérification Wikipedia ignorée. Génération des brouillons pour toutes les exoplanètes."
-    #    )
-    #   exoplanet_run_draft_generation(
-    #      processor, {}, {}, drafts_dir, is_wikipedia_check_skipped=True
-    # )
+    if not args.skip_wikipedia_check:
+        # Vérification Wikipedia et Génération des brouillons
+        existing_map, missing_map = check_and_export_wikipedia_status(
+            processor, output_dir
+        )
+        exoplanet_run_draft_generation(
+            processor,
+            existing_map,
+            missing_map,
+            drafts_dir,
+            is_wikipedia_check_skipped=False,
+        )
+    else:
+        logger.info(
+            "Vérification Wikipedia ignorée. Génération des brouillons pour toutes les exoplanètes."
+        )
+        exoplanet_run_draft_generation(
+            processor, {}, {}, drafts_dir, is_wikipedia_check_skipped=True
+        )
 
     logger.info("Traitement principal terminé.")
 
