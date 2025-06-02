@@ -89,16 +89,6 @@ class StarInfoboxGenerator:
         ]
         if infobox_field_name in fields_with_separate_unit_line:
             line = f" | {infobox_field_name} = {value}\n"
-            if unit:
-                # Specific unit parameter names if they differ from "{infobox_field_name} unité"
-                unit_param_name_overrides = {
-                    "longitude du nœud ascendant (Ω)": "longitude nœud ascendant unité",  # Example if different
-                    "argument du périastre (ω)": "argument périastre unité",  # Example if different
-                }
-                unit_param_name = unit_param_name_overrides.get(
-                    infobox_field_name, f"{infobox_field_name} unité"
-                )
-                line += f" | {unit_param_name} = {unit}\n"
             return line
 
         # 4. Default formatting: " | field = value unit" or " | field = value"

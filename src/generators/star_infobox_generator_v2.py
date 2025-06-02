@@ -8,7 +8,7 @@ from src.formatters.format_utils import FormatUtils
 
 
 class StarInfoboxGenerator:
-    """Générateur d'infobox pour les étoiles - Version refactorisée"""
+    """Générateur d'infobox pour les étoiles"""
 
     def __init__(self):
         self.format_utils = FormatUtils()
@@ -93,7 +93,7 @@ class StarInfoboxGenerator:
         """Formate une valeur selon son type de champ"""
         formatters = {
             FieldType.SIMPLE: lambda: self.field_formatter.format_simple_field(
-                value, unit, infobox_field
+                value, infobox_field
             ),
             FieldType.DESIGNATIONS: lambda: self.field_formatter.format_designations(
                 value, infobox_field
@@ -123,7 +123,6 @@ class StarInfoboxGenerator:
         """Gère le champ carte UAI calculé"""
         if not (star.right_ascension and star.declination):
             return ""
-
         carte_uai = self.star_utils.get_constellation_name(
             star.right_ascension.value, star.declination.value
         )

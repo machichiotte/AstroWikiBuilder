@@ -160,7 +160,7 @@ class StarMappingConfig:
             FieldMapping("planets", "planètes"),
             # Éléments orbitaux binaires
             FieldMapping("semi_major_axis", "demi-grand axe", FieldType.SEPARATE_UNIT),
-            FieldMapping("eccentricity", "excentricité (e)"),
+            FieldMapping("eccentricity", "excentricité"),
             FieldMapping("period", "période", FieldType.SEPARATE_UNIT),
             FieldMapping("inclination", "inclinaison", FieldType.SEPARATE_UNIT),
             FieldMapping("argument_of_periapsis", "argument", FieldType.SEPARATE_UNIT),

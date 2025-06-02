@@ -2,25 +2,20 @@
 import pandas as pd
 from typing import List, Optional, Dict, Any
 import logging
-from src.data_collectors.base_collector import BaseExoplanetCollector  # MODIFIÉ
+from src.data_collectors.base_collector import BaseExoplanetCollector
 from src.models.exoplanet import (
     Exoplanet,
-)  # Assurez-vous que Exoplanet, DataPoint etc. sont accessibles
+)
 from src.models.reference import DataPoint, Reference, SourceType
 
 logger = logging.getLogger(__name__)
 
 
-class ExoplanetEUCollector(BaseExoplanetCollector):  # MODIFIÉ
-    # DOWNLOAD_URL est maintenant géré par _get_download_url
-    # self.cache_path est maintenant géré par la classe de base
-    # self.reference_manager et self.last_update_date sont gérés par la classe de base
-
+class ExoplanetEUCollector(BaseExoplanetCollector):
     def __init__(
         self, cache_dir: str = "data/cache/exoplanet_eu", use_mock_data: bool = False
-    ):  # MODIFIÉ
+    ):
         super().__init__(cache_dir, use_mock_data)
-        # required_columns est maintenant géré par _get_required_columns
 
     def _get_default_cache_filename(self) -> str:
         return "exoplanet.eu_catalog.csv"
@@ -44,7 +39,6 @@ class ExoplanetEUCollector(BaseExoplanetCollector):  # MODIFIÉ
         self, row: pd.Series, ref: Reference
     ) -> Optional[Exoplanet]:
         try:
-            # Validation des données de base
             if pd.isna(row["name"]) or pd.isna(row["star_name"]):
                 logger.warning(
                     f"Données de base manquantes pour l'exoplanète : {row.get('name', 'Unknown')} (Source: EPE)"
@@ -124,5 +118,3 @@ class ExoplanetEUCollector(BaseExoplanetCollector):  # MODIFIÉ
                 exc_info=True,
             )
             return None
-
-    # fetch_data, _safe_float_conversion, _create_reference sont hérités

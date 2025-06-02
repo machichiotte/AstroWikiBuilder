@@ -6,7 +6,10 @@ from typing import List, Tuple, Dict, Any
 import logging
 
 # Project imports
-from src.data_collectors.nasa_exoplanet_archive import NASAExoplanetArchiveCollector
+from src.data_collectors.nasa_exoplanet_archive_collector import (
+    NASAExoplanetArchiveCollector,
+)
+
 from src.data_collectors.exoplanet_eu import ExoplanetEUCollector
 from src.data_collectors.open_exoplanet_collection import OpenExoplanetCollector
 
@@ -452,25 +455,25 @@ def main():
     log_statistics(processor.get_statistics())
 
     # --- Contrôle du Workflow ---
-    if not args.skip_wikipedia_check:
-        # Vérification Wikipedia et Génération des brouillons
-        existing_map, missing_map = check_and_export_wikipedia_status(
-            processor, output_dir
-        )
-        exoplanet_run_draft_generation(
-            processor,
-            existing_map,
-            missing_map,
-            drafts_dir,
-            is_wikipedia_check_skipped=False,
-        )
-    else:
-        logger.info(
-            "Vérification Wikipedia ignorée. Génération des brouillons pour toutes les exoplanètes."
-        )
-        exoplanet_run_draft_generation(
-            processor, {}, {}, drafts_dir, is_wikipedia_check_skipped=True
-        )
+    #    if not args.skip_wikipedia_check:
+    #       # Vérification Wikipedia et Génération des brouillons
+    #      existing_map, missing_map = check_and_export_wikipedia_status(
+    #         processor, output_dir
+    #    )
+    #   exoplanet_run_draft_generation(
+    #      processor,
+    #     existing_map,
+    #    missing_map,
+    #   drafts_dir,
+    #  is_wikipedia_check_skipped=False,
+    #        )
+    #   else:
+    #      logger.info(
+    #         "Vérification Wikipedia ignorée. Génération des brouillons pour toutes les exoplanètes."
+    #    )
+    #   exoplanet_run_draft_generation(
+    #      processor, {}, {}, drafts_dir, is_wikipedia_check_skipped=True
+    # )
 
     logger.info("Traitement principal terminé.")
 

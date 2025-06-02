@@ -1,14 +1,18 @@
 # src/generators/star_infobox_generator_v2.py
 from typing import Optional, Any
 from src.models.exoplanet import Exoplanet, DataPoint
-from src.mappers.star_mapping import ExoplanetMappingConfig, FieldMapping, FieldType
+from src.mappers.exoplanet_mapping import (
+    ExoplanetMappingConfig,
+    FieldMapping,
+    FieldType,
+)
 from src.formatters.field_formatters import FieldFormatter
 from src.utils.star.star_utils import StarUtils
 from src.formatters.format_utils import FormatUtils
 
 
 class ExoplanetInfoboxGenerator:
-    """Générateur d'infobox pour les exoplanète - Version refactorisée"""
+    """Générateur d'infobox pour les exoplanète"""
 
     def __init__(self):
         self.format_utils = FormatUtils()
@@ -94,12 +98,6 @@ class ExoplanetInfoboxGenerator:
         formatters = {
             FieldType.SIMPLE: lambda: self.field_formatter.format_simple_field(
                 value, unit, infobox_field
-            ),
-            FieldType.DESIGNATIONS: lambda: self.field_formatter.format_designations(
-                value, infobox_field
-            ),
-            FieldType.AGE: lambda: self.field_formatter.format_age_field(
-                value, infobox_field
             ),
             FieldType.SEPARATE_UNIT: lambda: self.field_formatter.format_separate_unit_field(
                 value, unit, infobox_field

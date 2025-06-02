@@ -6,18 +6,12 @@ class FieldFormatter:
     """Formatters pour différents types de champs"""
 
     @staticmethod
-    def format_simple_field(
-        value: Any, unit: Optional[str] = None, infobox_field: str = ""
-    ) -> str:
-        """Formate un champ simple avec valeur et unité optionnelle"""
+    def format_simple_field(value: Any, infobox_field: str = "") -> str:
+        """Formate un champ simple avec valeur"""
         if not value or (isinstance(value, str) and not value.strip()):
             return ""
 
         output = f" | {infobox_field} = {value}"
-
-        # Ajouter l'unité si présente et appropriée
-        if unit and not FieldFormatter._should_skip_unit(infobox_field):
-            output += f" {unit}"
 
         return output + "\n"
 
