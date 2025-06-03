@@ -4,8 +4,8 @@ import unicodedata
 # re module no longer needed for the simplified _is_valid_value
 from typing import Optional, Any
 from src.models.data_source_exoplanet import DataSourceExoplanet, DataPoint
-from src.mappers.exoplanet_mapping_infobox import (
-    ExoplanetMappingInfobox,
+from src.mappers.exoplanet_infobox_mapper import (
+    ExoplanetInfoboxMapper,
     FieldMapping,
     FieldType,
 )
@@ -17,7 +17,7 @@ from src.services.reference_manager import ReferenceManager
 
 class ExoplanetInfoboxGenerator:
     def __init__(self):
-        self.exoplanet_mapping = ExoplanetMappingInfobox()
+        self.exoplanet_mapping = ExoplanetInfoboxMapper()
         self.reference_manager = ReferenceManager()
         self.field_formatter = FieldFormatter()
         self.article_utils = ArticleUtils()

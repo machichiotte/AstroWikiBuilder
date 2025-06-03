@@ -1,4 +1,4 @@
-# src/mappers/star_mapping.py
+# src/mappers/star_infobox_mapper.py
 from typing import List, Optional, Callable, Any
 from dataclasses import dataclass
 from enum import Enum
@@ -33,7 +33,7 @@ class FieldMapping:
     )
 
 
-class StarMappingInfobox:
+class StarInfoboxMapper:
     """Configuration centralisée des mappings Star -> Infobox"""
 
     @classmethod

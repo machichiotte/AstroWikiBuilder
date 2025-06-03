@@ -2,7 +2,7 @@
 import math
 from typing import Optional, Any
 from src.models.data_source_star import DataSourceStar, DataPoint
-from src.mappers.star_mapping_infobox import StarMappingInfobox, FieldMapping, FieldType
+from src.mappers.star_infobox_mapper import StarInfoboxMapper, FieldMapping, FieldType
 from src.utils.constellation_utils import ConstellationUtils
 from src.utils.formatters.article_utils import ArticleUtils
 from src.utils.formatters.field_formatters import FieldFormatter
@@ -15,7 +15,7 @@ class StarInfoboxGenerator:
         self.article_utils = ArticleUtils()
         self.constellation_utils = ConstellationUtils()
         self.field_formatter = FieldFormatter()
-        self.mapping_config = StarMappingInfobox()
+        self.mapping_config = StarInfoboxMapper()
 
     def generate_star_infobox(self, star: DataSourceStar) -> str:
         """Génère le contenu de l'infobox Wikipédia pour une étoile"""

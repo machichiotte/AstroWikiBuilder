@@ -1,4 +1,4 @@
-# src/mappers/exoplanet_mapping.py
+# src/mappers/exoplanet_infobox_mapper.py
 from typing import List, Optional, Callable, Any
 from dataclasses import dataclass
 from enum import Enum
@@ -31,7 +31,7 @@ class FieldMapping:
     )
 
 
-class ExoplanetMappingInfobox:
+class ExoplanetInfoboxMapper:
     """Configuration centralisée des mappings Exoplanets -> Infobox"""
 
     @classmethod
