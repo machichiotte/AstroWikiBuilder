@@ -4,7 +4,7 @@ from typing import List, Optional
 import logging
 
 from src.data_collectors.base_collector import BaseExoplanetCollector  # MODIFIÉ
-from src.models.exoplanet import Exoplanet
+from src.models.data_source_exoplanet import DataSourceExoplanet
 from src.models.reference import DataPoint, Reference, SourceType
 
 logger = logging.getLogger(__name__)
@@ -36,7 +36,7 @@ class OpenExoplanetCollector(BaseExoplanetCollector):  # MODIFIÉ
 
     def _convert_row_to_exoplanet(
         self, row: pd.Series, ref: Reference
-    ) -> Optional[Exoplanet]:  # MODIFIÉ
+    ) -> Optional[DataSourceExoplanet]:  # MODIFIÉ
         try:
             if pd.isna(row["name"]) or pd.isna(row["star_name"]):
                 logger.warning(
@@ -44,7 +44,7 @@ class OpenExoplanetCollector(BaseExoplanetCollector):  # MODIFIÉ
                 )
                 return None
 
-            exoplanet = Exoplanet(
+            exoplanet = DataSourceExoplanet(
                 name=str(row["name"]).strip(),
                 host_star=DataPoint(str(row["star_name"]).strip(), ref),
                 discovery_method=DataPoint(str(row["discovery_method"]).strip(), ref)

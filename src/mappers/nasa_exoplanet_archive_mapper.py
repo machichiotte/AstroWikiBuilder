@@ -1,8 +1,8 @@
 # src/mappers/nasa_exoplanet_archive_mapper.py
 from typing import Dict, Any, Optional
 from src.models.reference import Reference, SourceType, DataPoint
-from src.models.star import Star
-from src.models.exoplanet import Exoplanet
+from src.models.data_source_star import DataSourceStar
+from src.models.data_source_exoplanet import DataSourceExoplanet
 
 from datetime import datetime
 
@@ -135,9 +135,9 @@ class NasaExoplanetArchiveMapper:
         "pl_bmassj": "Mjup",  # Unit for planetary mass (Jupiter masses)
     }
 
-    def map_nasa_data_to_star(self, nasa_data: Dict[str, Any]) -> Star:
+    def map_nasa_data_to_star(self, nasa_data: Dict[str, Any]) -> DataSourceStar:
         """Convertit un dictionnaire de données NASA vers un objet Star"""
-        star = Star()
+        star = DataSourceStar()
 
         # Create a NASA reference for all data points originating from this source
         nasa_reference = Reference(
@@ -206,9 +206,9 @@ class NasaExoplanetArchiveMapper:
                 pass
         return star
 
-    def map_nasa_data_to_exoplanet(self, nasa_data: Dict[str, Any]) -> Exoplanet:
+    def map_nasa_data_to_exoplanet(self, nasa_data: Dict[str, Any]) -> DataSourceExoplanet:
         """Convertit un dictionnaire de données NASA vers un objet Exoplanet"""
-        exoplanet = Exoplanet()
+        exoplanet = DataSourceExoplanet()
         # Create a NASA reference for all data points originating from this source
         nasa_reference = Reference(
             source=SourceType.NEA,

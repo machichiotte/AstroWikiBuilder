@@ -2,7 +2,7 @@
 import locale
 import datetime
 import pytz
-from src.models.star import Star
+from src.models.data_source_star import DataSourceStar
 from src.generators.star.star_infobox_generator_v2 import StarInfoboxGenerator
 from src.utils.formatters.article_utils import ArticleUtils
 from src.services.reference_manager import ReferenceManager
@@ -54,7 +54,7 @@ class ArticleStarGenerator:
         now_paris = now_utc.astimezone(paris_tz)
         return now_paris.strftime("%B %Y").lower()
 
-    def generate_article_content(self, star: Star) -> str:
+    def generate_article_content(self, star: DataSourceStar) -> str:
         """
         Génère l'ensemble du contenu de l'article Wikipédia pour une étoile.
         Appelle des sous-fonctions dédiées pour chaque partie.
@@ -96,7 +96,7 @@ class ArticleStarGenerator:
         source = f"{{{{Source unique|date={current_date}}}}}"
         return f"{stub}\n{source}"
 
-    def _generate_infobox_section(self, star: Star) -> str:
+    def _generate_infobox_section(self, star: DataSourceStar) -> str:
         """
         Génère l'infobox de l'étoile via StarInfoboxGenerator.
         Si l'infobox est vide, on retourne une chaîne vide.
@@ -104,7 +104,7 @@ class ArticleStarGenerator:
         infobox_content = self.infobox_generator.generate_star_infobox(star)
         return infobox_content or ""
 
-    def _generate_introduction_section(self, star: Star) -> str:
+    def _generate_introduction_section(self, star: DataSourceStar) -> str:
         """
         Génère l'introduction de l'article.
         Placeholders pour les données manquantes ou non initialisées.
@@ -156,7 +156,7 @@ class ArticleStarGenerator:
         portals = "{{Portail|astronomie|étoiles}}"
         return f"{refs}\n\n{portals}"
 
-    def _generate_categories_section(self, star: Star) -> str:
+    def _generate_categories_section(self, star: DataSourceStar) -> str:
         """
         Ajoute les catégories associées à l'étoile (au minimum Category:Étoiles).
         Si la constellation est disponible, on ajoute aussi Category:NomConstellation.

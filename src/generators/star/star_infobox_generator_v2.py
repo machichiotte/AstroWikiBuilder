@@ -1,7 +1,7 @@
 # src/generators/star_infobox_generator_v2.py
 import math
 from typing import Optional, Any
-from src.models.star import Star, DataPoint
+from src.models.data_source_star import DataSourceStar, DataPoint
 from src.mappers.star_mapping import StarMappingConfig, FieldMapping, FieldType
 from src.utils.constellation_utils import ConstellationUtils
 from src.utils.formatters.article_utils import ArticleUtils
@@ -17,11 +17,11 @@ class StarInfoboxGenerator:
         self.field_formatter = FieldFormatter()
         self.mapping_config = StarMappingConfig()
 
-    def generate_star_infobox(self, star: Star) -> str:
+    def generate_star_infobox(self, star: DataSourceStar) -> str:
         """Génère le contenu de l'infobox Wikipédia pour une étoile"""
 
         print("generateeeeeeeeee " + str(star))
-        if not isinstance(star, Star):
+        if not isinstance(star, DataSourceStar):
             raise TypeError("Input must be a Star object.")
 
         infobox = "{{Infobox Étoile\n"
@@ -35,7 +35,7 @@ class StarInfoboxGenerator:
         infobox += "}}\n"
         return infobox
 
-    def _process_field(self, star: Star, mapping: FieldMapping) -> str:
+    def _process_field(self, star: DataSourceStar, mapping: FieldMapping) -> str:
         """Traite un champ selon sa configuration de mapping"""
         # Vérifier la condition si elle existe
         if mapping.condition and not mapping.condition(star):
@@ -67,7 +67,7 @@ class StarInfoboxGenerator:
         )
 
     def _extract_field_value(
-        self, star: Star, attribute_name: str
+        self, star: DataSourceStar, attribute_name: str
     ) -> tuple[Any, Optional[str]]:
         """Extrait la valeur et l'unité d'un attribut Star"""
         attr_dp = getattr(star, attribute_name, None)
@@ -126,7 +126,7 @@ class StarInfoboxGenerator:
         formatter = formatters.get(field_type, formatters[FieldType.SIMPLE])
         return formatter()
 
-    def _handle_constellation_field(self, star: Star) -> str:
+    def _handle_constellation_field(self, star: DataSourceStar) -> str:
         """Gère le champ constellation calculé"""
         if not (star.right_ascension and star.declination):
             return ""
@@ -136,7 +136,7 @@ class StarInfoboxGenerator:
         )
         return f" | constellation = {constellation}\n"
 
-    def _handle_carte_uai_field(self, star: Star) -> str:
+    def _handle_carte_uai_field(self, star: DataSourceStar) -> str:
         """Gère le champ carte UAI calculé"""
         if not (star.right_ascension and star.declination):
             return ""

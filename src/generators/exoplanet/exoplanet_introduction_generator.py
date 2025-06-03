@@ -5,7 +5,7 @@ from src.constants.field_mappings import (
     CONSTELLATION_GENDER,
     SPECTRAL_TYPE_DESCRIPTIONS,
 )
-from src.models.exoplanet import Exoplanet
+from src.models.data_source_exoplanet import DataSourceExoplanet
 from src.utils.constellation_utils import ConstellationUtils
 from src.utils.formatters.article_utils import ArticleUtils
 
@@ -43,7 +43,7 @@ class ExoplanetIntroductionGenerator:
             return f"[[{description}]]"
         return "son étoile hôte"  # Placeholder if spectral class not in map or description is None
 
-    def _build_host_star_segment(self, exoplanet: Exoplanet) -> Optional[str]:
+    def _build_host_star_segment(self, exoplanet: DataSourceExoplanet) -> Optional[str]:
         """Construit le segment de phrase concernant l'étoile hôte."""
         if not (
             exoplanet.host_star
@@ -68,7 +68,7 @@ class ExoplanetIntroductionGenerator:
             # Gère correctement le placeholder "son étoile hôte".
             return f" en orbite autour de {star_type_description} {host_star_name}"
 
-    def _build_distance_segment(self, exoplanet: Exoplanet) -> Optional[str]:
+    def _build_distance_segment(self, exoplanet: DataSourceExoplanet) -> Optional[str]:
         """Construit le segment de phrase concernant la distance."""
         if not (
             exoplanet.distance
@@ -111,7 +111,7 @@ class ExoplanetIntroductionGenerator:
         else:
             return f"dans la constellation {preposition} {constellation_french_name}"
 
-    def _build_constellation_segment(self, exoplanet: Exoplanet) -> Optional[str]:
+    def _build_constellation_segment(self, exoplanet: DataSourceExoplanet) -> Optional[str]:
         """Construit le segment de phrase concernant la constellation."""
         if not (
             exoplanet.constellation
@@ -127,7 +127,7 @@ class ExoplanetIntroductionGenerator:
             return self._format_constellation_locative_phrase(constellation_name_fr)
         return None
 
-    def generate_exoplanet_introduction(self, exoplanet: Exoplanet) -> str:
+    def generate_exoplanet_introduction(self, exoplanet: DataSourceExoplanet) -> str:
         """
         Génère l'introduction pour une exoplanète.
         """

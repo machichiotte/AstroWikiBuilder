@@ -3,7 +3,7 @@ import locale
 import datetime
 import pytz
 
-from src.models.exoplanet import Exoplanet
+from src.models.data_source_exoplanet import DataSourceExoplanet
 
 from src.utils.formatters.article_utils import ArticleUtils
 from src.utils.constellation_utils import ConstellationUtils
@@ -114,7 +114,7 @@ class ArticleExoplanetGenerator:
 
         return f"{current_month_french} {current_year}"
 
-    def generate_article_content(self, exoplanet: Exoplanet) -> str:
+    def generate_article_content(self, exoplanet: DataSourceExoplanet) -> str:
         """
         Génère le contenu complet de l'article Wikipedia
         """
@@ -157,7 +157,7 @@ class ArticleExoplanetGenerator:
 """
         return article
 
-    def _generate_orbit_section(self, exoplanet: Exoplanet) -> str:
+    def _generate_orbit_section(self, exoplanet: DataSourceExoplanet) -> str:
         """
         Génère la section de l'orbite de l'exoplanète
         """
@@ -195,7 +195,7 @@ class ArticleExoplanetGenerator:
 
         return section
 
-    def _generate_discovery_section(self, exoplanet: Exoplanet) -> str:
+    def _generate_discovery_section(self, exoplanet: DataSourceExoplanet) -> str:
         """Génère la section de découverte."""
         if not exoplanet.discovery_date:
             return ""
@@ -240,7 +240,7 @@ class ArticleExoplanetGenerator:
 
         return section
 
-    def _generate_physical_characteristics_section(self, exoplanet: Exoplanet) -> str:
+    def _generate_physical_characteristics_section(self, exoplanet: DataSourceExoplanet) -> str:
         """Génère la section des caractéristiques physiques."""
         def get_value_or_none_if_nan(data_point):
             if data_point and hasattr(data_point, "value") and data_point.value is not None:
@@ -317,7 +317,7 @@ class ArticleExoplanetGenerator:
 
         return section
 
-    def _generate_habitability_section(self, exoplanet: Exoplanet) -> str:
+    def _generate_habitability_section(self, exoplanet: DataSourceExoplanet) -> str:
         """
         Génère la section sur l'habitabilité de l'exoplanète
         """

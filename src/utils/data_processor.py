@@ -1,8 +1,8 @@
 # src/utils/data_processor.py
 import logging
 from typing import List, Dict, Tuple, Any
-from src.models.star import Star
-from src.models.exoplanet import Exoplanet
+from src.models.data_source_star import DataSourceStar
+from src.models.data_source_exoplanet import DataSourceExoplanet
 from src.utils.wikipedia.wikipedia_checker import WikiArticleInfo
 from src.services.star_repository import StarRepository
 from src.services.exoplanet_repository import ExoplanetRepository
@@ -34,20 +34,20 @@ class DataProcessor:
         logger.info("DataProcessor initialized with all services.")
 
     def add_exoplanets_from_source(
-        self, exoplanets: List[Exoplanet], source_name: str
+        self, exoplanets: List[DataSourceExoplanet], source_name: str
     ) -> None:
         """Ajoute ou fusionne les exoplanètes dans le référentiel."""
         self.exoplanet_repository.add_exoplanets(exoplanets, source_name)
 
-    def add_stars_from_source(self, stars: List[Star], source_name: str) -> None:
+    def add_stars_from_source(self, stars: List[DataSourceStar], source_name: str) -> None:
         """Ajoute ou fusionne les étoiles dans le référentiel."""
         self.star_repository.add_stars(stars, source_name)
 
-    def get_all_exoplanets(self) -> List[Exoplanet]:
+    def get_all_exoplanets(self) -> List[DataSourceExoplanet]:
         """Récupère toutes les exoplanètes consolidées."""
         return self.exoplanet_repository.get_all_exoplanets()
 
-    def get_all_stars(self) -> List[Star]:
+    def get_all_stars(self) -> List[DataSourceStar]:
         """Récupère toutes les étoiles consolidées."""
         return self.star_repository.get_all_stars()
 

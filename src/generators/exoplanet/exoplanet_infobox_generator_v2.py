@@ -3,7 +3,7 @@
 import unicodedata
 # re module no longer needed for the simplified _is_valid_value
 from typing import Optional, Any
-from src.models.exoplanet import Exoplanet, DataPoint
+from src.models.data_source_exoplanet import DataSourceExoplanet, DataPoint
 from src.mappers.exoplanet_mapping import (
     ExoplanetMappingConfig,
     FieldMapping,
@@ -23,13 +23,13 @@ class ExoplanetInfoboxGenerator:
         self.article_utils = ArticleUtils()
         self.constellation_utils = ConstellationUtils()
 
-    def generate_exoplanet_infobox(self, exoplanet: Exoplanet) -> str:
+    def generate_exoplanet_infobox(self, exoplanet: DataSourceExoplanet) -> str:
         """
         Main entry point to build the infobox wikitext for a given Exoplanet.
         Loops over FieldMappings, calls _process_field(), and then injects
         all stored reference contents at the end.
         """
-        if not isinstance(exoplanet, Exoplanet):
+        if not isinstance(exoplanet, DataSourceExoplanet):
             raise TypeError("Input must be an Exoplanet object.")
 
         # Réinitialise les références pour cet exoplanète
@@ -53,7 +53,7 @@ class ExoplanetInfoboxGenerator:
         infobox_lines.append("}}")  # close infobox
         return "\n".join(infobox_lines)
 
-    def _process_field(self, exoplanet: Exoplanet, mapping: FieldMapping) -> str:
+    def _process_field(self, exoplanet: DataSourceExoplanet, mapping: FieldMapping) -> str:
         """
         Processes a single field mapping:
         1. Checks condition (if provided).
@@ -197,7 +197,7 @@ class ExoplanetInfoboxGenerator:
             return self.field_formatter.format_simple_field(value, infobox_field)
 
     def _extract_notes(
-        self, datapoint: DataPoint, exoplanet: Exoplanet
+        self, datapoint: DataPoint, exoplanet: DataSourceExoplanet
     ) -> Optional[str]:
         """
         If datapoint.reference exists and provides to_wiki_ref(exoplanet_name),
@@ -231,7 +231,7 @@ class ExoplanetInfoboxGenerator:
         ref_tag = self.reference_manager.add_reference(source_name, full_ref_wikitext)
         return ref_tag
 
-    def _handle_constellation_field(self, exoplanet: Exoplanet) -> str:
+    def _handle_constellation_field(self, exoplanet: DataSourceExoplanet) -> str:
         """
         Handles the CONSTELLATION field_type.
         Returns a line '| constellation = <value>' if RA and Dec exist.
@@ -243,7 +243,7 @@ class ExoplanetInfoboxGenerator:
         )
         return f"| constellation = {constellation}"
 
-    def _handle_carte_uai_field(self, exoplanet: Exoplanet) -> str:
+    def _handle_carte_uai_field(self, exoplanet: DataSourceExoplanet) -> str:
         """
         Handles the CARTE_UAI field_type.
         Returns a line '| carte UAI = <value>' if RA and Dec exist.

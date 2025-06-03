@@ -3,7 +3,7 @@ from typing import List, Optional, Callable, Any
 from dataclasses import dataclass
 from enum import Enum
 
-from src.models.star import Star
+from src.models.data_source_star import DataSourceStar
 
 
 class FieldType(Enum):
@@ -28,7 +28,7 @@ class FieldMapping:
     formatter: Optional[Callable[[Any], str]] = (
         None  # Fonction de formatage personnalisée
     )
-    condition: Optional[Callable[[Star], bool]] = (
+    condition: Optional[Callable[[DataSourceStar], bool]] = (
         None  # Condition pour inclure le champ
     )
 

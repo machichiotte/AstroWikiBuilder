@@ -1,7 +1,7 @@
 # src/services/statistics_service.py
 import logging
 from typing import List, Dict, Any
-from src.models.exoplanet import Exoplanet
+from src.models.data_source_exoplanet import DataSourceExoplanet
 from src.models.reference import DataPoint
 
 logger = logging.getLogger(__name__)
@@ -11,7 +11,7 @@ class StatisticsService:
     def __init__(self):
         logger.info("StatisticsService initialized.")
 
-    def generate_statistics(self, exoplanets: List[Exoplanet]) -> Dict[str, Any]:
+    def generate_statistics(self, exoplanets: List[DataSourceExoplanet]) -> Dict[str, Any]:
         """
         Retourne des statistiques sur les données collectées.
         """

@@ -4,8 +4,8 @@ import logging
 from typing import List, Tuple
 
 # Project imports
-from src.models.exoplanet import Exoplanet
-from src.models.star import Star
+from src.models.data_source_exoplanet import DataSourceExoplanet
+from src.models.data_source_star import DataSourceStar
 from src.generators.exoplanet.article_exoplanet_generator import (
     ArticleExoplanetGenerator,
 )
@@ -31,7 +31,7 @@ def clean_filename(filename: str) -> str:
     return filename
 
 
-def generate_exoplanet_draft(exoplanet: Exoplanet) -> str:
+def generate_exoplanet_draft(exoplanet: DataSourceExoplanet) -> str:
     """
     Génère le contenu d'un brouillon d'article pour une exoplanète.
     """
@@ -44,7 +44,7 @@ def generate_exoplanet_draft(exoplanet: Exoplanet) -> str:
     return content
 
 
-def generate_star_draft(star: Star) -> str:
+def generate_star_draft(star: DataSourceStar) -> str:
     """
     Génère le contenu d'un brouillon d'article pour une étoile.
 

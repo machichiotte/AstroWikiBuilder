@@ -4,7 +4,7 @@ from src.constants.field_mappings import (
     WIKILINK_FIELDS_DIRECT,
     METHOD_NAME_MAPPING,
 )
-from src.models.exoplanet import Exoplanet
+from src.models.data_source_exoplanet import DataSourceExoplanet
 from src.services.reference_manager import ReferenceManager
 from src.utils.constellation_utils import ConstellationUtils
 from src.utils.exoplanet_type_utils import ExoplanetTypeUtils
@@ -20,7 +20,7 @@ class ExoplanetInfoboxGenerator:
         self.planet_type_utils = ExoplanetTypeUtils()
         self.constellation_utils = ConstellationUtils()
 
-    def generate_exoplanet_infobox(self, exoplanet: Exoplanet) -> str:
+    def generate_exoplanet_infobox(self, exoplanet: DataSourceExoplanet) -> str:
         def val(attr_name):
             attribute_obj = getattr(exoplanet, attr_name, None)
             if attribute_obj is not None:

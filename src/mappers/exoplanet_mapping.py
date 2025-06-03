@@ -3,7 +3,7 @@ from typing import List, Optional, Callable, Any
 from dataclasses import dataclass
 from enum import Enum
 
-from src.models.exoplanet import Exoplanet
+from src.models.data_source_exoplanet import DataSourceExoplanet
 
 
 class FieldType(Enum):
@@ -26,7 +26,7 @@ class FieldMapping:
     formatter: Optional[Callable[[Any], str]] = (
         None  # Fonction de formatage personnalisée
     )
-    condition: Optional[Callable[[Exoplanet], bool]] = (
+    condition: Optional[Callable[[DataSourceExoplanet], bool]] = (
         None  # Condition pour inclure le champ
     )
 

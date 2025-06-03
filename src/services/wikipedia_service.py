@@ -1,7 +1,7 @@
 # src/services/wikipedia_service.py
 import logging
 from typing import List, Dict, Tuple, Any
-from src.models.exoplanet import Exoplanet
+from src.models.data_source_exoplanet import DataSourceExoplanet
 from src.utils.wikipedia.wikipedia_checker import (
     WikipediaChecker,
     WikiArticleInfo,
@@ -16,7 +16,7 @@ class WikipediaService:
         logger.info("WikipediaService initialized.")
 
     def get_all_articles_info_for_exoplanets(
-        self, exoplanets: List[Exoplanet]
+        self, exoplanets: List[DataSourceExoplanet]
     ) -> Dict[str, Dict[str, WikiArticleInfo]]:
         """
         Obtient les informations de tous les articles Wikipedia pour chaque exoplanète.
@@ -142,7 +142,7 @@ class WikipediaService:
     def format_wiki_links_data_for_export(
         self,
         exoplanets: List[
-            Exoplanet
+            DataSourceExoplanet
         ],  # Need full exoplanet objects for context like host_star
         exoplanet_articles_info: Dict[str, Dict[str, WikiArticleInfo]],
         only_existing: bool = False,  # If true, only format for exoplanets with at least one existing article

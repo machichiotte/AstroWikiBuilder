@@ -8,8 +8,8 @@ from bs4 import BeautifulSoup
 
 from src.mappers.nasa_exoplanet_archive_mapper import NasaExoplanetArchiveMapper
 from src.data_collectors.base_collector import BaseExoplanetCollector
-from src.models.exoplanet import Exoplanet
-from src.models.star import Star
+from src.models.data_source_exoplanet import DataSourceExoplanet
+from src.models.data_source_star import DataSourceStar
 
 from src.models.reference import DataPoint, Reference, SourceType
 
@@ -46,14 +46,14 @@ class NASAExoplanetArchiveCollector(BaseExoplanetCollector):
         # Si le fichier que vous sauvegardez/mockez en a, ajustez ici.
         return {}
 
-    def load_data(self) -> tuple[List[Exoplanet], List[Star]]:
+    def load_data(self) -> tuple[List[DataSourceExoplanet], List[DataSourceStar]]:
         df = self._get_data_frame()
         if df is None or df.empty:
             logger.info("Aucune donnée à traiter.")
             return [], []
 
-        exoplanets: List[Exoplanet] = []
-        stars: List[Star] = []
+        exoplanets: List[DataSourceExoplanet] = []
+        stars: List[DataSourceStar] = []
         base_ref = Reference(
             source=self._get_source_type(),
             url=self._get_source_reference_url(),
@@ -77,7 +77,7 @@ class NASAExoplanetArchiveCollector(BaseExoplanetCollector):
                     stars.append(star)
         return exoplanets, stars
 
-    def _convert_row_to_star(self, row: pd.Series, ref: Reference) -> Optional[Star]:
+    def _convert_row_to_star(self, row: pd.Series, ref: Reference) -> Optional[DataSourceStar]:
         """
         Converts a pandas Series (row from a CSV/DataFrame) to a Star object,
         populating it with data based on predefined mappings.
@@ -206,7 +206,7 @@ class NASAExoplanetArchiveCollector(BaseExoplanetCollector):
 
     def _convert_row_to_exoplanet(
         self, row: pd.Series, ref: Reference
-    ) -> Optional[Exoplanet]:
+    ) -> Optional[DataSourceExoplanet]:
         """
         Converts a pandas Series (row from a CSV/DataFrame) to a Star object,
         populating it with data based on predefined mappings.
@@ -232,7 +232,7 @@ class NASAExoplanetArchiveCollector(BaseExoplanetCollector):
 
     def _convert_row_to_exoplanet2(
         self, row: pd.Series, ref: Reference
-    ) -> Optional[Exoplanet]:
+    ) -> Optional[DataSourceExoplanet]:
         try:
             pl_name_val = row.get("pl_name")
             hostname_val = row.get("hostname")
@@ -251,7 +251,7 @@ class NASAExoplanetArchiveCollector(BaseExoplanetCollector):
                 star_identifier=str(hostname_val).strip(),
             )
 
-            exoplanet = Exoplanet(
+            exoplanet = DataSourceExoplanet(
                 name=str(row["pl_name"]).strip(),
                 host_star=DataPoint(str(row["hostname"]).strip(), nea_ref),
                 discovery_method=DataPoint(str(row["discoverymethod"]).strip(), nea_ref)

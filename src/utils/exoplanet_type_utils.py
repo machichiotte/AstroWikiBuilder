@@ -1,6 +1,6 @@
 # src/utils/exoplatnet_type_utils.py
 from typing import Optional
-from src.models.exoplanet import Exoplanet
+from src.models.data_source_exoplanet import DataSourceExoplanet
 
 
 class ExoplanetTypeUtils:
@@ -20,7 +20,7 @@ class ExoplanetTypeUtils:
     WARM_MIN = 500
     HIGH_INSOLATION_MIN = 100
 
-    def get_exoplanet_planet_type(self, p: Exoplanet) -> str:
+    def get_exoplanet_planet_type(self, p: DataSourceExoplanet) -> str:
         m = self._mass_in_earth(p)
         r = self._radius_in_earth(p)
         d = self._density(p)
@@ -59,7 +59,7 @@ class ExoplanetTypeUtils:
         m: float,
         r: float,
         d: Optional[float],
-        p: Exoplanet,
+        p: DataSourceExoplanet,
         insolation: Optional[float],
     ) -> str:
         # Petite masse et petit rayon → probablement terrestre
@@ -78,7 +78,7 @@ class ExoplanetTypeUtils:
         return self._classify_terrestrial(m, r)
 
     def _classify_giant(
-        self, m: float, p: Exoplanet, insolation: Optional[float]
+        self, m: float, p: DataSourceExoplanet, insolation: Optional[float]
     ) -> str:
         t = (
             float(p.temperature.value)
@@ -130,7 +130,7 @@ class ExoplanetTypeUtils:
             return "Super-Terre"
         return "Méga-Terre"
 
-    def _mass_in_earth(self, p: Exoplanet) -> Optional[float]:
+    def _mass_in_earth(self, p: DataSourceExoplanet) -> Optional[float]:
         if not p.mass or p.mass.value is None:
             return None
         try:
@@ -139,7 +139,7 @@ class ExoplanetTypeUtils:
             return None
         return value * (self.JUPITER_MASS if p.mass.unit == "M_J" else 1)
 
-    def _radius_in_earth(self, p: Exoplanet) -> Optional[float]:
+    def _radius_in_earth(self, p: DataSourceExoplanet) -> Optional[float]:
         if not p.radius or p.radius.value is None:
             return None
         try:
@@ -148,7 +148,7 @@ class ExoplanetTypeUtils:
             return None
         return value * (11.2 if p.radius.unit == "R_J" else 1)
 
-    def _density(self, p: Exoplanet) -> Optional[float]:
+    def _density(self, p: DataSourceExoplanet) -> Optional[float]:
         m = self._mass_in_earth(p)
         r = self._radius_in_earth(p)
         if m is None or r is None:
@@ -157,7 +157,7 @@ class ExoplanetTypeUtils:
         vol_cm3 = 4 / 3 * 3.1416 * (r * 6.371e8) ** 3
         return mass_g / vol_cm3
 
-    def _stellar_insolation(self, p: Exoplanet) -> Optional[float]:
+    def _stellar_insolation(self, p: DataSourceExoplanet) -> Optional[float]:
         if (
             not p.host_star
             or p.host_star.value is None

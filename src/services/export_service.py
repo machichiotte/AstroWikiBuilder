@@ -3,7 +3,7 @@ import logging
 import pandas as pd
 import json
 from typing import List, Dict, Any, Optional
-from src.models.exoplanet import Exoplanet, DataPoint
+from src.models.data_source_exoplanet import DataSourceExoplanet, DataPoint
 
 logger = logging.getLogger(__name__)
 
@@ -11,7 +11,7 @@ class ExportService:
     def __init__(self):
         logger.info("ExportService initialized.")
 
-    def _exoplanet_to_dict_flat(self, exoplanet: Exoplanet) -> Dict[str, Any]:
+    def _exoplanet_to_dict_flat(self, exoplanet: DataSourceExoplanet) -> Dict[str, Any]:
         """
         Convertit un objet Exoplanet en dictionnaire avec des valeurs 'plates' (pas d'objets DataPoint).
         Utilise la valeur de DataPoint, et ajoute la source si disponible.
@@ -39,7 +39,7 @@ class ExportService:
         
         return data # No need to filter Nones here, pandas handles it gracefully in to_csv. For JSON, it might be desired.
 
-    def export_exoplanets_to_csv(self, filename: str, exoplanets: List[Exoplanet]) -> None:
+    def export_exoplanets_to_csv(self, filename: str, exoplanets: List[DataSourceExoplanet]) -> None:
         logger.info(f"Exporting {len(exoplanets)} exoplanets to CSV: {filename}")
         if not exoplanets:
             logger.warning("No exoplanets to export to CSV.")
@@ -59,7 +59,7 @@ class ExportService:
             logger.error(f"Error exporting exoplanets to CSV {filename}: {e}")
             raise # Re-raise the exception to notify the caller
 
-    def export_exoplanets_to_json(self, filename: str, exoplanets: List[Exoplanet]) -> None:
+    def export_exoplanets_to_json(self, filename: str, exoplanets: List[DataSourceExoplanet]) -> None:
         logger.info(f"Exporting {len(exoplanets)} exoplanets to JSON: {filename}")
         if not exoplanets:
             logger.warning("No exoplanets to export to JSON.")

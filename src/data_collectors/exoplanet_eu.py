@@ -3,8 +3,8 @@ import pandas as pd
 from typing import List, Optional, Dict, Any
 import logging
 from src.data_collectors.base_collector import BaseExoplanetCollector
-from src.models.exoplanet import (
-    Exoplanet,
+from src.models.data_source_exoplanet import (
+    DataSourceExoplanet,
 )
 from src.models.reference import DataPoint, Reference, SourceType
 
@@ -37,7 +37,7 @@ class ExoplanetEUCollector(BaseExoplanetCollector):
 
     def _convert_row_to_exoplanet(
         self, row: pd.Series, ref: Reference
-    ) -> Optional[Exoplanet]:
+    ) -> Optional[DataSourceExoplanet]:
         try:
             if pd.isna(row["name"]) or pd.isna(row["star_name"]):
                 logger.warning(
@@ -45,7 +45,7 @@ class ExoplanetEUCollector(BaseExoplanetCollector):
                 )
                 return None
 
-            exoplanet = Exoplanet(
+            exoplanet = DataSourceExoplanet(
                 name=str(row["name"]).strip(),
                 host_star=DataPoint(str(row["star_name"]).strip(), ref),
                 discovery_method=DataPoint(str(row["detection_type"]).strip(), ref)

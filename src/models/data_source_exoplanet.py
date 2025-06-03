@@ -1,11 +1,11 @@
-# src/models/exoplanet.py
+# src/models/data_source_exoplanet.py
 from dataclasses import dataclass, field
 from typing import Optional, List
 from .reference import DataPoint
 
 
 @dataclass
-class Exoplanet:
+class DataSourceExoplanet:
     # Identifiants
     name: Optional[DataPoint] = None
     other_names: Optional[List[str]] = field(default_factory=list)

@@ -1,17 +1,17 @@
 # src/services/star_repository.py
 import logging
 from typing import List, Dict
-from src.models.star import Star
+from src.models.data_source_star import DataSourceStar
 
 logger = logging.getLogger(__name__)
 
 
 class StarRepository:
     def __init__(self):
-        self.stars: Dict[str, Star] = {}
+        self.stars: Dict[str, DataSourceStar] = {}
         logger.info("StarRepository initialized.")
 
-    def add_stars(self, stars: List[Star], source_system: str) -> None:
+    def add_stars(self, stars: List[DataSourceStar], source_system: str) -> None:
         """
         Ajoute ou fusionne les exoplanètes dans le dictionnaire.
         Le paramètre 'source_system' indique le système ou le lot d'où proviennent ces données,
@@ -37,5 +37,5 @@ class StarRepository:
             f"Addition from {source_system} complete. Added: {added_count}, Merged: {merged_count}. Total stars: {len(self.stars)}"
         )
 
-    def get_all_stars(self) -> List[Star]:
+    def get_all_stars(self) -> List[DataSourceStar]:
         return list(self.stars.values())

@@ -1,6 +1,6 @@
 # src/generators/exoplanet/exoplanet_category_generator_old.py
 from typing import List, Dict, Optional, Set
-from src.models.exoplanet import Exoplanet
+from src.models.data_source_exoplanet import DataSourceExoplanet
 from src.utils.exoplanet_type_utils import ExoplanetTypeUtils
 from src.utils.wikipedia.category_parser import parse_categories
 import re
@@ -54,7 +54,7 @@ class ExoplanetCategoryGenerator:
             "CHEOPS": "[[Catégorie:Exoplanète découverte grâce au télescope spatial CHEOPS]]",
         }
 
-    def _get_constellation_category(self, exoplanet: Exoplanet) -> Optional[str]:
+    def _get_constellation_category(self, exoplanet: DataSourceExoplanet) -> Optional[str]:
         if (
             exoplanet.constellation
             and hasattr(exoplanet.constellation, "value")
@@ -83,7 +83,7 @@ class ExoplanetCategoryGenerator:
                             return cat_string
         return None
 
-    def _get_discovery_method_category(self, exoplanet: Exoplanet) -> Optional[str]:
+    def _get_discovery_method_category(self, exoplanet: DataSourceExoplanet) -> Optional[str]:
         if (
             exoplanet.discovery_method
             and hasattr(exoplanet.discovery_method, "value")
@@ -99,7 +99,7 @@ class ExoplanetCategoryGenerator:
                     return target_category
         return None
 
-    def _get_discovery_year_category(self, exoplanet: Exoplanet) -> Optional[str]:
+    def _get_discovery_year_category(self, exoplanet: DataSourceExoplanet) -> Optional[str]:
         if (
             exoplanet.discovery_date
             and hasattr(exoplanet.discovery_date, "value")
@@ -125,7 +125,7 @@ class ExoplanetCategoryGenerator:
                     return target_category
         return None
 
-    def _get_discovery_instrument_category(self, exoplanet: Exoplanet) -> Optional[str]:
+    def _get_discovery_instrument_category(self, exoplanet: DataSourceExoplanet) -> Optional[str]:
         if (
             hasattr(exoplanet, "discovered_by")
             and exoplanet.discovered_by
@@ -160,7 +160,7 @@ class ExoplanetCategoryGenerator:
                                 return mapped_cat_string
         return None
 
-    def _get_planet_type_category(self, exoplanet: Exoplanet) -> Optional[str]:
+    def _get_planet_type_category(self, exoplanet: DataSourceExoplanet) -> Optional[str]:
         try:
             planet_type_value = self.planet_type_utils.get_exoplanet_planet_type(
                 exoplanet
@@ -186,7 +186,7 @@ class ExoplanetCategoryGenerator:
             pass
         return None
 
-    def generate_exoplanet_categories(self, exoplanet: Exoplanet) -> List[str]:
+    def generate_exoplanet_categories(self, exoplanet: DataSourceExoplanet) -> List[str]:
         categories: Set[str] = set(self.base_categories.copy())
 
         # List of getter methods for different category types

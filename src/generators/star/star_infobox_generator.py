@@ -1,7 +1,7 @@
 # src/generators/star_infobox_generator.py
 from typing import Any, Optional
-from src.models.star import (
-    Star,
+from models.data_source_star import (
+    DataSourceStar,
     DataPoint,
 )
 from src.utils.formatters.article_utils import ArticleUtils
@@ -19,7 +19,7 @@ class StarInfoboxGenerator:
         pass
 
     def _add_field(
-        self, star: Star, attribute_name: str, infobox_field_name: str
+        self, star: DataSourceStar, attribute_name: str, infobox_field_name: str
     ) -> str:
         """
         Helper function to add a field to the infobox string.
@@ -115,11 +115,11 @@ class StarInfoboxGenerator:
         output_str += "\n"
         return output_str
 
-    def generate_star_infobox(self, star: Star) -> str:
+    def generate_star_infobox(self, star: DataSourceStar) -> str:
         """
         Génère le contenu de l'infobox Wikipédia pour une étoile.
         """
-        if not isinstance(star, Star):
+        if not isinstance(star, DataSourceStar):
             raise TypeError("Input must be a Star object.")
 
         infobox = "{{Infobox Étoile\n"

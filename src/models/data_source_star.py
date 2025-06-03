@@ -1,11 +1,11 @@
-# src/models/star.py
+# src/models/data_source_star.py
 from dataclasses import dataclass
 from typing import Optional
 from .reference import DataPoint
 
 
 @dataclass
-class Star:
+class DataSourceStar:
     # Identifiants
     name: Optional[DataPoint] = None
     image: Optional[DataPoint] = None

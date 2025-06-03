@@ -1,6 +1,6 @@
 # src/utils/exoplatnet_comparison_utils.py
 
-from src.models.exoplanet import Exoplanet
+from src.models.data_source_exoplanet import DataSourceExoplanet
 from src.utils.formatters.article_utils import ArticleUtils
 
 
@@ -24,7 +24,7 @@ class ExoplanetComparisonUtils:
         self.uranus_orbit_au = 19.229
         self.neptune_orbit_au = 30.103
 
-    def get_radius_comparison(self, exoplanet: Exoplanet) -> str:
+    def get_radius_comparison(self, exoplanet: DataSourceExoplanet) -> str:
         """
         Génère une comparaison de rayon avec Jupiter ou la Terre.
         Le rayon de l'exoplanète est supposé être en rayons joviens (R_J).
@@ -62,7 +62,7 @@ class ExoplanetComparisonUtils:
 
         return ""
 
-    def get_mass_comparison(self, exoplanet: Exoplanet) -> str:
+    def get_mass_comparison(self, exoplanet: DataSourceExoplanet) -> str:
         """
         Génère une comparaison de masse avec Jupiter ou la Terre.
         La masse de l'exoplanète est supposée être en masses joviennes.
@@ -99,7 +99,7 @@ class ExoplanetComparisonUtils:
 
         return ""
 
-    def get_orbital_comparison(self, exoplanet: Exoplanet) -> str:
+    def get_orbital_comparison(self, exoplanet: DataSourceExoplanet) -> str:
         """
         Génère une comparaison de l'orbite de l'exoplanète avec les planètes du système solaire.
         La distance est supposée être en Unités Astronomiques (UA).
