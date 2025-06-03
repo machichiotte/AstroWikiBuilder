@@ -1,8 +1,9 @@
-# src/mappers/star_infobox_mapper.py
-from typing import List, Optional, Callable, Any
+# src/mappers/infobox_mapper.py
+from typing import List, Optional, Callable, Any, Union
 from dataclasses import dataclass
 from enum import Enum
 
+from src.models.data_source_exoplanet import DataSourceExoplanet
 from src.models.data_source_star import DataSourceStar
 
 
@@ -10,35 +11,99 @@ class FieldType(Enum):
     """Types de champs pour déterminer le formatage approprié"""
 
     SIMPLE = "simple"  # Valeur simple avec unité optionnelle
-    DESIGNATIONS = "designations"  # Liste de désignations
-    AGE = "age"  # Âge nécessitant formatage spécial
     SEPARATE_UNIT = "separate_unit"  # Champs nécessitant une ligne séparée pour l'unité
     CONSTELLATION = "constellation"  # Champ constellation calculé
     CARTE_UAI = "carte_uai"  # Carte UAI calculée
+    DESIGNATIONS = "designations"  # Liste de désignations (spécifique aux étoiles)
+    AGE = "age"  # Âge nécessitant formatage spécial (spécifique aux étoiles)
 
 
 @dataclass
 class FieldMapping:
-    """Configuration pour mapper un champ Star vers l'infobox"""
+    """Configuration pour mapper un champ de source de données vers l'infobox"""
 
-    star_attribute: str
+    source_attribute: str  # Attribut de DataSourceExoplanet ou DataSourceStar
     infobox_field: str
     field_type: FieldType = FieldType.SIMPLE
     unit_override: Optional[str] = None  # Pour remplacer l'unité par défaut
     formatter: Optional[Callable[[Any], str]] = (
         None  # Fonction de formatage personnalisée
     )
-    condition: Optional[Callable[[DataSourceStar], bool]] = (
+    condition: Optional[Callable[[Union[DataSourceExoplanet, DataSourceStar]], bool]] = (
         None  # Condition pour inclure le champ
     )
 
 
-class StarInfoboxMapper:
-    """Configuration centralisée des mappings Star -> Infobox"""
+class InfoboxMapper:
+    """Configuration centralisée des mappings de sources de données -> Infobox"""
 
     @classmethod
-    def get_field_mappings(cls) -> List[FieldMapping]:
-        """Retourne la liste complète des mappings de champs"""
+    def get_exoplanet_field_mappings(cls) -> List[FieldMapping]:
+        """Retourne la liste complète des mappings de champs pour les exoplanètes"""
+        return [
+            # Identifiants
+            FieldMapping("name", "nom"),
+            FieldMapping("image", "image"),
+            FieldMapping("caption", "légende"),
+            # ÉTOILE
+            FieldMapping("star_name", "étoile"),
+            FieldMapping("epoch_star", "époque étoile"),
+            FieldMapping("right_ascension", "ascension droite"),
+            FieldMapping("declination", "déclinaison"),
+            FieldMapping("distance_general", "distance"),
+            FieldMapping("constellation", "constellation", FieldType.CONSTELLATION),
+            FieldMapping("carte_uai", "carte UAI", FieldType.CARTE_UAI),
+            FieldMapping("spectral_type", "type spectral"),
+            FieldMapping("apparent_magnitude", "magnitude apparente"),
+            # PLANÈTE
+            # Type
+            FieldMapping("type", "type"),
+            # Caractéristiques orbitales
+            FieldMapping("semi_major_axis", "demi-grand axe", FieldType.SEPARATE_UNIT),
+            FieldMapping(
+                "argument_of_periastron", "périastre", FieldType.SEPARATE_UNIT
+            ),
+            FieldMapping("apoastron", "apoastre", FieldType.SEPARATE_UNIT),
+            FieldMapping("eccentricity", "excentricité"),
+            FieldMapping("period", "période", FieldType.SEPARATE_UNIT),
+            FieldMapping("angular_distance", "distance angulaire"),
+            FieldMapping("periastron_time", "t_peri"),
+            FieldMapping("inclination", "inclinaison", FieldType.SEPARATE_UNIT),
+            FieldMapping(
+                "longitude_of_periastron", "arg_péri", FieldType.SEPARATE_UNIT
+            ),
+            FieldMapping("epoch", "époque"),
+            # Caractéristiques physiques
+            FieldMapping("mass", "masse", FieldType.SEPARATE_UNIT),
+            FieldMapping("minimum_mass", "masse minimale", FieldType.SEPARATE_UNIT),
+            FieldMapping("radius", "rayon", FieldType.SEPARATE_UNIT),
+            FieldMapping("density", "masse volumique", FieldType.SEPARATE_UNIT),
+            FieldMapping("surface_gravity", "gravité", FieldType.SEPARATE_UNIT),
+            FieldMapping(
+                "rotation_period", "période de rotation", FieldType.SEPARATE_UNIT
+            ),
+            FieldMapping("temperature", "température", FieldType.SEPARATE_UNIT),
+            FieldMapping("albedo_bond", "albedo_bond"),
+            # Atmosphère
+            FieldMapping("pression", "pression"),
+            FieldMapping("composition", "composition"),
+            FieldMapping("wind_speed", "vitesse des vents"),
+            # Découverte
+            FieldMapping("discoverers", "découvreurs"),
+            FieldMapping("program", "programme"),
+            FieldMapping("method", "méthode"),
+            FieldMapping("discovery_date", "date"),
+            FieldMapping("discovery_site", "lieu"),
+            FieldMapping("pre_discovery", "prédécouverte"),
+            FieldMapping("detection_type", "détection"),
+            FieldMapping("status", "statut"),
+            # Informations supplémentaires
+            FieldMapping("other_names", "autres noms"),
+        ]
+
+    @classmethod
+    def get_star_field_mappings(cls) -> List[FieldMapping]:
+        """Retourne la liste complète des mappings de champs pour les étoiles"""
         return [
             # Identifiants
             FieldMapping("name", "nom"),

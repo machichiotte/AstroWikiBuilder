@@ -2,7 +2,7 @@
 import math
 from typing import Optional, Any
 from src.models.data_source_star import DataSourceStar, DataPoint
-from src.mappers.star_infobox_mapper import StarInfoboxMapper, FieldMapping, FieldType
+from src.mappers.infobox_mapper import InfoboxMapper, FieldMapping, FieldType
 from src.utils.constellation_utils import ConstellationUtils
 from src.utils.formatters.article_utils import ArticleUtils
 from src.utils.formatters.field_formatters import FieldFormatter
@@ -15,7 +15,6 @@ class StarInfoboxGenerator:
         self.article_utils = ArticleUtils()
         self.constellation_utils = ConstellationUtils()
         self.field_formatter = FieldFormatter()
-        self.mapping_config = StarInfoboxMapper()
 
     def generate_star_infobox(self, star: DataSourceStar) -> str:
         """Génère le contenu de l'infobox Wikipédia pour une étoile"""
@@ -27,7 +26,7 @@ class StarInfoboxGenerator:
         infobox = "{{Infobox Étoile\n"
 
         # Traiter tous les champs selon leur configuration
-        for mapping in self.mapping_config.get_field_mappings():
+        for mapping in InfoboxMapper.get_star_field_mappings():
             field_content = self._process_field(star, mapping)
             if field_content:
                 infobox += field_content
@@ -48,7 +47,7 @@ class StarInfoboxGenerator:
             return self._handle_carte_uai_field(star)
 
         # Récupérer la valeur du champ
-        value, unit = self._extract_field_value(star, mapping.star_attribute)
+        value, unit = self._extract_field_value(star, mapping.source_attribute)
 
         if not self._is_valid_value(value):
             return ""

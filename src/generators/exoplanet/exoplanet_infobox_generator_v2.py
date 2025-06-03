@@ -4,8 +4,8 @@ import unicodedata
 # re module no longer needed for the simplified _is_valid_value
 from typing import Optional, Any
 from src.models.data_source_exoplanet import DataSourceExoplanet, DataPoint
-from src.mappers.exoplanet_infobox_mapper import (
-    ExoplanetInfoboxMapper,
+from src.mappers.infobox_mapper import (
+    InfoboxMapper,
     FieldMapping,
     FieldType,
 )
@@ -17,7 +17,6 @@ from src.services.reference_manager import ReferenceManager
 
 class ExoplanetInfoboxGenerator:
     def __init__(self):
-        self.exoplanet_mapping = ExoplanetInfoboxMapper()
         self.reference_manager = ReferenceManager()
         self.field_formatter = FieldFormatter()
         self.article_utils = ArticleUtils()
@@ -37,7 +36,7 @@ class ExoplanetInfoboxGenerator:
 
         infobox_lines = ["{{Infobox exoplanet"]  # start infobox
 
-        for mapping in self.exoplanet_mapping.get_field_mappings():
+        for mapping in InfoboxMapper.get_exoplanet_field_mappings():
             field_block = self._process_field(exoplanet, mapping)
             if field_block:
                 infobox_lines.append(field_block)
@@ -73,9 +72,9 @@ class ExoplanetInfoboxGenerator:
             return self._handle_carte_uai_field(exoplanet)
 
         # 3. Standard DataPoint fields
-        #    Attempt to retrieve the DataPoint object via mapping.star_attribute
+        #    Attempt to retrieve the DataPoint object via mapping.source_attribute
         datapoint: Optional[DataPoint] = getattr(
-            exoplanet, mapping.star_attribute, None
+            exoplanet, mapping.source_attribute, None
         )
         if datapoint is None:
             return ""
