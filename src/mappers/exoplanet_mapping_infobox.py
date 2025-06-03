@@ -31,7 +31,7 @@ class FieldMapping:
     )
 
 
-class ExoplanetMappingConfig:
+class ExoplanetMappingInfobox:
     """Configuration centralisée des mappings Exoplanets -> Infobox"""
 
     @classmethod

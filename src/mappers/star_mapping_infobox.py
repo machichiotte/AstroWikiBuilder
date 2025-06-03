@@ -33,7 +33,7 @@ class FieldMapping:
     )
 
 
-class StarMappingConfig:
+class StarMappingInfobox:
     """Configuration centralisée des mappings Star -> Infobox"""
 
     @classmethod
