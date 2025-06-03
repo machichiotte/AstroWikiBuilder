@@ -20,7 +20,6 @@ from src.generators.exoplanet.exoplanet_category_generator import (
     ExoplanetCategoryGenerator,
 )
 from src.services.reference_manager import ReferenceManager
-from src.mappers.exoplanet_mapping import ExoplanetMappingConfig
 
 
 class ArticleExoplanetGenerator:
@@ -66,9 +65,8 @@ class ArticleExoplanetGenerator:
     def __init__(self):
         locale.setlocale(locale.LC_ALL, "fr_FR.UTF-8")
 
-        self.exoplanet_mapping = ExoplanetMappingConfig()
         self.reference_manager = ReferenceManager()
-        self.infobox_generator = ExoplanetInfoboxGenerator(self.exoplanet_mapping)
+        self.infobox_generator = ExoplanetInfoboxGenerator()
         self.category_utils = ExoplanetCategoryGenerator()
 
         self.article_utils = ArticleUtils()
@@ -124,17 +122,22 @@ class ArticleExoplanetGenerator:
         self.reference_manager.reset_references()
 
         # Générer les différentes sections
+        header = self._generate_header_section()
         infobox = self.infobox_generator.generate_exoplanet_infobox(exoplanet)
         introduction = self.introduction_generator.generate_exoplanet_introduction(
             exoplanet
         )
-        physical_characteristics = self._generate_physical_characteristics(exoplanet)
+        physical_characteristics = self._generate_physical_characteristics_section(exoplanet)
         orbit = self._generate_orbit_section(exoplanet)
         discovery = self._generate_discovery_section(exoplanet)
         habitability = self._generate_habitability_section(exoplanet)
+        reference = self._generate_references_section()
+        category = self._generate_category_section(exoplanet)
 
         # Assembler l'article
-        article = f"""{{{{Ébauche|exoplanète|}}}}{{{{Source unique|date={self._get_formatted_french_utc_plus_1_date()}}}}}
+        article = f"""
+
+{header}
 
 {infobox}
 
@@ -148,17 +151,10 @@ class ArticleExoplanetGenerator:
 
 {habitability}
 
-== Références ==
-{{{{références}}}}
+{reference}
 
-{{{{Portail|astronomie|exoplanètes}}}}
-
+{category}
 """
-        # Ajouter les catégories
-        categories = self.category_utils.generate_exoplanet_categories(exoplanet)
-        for category in categories:
-            article += f"{category}\n"
-
         return article
 
     def _generate_orbit_section(self, exoplanet: Exoplanet) -> str:
@@ -244,25 +240,21 @@ class ArticleExoplanetGenerator:
 
         return section
 
-    def _generate_physical_characteristics(self, exoplanet: Exoplanet) -> str:
+    def _generate_physical_characteristics_section(self, exoplanet: Exoplanet) -> str:
         """Génère la section des caractéristiques physiques."""
-        mass = (
-            exoplanet.mass.value
-            if exoplanet.mass and exoplanet.mass.value is not None
-            else None
-        )
-        radius = (
-            exoplanet.radius.value
-            if exoplanet.radius and exoplanet.radius.value is not None
-            else None
-        )
-        temp = (
-            exoplanet.temperature.value
-            if exoplanet.temperature and exoplanet.temperature.value is not None
-            else None
-        )
+        def get_value_or_none_if_nan(data_point):
+            if data_point and hasattr(data_point, "value") and data_point.value is not None:
+                value = data_point.value
+                if isinstance(value, str) and value.lower() == "nan":
+                    return None
+                return value
+            return None
 
-        if not any([mass, radius, temp]):
+        mass = get_value_or_none_if_nan(exoplanet.mass)
+        radius = get_value_or_none_if_nan(exoplanet.radius)
+        temp = get_value_or_none_if_nan(exoplanet.temperature)
+
+        if not any([mass is not None, radius is not None, temp is not None]):
             return ""
 
         section = "== Caractéristiques physiques ==\n"
@@ -332,3 +324,35 @@ class ArticleExoplanetGenerator:
         section = "== Habitabilité ==\n"
         section += "Les conditions d'habitabilité de cette exoplanète ne sont pas déterminées ou ne sont pas connues.\n"
         return section
+
+    def _generate_references_section(self) -> str:
+        """
+        Génère la section des références
+        """
+        section = "== Références ==\n"
+        section += f"{{{{références}}}}"
+        section += f"{{{{Portail|astronomie|exoplanètes}}}}"
+        return section
+    
+    def _generate_header_section(self) -> str:
+        """
+        Génère le header
+        """        
+
+        section = f"{{{{Ébauche|exoplanète|}}}}"
+        section += f"{{{{Source unique|date={self._get_formatted_french_utc_plus_1_date()}}}}}"
+        return section
+    
+    def _generate_category_section(self, exoplanet) -> str:
+        """
+        Génère la section des catégories
+        """
+
+        categories = self.category_utils.generate_exoplanet_categories(exoplanet)
+        if not categories:
+            return ""
+        section = ""
+        for category in categories:
+            section += f"\n"
+        return section.strip() if section else ""
+        

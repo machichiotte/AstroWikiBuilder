@@ -1,5 +1,7 @@
 # src/generators/exoplanet_infobox_generator_v2.py
 
+import unicodedata
+# re module no longer needed for the simplified _is_valid_value
 from typing import Optional, Any
 from src.models.exoplanet import Exoplanet, DataPoint
 from src.mappers.exoplanet_mapping import (
@@ -14,8 +16,8 @@ from src.services.reference_manager import ReferenceManager
 
 
 class ExoplanetInfoboxGenerator:
-    def __init__(self, mapping_config: ExoplanetMappingConfig):
-        self.mapping_config = mapping_config
+    def __init__(self):
+        self.exoplanet_mapping = ExoplanetMappingConfig()
         self.reference_manager = ReferenceManager()
         self.field_formatter = FieldFormatter()
         self.article_utils = ArticleUtils()
@@ -35,7 +37,7 @@ class ExoplanetInfoboxGenerator:
 
         infobox_lines = ["{{Infobox exoplanet"]  # start infobox
 
-        for mapping in self.mapping_config.get_field_mappings():
+        for mapping in self.exoplanet_mapping.get_field_mappings():
             field_block = self._process_field(exoplanet, mapping)
             if field_block:
                 infobox_lines.append(field_block)
@@ -104,7 +106,7 @@ class ExoplanetInfoboxGenerator:
 
         # 4. Attempt to extract a reference (notes) from datapoint
         notes_ref = self._extract_notes(datapoint, exoplanet)
-        if notes_ref:
+        if notes_ref:   
             # Append notes as a new, correctly formatted line
             infobox_block += f"\n| {mapping.infobox_field} notes = {notes_ref}"
         
@@ -138,9 +140,37 @@ class ExoplanetInfoboxGenerator:
         Returns False if value is None, empty string, or otherwise invalid.
         """
         if value is None:
+            return False  # Step 1: Handle None directly
+
+        if value is None:
             return False
-        if isinstance(value, str) and value.strip() == "":
+
+        try:
+            # Get the string representation using format(), which is closer to f-string behavior
+            s_representation = format(value)
+        except Exception:
+            # If formatting fails for some reason, treat as invalid
             return False
+
+        # Normalize Unicode characters
+        normalized_s_value = unicodedata.normalize('NFKD', s_representation)
+        
+        # Strip whitespace from the normalized string representation
+        s_value_stripped = normalized_s_value.strip()
+
+        # If, after stripping, the string is empty, it's invalid
+        if not s_value_stripped:
+            return False
+        
+        # Convert the stripped string to lowercase for case-insensitive comparison
+        s_value_lower = s_value_stripped.lower()
+        
+        # Check if the lowercase, stripped, normalized string is "nan"
+        # OR starts with "nan{{" (to catch "nan{{±...}}")
+        if s_value_lower == "nan" or s_value_lower.startswith("nan{{"):
+            return False # If it's "nan" or "nan{{...", it's invalid
+            
+        # Otherwise, the value is considered valid
         return True
 
     def _format_by_type(
