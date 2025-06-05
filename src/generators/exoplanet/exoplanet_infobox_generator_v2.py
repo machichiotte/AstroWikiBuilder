@@ -16,8 +16,8 @@ from src.services.reference_manager import ReferenceManager
 
 
 class ExoplanetInfoboxGenerator:
-    def __init__(self):
-        self.reference_manager = ReferenceManager()
+    def __init__(self, reference_manager: ReferenceManager):
+        self.reference_manager = reference_manager
         self.field_formatter = FieldFormatter()
         self.article_utils = ArticleUtils()
         self.constellation_utils = ConstellationUtils()
@@ -32,7 +32,7 @@ class ExoplanetInfoboxGenerator:
             raise TypeError("Input must be an Exoplanet object.")
 
         # Réinitialise les références pour cet exoplanète
-        self.reference_manager.reset_references()
+        #self.reference_manager.reset_references()
 
         infobox_lines = ["{{Infobox exoplanet"]  # start infobox
 
@@ -76,6 +76,13 @@ class ExoplanetInfoboxGenerator:
         datapoint: Optional[DataPoint] = getattr(
             exoplanet, mapping.source_attribute, None
         )
+       # TODO print(f"exoplanet {exoplanet.mass}")
+       # print(f"mapping {mapping}")
+       # print(f"Processing field '{mapping.infobox_field}' with source '{mapping.source_attribute}'")
+       # print(f"_process_field exoplanet '{exoplanet.spectral_type}'")
+        print(f"_process_field datapoint '{datapoint}'")
+        print(f"exoplanet  '{exoplanet}'")
+
         if datapoint is None:
             return ""
 
@@ -207,27 +214,53 @@ class ExoplanetInfoboxGenerator:
         if reference_obj is None:
             return None
 
-        # Attempt to obtain the full ref wikitext (e.g., '<ref name="Smith2024">Smith et al. 2024</ref>')
+        # Determine the exoplanet's name as a string, with a fallback.
+        current_exoplanet_name_str = "unknown_exoplanet"  # Default fallback
+        if exoplanet.name and hasattr(exoplanet.name, 'value') and exoplanet.name.value is not None:
+            current_exoplanet_name_str = str(exoplanet.name.value)
+        elif exoplanet.name and hasattr(exoplanet.name, 'value') and exoplanet.name.value is None:
+             # Case where exoplanet.name is a DataPoint but its value is None
+             # Decide if to_wiki_ref can handle None or needs a placeholder.
+             # For now, let's keep current_exoplanet_name_str as "unknown_exoplanet" or pass None.
+             # Let's assume to_wiki_ref might not need the name or handles None.
+             # If it strictly needs a name, this might need adjustment based on to_wiki_ref's contract.
+             pass # current_exoplanet_name_str remains "unknown_exoplanet"
+        elif exoplanet.name: # If exoplanet.name is a DataPoint but .value is not present or None
+             current_exoplanet_name_str = str(exoplanet.name) # Fallback to string of DataPoint obj itself
+
+        # Attempt to obtain the full ref wikitext
         try:
-            full_ref_wikitext = reference_obj.to_wiki_ref(exoplanet.name)
-        except Exception:
+            # Pass the string name to to_wiki_ref.
+            # This assumes to_wiki_ref expects/handles a string name.
+            # If it expected the DataPoint object exoplanet.name, this is a change.
+            full_ref_wikitext = reference_obj.to_wiki_ref(current_exoplanet_name_str)
+        except Exception as e:
+            # Optional: log the error with more context for debugging
+            # print(f"Error calling to_wiki_ref for '{current_exoplanet_name_str}' with reference '{reference_obj}': {e}")
             return None
 
         if not full_ref_wikitext:
             return None
 
-        # Determine a source name to use as the <ref name="..."> identifier
-        source_name = None
-        if hasattr(reference_obj, "source") and reference_obj.source:
-            # If .source has a .value attribute, use it; otherwise fallback to string repr
-            source_name = getattr(
-                reference_obj.source, "value", str(reference_obj.source)
-            )
-        else:
-            source_name = str(exoplanet.name)  # fallback to exoplanet.name as tag base
+        # Determine a source name string for the <ref name="..."> identifier
+        # Default to the exoplanet's name string if no specific source is found on the reference object.
+        source_name_str = current_exoplanet_name_str
 
-        # Register the reference in ReferenceManager, which returns the short tag '<ref name="..."/>'
-        ref_tag = self.reference_manager.add_reference(source_name, full_ref_wikitext)
+        if hasattr(reference_obj, "source") and reference_obj.source:
+            # If .source has a .value attribute, use it; otherwise fallback to string repr of source object
+            if hasattr(reference_obj.source, "value") and reference_obj.source.value is not None:
+                source_name_str = str(reference_obj.source.value)
+            else:
+                source_name_str = str(reference_obj.source)
+        # If no explicit source on reference_obj, source_name_str remains current_exoplanet_name_str (set above)
+
+        # Ensure source_name_str is a string (it should be by this point, but as a safeguard)
+        if not isinstance(source_name_str, str):
+            source_name_str = str(source_name_str) # Final fallback to string conversion
+
+        # Register the reference in ReferenceManager.
+        # ReferenceManager is responsible for creating a valid XML attribute for 'name' from source_name_str.
+        ref_tag = self.reference_manager.add_reference(source_name_str, full_ref_wikitext)
         return ref_tag
 
     def _handle_constellation_field(self, exoplanet: DataSourceExoplanet) -> str:
@@ -252,4 +285,5 @@ class ExoplanetInfoboxGenerator:
         carte_uai = self.constellation_utils.get_constellation_name(
             exoplanet.right_ascension.value, exoplanet.declination.value
         )
+        
         return f"| carte UAI = {carte_uai}"

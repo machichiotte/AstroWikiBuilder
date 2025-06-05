@@ -2,20 +2,20 @@
 
 # Unités par défaut associées aux champs physiques
 FIELD_DEFAULT_UNITS: dict[str, str] = {
-    "masse": "M_J",
-    "rayon": "R_J",
-    "température": "K",
+    "mass": "M☉",
+    "radius": "R☉",
+    "temperature": "K",
     "distance": "pc",
-    "demi-grand axe": "ua",
-    "période": "j",
-    "inclinaison": "°",
-    "périastre": "ua",
-    "apoastre": "ua",
-    "masse minimale": "M_J",
-    "masse volumique": "kg/m³",
-    "gravité": "m/s²",
-    "période de rotation": "h",
-    "arg_péri": "°",
+    "semi-major axis": "ua",
+    "period": "j",
+    "inclination": "°",
+    "periastron": "ua",
+    "apoastron": "ua",
+    "minimum mass": "M☉",
+    "density": "kg/m³",
+    "gravity": "m/s²",
+    "rotation period": "h",
+    "argument of periastron": "°",
 }
 
 # Champs pour lesquels un lien direct vers un article Wikipédia doit être généré

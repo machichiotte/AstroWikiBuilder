@@ -1,6 +1,7 @@
 # src/services/statistics_service.py
 import logging
 from typing import List, Dict, Any
+from src.models.data_source_star import DataSourceStar
 from src.models.data_source_exoplanet import DataSourceExoplanet
 from src.models.reference import DataPoint
 
@@ -11,7 +12,7 @@ class StatisticsService:
     def __init__(self):
         logger.info("StatisticsService initialized.")
 
-    def generate_statistics(self, exoplanets: List[DataSourceExoplanet]) -> Dict[str, Any]:
+    def generate_statistics_exoplanet(self, exoplanets: List[DataSourceExoplanet]) -> Dict[str, Any]:
         """
         Retourne des statistiques sur les données collectées.
         """
@@ -98,4 +99,83 @@ class StatisticsService:
                     )
 
         logger.info("Statistics generation complete.")
+        return stats
+
+    def generate_statistics_star(self, stars: List[DataSourceStar]) -> Dict[str, Any]:
+        """
+        Retourne des statistiques sur les données collectées pour les étoiles.
+        """
+        if not stars:
+            logger.warning("No stars provided for statistics generation.")
+            return {
+                "total_stars": 0,
+                "data_points_by_source": {},
+                "spectral_types": {},
+                "discovery_years": {},
+            }
+    
+        stats = {
+            "total_stars": len(stars),
+            "data_points_by_source": {},
+            "spectral_types": {},
+            "discovery_years": {},
+        }
+    
+        logger.info(f"Generating statistics for {len(stars)} stars.")
+    
+        for star in stars:
+            # Statistiques par source de données (pour chaque DataPoint)
+            for field_name in star.__dataclass_fields__:
+                if field_name in [
+                    "name",
+                    "other_names",
+                ]:
+                    continue
+    
+                value_attr = getattr(star, field_name)
+                if (
+                    isinstance(value_attr, DataPoint)
+                    and value_attr.reference
+                    and value_attr.reference.source
+                ):
+                    source_key = value_attr.reference.source.value
+                    stats["data_points_by_source"][source_key] = (
+                        stats["data_points_by_source"].get(source_key, 0) + 1
+                    )
+    
+            # Statistiques par type spectral
+            if hasattr(star, "spectral_type") and star.spectral_type and getattr(star.spectral_type, "value", None):
+                spectral = str(star.spectral_type.value)
+                stats["spectral_types"][spectral] = (
+                    stats["spectral_types"].get(spectral, 0) + 1
+                )
+    
+            # Statistiques par année de découverte
+            if hasattr(star, "discovery_date") and star.discovery_date and getattr(star.discovery_date, "value", None):
+                try:
+                    year_val = star.discovery_date.value
+                    if hasattr(year_val, "year"):
+                        year = year_val.year
+                    elif (
+                        isinstance(year_val, str)
+                        and len(year_val) >= 4
+                        and year_val[:4].isdigit()
+                    ):
+                        year = int(year_val[:4])
+                    elif isinstance(year_val, (int, float)):
+                        year = int(year_val)
+                    else:
+                        logger.debug(
+                            f"Could not parse year from discovery_date.value: {year_val}"
+                        )
+                        continue
+                    stats["discovery_years"][year] = (
+                        stats["discovery_years"].get(year, 0) + 1
+                    )
+                except ValueError:
+                    logger.warning(
+                        f"Could not parse year from discovery_date.value: {star.discovery_date.value} for star {star.name}"
+                    )
+    
+        logger.info("Statistics generation for stars complete.")
         return stats

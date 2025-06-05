@@ -51,10 +51,24 @@ class DataProcessor:
         """Récupère toutes les étoiles consolidées."""
         return self.star_repository.get_all_stars()
 
-    def get_statistics(self) -> Dict[str, Any]:
+    def get_statistics_exoplanet(self) -> Dict[str, Any]:
         """Retourne des statistiques sur les données collectées."""
         all_exoplanets = self.exoplanet_repository.get_all_exoplanets()
-        return self.stat_service.generate_statistics(all_exoplanets)
+        return self.stat_service.generate_statistics_exoplanet(all_exoplanets)
+
+    def get_statistics_star(self) -> Dict[str, Any]:
+        """Retourne des statistiques sur les données collectées."""
+        all_stars = self.star_repository.get_all_stars()
+        return self.stat_service.generate_statistics_star(all_stars)
+
+    def get_statistics(self) -> Dict[str, Any]:
+        """Retourne des statistiques sur les données collectées."""
+        statistics_star = self.get_statistics_star()
+        statistics_exoplanet = self.get_statistics_exoplanet()
+        return {
+            "exoplanet": statistics_exoplanet,
+            "star": statistics_star
+        }
 
     def _get_wikipedia_article_information_for_all_exoplanets(
         self,

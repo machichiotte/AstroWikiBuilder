@@ -27,7 +27,7 @@ class NASAExoplanetArchiveCollector(BaseExoplanetCollector):
         self.mapper = NasaExoplanetArchiveMapper()
 
     def _get_default_cache_filename(self) -> str:
-        return "nasa_mock_data.csv"
+        return "nea_mock_data.csv"
 
     def _get_download_url(self) -> str:
         return "https://exoplanetarchive.ipac.caltech.edu/TAP/sync?query=select+*+from+PSCompPars&format=csv"
@@ -42,7 +42,7 @@ class NASAExoplanetArchiveCollector(BaseExoplanetCollector):
         return ["pl_name", "hostname", "discoverymethod", "disc_year"]
 
     def _get_csv_reader_kwargs(self) -> Dict[str, Any]:
-        # Le fichier téléchargé de NASA n'a pas de lignes de commentaire typiques à ignorer avec '#' au début.
+        # Le fichier téléchargé de NEA n'a pas de lignes de commentaire typiques à ignorer avec '#' au début.
         # Si le fichier que vous sauvegardez/mockez en a, ajustez ici.
         return {}
 
@@ -83,16 +83,16 @@ class NASAExoplanetArchiveCollector(BaseExoplanetCollector):
         populating it with data based on predefined mappings.
         """
         try:
-            nasa_data_dict = row.to_dict()
+            nea_data_dict = row.to_dict()
             # S'assurer que les données essentielles sont présentes avant d'appeler le mapper.
-            if not nasa_data_dict.get("hostname"):
+            if not nea_data_dict.get("hostname"):
                 logger.warning(
-                    f"Star name (hostname) is missing or empty for a row. Skipping star creation. Row data: {nasa_data_dict}"
+                    f"Star name (hostname) is missing or empty for a row. Skipping star creation. Row data: {nea_data_dict}"
                 )
                 return None
 
             # Déléguer toute la logique de mappage et de création de l'objet au mapper.
-            star = self.mapper.map_nasa_data_to_star(nasa_data_dict)
+            star = self.mapper.map_nea_data_to_star(nea_data_dict)
             return star
         except Exception as e:
             logger.error(
@@ -212,152 +212,20 @@ class NASAExoplanetArchiveCollector(BaseExoplanetCollector):
         populating it with data based on predefined mappings.
         """
         try:
-            nasa_data_dict = row.to_dict()
+            nea_data_dict = row.to_dict()
             # S'assurer que les données essentielles sont présentes avant d'appeler le mapper.
-            if not nasa_data_dict.get("pl_name"):
+            if not nea_data_dict.get("pl_name"):
                 logger.warning(
-                    f"Exoplanet name (pl_name) is missing or empty for a row. Skipping exoplanet creation. Row data: {nasa_data_dict}"
+                    f"Exoplanet name (pl_name) is missing or empty for a row. Skipping exoplanet creation. Row data: {nea_data_dict}"
                 )
                 return None
 
             # Déléguer toute la logique de mappage et de création de l'objet au mapper.
-            star = self.mapper.map_nasa_data_to_exoplanet(nasa_data_dict)
+            star = self.mapper.map_nea_data_to_exoplanet(nea_data_dict)
             return star
         except Exception as e:
             logger.error(
                 f"Unexpected error converting row to Exoplanet using mapper for {row.get('pl_name', 'Unknown')}: {e}",
-                exc_info=True,
-            )
-            return None
-
-    def _convert_row_to_exoplanet2(
-        self, row: pd.Series, ref: Reference
-    ) -> Optional[DataSourceExoplanet]:
-        try:
-            pl_name_val = row.get("pl_name")
-            hostname_val = row.get("hostname")
-
-            if pd.isna(pl_name_val) or pd.isna(hostname_val):
-                logger.warning(
-                    f"Données de base manquantes pour l'exoplanète : {row.get('pl_name', 'Unknown')} (Source: NASA Exoplamet Archive)"
-                )
-                return None
-
-            nea_ref = Reference(
-                source=ref.source,
-                update_date=ref.update_date,
-                consultation_date=ref.consultation_date,
-                planet_identifier=str(pl_name_val).strip(),
-                star_identifier=str(hostname_val).strip(),
-            )
-
-            exoplanet = DataSourceExoplanet(
-                name=str(row["pl_name"]).strip(),
-                host_star=DataPoint(str(row["hostname"]).strip(), nea_ref),
-                discovery_method=DataPoint(str(row["discoverymethod"]).strip(), nea_ref)
-                if pd.notna(row["discoverymethod"])
-                else None,
-                discovery_date=DataPoint(str(row["disc_year"]).strip(), nea_ref)
-                if pd.notna(row["disc_year"])
-                else None,
-            )
-
-            (
-                formatted_ra,
-                formatted_dec,
-                formatted_epoch,
-                formatted_orb_per,
-                formatted_inclination,
-            ) = None, None, None, None, None
-            if pd.notna(row.get("rastr")):
-                formatted_ra = self._format_right_ascension_str(
-                    str(row["rastr"]).strip()
-                )
-            if pd.notna(row.get("decstr")):
-                formatted_dec = self._format_declination_str(str(row["decstr"]).strip())
-            if pd.notna(row.get("pl_tranmidstr")):
-                formatted_epoch = self._parse_epoch_string(row.get("pl_tranmidstr"))
-            if pd.notna(row.get("pl_orbperstr")):
-                formatted_orb_per = self._parse_epoch_string(row.get("pl_orbperstr"))
-            if (
-                pd.notna(row.get("pl_orbincl"))
-                and pd.notna(row.get("pl_orbinclerr1"))
-                and pd.notna(row.get("pl_orbinclerr2"))
-            ):
-                pl_orbincl_val = row["pl_orbincl"]
-                pl_orbinclerr1_val = abs(
-                    self._safe_float_conversion(row["pl_orbinclerr1"])
-                )
-                pl_orbinclerr2_val = abs(
-                    self._safe_float_conversion(row["pl_orbinclerr2"])
-                )
-                if pl_orbinclerr1_val is not None and pl_orbinclerr2_val is not None:
-                    formatted_inclination = f"{pl_orbincl_val}{{{{±|{pl_orbinclerr1_val}|{pl_orbinclerr2_val}}}}}"
-
-            if formatted_ra:
-                exoplanet.right_ascension = DataPoint(formatted_ra, nea_ref)
-            if formatted_dec:
-                exoplanet.declination = DataPoint(formatted_dec, nea_ref)
-            if formatted_epoch:
-                exoplanet.epoch = DataPoint(formatted_epoch, nea_ref)
-            if formatted_orb_per:
-                exoplanet.orbital_period = DataPoint(formatted_orb_per, nea_ref)
-            if formatted_inclination:
-                exoplanet.inclination = DataPoint(formatted_inclination, nea_ref)
-
-            orbital_fields_map = {
-                "semi_major_axis": ("pl_orbsmax", None),
-                "eccentricity": ("pl_orbeccen", None),
-                "argument_of_periastron": ("pl_orblper", None),
-                "periastron_time": ("pl_orbtper", None),
-            }
-
-            for field, (csv_field, unit) in orbital_fields_map.items():
-                value = self._safe_float_conversion(row.get(csv_field))
-                if value is not None:
-                    setattr(exoplanet, field, DataPoint(value, nea_ref, unit))
-
-            # Caractéristiques physiques
-            for field, csv_field, unit in [
-                ("mass", "pl_bmassj", None),
-                ("radius", "pl_radj", None),
-                ("temperature", "pl_eqt", None),
-            ]:
-                value = self._safe_float_conversion(row.get(csv_field))
-                if value is not None:
-                    setattr(exoplanet, field, DataPoint(value, nea_ref, unit))
-
-            # Informations sur l'étoile
-            for field, csv_field, unit in [
-                ("spectral_type", "st_spectype", None),
-                ("distance", "sy_dist", None),
-                ("apparent_magnitude", "sy_vmag", None),
-            ]:
-                value = row.get(csv_field)
-                if pd.notna(value):
-                    processed_value = (
-                        self._safe_float_conversion(value)
-                        if isinstance(value, (int, float, str))
-                        and str(value).replace(".", "", 1).isdigit()
-                        else str(value).strip()
-                    )
-                    if processed_value is not None:
-                        setattr(
-                            exoplanet, field, DataPoint(processed_value, nea_ref, unit)
-                        )
-
-            if pd.notna(row.get("pl_altname")):
-                names = str(row["pl_altname"]).split(",")
-                for name in names:
-                    name = name.strip()
-                    if name and name != exoplanet.name:
-                        exoplanet.other_names.append(name)
-
-            return exoplanet
-
-        except Exception as e:
-            logger.error(
-                f"Erreur NASA lors de la conversion de la ligne : {row.get('pl_name', 'Unknown')}. Erreur: {e}",
                 exc_info=True,
             )
             return None

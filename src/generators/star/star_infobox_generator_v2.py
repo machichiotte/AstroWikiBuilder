@@ -19,12 +19,15 @@ class StarInfoboxGenerator:
     def generate_star_infobox(self, star: DataSourceStar) -> str:
         """Génère le contenu de l'infobox Wikipédia pour une étoile"""
 
-        print("generateeeeeeeeee " + str(star))
         if not isinstance(star, DataSourceStar):
             raise TypeError("Input must be a Star object.")
 
         infobox = "{{Infobox Étoile\n"
 
+        print("Generating infobox for name:", star.name.value if star.name else "Unknown")
+        print("Generating infobox for apparent magnitude:", star.apparent_magnitude if star.apparent_magnitude else "Unknown")
+        print("Generating infobox for spectral type:", star.spectral_type if star.spectral_type else "Unknown")
+        print("Generating infobox for star str:", str(star))
         # Traiter tous les champs selon leur configuration
         for mapping in InfoboxMapper.get_star_field_mappings():
             field_content = self._process_field(star, mapping)
@@ -47,8 +50,12 @@ class StarInfoboxGenerator:
             return self._handle_carte_uai_field(star)
 
         # Récupérer la valeur du champ
-        value, unit = self._extract_field_value(star, mapping.source_attribute)
+        value, unit, reference = self._extract_field_value(star, mapping.source_attribute)
 
+        print("Processing value:", value)
+        print("Processing unit:", unit)
+        print("Processing reference:", reference)
+        
         if not self._is_valid_value(value):
             return ""
 
@@ -61,8 +68,14 @@ class StarInfoboxGenerator:
             return mapping.formatter(value)
 
         # Formater selon le type de champ
+
+
+      # TODO print("value: " + str(value))
+      #  print("unit: " + str(unit))
+       # print("infobox_field: " + str(mapping.infobox_field))
+      #  print("field_type: " + str(mapping.field_type))
         return self._format_by_type(
-            value, unit, mapping.infobox_field, mapping.field_type
+            value, unit, reference, mapping.infobox_field, mapping.field_type
         )
 
     def _extract_field_value(
@@ -72,12 +85,12 @@ class StarInfoboxGenerator:
         attr_dp = getattr(star, attribute_name, None)
 
         if attr_dp is None:
-            return None, None
+            return None, None, None
 
         if isinstance(attr_dp, DataPoint):
-            return attr_dp.value, attr_dp.unit
+            return attr_dp.value, attr_dp.unit, attr_dp.reference
 
-        return attr_dp, None
+        return attr_dp, None, None
 
     def _is_valid_value(self, value: Any) -> bool:
         """
@@ -104,12 +117,12 @@ class StarInfoboxGenerator:
         return True
 
     def _format_by_type(
-        self, value: Any, unit: Optional[str], infobox_field: str, field_type: FieldType
+        self, value: Any, unit: Optional[str], reference: Optional[str],infobox_field: str, field_type: FieldType
     ) -> str:
         """Formate une valeur selon son type de champ"""
         formatters = {
-            FieldType.SIMPLE: lambda: self.field_formatter.format_simple_field(
-                value, infobox_field
+            FieldType.SIMPLE: lambda: self.field_formatter.format_simple_with_notes_field(
+                value, infobox_field, reference
             ),
             FieldType.DESIGNATIONS: lambda: self.field_formatter.format_designations(
                 value, infobox_field

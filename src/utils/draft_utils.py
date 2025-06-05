@@ -54,6 +54,7 @@ def generate_star_draft(star: DataSourceStar) -> str:
     Returns:
         Le contenu du brouillon généré.
     """
+
     generator = ArticleStarGenerator()
     # Star.name is a DataPoint object, so access its .value attribute for the actual name string.
     star_name_val = (

@@ -27,23 +27,6 @@ class ArticleExoplanetGenerator:
     Classe pour générer les articles Wikipedia des exoplanètes
     """
 
-    EXOPLANET_FIELD_DEFAULT_UNITS = {
-        "masse": "M_J",
-        "rayon": "R_J",
-        "température": "K",
-        "distance": "pc",
-        "demi-grand axe": "ua",
-        "période": "j",  # jours
-        "inclinaison": "°",  # degrés
-        "périastre": "ua",
-        "apoastre": "ua",
-        "masse minimale": "M_J",
-        "masse volumique": "kg/m³",  # Though often g/cm³ is also used
-        "gravité": "m/s²",
-        "période de rotation": "h",  # heures
-        "arg_péri": "°",  # argument of periastron
-    }
-
     # Constantes de classification des planètes
     EXOPLANET_MASS_THRESHOLDS = {
         "GAS_GIANT": 1.0,  # Masse en M_J
@@ -66,7 +49,7 @@ class ArticleExoplanetGenerator:
         locale.setlocale(locale.LC_ALL, "fr_FR.UTF-8")
 
         self.reference_manager = ReferenceManager()
-        self.infobox_generator = ExoplanetInfoboxGenerator()
+        self.infobox_generator = ExoplanetInfoboxGenerator(self.reference_manager)
         self.category_utils = ExoplanetCategoryGenerator()
 
         self.article_utils = ArticleUtils()

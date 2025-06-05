@@ -65,6 +65,7 @@ class ArticleStarGenerator:
         # 1. Templates de base (stub + source)
         parts.append(self._generate_stub_and_source())
 
+        print('mon etoileeeeee ' + str(star))
         # 2. Infobox
         parts.append(self._generate_infobox_section(star))
 
