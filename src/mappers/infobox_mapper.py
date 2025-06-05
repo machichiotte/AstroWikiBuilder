@@ -25,6 +25,7 @@ class FieldMapping:
     source_attribute: str  # Attribut de DataSourceExoplanet ou DataSourceStar
     infobox_field: str
     field_type: FieldType = FieldType.SIMPLE
+    default_unit: Optional[str] = None # Unité par défaut pour ce champ
     unit_override: Optional[str] = None  # Pour remplacer l'unité par défaut
     formatter: Optional[Callable[[Any], str]] = (
         None  # Fonction de formatage personnalisée
@@ -59,30 +60,30 @@ class InfoboxMapper:
             # Type
             FieldMapping("type", "type"),
             # Caractéristiques orbitales
-            FieldMapping("semi_major_axis", "demi-grand axe", FieldType.SEPARATE_UNIT),
+            FieldMapping("semi_major_axis", "demi-grand axe", FieldType.SEPARATE_UNIT, default_unit="unités astronomiques"),
             FieldMapping(
-                "argument_of_periastron", "périastre", FieldType.SEPARATE_UNIT
+                "argument_of_periastron", "périastre", FieldType.SEPARATE_UNIT, default_unit="unités astronomiques"
             ),
-            FieldMapping("apoastron", "apoastre", FieldType.SEPARATE_UNIT),
+            FieldMapping("apoastron", "apoastre", FieldType.SEPARATE_UNIT, default_unit="unités astronomiques"),
             FieldMapping("eccentricity", "excentricité"),
-            FieldMapping("period", "période", FieldType.SEPARATE_UNIT),
+            FieldMapping("period", "période", FieldType.SEPARATE_UNIT, default_unit="jours"),
             FieldMapping("angular_distance", "distance angulaire"),
             FieldMapping("periastron_time", "t_peri"),
-            FieldMapping("inclination", "inclinaison", FieldType.SEPARATE_UNIT),
+            FieldMapping("inclination", "inclinaison", FieldType.SEPARATE_UNIT), # Pas d'unité par défaut spécifiée dans les notes pour inclinaison
             FieldMapping(
-                "longitude_of_periastron", "arg_péri", FieldType.SEPARATE_UNIT
+                "longitude_of_periastron", "arg_péri", FieldType.SEPARATE_UNIT # Pas d'unité par défaut spécifiée dans les notes pour arg_péri
             ),
             FieldMapping("epoch", "époque"),
             # Caractéristiques physiques
-            FieldMapping("mass", "masse", FieldType.SEPARATE_UNIT),
-            FieldMapping("minimum_mass", "masse minimale", FieldType.SEPARATE_UNIT),
-            FieldMapping("radius", "rayon", FieldType.SEPARATE_UNIT),
-            FieldMapping("density", "masse volumique", FieldType.SEPARATE_UNIT),
-            FieldMapping("surface_gravity", "gravité", FieldType.SEPARATE_UNIT),
+            FieldMapping("mass", "masse", FieldType.SEPARATE_UNIT, default_unit="masses joviennes"),
+            FieldMapping("minimum_mass", "masse minimale", FieldType.SEPARATE_UNIT, default_unit="masses joviennes"),
+            FieldMapping("radius", "rayon", FieldType.SEPARATE_UNIT, default_unit="rayons joviens"),
+            FieldMapping("density", "masse volumique", FieldType.SEPARATE_UNIT, default_unit="kilogrammes par mètre cube"),
+            FieldMapping("surface_gravity", "gravité", FieldType.SEPARATE_UNIT, default_unit="mètres par seconde carrée"),
             FieldMapping(
-                "rotation_period", "période de rotation", FieldType.SEPARATE_UNIT
+                "rotation_period", "période de rotation", FieldType.SEPARATE_UNIT, default_unit="heures"
             ),
-            FieldMapping("temperature", "température", FieldType.SEPARATE_UNIT),
+            FieldMapping("temperature", "température", FieldType.SEPARATE_UNIT, default_unit="kelvins"),
             FieldMapping("albedo_bond", "albedo_bond"),
             # Atmosphère
             FieldMapping("pression", "pression"),
