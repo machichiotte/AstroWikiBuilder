@@ -22,24 +22,6 @@ NOTES_FIELDS_STAR = [
     "découverte", "désignations", "statut"
 ]
 
-# Unités par défaut associées aux champs physiques
-FIELD_DEFAULT_UNITS: dict[str, str] = {
-    "mass": "M☉",
-    "radius": "R☉",
-    "temperature": "K",
-    "distance": "pc",
-    "semi-major axis": "ua",
-    "period": "j",
-    "inclination": "°",
-    "periastron": "ua",
-    "apoastron": "ua",
-    "minimum mass": "M☉",
-    "density": "kg/m³",
-    "gravity": "m/s²",
-    "rotation period": "h",
-    "argument of periastron": "°",
-}
-
 FIELD_DEFAULT_UNITS_STAR: dict[str, str] = {
     "mass": "M☉",                  # Masse solaire
     "radius": "R☉",                # Rayon solaire
@@ -128,6 +110,13 @@ METHOD_NAME_MAPPING: dict[str, str] = {
     # "article": "Méthode des transits"
     # }
 }
+
+LIEU_NAME_MAPPING = {
+    "Cerro Tololo Inter-American Observatory": "Observatoire interaméricain du Cerro Tololo",
+    "Keck Observatory": "Observatoire W. M. Keck",
+    "La Silla Observatory": "Observatoire de La Silla",
+}
+
 
 CONSTELLATION_FR: dict[str, str] = {
     "Andromeda": "Andromède",
@@ -339,3 +328,6 @@ SPECTRAL_TYPE_LINKS: dict[str, str] = {
     "T": "https://fr.wikipedia.org/wiki/Naine_brune_T",
     "Y": "https://fr.wikipedia.org/wiki/Naine_brune_Y",
 }
+
+
+

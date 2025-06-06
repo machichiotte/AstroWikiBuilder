@@ -1,6 +1,7 @@
 # src/utils/formatters/field_formatters.py
 from typing import Any, Optional
 
+from src.constants.field_mappings import LIEU_NAME_MAPPING, METHOD_NAME_MAPPING
 from src.models.reference import DataPoint
 from src.mappers.infobox_mapper import FieldType
 
@@ -14,30 +15,28 @@ class FieldFormatter:
         if not value or (isinstance(value, str) and not value.strip()):
             return ""
 
+         # Mapping pour certains champs
+        if infobox_field == "lieu":
+            mapped = LIEU_NAME_MAPPING.get(value)
+            if mapped:
+                value = f"[[{mapped}]]"
+        elif infobox_field == "méthode":
+            mapped = METHOD_NAME_MAPPING.get(value)
+            if mapped:
+                value = f"[[{mapped}]]"
+        elif infobox_field == "âge":
+            # Pour le champ âge, on utilise une notation scientifique
+            value = f"{value}×10<sup>9</sup>"
+        elif infobox_field == "désignations":
+            # Pour le champ désignations, on formate en liste
+            if isinstance(value, list):
+                value = ", ".join(str(v) for v in value if str(v).strip())
+            else:
+                value = str(value).strip()
+                
         output = f" | {infobox_field} = {value}"
 
         return output
-
-    @staticmethod
-    def format_designations(value: Any, infobox_field: str) -> str:
-        """Formate le champ désignations (liste ou string)"""
-        if isinstance(value, list):
-            processed_list = [str(v) for v in value if str(v).strip()]
-            if not processed_list:
-                return ""
-            return f" | {infobox_field} = {', '.join(processed_list)}"
-
-        if value and str(value).strip():
-            return f" | {infobox_field} = {value}"
-
-        return ""
-
-    @staticmethod
-    def format_age_field(value: Any, infobox_field: str) -> str:
-        """Formate le champ âge avec notation scientifique"""
-        if not value:
-            return ""
-        return f" | {infobox_field} = {value}×10<sup>9</sup>"
 
     @staticmethod
     def format_separate_unit_field(
@@ -86,12 +85,6 @@ class FieldFormatter:
         """Formate une valeur selon son type de champ"""
         formatters = {
             FieldType.SIMPLE: lambda: FieldFormatter.format_simple_field(
-                value, infobox_field
-            ),
-            FieldType.DESIGNATIONS: lambda: FieldFormatter.format_designations(
-                value, infobox_field
-            ),
-            FieldType.AGE: lambda: FieldFormatter.format_age_field(
                 value, infobox_field
             ),
             FieldType.SEPARATE_UNIT: lambda: FieldFormatter.format_separate_unit_field(

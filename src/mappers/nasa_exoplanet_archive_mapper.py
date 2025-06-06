@@ -340,14 +340,15 @@ class NasaExoplanetArchiveMapper:
         return exoplanet
 
     def _extract_designations(self, nea_data: Dict[str, Any]) -> Optional[list]:
-        """Extrait les différentes désignations d'une étoile"""
+        """Extrait les différentes désignations d'une étoile, en filtrant les valeurs invalides"""
         designation_fields = ["hostname", "hd_name", "hip_name", "tic_id"]
         designations = []
 
         for field in designation_fields:
             if field in nea_data and nea_data[field]:
                 value = str(nea_data[field]).strip()
-                if value and value not in designations:
+                # Filtre les valeurs invalides
+                if value and value.lower() not in {"nan", "none", ""} and value not in designations:
                     designations.append(value)
 
         return designations if designations else None

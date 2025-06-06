@@ -20,9 +20,10 @@ from src.generators.exoplanet.exoplanet_category_generator import (
     ExoplanetCategoryGenerator,
 )
 from src.services.reference_manager import ReferenceManager
+from src.generators.base_article_generator import BaseArticleGenerator
 
 
-class ArticleExoplanetGenerator:
+class ArticleExoplanetGenerator(BaseArticleGenerator):
     """
     Classe pour générer les articles Wikipedia des exoplanètes
     """
@@ -48,10 +49,14 @@ class ArticleExoplanetGenerator:
     def __init__(self):
         locale.setlocale(locale.LC_ALL, "fr_FR.UTF-8")
 
-        self.reference_manager = ReferenceManager()
-        self.infobox_generator = ExoplanetInfoboxGenerator(self.reference_manager)
-        self.category_utils = ExoplanetCategoryGenerator()
+        reference_manager = ReferenceManager()
+        category_generator = ExoplanetCategoryGenerator()
+        stub_type = "exoplanète"
+        portals = ["astronomie", "exoplanètes"]
 
+        super().__init__(reference_manager, category_generator, stub_type, portals)
+
+        self.infobox_generator = ExoplanetInfoboxGenerator(self.reference_manager)
         self.article_utils = ArticleUtils()
         self.constellation_utils = ConstellationUtils()
         self.comparison_utils = ExoplanetComparisonUtils()
@@ -59,43 +64,6 @@ class ArticleExoplanetGenerator:
         self.introduction_generator = ExoplanetIntroductionGenerator(
             self.comparison_utils, self.article_utils
         )
-
-    def _get_formatted_french_utc_plus_1_date(self) -> str:
-        """
-        Gets the current date formatted as 'month_name year' in French,
-        adjusted for UTC+1 (Paris/France timezone).
-        """
-        # Get current date in UTC
-        utc_now = datetime.datetime.now(datetime.timezone.utc)
-
-        # Define the timezone for Paris (France)
-        # 'Europe/Paris' accounts for daylight saving changes automatically.
-        paris_tz = pytz.timezone("Europe/Paris")
-
-        # Convert UTC time to Paris time
-        paris_time = utc_now.astimezone(paris_tz)
-
-        # French month names mapping
-        french_months = {
-            1: "janvier",
-            2: "février",
-            3: "mars",
-            4: "avril",
-            5: "mai",
-            6: "juin",
-            7: "juillet",
-            8: "août",
-            9: "septembre",
-            10: "octobre",
-            11: "novembre",
-            12: "décembre",
-        }
-
-        # Get the month name and year
-        current_month_french = french_months[paris_time.month]
-        current_year = paris_time.year
-
-        return f"{current_month_french} {current_year}"
 
     def generate_article_content(self, exoplanet: DataSourceExoplanet) -> str:
         """
@@ -106,7 +74,7 @@ class ArticleExoplanetGenerator:
         parts = []
 
         # 1. Templates de base (stub + source)
-        parts.append(self._generate_header_section())
+        parts.append(self._generate_stub_and_source())
 
         # 2. Infobox
         parts.append(self.infobox_generator.generate(exoplanet))
@@ -302,34 +270,3 @@ class ArticleExoplanetGenerator:
         section = "== Habitabilité ==\n"
         section += "Les conditions d'habitabilité de cette exoplanète ne sont pas déterminées ou ne sont pas connues.\n"
         return section
-
-    def _generate_references_section(self) -> str:
-        """
-        Génère la section des références
-        """
-        section = "== Références ==\n"
-        section += f"{{{{références}}}}"
-        section += f"{{{{Portail|astronomie|exoplanètes}}}}"
-        return section
-    
-    def _generate_header_section(self) -> str:
-        """
-        Génère le header
-        """        
-
-        section = f"{{{{Ébauche|exoplanète|}}}}"
-        section += f"{{{{Source unique|date={self._get_formatted_french_utc_plus_1_date()}}}}}"
-        return section
-    
-    def _generate_category_section(self, exoplanet) -> str:
-        """
-        Génère la section des catégories
-        """
-
-        categories = self.category_utils.generate_exoplanet_categories(exoplanet)
-        if not categories:
-            return ""
-        section = ""
-        for category in categories:
-            section += f"\n"
-        return section.strip() if section else ""

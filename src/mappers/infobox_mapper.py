@@ -14,9 +14,6 @@ class FieldType(Enum):
     SEPARATE_UNIT = "separate_unit"  # Champs nécessitant une ligne séparée pour l'unité
     CONSTELLATION = "constellation"  # Champ constellation calculé
     CARTE_UAI = "carte_uai"  # Carte UAI calculée
-    DESIGNATIONS = "designations"  # Liste de désignations (spécifique aux étoiles)
-    AGE = "age"  # Âge nécessitant formatage spécial (spécifique aux étoiles)
-
 
 @dataclass
 class FieldMapping:
@@ -112,7 +109,7 @@ class InfoboxMapper:
             FieldMapping("upright", "upright"),
             FieldMapping("caption", "légende"),
             FieldMapping("coord_title", "coord titre"),
-            FieldMapping("designations", "désignations", FieldType.DESIGNATIONS),
+            FieldMapping("designations", "désignations"),
             # Champs calculés
             FieldMapping("constellation", "constellation", FieldType.CONSTELLATION),
             FieldMapping("carte_uai", "carte UAI", FieldType.CARTE_UAI),
@@ -216,8 +213,8 @@ class InfoboxMapper:
             FieldMapping("metallicity_2", "métallicité 2"),
             FieldMapping("rotation", "rotation", FieldType.SEPARATE_UNIT),
             FieldMapping("rotation_2", "rotation 2", FieldType.SEPARATE_UNIT),
-            FieldMapping("age", "âge", FieldType.AGE),
-            FieldMapping("age_2", "âge 2", FieldType.AGE),
+            FieldMapping("age", "âge"),
+            FieldMapping("age_2", "âge 2"),
             FieldMapping("evolutionary_stage", "stade évolutif"),
             FieldMapping("evolutionary_stage_2", "stade évolutif 2"),
             # Système stellaire

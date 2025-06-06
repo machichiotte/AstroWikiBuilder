@@ -186,7 +186,7 @@ class ExoplanetCategoryGenerator:
             pass
         return None
 
-    def generate_exoplanet_categories(self, exoplanet: DataSourceExoplanet) -> List[str]:
+    def generate_categories(self, exoplanet: DataSourceExoplanet) -> List[str]:
         categories: Set[str] = set(self.base_categories.copy())
 
         # List of getter methods for different category types
