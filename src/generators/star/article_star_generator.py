@@ -60,13 +60,11 @@ class ArticleStarGenerator:
         Génère l'ensemble du contenu de l'article Wikipédia pour une étoile.
         Appelle des sous-fonctions dédiées pour chaque partie.
         """
-        self.reference_manager.reset_references()
         parts = []
 
         # 1. Templates de base (stub + source)
         parts.append(self._generate_stub_and_source())
 
-        print('mon etoileeeeee ' + str(star))
         # 2. Infobox
         parts.append(self._generate_infobox_section(star))
 

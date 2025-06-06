@@ -3,7 +3,7 @@
 from src.generators.base_infobox_generator import InfoboxBaseGenerator
 from src.models.data_source_exoplanet import DataSourceExoplanet
 from src.mappers.infobox_mapper import InfoboxMapper, FieldMapping, FieldType
-from src.constants.field_mappings import NOTES_FIELDS_EXOPLANET
+from src.constants.field_mappings import FIELD_DEFAULT_UNITS_EXOPLANET, NOTES_FIELDS_EXOPLANET
 
 
 class ExoplanetInfoboxGenerator(InfoboxBaseGenerator):
@@ -37,3 +37,7 @@ class ExoplanetInfoboxGenerator(InfoboxBaseGenerator):
             return f"| carte UAI = {carte_uai}"
 
         return ""
+
+    @property
+    def default_mapping(self):
+        return FIELD_DEFAULT_UNITS_EXOPLANET

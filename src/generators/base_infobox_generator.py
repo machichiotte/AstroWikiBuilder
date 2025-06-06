@@ -51,11 +51,14 @@ class InfoboxBaseGenerator(ABC):
             if mapping.unit_override:
                 unit = mapping.unit_override
 
+            unit_to_use = unit if self.article_utils.is_needed_infobox_unit(
+                mapping.infobox_field, unit, self.default_mapping) else None
+
             if mapping.formatter:
                 value_part = mapping.formatter(value).strip()
             else:
                 value_part = self.field_formatter.format_by_type(
-                    value, unit, mapping.infobox_field, mapping.field_type
+                    value, unit_to_use, mapping.infobox_field, mapping.field_type
                 )
 
         if not value_part:
@@ -115,4 +118,9 @@ class InfoboxBaseGenerator(ABC):
 
     @abstractmethod
     def _handle_special_field(self, obj: Any, mapping: FieldMapping) -> str:
+        pass
+
+    @property
+    @abstractmethod
+    def default_mapping(self) -> dict:
         pass

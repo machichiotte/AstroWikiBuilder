@@ -40,6 +40,41 @@ FIELD_DEFAULT_UNITS: dict[str, str] = {
     "argument of periastron": "°",
 }
 
+FIELD_DEFAULT_UNITS_STAR: dict[str, str] = {
+    "mass": "M☉",                  # Masse solaire
+    "radius": "R☉",                # Rayon solaire
+    "luminosity": "L☉",            # Luminosité solaire
+    "temperature": "K",            # Kelvin
+    "gravity": "log g",            # Gravité logarithmique
+    "metallicity": "[Fe/H]",       # Métallicité
+    "age": "Ga",                   # Gigannées
+    "rotation": "j",               # Jours
+    "distance": "al",              # Années-lumière (courant sur Wiki fr)
+    "parallax": "mas",             # Millisecondes d'arc
+    "spectral type": "",           # Sans unité
+    "apparent magnitude": "",      # Sans unité
+    "absolute magnitude": "",      # Sans unité
+}
+
+FIELD_DEFAULT_UNITS_EXOPLANET: dict[str, str] = {
+    "mass": "MJ",                  # Masse de Jupiter
+    "minimum mass": "MJ",          # Masse de Jupiter
+    "radius": "RJ",                # Rayon de Jupiter
+    "semi-major axis": "ua",       # Unité astronomique
+    "eccentricity": "",            # Sans unité
+    "period": "j",                 # Jours
+    "inclination": "°",            # Degrés
+    "periastron": "ua",            # UA
+    "apoastron": "ua",             # UA
+    "temperature": "K",            # Kelvin
+    "discovery year": "",          # Sans unité
+    "detection method": "",        # Sans unité
+    "rotation period": "h",        # Heures (si connue)
+    "density": "g/cm³",            # g/cm³ selon les conventions fr
+    "gravity": "m/s²",             # m/s²
+    "argument of periastron": "°", # Degrés
+}
+
 # Champs pour lesquels un lien direct vers un article Wikipédia doit être généré
 WIKILINK_FIELDS_DIRECT: list[str] = [
     "étoile",

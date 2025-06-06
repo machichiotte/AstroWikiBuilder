@@ -19,19 +19,6 @@ class FieldFormatter:
         return output
 
     @staticmethod
-    def format_simple_with_notes_field(value: Any, infobox_field: str = "", reference: str = "") -> str:
-        """Formate un champ simple avec notes"""
-        if not value or (isinstance(value, str) and not value.strip()):
-            return ""
-
-        output = f" | {infobox_field} = {value}  \n"
-
-        if reference:
-            output += f" | {infobox_field} notes = {reference}  \n"
-
-        return output
-
-    @staticmethod
     def format_designations(value: Any, infobox_field: str) -> str:
         """Formate le champ désignations (liste ou string)"""
         if isinstance(value, list):
@@ -112,14 +99,8 @@ class FieldFormatter:
             ),
         }
 
-        print("iciiiii info", infobox_field)
-        print("iciiiii value", value)
-        print("iciiiii unit", unit)
-        print("iciiiii field", field_type)
-
         formatter = formatters.get(field_type, formatters[FieldType.SIMPLE])
 
-        print("formatter", formatter())
         return formatter()
 
     def extract_field_value(

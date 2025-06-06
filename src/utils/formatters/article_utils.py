@@ -174,3 +174,7 @@ class ArticleUtils:
             return False
 
         return True
+
+    def is_needed_infobox_unit(self, field: str, unit: str, default_mapping: dict) -> bool:
+        valid_units = default_mapping.get(field.lower(), None)
+        return not valid_units == unit

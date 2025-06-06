@@ -5,8 +5,9 @@ from src.models.data_source_star import DataSourceStar
 from src.models.data_source_exoplanet import DataSourceExoplanet
 
 from datetime import datetime
-from src.constants.field_mappings import FIELD_DEFAULT_UNITS
+from src.constants.field_mappings import FIELD_DEFAULT_UNITS_STAR, FIELD_DEFAULT_UNITS_EXOPLANET
 import math
+
 
 class NasaExoplanetArchiveMapper:
     """Mapper pour convertir les données NEA Exoplanet Archive vers le modèle Star"""
@@ -108,32 +109,37 @@ class NasaExoplanetArchiveMapper:
     }
 
     # Unités par défaut pour certains champs NEA
-    NEA_DEFAULT_UNITS = {
-        "ra": "deg",
-        "dec": "deg",
-        "sy_pmra": "mas/yr",
-        "sy_pmdec": "mas/yr",
-        "sy_plx": "mas",
-        "sy_dist": "pc",
-        "st_teff": "K",
-        "st_mass": "M☉",
-        "st_rad": "R☉",
-        "st_met": "dex",
-        "st_logg": "log(cm/s²)",
-        "st_lum": "L☉",
-        "st_dens": "g/cm³",
-        "st_age": "Gyr",
-        "st_radv": "km/s",
-        "st_rotp": "days",
-        "st_vsin": "km/s",
-        "pl_orbper": "days",  # Unit for orbital period
-        "pl_angsep": "arcsec",  # Unit for angular separation
-        "pl_orbincl": "deg",  # Unit for orbital inclination
-        "pl_msinij": "M☉",  # Unit for minimum mass (Jupiter masses)
-        "pl_dens": "g/cm³",  # Unit for planetary density
-        "pl_eqt": "K",  # Unit for equilibrium temperature
-        "pl_radj": "R☉",  # Unit for planetary radius (Jupiter radii)
-        "pl_bmassj": "M☉",  # Unit for planetary mass (Jupiter masses)
+    NEA_DEFAULT_UNITS: dict[str, str] = {
+        # --- Coordonnées et mouvements ---
+        "ra": "°",                     # Ascension droite
+        "dec": "°",                    # Déclinaison
+        "sy_pmra": "mas/an",          # mouvement propre en RA
+        "sy_pmdec": "mas/an",         # mouvement propre en DEC
+        "sy_plx": "mas",              # parallaxe
+        "sy_dist": "pc",              # parsecs
+
+        # --- Étoile (préfixe st_) ---
+        "st_teff": "K",               # Température effective
+        "st_mass": "M☉",              # Masse stellaire
+        "st_rad": "R☉",               # Rayon stellaire
+        "st_met": "[Fe/H]",           # Métallicité (dex mais exprimée [Fe/H])
+        "st_logg": "log g",           # Gravité de surface log g
+        "st_lum": "L☉",               # Luminosité stellaire
+        "st_dens": "g/cm³",           # Densité stellaire
+        "st_age": "Ga",               # Âge stellaire
+        "st_radv": "km/s",            # Vitesse radiale
+        "st_rotp": "j",               # Période de rotation (jours)
+        "st_vsin": "km/s",            # Vitesse de rotation projetée
+
+        # --- Planète (préfixe pl_) ---
+        "pl_orbper": "j",             # Période orbitale (jours)
+        "pl_angsep": "″",             # Séparation angulaire (arcsec)
+        "pl_orbincl": "°",            # Inclinaison orbitale
+        "pl_msinij": "MJ",            # Masse minimum (Jupiter)
+        "pl_bmassj": "MJ",            # Masse brute (Jupiter)
+        "pl_radj": "RJ",              # Rayon (Jupiter)
+        "pl_dens": "g/cm³",           # Densité planétaire
+        "pl_eqt": "K",                # Température d'équilibre
     }
 
     def map_nea_data_to_star(self, nea_data: Dict[str, Any]) -> DataSourceStar:
@@ -143,7 +149,8 @@ class NasaExoplanetArchiveMapper:
         # Create a NEA reference for all data points originating from this source
         nea_reference = Reference(
             source=SourceType.NEA,
-            update_date=datetime.now(),  # TODO ici il faudrait plutot recuperer la dte depuis le retour de l'api, la date de mise a jour des donnees dans l'api
+            # TODO ici il faudrait plutot recuperer la dte depuis le retour de l'api, la date de mise a jour des donnees dans l'api
+            update_date=datetime.now(),
             consultation_date=datetime.now(),
             star_identifier=nea_data.get("hostname"),
         )
@@ -155,21 +162,21 @@ class NasaExoplanetArchiveMapper:
                 # Créer un DataPoint avec la valeur et l'unité par défaut
                 if value is not None and str(value).strip() and not (isinstance(value, float) and math.isnan(value)):
                     unit = None
-                    
-                    if self.NEA_DEFAULT_UNITS.get(nea_field)  and self.NEA_DEFAULT_UNITS.get(nea_field) != FIELD_DEFAULT_UNITS.get(star_attribute):
-                        unit = FIELD_DEFAULT_UNITS.get(star_attribute)
+
+                    if self.NEA_DEFAULT_UNITS.get(nea_field) and self.NEA_DEFAULT_UNITS.get(nea_field) != FIELD_DEFAULT_UNITS_STAR.get(star_attribute):
+                        unit = FIELD_DEFAULT_UNITS_STAR.get(star_attribute)
 
                     datapoint = DataPoint(
                         value=value, unit=unit, reference=nea_reference
                     )
 
-                    setattr(star, star_attribute, datapoint)  
+                    setattr(star, star_attribute, datapoint)
 
         # Traitement spécial pour les désignations
         designations = self._extract_designations(nea_data)
         if designations:
             star.designations = DataPoint(value=designations)
-    
+
         # Autres traitements
         # Special handling for right_ascension (rastr or ra)
         if "rastr" in nea_data and nea_data["rastr"]:
@@ -212,23 +219,39 @@ class NasaExoplanetArchiveMapper:
     def map_nea_data_to_exoplanet(self, nea_data: Dict[str, Any]) -> DataSourceExoplanet:
         """Convertit un dictionnaire de données NEA vers un objet Exoplanet"""
         exoplanet = DataSourceExoplanet()
+
         # Create a NEA reference for all data points originating from this source
         nea_reference = Reference(
             source=SourceType.NEA,
-            update_date=datetime.now(),  # TODO ici il faudrait plutot recuperer la dte depuis le retour de l'api, la date de mise a jour des donnees dans l'api
+            # TODO ici il faudrait plutot recuperer la dte depuis le retour de l'api, la date de mise a jour des donnees dans l'api
+            update_date=datetime.now(),
             consultation_date=datetime.now(),
             star_identifier=nea_data.get("hostname"),
             planet_identifier=nea_data.get("pl_name"),
         )
 
-        for nasa_field, exoplanet_attribute in self.NEA_TO_EXOPLANET_MAPPING.items():
-            if nasa_field in nea_data:
-                value = nea_data[nasa_field]
+        for nea_field, exoplanet_attribute in self.NEA_TO_EXOPLANET_MAPPING.items():
+            if nea_field in nea_data:
+                value = nea_data[nea_field]
 
                 # Créer un DataPoint avec la valeur et l'unité par défaut
                 if value is not None and str(value).strip():
-                    unit = self.NEA_DEFAULT_UNITS.get(nasa_field)
-                    datapoint = DataPoint(value=value, unit=unit, reference=nea_reference)
+                    unit = self.NEA_DEFAULT_UNITS.get(nea_field)
+                    datapoint = DataPoint(
+                        value=value, unit=unit, reference=nea_reference)
+                    setattr(exoplanet, exoplanet_attribute, datapoint)
+
+                if value is not None and str(value).strip() and not (isinstance(value, float) and math.isnan(value)):
+                    unit = None
+
+                    if self.NEA_DEFAULT_UNITS.get(nea_field) and self.NEA_DEFAULT_UNITS.get(nea_field) != FIELD_DEFAULT_UNITS_EXOPLANET.get(exoplanet_attribute):
+                        unit = FIELD_DEFAULT_UNITS_EXOPLANET.get(
+                            exoplanet_attribute)
+
+                    datapoint = DataPoint(
+                        value=value, unit=unit, reference=nea_reference
+                    )
+
                     setattr(exoplanet, exoplanet_attribute, datapoint)
 
         # Special handling for right_ascension (rastr or ra)
@@ -340,7 +363,8 @@ class NasaExoplanetArchiveMapper:
             # Handle cases where it might not be a string (e.g., NaN, other types)
             return ""  # Return empty string for invalid input
 
-        formatted_ra = rastr_val.replace("h", "/").replace("m", "/").replace("s", "")
+        formatted_ra = rastr_val.replace(
+            "h", "/").replace("m", "/").replace("s", "")
 
         return formatted_ra.strip()
 
@@ -355,7 +379,8 @@ class NasaExoplanetArchiveMapper:
             # Handle cases where it might not be a string
             return ""  # Return empty string for invalid input
 
-        formatted_dec = decstr_val.replace("d", "/").replace("m", "/").replace("s", "")
+        formatted_dec = decstr_val.replace(
+            "d", "/").replace("m", "/").replace("s", "")
 
         return formatted_dec.strip()
 
@@ -431,7 +456,8 @@ class NasaExoplanetArchiveMapper:
         # Case 2: HTML snippet
         elif "div" in epoch_str_val and "<span" in epoch_str_val:
             # Pre-process the HTML to fix the common malformation: class=value" -> class="value"
-            fixed_html_str = re.sub(r'class=(\w+)"', r'class="\1"', epoch_str_val)
+            fixed_html_str = re.sub(
+                r'class=(\w+)"', r'class="\1"', epoch_str_val)
             soup = BeautifulSoup(fixed_html_str, "html5lib")
 
             base_value_span = soup.find("span", class_="supersubNumber")
