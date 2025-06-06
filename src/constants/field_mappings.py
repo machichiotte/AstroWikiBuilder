@@ -1,5 +1,27 @@
 # astro_wiki/src/constants/field_mappings.py
 
+NOTES_FIELDS_EXOPLANET = [
+    "époque étoile", "ascension droite", "déclinaison", "distance", "constellation",
+    "type spectral", "magnitude apparente", "type", "demi-grand axe", "périastre",
+    "apoastre", "excentricité", "période", "distance angulaire", "t_peri", "inclinaison",
+    "arg_péri", "époque", "masse", "masse minimale", "rayon", "masse volumique",
+    "gravité", "période de rotation", "température", "albedo_bond", "pression",
+    "composition", "vitesse des vents", "découvreurs", "programme", "méthode", "date",
+    "lieu", "prédécouverte", "détection", "statut"
+]
+
+NOTES_FIELDS_STAR = [
+    "époque", "ascension droite", "déclinaison", "distance", "constellation", "carte UAI",
+    "type spectral", "classe de luminosité", "magnitude apparente", "magnitude absolue",
+    "magnitude bolométrique", "indice de couleur B-V", "indice de couleur U-B",
+    "indice de couleur V-R", "indice de couleur R-I", "indice de couleur J-H",
+    "indice de couleur H-K", "mouvement propre", "parallaxe", "vitesse radiale",
+    "métallicité", "masse", "rayon", "luminosité", "température", "gravité", "âge",
+    "rotation", "vitesse de rotation", "densité", "excentricité", "période orbitale",
+    "inclinaison", "argument du périastre", "nœud ascendant", "compagne", "variabilité",
+    "découverte", "désignations", "statut"
+]
+
 # Unités par défaut associées aux champs physiques
 FIELD_DEFAULT_UNITS: dict[str, str] = {
     "mass": "M☉",

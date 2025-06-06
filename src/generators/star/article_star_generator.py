@@ -21,7 +21,7 @@ class ArticleStarGenerator:
         Initialise le générateur d'article pour une étoile.
         """
         self.reference_manager = ReferenceManager()
-        self.infobox_generator = StarInfoboxGenerator()
+        self.infobox_generator = StarInfoboxGenerator(self.reference_manager)
         self.article_utils = ArticleUtils()
         self._setup_locale()
 
@@ -39,7 +39,8 @@ class ArticleStarGenerator:
                     locale.setlocale(locale.LC_ALL, "french_France")
                 except locale.Error:
                     default_locale = locale.getdefaultlocale()[0]
-                    locale.setlocale(locale.LC_ALL, default_locale or "C.UTF-8")
+                    locale.setlocale(
+                        locale.LC_ALL, default_locale or "C.UTF-8")
                     # Si la locale française n'est pas disponible, on émet un avertissement
                     print(
                         f"French locale not available. Using default: {default_locale or 'C.UTF-8'}."
@@ -102,7 +103,7 @@ class ArticleStarGenerator:
         Génère l'infobox de l'étoile via StarInfoboxGenerator.
         Si l'infobox est vide, on retourne une chaîne vide.
         """
-        infobox_content = self.infobox_generator.generate_star_infobox(star)
+        infobox_content = self.infobox_generator.generate(star)
         return infobox_content or ""
 
     def _generate_introduction_section(self, star: DataSourceStar) -> str:
@@ -166,5 +167,6 @@ class ArticleStarGenerator:
         if star.constellation and star.constellation.value:
             categories.append(f"[[Category:{star.constellation.value}]]")
         else:
-            categories.append("[[Category:Constellation inconnue]]")  # placeholder
+            categories.append(
+                "[[Category:Constellation inconnue]]")  # placeholder
         return "\n".join(categories)

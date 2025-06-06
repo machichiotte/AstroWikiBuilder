@@ -2,6 +2,7 @@
 import locale
 from typing import Optional, Dict
 from src.models.reference import DataPoint
+import unicodedata
 
 
 class ArticleUtils:
@@ -80,9 +81,11 @@ class ArticleUtils:
         """
         if not isinstance(rastr_val, str):
             # Handle cases where it might not be a string (e.g., NaN, other types)
-            return str(rastr_val)  # Or raise an error, or return a default value
+            # Or raise an error, or return a default value
+            return str(rastr_val)
 
-        formatted_ra = rastr_val.replace("h", "/").replace("m", "/").replace("s", "")
+        formatted_ra = rastr_val.replace(
+            "h", "/").replace("m", "/").replace("s", "")
         return formatted_ra
 
     # TODO check if utile or not
@@ -138,3 +141,36 @@ class ArticleUtils:
                 return str(value)
         except (ValueError, TypeError):
             return str(value)
+
+    def is_valid_infobox_notes(self, field: str, notes_fields: list[str]) -> bool:
+        return field.lower() in notes_fields
+
+    def is_valid_infobox_value(self, value) -> bool:
+        """
+        Checks if the extracted value should be rendered.
+        Returns False if value is None, empty string, or otherwise invalid.
+        """
+        if value is None:
+            return False
+
+        if value is None:
+            return False
+
+        try:
+            s_representation = format(value)
+        except Exception:
+            return False
+
+        normalized_s_value = unicodedata.normalize('NFKD', s_representation)
+
+        s_value_stripped = normalized_s_value.strip()
+
+        if not s_value_stripped:
+            return False
+
+        s_value_lower = s_value_stripped.lower()
+
+        if s_value_lower == "nan" or s_value_lower.startswith("nan{{"):
+            return False
+
+        return True

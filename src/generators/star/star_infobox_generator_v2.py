@@ -1,158 +1,39 @@
-# src/generators/star_infobox_generator_v2.py
-import math
-from typing import Optional, Any
-from src.models.data_source_star import DataSourceStar, DataPoint
+# src/generators/star_infobox_generator.py
+
+from src.generators.base_infobox_generator import InfoboxBaseGenerator
+from src.models.data_source_star import DataSourceStar
 from src.mappers.infobox_mapper import InfoboxMapper, FieldMapping, FieldType
-from src.utils.constellation_utils import ConstellationUtils
-from src.utils.formatters.article_utils import ArticleUtils
-from src.utils.formatters.field_formatters import FieldFormatter
+from src.constants.field_mappings import NOTES_FIELDS_STAR
 
 
-class StarInfoboxGenerator:
-    """Générateur d'infobox pour les étoiles"""
+class StarInfoboxGenerator(InfoboxBaseGenerator):
+    def get_field_mappings(self) -> list[FieldMapping]:
+        return InfoboxMapper.get_star_field_mappings()
 
-    def __init__(self):
-        self.article_utils = ArticleUtils()
-        self.constellation_utils = ConstellationUtils()
-        self.field_formatter = FieldFormatter()
+    def get_infobox_header(self) -> str:
+        return "{{Infobox Étoile"
 
-    def generate_star_infobox(self, star: DataSourceStar) -> str:
-        """Génère le contenu de l'infobox Wikipédia pour une étoile"""
+    def get_notes_fields(self) -> list[str]:
+        return NOTES_FIELDS_STAR
 
-        if not isinstance(star, DataSourceStar):
-            raise TypeError("Input must be a Star object.")
+    def _is_valid_object(self, obj) -> bool:
+        return isinstance(obj, DataSourceStar)
 
-        infobox = "{{Infobox Étoile\n"
-
-        print("Generating infobox for name:", star.name.value if star.name else "Unknown")
-        print("Generating infobox for apparent magnitude:", star.apparent_magnitude if star.apparent_magnitude else "Unknown")
-        print("Generating infobox for spectral type:", star.spectral_type if star.spectral_type else "Unknown")
-        print("Generating infobox for star str:", str(star))
-        # Traiter tous les champs selon leur configuration
-        for mapping in InfoboxMapper.get_star_field_mappings():
-            field_content = self._process_field(star, mapping)
-            if field_content:
-                infobox += field_content
-
-        infobox += "}}\n"
-        return infobox
-
-    def _process_field(self, star: DataSourceStar, mapping: FieldMapping) -> str:
-        """Traite un champ selon sa configuration de mapping"""
-        # Vérifier la condition si elle existe
-        if mapping.condition and not mapping.condition(star):
-            return ""
-
-        # Gérer les champs calculés spéciaux
+    def _handle_special_field(self, star: DataSourceStar, mapping: FieldMapping) -> str:
         if mapping.field_type == FieldType.CONSTELLATION:
-            return self._handle_constellation_field(star)
+            if not (star.right_ascension and star.declination):
+                return ""
+            constellation = self.constellation_utils.get_constellation_UAI(
+                star.right_ascension.value, star.declination.value
+            )
+            return f"| constellation = {constellation}"
+
         elif mapping.field_type == FieldType.CARTE_UAI:
-            return self._handle_carte_uai_field(star)
+            if not (star.right_ascension and star.declination):
+                return ""
+            carte_uai = self.constellation_utils.get_constellation_name(
+                star.right_ascension.value, star.declination.value
+            )
+            return f"| carte UAI = {carte_uai}"
 
-        # Récupérer la valeur du champ
-        value, unit, reference = self._extract_field_value(star, mapping.source_attribute)
-
-        print("Processing value:", value)
-        print("Processing unit:", unit)
-        print("Processing reference:", reference)
-        
-        if not self._is_valid_value(value):
-            return ""
-
-        # Appliquer l'override d'unité si défini
-        if mapping.unit_override:
-            unit = mapping.unit_override
-
-        # Appliquer le formatter personnalisé si défini
-        if mapping.formatter:
-            return mapping.formatter(value)
-
-        # Formater selon le type de champ
-
-
-      # TODO print("value: " + str(value))
-      #  print("unit: " + str(unit))
-       # print("infobox_field: " + str(mapping.infobox_field))
-      #  print("field_type: " + str(mapping.field_type))
-        return self._format_by_type(
-            value, unit, reference, mapping.infobox_field, mapping.field_type
-        )
-
-    def _extract_field_value(
-        self, star: DataSourceStar, attribute_name: str
-    ) -> tuple[Any, Optional[str]]:
-        """Extrait la valeur et l'unité d'un attribut Star"""
-        attr_dp = getattr(star, attribute_name, None)
-
-        if attr_dp is None:
-            return None, None, None
-
-        if isinstance(attr_dp, DataPoint):
-            return attr_dp.value, attr_dp.unit, attr_dp.reference
-
-        return attr_dp, None, None
-
-    def _is_valid_value(self, value: Any) -> bool:
-        """
-        Checks if the extracted value should be rendered.
-        Returns False if value is None, an empty string, a string representation of 'nan',
-        or the float NaN.
-        """
-        if value is None:
-            return False
-
-        # Check for float NaN
-        if isinstance(value, float) and math.isnan(value):
-            return False
-
-        # Check for string representations of NaN or empty/whitespace strings
-        if isinstance(value, str):
-            if value.strip() == "":
-                return False
-            if value.strip().lower() == "nan":
-                return False
-
-        # Add any other specific invalid checks if needed, e.g. for other types
-
-        return True
-
-    def _format_by_type(
-        self, value: Any, unit: Optional[str], reference: Optional[str],infobox_field: str, field_type: FieldType
-    ) -> str:
-        """Formate une valeur selon son type de champ"""
-        formatters = {
-            FieldType.SIMPLE: lambda: self.field_formatter.format_simple_with_notes_field(
-                value, infobox_field, reference
-            ),
-            FieldType.DESIGNATIONS: lambda: self.field_formatter.format_designations(
-                value, infobox_field
-            ),
-            FieldType.AGE: lambda: self.field_formatter.format_age_field(
-                value, infobox_field
-            ),
-            FieldType.SEPARATE_UNIT: lambda: self.field_formatter.format_separate_unit_field(
-                value, unit, infobox_field
-            ),
-        }
-
-        formatter = formatters.get(field_type, formatters[FieldType.SIMPLE])
-        return formatter()
-
-    def _handle_constellation_field(self, star: DataSourceStar) -> str:
-        """Gère le champ constellation calculé"""
-        if not (star.right_ascension and star.declination):
-            return ""
-
-        constellation = self.constellation_utils.get_constellation_UAI(
-            star.right_ascension.value, star.declination.value
-        )
-        return f" | constellation = {constellation}\n"
-
-    def _handle_carte_uai_field(self, star: DataSourceStar) -> str:
-        """Gère le champ carte UAI calculé"""
-        if not (star.right_ascension and star.declination):
-            return ""
-        carte_uai = self.constellation_utils.get_constellation_name(
-            star.right_ascension.value, star.declination.value
-        )
-        return f" | carte UAI = {carte_uai}\n"
+        return ""

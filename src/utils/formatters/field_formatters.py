@@ -1,6 +1,9 @@
 # src/utils/formatters/field_formatters.py
 from typing import Any, Optional
 
+from src.models.reference import DataPoint
+from src.mappers.infobox_mapper import FieldType
+
 
 class FieldFormatter:
     """Formatters pour différents types de champs"""
@@ -61,7 +64,8 @@ class FieldFormatter:
 
         if unit:
             unit_param = FieldFormatter._get_unit_param_name(infobox_field)
-            result += f"\n | {unit_param} = {unit}" # Add newline here if unit exists
+            # Add newline here if unit exists
+            result += f"\n | {unit_param} = {unit}"
 
         return result
 
@@ -87,3 +91,55 @@ class FieldFormatter:
             "argument du périastre (ω)": "argument périastre unité",
         }
         return overrides.get(infobox_field, f"{infobox_field} unité")
+
+    @staticmethod
+    def format_by_type(
+        value: Any, unit: Optional[str], infobox_field: str, field_type: FieldType
+    ) -> str:
+        """Formate une valeur selon son type de champ"""
+        formatters = {
+            FieldType.SIMPLE: lambda: FieldFormatter.format_simple_field(
+                value, infobox_field
+            ),
+            FieldType.DESIGNATIONS: lambda: FieldFormatter.format_designations(
+                value, infobox_field
+            ),
+            FieldType.AGE: lambda: FieldFormatter.format_age_field(
+                value, infobox_field
+            ),
+            FieldType.SEPARATE_UNIT: lambda: FieldFormatter.format_separate_unit_field(
+                value, unit, infobox_field
+            ),
+        }
+
+        print("iciiiii info", infobox_field)
+        print("iciiiii value", value)
+        print("iciiiii unit", unit)
+        print("iciiiii field", field_type)
+
+        formatter = formatters.get(field_type, formatters[FieldType.SIMPLE])
+
+        print("formatter", formatter())
+        return formatter()
+
+    def extract_field_value(
+        self, datapoint: DataPoint
+    ) -> tuple[Optional[Any], Optional[str]]:
+        """
+        Returns a tuple (value, unit) from the DataPoint.
+        If the DataPoint has no value or it's invalid, returns (None, None).
+        """
+        # We assume DataPoint has .value and .unit attributes
+        try:
+            raw_value = datapoint.value
+            raw_unit = getattr(datapoint, "unit", None)
+        except AttributeError:
+            return None, None
+
+        # If the raw_value is None or empty, treat as invalid
+        if raw_value is None or (
+            isinstance(raw_value, str) and raw_value.strip() == ""
+        ):
+            return None, None
+
+        return raw_value, raw_unit

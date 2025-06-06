@@ -106,7 +106,7 @@ class ArticleExoplanetGenerator:
 
         # Générer les différentes sections
         header = self._generate_header_section()
-        infobox = self.infobox_generator.generate_exoplanet_infobox(exoplanet)
+        infobox = self.infobox_generator.generate(exoplanet)
         introduction = self.introduction_generator.generate_exoplanet_introduction(
             exoplanet
         )
