@@ -99,46 +99,41 @@ class ArticleExoplanetGenerator:
 
     def generate_article_content(self, exoplanet: DataSourceExoplanet) -> str:
         """
-        Génère le contenu complet de l'article Wikipedia
+        Génère l'ensemble du contenu de l'article Wikipédia pour une exoplanète.
+        Appelle des sous-fonctions dédiées pour chaque partie.
         """
-        # Réinitialiser les références pour le nouvel article
         self.reference_manager.reset_references()
+        parts = []
 
-        # Générer les différentes sections
-        header = self._generate_header_section()
-        infobox = self.infobox_generator.generate(exoplanet)
-        introduction = self.introduction_generator.generate_exoplanet_introduction(
-            exoplanet
-        )
-        physical_characteristics = self._generate_physical_characteristics_section(exoplanet)
-        orbit = self._generate_orbit_section(exoplanet)
-        discovery = self._generate_discovery_section(exoplanet)
-        habitability = self._generate_habitability_section(exoplanet)
-        reference = self._generate_references_section()
-        category = self._generate_category_section(exoplanet)
+        # 1. Templates de base (stub + source)
+        parts.append(self._generate_header_section())
 
-        # Assembler l'article
-        article = f"""
+        # 2. Infobox
+        parts.append(self.infobox_generator.generate(exoplanet))
 
-{header}
+        # 3. Introduction
+        parts.append(self.introduction_generator.generate_exoplanet_introduction(exoplanet))
 
-{infobox}
+        # 4. Caractéristiques physiques
+        parts.append(self._generate_physical_characteristics_section(exoplanet))
 
-{introduction}
+        # 5. Orbite
+        parts.append(self._generate_orbit_section(exoplanet))
 
-{physical_characteristics}
+        # 6. Découverte
+        parts.append(self._generate_discovery_section(exoplanet))
 
-{orbit}
+        # 7. Habitabilité
+        parts.append(self._generate_habitability_section(exoplanet))
 
-{discovery}
+        # 8. Références et portails
+        parts.append(self._generate_references_section())
 
-{habitability}
+        # 9. Catégories
+        parts.append(self._generate_category_section(exoplanet))
 
-{reference}
-
-{category}
-"""
-        return article
+        # On assemble le tout en filtrant les chaînes vides
+        return "\n\n".join(filter(None, parts))
 
     def _generate_orbit_section(self, exoplanet: DataSourceExoplanet) -> str:
         """
@@ -338,4 +333,3 @@ class ArticleExoplanetGenerator:
         for category in categories:
             section += f"\n"
         return section.strip() if section else ""
-        
