@@ -15,24 +15,31 @@ class ArticleUtils:
 
     def format_numeric_value(self, value: Optional[float], precision: int = 2) -> str:
         """
-        Formate une valeur numérique avec le format français
+        Formate une valeur numérique avec le format français, sans décimale inutile.
         """
         if value is None:
             return ""
 
-        # Si c'est une date (année), on ne garde pas de décimales
-        if (
-            isinstance(value, (int, float))
-            and value.is_integer()
-            and 1000 <= value <= 2100
-        ):
-            return str(int(value))
+        # Si c'est un float ou int et entier, on affiche sans décimale
+        try:
+            fval = float(value)
+        except Exception:
+            return str(value)
 
-        # Si c'est une température avec des décimales nulles, on affiche en entier
-        if isinstance(value, float) and value.is_integer():
-            return str(int(value))
+        if fval.is_integer():
+            return str(int(fval))
 
-        return locale.format_string(f"%.{precision}f", value, grouping=True)
+        return locale.format_string(f"%.{precision}f", fval, grouping=True).rstrip("0").rstrip(".")
+
+    def format_year_value(self, value: Optional[float]) -> str:
+        """
+        Formate une valeur d'année (date) sans décimale.
+        """
+        if value is None:
+            return ""
+        if isinstance(value, (int, float)) and float(value).is_integer():
+            return str(int(value))
+        return str(value)
 
     def format_parsecs_to_lightyears(self, parsecs: float) -> float:
         """Convertit les parsecs en années-lumière."""

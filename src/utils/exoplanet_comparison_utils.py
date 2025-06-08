@@ -104,16 +104,15 @@ class ExoplanetComparisonUtils:
         Génère une comparaison de l'orbite de l'exoplanète avec les planètes du système solaire.
         La distance est supposée être en Unités Astronomiques (UA).
         """
-        sma = (
-            exoplanet.semi_major_axis.value
-            if exoplanet.semi_major_axis and exoplanet.semi_major_axis.value is not None
-            else None
-        )
+        sma = exoplanet.semi_major_axis
+        if hasattr(sma, "value"):
+            sma = sma.value
+        try:
+            sma = float(sma)
+        except (TypeError, ValueError):
+            return ""  # ou une valeur par défaut
 
-        if sma is None:
-            return ""
-
-        # Use a margin for "similar to" comparisons
+        # Maintenant, sma est bien un float pour la comparaison
         margin = self.SIMILARITY_MARGIN
 
         if sma < self.mercury_orbit_au * (1 - margin):

@@ -1,4 +1,4 @@
-# src/utils/formatters/field_formatters.py
+# src/utils/formatters/infobox_field_formatters.py
 from typing import Any, Optional
 
 from src.constants.field_mappings import LIEU_NAME_MAPPING, METHOD_NAME_MAPPING
@@ -30,10 +30,14 @@ class FieldFormatter:
         elif infobox_field == "désignations":
             # Pour le champ désignations, on formate en liste
             if isinstance(value, list):
-                value = ", ".join(str(v) for v in value if str(v).strip())
+                value = ", ".join(
+                    FieldFormatter._format_designation_with_template(str(v))
+                    for v in value if str(v).strip()
+                )
             else:
-                value = str(value).strip()
-                
+                value = FieldFormatter._format_designation_with_template(
+                    str(value).strip())
+
         output = f" | {infobox_field} = {value}"
 
         return output
@@ -54,20 +58,6 @@ class FieldFormatter:
             result += f"\n | {unit_param} = {unit}"
 
         return result
-
-    @staticmethod
-    def _should_skip_unit(infobox_field: str) -> bool:
-        """Détermine si l'unité doit être omise pour ce champ"""
-        skip_patterns = [
-            "métallicité",
-            "type spectral",
-            "époque",
-            "constellation",
-            "magnitude apparente",
-            "magnitude absolue",
-            "indice ",
-        ]
-        return any(pattern in infobox_field for pattern in skip_patterns)
 
     @staticmethod
     def _get_unit_param_name(infobox_field: str) -> str:
@@ -117,3 +107,31 @@ class FieldFormatter:
             return None, None
 
         return raw_value, raw_unit
+
+    @staticmethod
+    def _format_designation_with_template(designation: str) -> str:
+        """Formate une désignation avec le modèle Wikipédia approprié si possible."""
+        d = designation.strip()
+        if d.lower().startswith("koi "):
+            return f"{{{{StarKOI|{d.split(' ')[1]}}}}}"
+        if d.lower().startswith("kic "):
+            return f"{{{{StarKIC|{d.split(' ')[1]}}}}}"
+        if d.lower().startswith("tic "):
+            return f"{{{{StarTIC|{d.split(' ')[1]}}}}}"
+        if d.lower().startswith("2mass j"):
+            core = d[7:].strip()
+            if "+" in core or "-" in core:
+                for sep in ["+", "-"]:
+                    if sep in core:
+                        parts = core.split(sep)
+                        if len(parts) == 2:
+                            return f"{{{{Star2MASS|{parts[0]}|{sep}{parts[1]}}}}}"
+        # Ajoute d'autres modèles si besoin
+        return d
+
+    def format_numeric_no_trailing_zeros(value):
+        try:
+            fval = float(value)
+            return f"{fval:.5f}".rstrip("0").rstrip(".")
+        except Exception:
+            return str(value)

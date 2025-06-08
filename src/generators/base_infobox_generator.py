@@ -3,7 +3,7 @@
 from abc import ABC, abstractmethod
 from typing import Optional, Any
 from src.mappers.infobox_mapper import FieldMapping, FieldType
-from src.utils.formatters.field_formatters import FieldFormatter
+from src.utils.formatters.infobox_field_formatters import FieldFormatter
 from src.utils.formatters.article_utils import ArticleUtils
 from src.utils.constellation_utils import ConstellationUtils
 from src.services.reference_manager import ReferenceManager

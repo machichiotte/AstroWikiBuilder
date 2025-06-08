@@ -1,7 +1,6 @@
 # src/generators/article_exoplanet_generator.py
 import locale
-import datetime
-import pytz
+import math
 
 from src.models.data_source_exoplanet import DataSourceExoplanet
 
@@ -21,6 +20,7 @@ from src.generators.exoplanet.exoplanet_category_generator import (
 )
 from src.services.reference_manager import ReferenceManager
 from src.generators.base_article_generator import BaseArticleGenerator
+
 
 
 class ArticleExoplanetGenerator(BaseArticleGenerator):
@@ -164,12 +164,8 @@ class ArticleExoplanetGenerator(BaseArticleGenerator):
             "Transit Timing Variations": "des variations temporelles de transit",
         }
 
-        discovery_method = (
-            exoplanet.discovery_method.value if exoplanet.discovery_method else ""
-        )
-        discovery_method = method_translations.get(
-            discovery_method, f"de {discovery_method.lower()}"
-        )
+        method_raw = exoplanet.discovery_method.value if exoplanet.discovery_method else ""
+        discovery_method = method_translations.get(method_raw, None)
 
         # Gestion robuste de la date
         date_value = (
@@ -178,11 +174,14 @@ class ArticleExoplanetGenerator(BaseArticleGenerator):
             else exoplanet.discovery_date
         )
         if hasattr(date_value, "year"):
-            date_str = f"en {date_value.year}"
+            date_str = f"en {self.article_utils.format_year_value(date_value.year)}"
         else:
-            date_str = f"en {str(date_value)}"
+            date_str = f"en {str(self.article_utils.format_year_value(date_value))}"
 
-        section += f"L'exoplanète a été découverte par la méthode {discovery_method} {date_str}.\n"
+        if discovery_method:
+            section += f"L'exoplanète a été découverte par la méthode {discovery_method} {date_str}.\n"
+        else:
+            section += f"L'exoplanète a été découverte {date_str}.\n"
 
         return section
 
@@ -209,51 +208,74 @@ class ArticleExoplanetGenerator(BaseArticleGenerator):
         desc_parts = []
 
         if mass is not None:
+            try:
+                mass_f = float(mass)
+            except Exception:
+                mass_f = None
             mass_value = self.article_utils.format_numeric_value(
-                mass, precision=3 if mass < 0.1 else (2 if mass < 1 else 1)
+                mass, precision=3 if mass_f is not None and mass_f < 0.1 else (2 if mass_f is not None and mass_f < 1 else 1)
             )
-            if mass < 0.1:
-                desc_parts.append(
-                    f"sa masse faible de {mass_value} [[Masse_jovienne|''M''{{{{ind|J}}}}]]"
-                )
-            elif mass < 1:
-                desc_parts.append(
-                    f"sa masse modérée de {mass_value} [[Masse_jovienne|''M''{{{{ind|J}}}}]]"
-                )
-            else:
-                desc_parts.append(
-                    f"sa masse imposante de {mass_value} [[Masse_jovienne|''M''{{{{ind|J}}}}]]"
-                )
+            if mass_f is not None:
+                if mass_f < 0.1:
+                    desc_parts.append(
+                        f"sa masse faible de {mass_value} [[Masse_jovienne|''M''{{{{ind|J}}}}]]"
+                    )
+                elif mass_f < 1:
+                    desc_parts.append(
+                        f"sa masse modérée de {mass_value} [[Masse_jovienne|''M''{{{{ind|J}}}}]]"
+                    )
+                else:
+                    desc_parts.append(
+                        f"sa masse imposante de {mass_value} [[Masse_jovienne|''M''{{{{ind|J}}}}]]"
+                    )
 
         if radius is not None:
+            try:
+                radius_f = float(radius)
+            except Exception:
+                radius_f = None
             radius_value = self.article_utils.format_numeric_value(
-                radius, precision=3 if radius < 0.1 else (2 if radius < 1 else 1)
+                radius, precision=3 if radius_f is not None and radius_f < 0.1 else (2 if radius_f is not None and radius_f < 1 else 1)
             )
-            if radius < 0.5:
-                desc_parts.append(
-                    f"son rayon compact de {radius_value} [[Rayon_jovien|''R''{{{{ind|J}}}}]]"
-                )
-            elif radius < 1.5:
-                desc_parts.append(
-                    f"son rayon de {radius_value} [[Rayon_jovien|''R''{{{{ind|J}}}}]]"
-                )
-            else:
-                desc_parts.append(
-                    f"son rayon étendu de {radius_value} [[Rayon_jovien|''R''{{{{ind|J}}}}]]"
-                )
+            if radius_f is not None:
+                if radius_f < 0.5:
+                    desc_parts.append(
+                        f"son rayon compact de {radius_value} [[Rayon_jovien|''R''{{{{ind|J}}}}]]"
+                    )
+                elif radius_f < 1.5:
+                    desc_parts.append(
+                        f"son rayon de {radius_value} [[Rayon_jovien|''R''{{{{ind|J}}}}]]"
+                    )
+                else:
+                    desc_parts.append(
+                        f"son rayon étendu de {radius_value} [[Rayon_jovien|''R''{{{{ind|J}}}}]]"
+                    )
 
-        if temp is not None:
-            temp_value = self.article_utils.format_numeric_value(
-                temp, precision=1 if temp < 100 else 0
-            )
-            if temp < 500:
-                desc_parts.append(f"sa température de {temp_value} [[Kelvin|K]]")
-            elif temp < 1000:
-                desc_parts.append(f"sa température élevée de {temp_value} [[Kelvin|K]]")
+        if (
+            temp is not None
+            and not (isinstance(temp, str) and temp.lower() == "nan")
+            and not (isinstance(temp, float) and math.isnan(temp))
+        ):
+            print(f"Température brute : {temp}")
+            # Affiche sans décimale inutile, mais garde les décimales significatives
+            try:
+                temp_f = float(temp)
+            except Exception:
+                temp_f = None
+            if isinstance(temp, (int, float)):
+                temp_value = f"{float(temp):.5f}".rstrip("0").rstrip(".")
             else:
-                desc_parts.append(
-                    f"sa température extrême de {temp_value} [[Kelvin|K]]"
-                )
+                temp_value = str(temp)
+
+            print(f"Température  : {temp}")
+            print(f"Température traitée : {temp_value}")
+            if temp_f is not None:
+                if temp_f < 500:
+                    desc_parts.append(f"sa température de {temp_value} [[Kelvin|K]]")
+                elif temp_f < 1000:
+                    desc_parts.append(f"sa température élevée de {temp_value} [[Kelvin|K]]")
+                else:
+                    desc_parts.append(f"sa température extrême de {temp_value} [[Kelvin|K]]")
 
         if desc_parts:
             if len(desc_parts) == 1:

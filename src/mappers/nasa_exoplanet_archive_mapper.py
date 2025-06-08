@@ -5,6 +5,7 @@ from src.models.data_source_star import DataSourceStar
 from src.models.data_source_exoplanet import DataSourceExoplanet
 
 from datetime import datetime
+from src.utils.formatters.infobox_field_formatters import FieldFormatter
 from src.constants.field_mappings import FIELD_DEFAULT_UNITS_STAR, FIELD_DEFAULT_UNITS_EXOPLANET
 import math
 
@@ -233,6 +234,15 @@ class NasaExoplanetArchiveMapper:
         for nea_field, exoplanet_attribute in self.NEA_TO_EXOPLANET_MAPPING.items():
             if nea_field in nea_data:
                 value = nea_data[nea_field]
+
+                # Liste des champs à formater
+                numeric_fields = {
+                    "pl_orbsmax", "pl_angsep", "pl_bmassj", "pl_msinij", "pl_radj", "pl_dens", "pl_eqt",
+                    "sy_dist", "st_teff", "st_mass", "st_rad", "st_met", "st_logg", "st_lum", "st_dens", "st_age"
+                }
+
+                if nea_field in numeric_fields and value not in (None, ""):
+                    value = FieldFormatter.format_numeric_no_trailing_zeros(value)
 
                 # Créer un DataPoint avec la valeur et l'unité par défaut
                 if value is not None and str(value).strip():
