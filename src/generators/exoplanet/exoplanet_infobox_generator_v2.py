@@ -16,10 +16,10 @@ class ExoplanetInfoboxGenerator(InfoboxBaseGenerator):
     def get_notes_fields(self) -> list[str]:
         return NOTES_FIELDS_EXOPLANET
 
-    def _is_valid_object(self, obj) -> bool:
+    def is_valid_object(self, obj) -> bool:
         return isinstance(obj, DataSourceExoplanet)
 
-    def _handle_special_field(self, exoplanet: DataSourceExoplanet, mapping: FieldMapping) -> str:
+    def handle_special_field(self, exoplanet: DataSourceExoplanet, mapping: FieldMapping) -> str:
         if mapping.field_type == FieldType.CONSTELLATION:
             if not (exoplanet.right_ascension and exoplanet.declination):
                 return ""

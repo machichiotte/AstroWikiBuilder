@@ -16,10 +16,10 @@ class StarInfoboxGenerator(InfoboxBaseGenerator):
     def get_notes_fields(self) -> list[str]:
         return NOTES_FIELDS_STAR
 
-    def _is_valid_object(self, obj) -> bool:
+    def is_valid_object(self, obj) -> bool:
         return isinstance(obj, DataSourceStar)
 
-    def _handle_special_field(self, star: DataSourceStar, mapping: FieldMapping) -> str:
+    def handle_special_field(self, star: DataSourceStar, mapping: FieldMapping) -> str:
         if mapping.field_type == FieldType.CONSTELLATION:
             if not (star.right_ascension and star.declination):
                 return ""

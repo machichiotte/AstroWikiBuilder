@@ -17,7 +17,7 @@ class InfoboxBaseGenerator(ABC):
         self.constellation_utils = ConstellationUtils()
 
     def generate(self, obj: Any) -> str:
-        if not self._is_valid_object(obj):
+        if not self.is_valid_object(obj):
             raise TypeError("Invalid data source object.")
 
         lines = [self.get_infobox_header()]
@@ -38,7 +38,7 @@ class InfoboxBaseGenerator(ABC):
             return ""
 
         if mapping.field_type in {FieldType.CONSTELLATION, FieldType.CARTE_UAI}:
-            return self._handle_special_field(obj, mapping)
+            return self.handle_special_field(obj, mapping)
 
         datapoint = getattr(obj, mapping.source_attribute, None)
         if datapoint is None:
@@ -113,11 +113,11 @@ class InfoboxBaseGenerator(ABC):
         pass
 
     @abstractmethod
-    def _is_valid_object(self, obj: Any) -> bool:
+    def is_valid_object(self, obj: Any) -> bool:
         pass
 
     @abstractmethod
-    def _handle_special_field(self, obj: Any, mapping: FieldMapping) -> str:
+    def handle_special_field(self, obj: Any, mapping: FieldMapping) -> str:
         pass
 
     @property
