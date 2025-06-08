@@ -22,20 +22,20 @@ class BaseArticleGenerator:
         now_paris = now_utc.astimezone(paris_tz)
         return now_paris.strftime("%B %Y").lower()
 
-    def _generate_stub_and_source(self) -> str:
+    def generate_stub_and_source(self) -> str:
         current_date = self._get_formatted_french_utc_plus_1_date()
         stub = f"{{{{Ébauche|{self.stub_type}}}}}"
         source = f"{{{{Source unique|date={current_date}}}}}"
         return f"{stub}\n{source}"
 
-    def _generate_references_section(self) -> str:
+    def generate_references_section(self) -> str:
         section = "== Références ==\n"
         section += "{{références}}\n"
         for portal in self.portals:
             section += f"{{{{Portail|{portal}}}}}\n "
         return section
 
-    def _generate_category_section(self, obj) -> str:
+    def generate_category_section(self, obj) -> str:
         categories = self.category_generator.generate_categories(obj)
         if not categories:
             return ""

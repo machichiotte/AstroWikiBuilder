@@ -74,7 +74,7 @@ class ArticleExoplanetGenerator(BaseArticleGenerator):
         parts = []
 
         # 1. Templates de base (stub + source)
-        parts.append(self._generate_stub_and_source())
+        parts.append(self.generate_stub_and_source())
 
         # 2. Infobox
         parts.append(self.infobox_generator.generate(exoplanet))
@@ -95,10 +95,10 @@ class ArticleExoplanetGenerator(BaseArticleGenerator):
         parts.append(self._generate_habitability_section(exoplanet))
 
         # 8. Références et portails
-        parts.append(self._generate_references_section())
+        parts.append(self.generate_references_section())
 
         # 9. Catégories
-        parts.append(self._generate_category_section(exoplanet))
+        parts.append(self.generate_category_section(exoplanet))
 
         # On assemble le tout en filtrant les chaînes vides
         return "\n\n".join(filter(None, parts))

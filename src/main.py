@@ -27,8 +27,7 @@ from src.services.export_service import ExportService
 from src.utils.draft_utils import (
     generate_exoplanet_draft,
     generate_star_draft,
-    save_exoplanet_drafts,
-    save_star_drafts,
+    save_drafts,
 )
 
 logging.basicConfig(
@@ -216,11 +215,6 @@ def create_output_directories(output_dir: str = "output", drafts_dir: str = "dra
     """Crée les répertoires de sortie nécessaires."""
     os.makedirs(output_dir, exist_ok=True)
     os.makedirs(drafts_dir, exist_ok=True)
-    os.makedirs(os.path.join(drafts_dir, "missing"), exist_ok=True)
-    os.makedirs(os.path.join(drafts_dir, "existing"), exist_ok=True)
-    os.makedirs(
-        os.path.join(drafts_dir, "stars"), exist_ok=True
-    )  # Added 'stars' subdirectory
 
     # The unknown_status directory is handled by save_drafts in draft_utils.py if that logic was successfully updated.
     # If not, drafts of unknown status are logged and placed in 'missing'.
@@ -332,9 +326,9 @@ def exoplanet_run_draft_generation(
         # Assuming save_drafts from draft_utils.py handles only two lists as per its original confirmed signature
         # If draft_utils.py was successfully updated to handle three lists, this call would need adjustment.
         # However, the prompt's context implies draft_utils.py might not have been updated.
-        save_exoplanet_drafts(
-            exoplanet_missing_drafts, exoplanet_existing_drafts, drafts_dir
-        )
+        
+        save_drafts(exoplanet_missing_drafts, exoplanet_existing_drafts, drafts_dir="drafts/exoplanet", entity="exoplanètes")
+
         logger.info(f"Brouillons sauvegardés dans {drafts_dir}")
     else:
         logger.info("Aucun brouillon n'a été généré.")
@@ -388,7 +382,8 @@ def star_run_draft_generation(
         # Assuming save_drafts from draft_utils.py handles only two lists as per its original confirmed signature
         # If draft_utils.py was successfully updated to handle three lists, this call would need adjustment.
         # However, the prompt's context implies draft_utils.py might not have been updated.
-        save_star_drafts(star_missing_drafts, star_existing_drafts, drafts_dir)
+        save_drafts(star_missing_drafts, star_existing_drafts, drafts_dir="drafts/star", entity="étoiles")
+
         logger.info(f"Brouillons sauvegardés dans {drafts_dir}")
     else:
         logger.info("Aucun brouillon n'a été généré.")
