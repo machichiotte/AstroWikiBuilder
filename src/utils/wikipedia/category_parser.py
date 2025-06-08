@@ -6,13 +6,6 @@ import re
 def parse_categories(file_path="notes/categories_notes.md"):
     """
     Parses a markdown file to extract categories.
-
-    Args:
-        file_path (str): The path to the markdown file.
-
-    Returns:
-        dict: A dictionary where keys are category types and
-              values are lists of category names.
     """
     categories = {}
     current_category_type = None
@@ -47,10 +40,6 @@ def parse_categories(file_path="notes/categories_notes.md"):
                 and line.startswith("[[Catégorie:")
                 and "Discovery Years" not in current_category_type
             ):
-                # Add category items to the current type, if not a special case like Discovery Years
                 categories[current_category_type].append(line)
-            # Lines for "Discovery Years" are generated and should not be appended here from the file
-            # if "Discovery Years" in current_category_type and line.startswith("[[Catégorie:"):
-            #    pass # Already handled by year range generation
 
     return categories

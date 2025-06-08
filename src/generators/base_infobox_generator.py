@@ -2,12 +2,12 @@
 
 from abc import ABC, abstractmethod
 from typing import Optional, Any
-from src.mappers.infobox_mapper import FieldMapping, FieldType
+from src.utils.formatters.infobox_fields import FieldMapping, FieldType
 from src.utils.formatters.infobox_field_formatters import FieldFormatter
-from src.utils.formatters.article_utils import ArticleUtils
+from src.utils.formatters.article_formatters import ArticleUtils
 from src.utils.constellation_utils import ConstellationUtils
 from src.services.reference_manager import ReferenceManager
-
+from src.utils.validators import infobox_validators
 
 class InfoboxBaseGenerator(ABC):
     def __init__(self, reference_manager: ReferenceManager):
@@ -47,11 +47,11 @@ class InfoboxBaseGenerator(ABC):
         value, unit = self.field_formatter.extract_field_value(datapoint)
         value_part = ""
 
-        if self.article_utils.is_valid_infobox_value(value):
+        if infobox_validators.is_valid_infobox_value(value):
             if mapping.unit_override:
                 unit = mapping.unit_override
 
-            unit_to_use = unit if self.article_utils.is_needed_infobox_unit(
+            unit_to_use = unit if infobox_validators.is_needed_infobox_unit(
                 mapping.infobox_field, unit, self.default_mapping) else None
 
             if mapping.formatter:
@@ -66,7 +66,7 @@ class InfoboxBaseGenerator(ABC):
 
         parts = [value_part]
 
-        if self.article_utils.is_valid_infobox_notes(mapping.infobox_field, self.get_notes_fields()):
+        if infobox_validators.is_valid_infobox_note(mapping.infobox_field, self.get_notes_fields()):
             notes_ref = self._extract_notes(datapoint, obj)
             if notes_ref:
                 parts.append(f"| {mapping.infobox_field} notes = {notes_ref}")

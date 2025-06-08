@@ -51,39 +51,15 @@ class DataProcessor:
         """Récupère toutes les étoiles consolidées."""
         return self.star_repository.get_all_stars()
 
-    def get_statistics_exoplanet(self) -> Dict[str, Any]:
-        """Retourne des statistiques sur les données collectées."""
-        all_exoplanets = self.exoplanet_repository.get_all_exoplanets()
-        return self.stat_service.generate_statistics_exoplanet(all_exoplanets)
-
-    def get_statistics_star(self) -> Dict[str, Any]:
-        """Retourne des statistiques sur les données collectées."""
-        all_stars = self.star_repository.get_all_stars()
-        return self.stat_service.generate_statistics_star(all_stars)
-
     def get_statistics(self) -> Dict[str, Any]:
         """Retourne des statistiques sur les données collectées."""
-        statistics_star = self.get_statistics_star()
-        statistics_exoplanet = self.get_statistics_exoplanet()
+        statistics_star = self._get_statistics_star()
+        statistics_exoplanet = self._get_statistics_exoplanet()
         return {
             "exoplanet": statistics_exoplanet,
             "star": statistics_star
         }
-
-    def _get_wikipedia_article_information_for_all_exoplanets(
-        self,
-    ) -> Dict[str, Dict[str, WikiArticleInfo]]:
-        """
-        Récupère les informations des articles Wikipedia pour toutes les exoplanètes du référentiel.
-        """
-        all_exoplanets = self.exoplanet_repository.get_all_exoplanets()
-        if not all_exoplanets:
-            logger.warning(
-                "No exoplanets in exoplanet_repository to check Wikipedia for."
-            )
-            return {}
-        return self.wiki_service.get_all_articles_info_for_exoplanets(all_exoplanets)
-
+   
     def get_and_separate_wikipedia_articles_by_status(
         self,
     ) -> Tuple[
@@ -188,3 +164,27 @@ class DataProcessor:
         logger.info(
             f"Wikipedia links data for '{status_description_for_filename}' exported to {csv_filename} and {json_filename}"
         )
+
+    def _get_statistics_exoplanet(self) -> Dict[str, Any]:
+        """Retourne des statistiques sur les données collectées."""
+        all_exoplanets = self.exoplanet_repository.get_all_exoplanets()
+        return self.stat_service.generate_statistics_exoplanet(all_exoplanets)
+
+    def _get_statistics_star(self) -> Dict[str, Any]:
+        """Retourne des statistiques sur les données collectées."""
+        all_stars = self.star_repository.get_all_stars()
+        return self.stat_service.generate_statistics_star(all_stars)
+
+    def _get_wikipedia_article_information_for_all_exoplanets(
+        self,
+    ) -> Dict[str, Dict[str, WikiArticleInfo]]:
+        """
+        Récupère les informations des articles Wikipedia pour toutes les exoplanètes du référentiel.
+        """
+        all_exoplanets = self.exoplanet_repository.get_all_exoplanets()
+        if not all_exoplanets:
+            logger.warning(
+                "No exoplanets in exoplanet_repository to check Wikipedia for."
+            )
+            return {}
+        return self.wiki_service.get_all_articles_info_for_exoplanets(all_exoplanets)

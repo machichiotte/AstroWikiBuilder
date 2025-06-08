@@ -3,7 +3,7 @@ from typing import Any, Optional
 
 from src.constants.field_mappings import LIEU_NAME_MAPPING, METHOD_NAME_MAPPING
 from src.models.reference import DataPoint
-from src.mappers.infobox_mapper import FieldType
+from src.utils.formatters.infobox_fields import FieldType
 
 
 class FieldFormatter:

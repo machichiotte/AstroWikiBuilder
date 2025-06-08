@@ -41,7 +41,7 @@ class WikipediaChecker:
         )
         logger.info(f"WikipediaChecker initialized with User-Agent: {user_agent}")
 
-    def normalize_title(self, title: str) -> str:
+    def _normalize_title(self, title: str) -> str:
         title = title.lower()
         title = (
             unicodedata.normalize("NFKD", title)
@@ -55,156 +55,128 @@ class WikipediaChecker:
     def check_multiple_articles(
         self,
         titles_to_check: List[str],
-        exoplanet_context: Dict[str, Dict[str, Any]] = None,
+        exoplanet_context: Optional[Dict[str, Dict[str, Any]]] = None,
     ) -> Dict[str, WikiArticleInfo]:
-        """
-        Vérifie l'existence de plusieurs articles (jusqu'à 50) en une seule requête.
-
-        Args:
-            titles_to_check: Liste des titres d'articles à vérifier (max 50). These are the exoplanet names or aliases.
-            exoplanet_context: Dictionnaire optionnel mappant chaque titre original de la requête (nom d'exoplanète)
-                               à un dictionnaire contenant des informations contextuelles comme `{'host_star_name': '...', 'aliases': ['alias1', ...]}`.
-                               Le titre principal de l'exoplanète doit être l'une des clés de `titles_to_check`.
-
-        Returns:
-            Dict[str, WikiArticleInfo]: Dictionnaire avec les titres originaux (queried_title) comme clés.
-        """
         if not titles_to_check:
             return {}
+
         if len(titles_to_check) > 50:
-            # This should be handled by the calling method (batching)
             raise ValueError("L'API MediaWiki limite à 50 titres par requête.")
 
-        # Initialize results with default "not found" for each queried title
-        results: Dict[str, WikiArticleInfo] = {
-            title: WikiArticleInfo(exists=False, title=title, queried_title=title)
-            for title in titles_to_check
-        }
-
-        params = {
-            "action": "query",
-            "titles": "|".join(titles_to_check),
-            "format": "json",
-            "prop": "info|redirects",  # 'redirects' here gets info if the page *is* a redirect source
-            "inprop": "url",
-            "redirects": 1,  # Resolve redirects (i.e. if 'X' redirects to 'Y', query for 'X' will return info for 'Y')
-            "utf8": 1,
-        }
+        initial_results = self._initialize_results(titles_to_check)
 
         try:
-            response = self.session.get(
-                self.BASE_URL, params=params, timeout=10
-            )  # Added timeout
-            response.raise_for_status()
-            data = response.json().get("query", {})
+            data = self._fetch_api_data(titles_to_check)
         except requests.RequestException as e:
-            # logger.error(f"Wikipedia API request error: {e}") # Use logger here
-            for title in titles_to_check:  # Mark all as failed due to API error
-                results[title] = WikiArticleInfo(
-                    exists=False, title=title, queried_title=title, url=f"Error: {e}"
-                )
-            return results
+            logger.error(f"Erreur Wikipedia API: {e}")
+            for title in titles_to_check:
+                initial_results[title].url = f"Erreur API: {e}"
+            return initial_results
 
-        normalized_map = data.get("normalized", [])
-        title_normalization_map = {item["from"]: item["to"] for item in normalized_map}
+        normalized_map, redirect_map, resolved_map = self._build_title_maps(
+            data, titles_to_check
+        )
 
-        redirect_map = {item["from"]: item["to"] for item in data.get("redirects", [])}
+        self._process_api_pages(
+            data, resolved_map, redirect_map, normalized_map,
+            initial_results, exoplanet_context
+        )
 
-        # This map will link the final resolved title (after normalization and redirection) back to the original queried title
-        resolved_to_queried_map: Dict[str, str] = {}
-        for queried_title in titles_to_check:
-            current_title = queried_title
-            # Step 1: Normalization (e.g. "alpha centauri bb" -> "Alpha Centauri Bb")
-            if current_title in title_normalization_map:
-                current_title = title_normalization_map[current_title]
+        return initial_results
 
-            # Step 2: Redirection (e.g. "Proxima b" redirects to "Proxima Centauri b")
-            # The API with 'redirects=1' resolves this, so `page.title` will be the target.
-            # We need to know if a redirect happened for the *original* queried_title.
-            resolved_to_queried_map[current_title] = (
-                queried_title  # map normalized title to original
-            )
-            if (
-                current_title in redirect_map
-            ):  # if normalized title was a redirect source
-                resolved_to_queried_map[redirect_map[current_title]] = (
-                    queried_title  # map redirect target to original
-                )
+    def _initialize_results(self, titles: List[str]) -> Dict[str, WikiArticleInfo]:
+        return {
+            title: WikiArticleInfo(exists=False, title=title, queried_title=title)
+            for title in titles
+        }
 
-        for page_id, page_info in data.get("pages", {}).items():
-            api_title = page_info.get(
-                "title"
-            )  # This is the title returned by the API (could be a redirect target)
+    def _fetch_api_data(self, titles: List[str]) -> Dict[str, Any]:
+        params = {
+            "action": "query",
+            "titles": "|".join(titles),
+            "format": "json",
+            "prop": "info|redirects",
+            "inprop": "url",
+            "redirects": 1,
+            "utf8": 1,
+        }
+        response = self.session.get(self.BASE_URL, params=params, timeout=10)
+        response.raise_for_status()
+        return response.json().get("query", {})
 
-            # Find which original queried_title this page_info corresponds to
-            # This is tricky because the API might return a page_info with a title that was a redirect target.
-            original_queried_title = None
-            if api_title in resolved_to_queried_map:
-                original_queried_title = resolved_to_queried_map[api_title]
-            elif (
-                api_title in titles_to_check
-            ):  # Direct match, no normalization or redirect from API's perspective for this title
-                original_queried_title = api_title
-            else:  # Fallback: try to find based on page_info['title'] being a key in redirect_map's values
+    def _build_title_maps(
+        self,
+        data: Dict[str, Any],
+        queried_titles: List[str]
+    ) -> tuple[Dict[str, str], Dict[str, str], Dict[str, str]]:
+        normalized_map = {i["from"]: i["to"] for i in data.get("normalized", [])}
+        redirect_map = {i["from"]: i["to"] for i in data.get("redirects", [])}
+        resolved_to_queried = {}
+
+        for title in queried_titles:
+            current = normalized_map.get(title, title)
+            resolved_to_queried[current] = title
+            if current in redirect_map:
+                resolved_to_queried[redirect_map[current]] = title
+
+        return normalized_map, redirect_map, resolved_to_queried
+
+    def _process_api_pages(
+        self,
+        data: Dict[str, Any],
+        resolved_to_queried: Dict[str, str],
+        redirect_map: Dict[str, str],
+        normalized_map: Dict[str, str],
+        results: Dict[str, WikiArticleInfo],
+        exoplanet_context: Optional[Dict[str, Dict[str, Any]]],
+    ) -> None:
+        for page_id, page in data.get("pages", {}).items():
+            api_title = page.get("title")
+            original = resolved_to_queried.get(api_title)
+
+            if not original:
                 for r_from, r_to in redirect_map.items():
-                    if r_to == api_title:  # api_title is a redirect target
-                        normalized_r_from = title_normalization_map.get(r_from, r_from)
-                        if normalized_r_from in titles_to_check:
-                            original_queried_title = normalized_r_from
+                    if r_to == api_title:
+                        original = normalized_map.get(r_from, r_from)
+                        if original in results:
                             break
-                        elif (
-                            r_from in titles_to_check
-                        ):  # if the original non-normalized redirect source was queried
-                            original_queried_title = r_from
-                            break
-                if not original_queried_title:
-                    # logger.warning(f"Could not map API title '{api_title}' back to any queried title. Skipping.")
+                if not original:
+                    logger.warning(f"Pas de correspondance trouvée pour {api_title}")
                     continue
 
-            if "missing" in page_info or page_id == "-1":
-                results[original_queried_title] = WikiArticleInfo(
-                    exists=False, title=api_title, queried_title=original_queried_title
+            if "missing" in page or page_id == "-1":
+                results[original] = WikiArticleInfo(
+                    exists=False,
+                    title=api_title,
+                    queried_title=original,
                 )
                 continue
 
-            is_redirect_source = (
-                original_queried_title in redirect_map
-            )  # Was the *original queried title* a redirect?
-            redirect_target = (
-                redirect_map.get(original_queried_title) if is_redirect_source else None
+            is_redirect = original in redirect_map
+            redirect_target = redirect_map.get(original) if is_redirect else None
+            host_star = (
+                exoplanet_context.get(original, {}).get("host_star_name")
+                if exoplanet_context else None
             )
 
-            # Contextual check: if the page found is the host star page, it's not the exoplanet page.
-            # This logic needs the context (host star name for the original_queried_title).
-            host_star_name_for_original_title = None
-            if exoplanet_context and original_queried_title in exoplanet_context:
-                host_star_name_for_original_title = exoplanet_context[
-                    original_queried_title
-                ].get("host_star_name")
+            if host_star and self._normalize_title(api_title) == self._normalize_title(host_star):
+                results[original] = WikiArticleInfo(
+                    exists=False,
+                    title=api_title,
+                    queried_title=original,
+                    is_redirect=is_redirect,
+                    redirect_target=redirect_target,
+                    url=page.get("fullurl"),
+                    host_star=host_star
+                )
+                continue
 
-            if host_star_name_for_original_title:
-                # If the (potentially redirected) title is the host star, then the exoplanet article itself doesn't exist.
-                # The `api_title` is the final title of the page found by MediaWiki.
-                if self.normalize_title(api_title) == self.normalize_title(
-                    host_star_name_for_original_title
-                ):
-                    results[original_queried_title] = WikiArticleInfo(
-                        exists=False,
-                        title=api_title,
-                        queried_title=original_queried_title,
-                        is_redirect=is_redirect_source,  # It might be a redirect TO the host star page
-                        redirect_target=redirect_target,
-                        url=page_info.get("fullurl"),  # URL to the host star page
-                    )
-                    continue  # Skip marking as exists=True
-
-            results[original_queried_title] = WikiArticleInfo(
+            results[original] = WikiArticleInfo(
                 exists=True,
-                title=api_title,  # The actual title of the page found
-                queried_title=original_queried_title,
-                is_redirect=is_redirect_source,
+                title=api_title,
+                queried_title=original,
+                is_redirect=is_redirect,
                 redirect_target=redirect_target,
-                url=page_info.get("fullurl"),
+                url=page.get("fullurl"),
+                host_star=host_star
             )
-
-        return results

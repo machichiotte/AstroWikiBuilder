@@ -1,7 +1,7 @@
 # src/utils/exoplatnet_comparison_utils.py
 
 from src.models.data_source_exoplanet import DataSourceExoplanet
-from src.utils.formatters.article_utils import ArticleUtils
+from src.utils.formatters.article_formatters import ArticleUtils
 
 
 class ExoplanetComparisonUtils:

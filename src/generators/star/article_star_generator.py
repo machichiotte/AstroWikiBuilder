@@ -2,7 +2,7 @@
 import locale
 from src.models.data_source_star import DataSourceStar
 from src.generators.star.star_infobox_generator_v2 import StarInfoboxGenerator
-from src.utils.formatters.article_utils import ArticleUtils
+from src.utils.formatters.article_formatters import ArticleUtils
 from src.services.reference_manager import ReferenceManager
 from src.generators.star.star_category_generator import StarCategoryGenerator
 from src.generators.base_article_generator import BaseArticleGenerator

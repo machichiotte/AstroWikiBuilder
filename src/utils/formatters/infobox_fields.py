@@ -1,4 +1,4 @@
-# src/mappers/infobox_mapper.py
+# src/utils/formatters/infobox_fields.py
 from typing import List, Optional, Callable, Any, Union
 from dataclasses import dataclass
 from enum import Enum

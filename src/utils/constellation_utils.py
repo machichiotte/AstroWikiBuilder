@@ -1,6 +1,6 @@
 # src/utils/constellation_utils.py
 from src.constants.field_mappings import CONSTELLATION_FR
-from src.utils.formatters.article_utils import ArticleUtils
+from src.utils.formatters.article_formatters import ArticleUtils
 
 from astropy.coordinates import SkyCoord
 import astropy.units as u

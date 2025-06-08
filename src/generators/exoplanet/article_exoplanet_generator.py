@@ -4,7 +4,7 @@ import math
 
 from src.models.data_source_exoplanet import DataSourceExoplanet
 
-from src.utils.formatters.article_utils import ArticleUtils
+from src.utils.formatters.article_formatters import ArticleUtils
 from src.utils.constellation_utils import ConstellationUtils
 
 from src.utils.exoplanet_comparison_utils import ExoplanetComparisonUtils

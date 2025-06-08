@@ -2,7 +2,7 @@
 
 from src.generators.base_infobox_generator import InfoboxBaseGenerator
 from src.models.data_source_exoplanet import DataSourceExoplanet
-from src.mappers.infobox_mapper import InfoboxMapper, FieldMapping, FieldType
+from src.utils.formatters.infobox_fields import InfoboxMapper, FieldMapping, FieldType
 from src.constants.field_mappings import FIELD_DEFAULT_UNITS_EXOPLANET, NOTES_FIELDS_EXOPLANET
 
 
