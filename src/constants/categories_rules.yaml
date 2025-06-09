@@ -122,7 +122,7 @@ exoplanet:
 star:
   base: "[[Catégorie:Étoile]]"
   mapped:
-    spectral_type:
+    st_spectral_type:
       'O': "[[Catégorie:Étoile de type spectral O]]"
       'B': "[[Catégorie:Étoile de type spectral B]]"
       'A': "[[Catégorie:Étoile de type spectral A]]"
@@ -140,16 +140,18 @@ star:
       'O0': '[[Catégorie:Étoile de type spectral O0]]' # Exemple
       'O1': '[[Catégorie:Étoile de type spectral O1]]' # Exemple
       'B0': '[[Catégorie:Étoile de type spectral B0]]' # Exemple
-      'B1': '[[Catégorie:Étoile de type spectral B1]]' # Exemple
+      'B1': '[[Catégorie:Étoile de type spectral BI]]' # Exemple
       'A0': '[[Catégorie:Étoile de type spectral A0]]' # Exemple
-      'A1': '[[Catégorie:Étoile de type spectral A1]]' # Exemple
+      'A1': '[[Catégorie:Étoile de type spectral AI]]' # Exemple
       'F0': '[[Catégorie:Étoile de type spectral F0]]' # Exemple
       'G0': '[[Catégorie:Étoile de type spectral G0]]' # Exemple
       'K0': '[[Catégorie:Étoile de type spectral K0]]' # Exemple
       'M0': '[[Catégorie:Étoile de type spectral M0]]' # Exemple
       # Ajout des classifications spécifiques de type spectral avec luminosité (si nécessaire)
       'AI': '[[Catégorie:Étoile de type spectral AI]]'
+      'A1': '[[Catégorie:Étoile de type spectral AI]]'
       'AII': '[[Catégorie:Étoile de type spectral AII]]'
+      'A2': '[[Catégorie:Étoile de type spectral AII]]'
       'AIII': '[[Catégorie:Étoile de type spectral AIII]]'
       'AIV': '[[Catégorie:Étoile de type spectral AIV]]'
       'AV': '[[Catégorie:Étoile de type spectral AV]]'

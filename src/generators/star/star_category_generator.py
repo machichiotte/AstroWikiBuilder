@@ -2,6 +2,17 @@
 from typing import List, Optional
 from src.models.data_source_star import DataSourceStar
 from src.generators.category_generator import CategoryGenerator
+import re
+
+
+def int_to_roman(num):
+    # Limité à 0-9 pour les sous-types spectraux
+    roman_numerals = ['0', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX']
+    try:
+        n = int(float(num))
+        return roman_numerals[n]
+    except Exception:
+        return None
 
 
 class StarCategoryGenerator:
@@ -16,34 +27,58 @@ class StarCategoryGenerator:
         """
         self.generator = CategoryGenerator(rules_filepath)
 
+    def _parse_spectral_type(self, spectral_type: str):
+        """
+        Parse un type spectral complexe (ex: 'K1 V', 'G2V', 'M4.5+/-0.5', 'F8/G0 V', etc.)
+        Retourne (lettre, sous-type, classe de luminosité) ou None si non reconnu.
+        """
+        # Exemples : 'K1 V', 'G2V', 'M4.5+/-0.5', 'F8/G0 V', 'K0III', 'G5 IV/V'
+        match = re.match(r"([OBAFGKMLTY])\s*([0-9.]*)\s*([IV]+)?", spectral_type)
+        if match:
+            letter = match.group(1)
+            subtype = match.group(2) if match.group(2) else None
+            luminosity = match.group(3) if match.group(3) else None
+            return letter, subtype, luminosity
+        return None, None, None
+
+    def _get_spectral_type_category(self, star: DataSourceStar) -> Optional[str]:
+        """
+        Catégorie basée sur la lettre principale du type spectral.
+        """
+        spectral_type_str = star.st_spectral_type.value if star.st_spectral_type else ""
+        letter, subtype, _ = self._parse_spectral_type(spectral_type_str)
+        mapping = self.generator.rules.get("star", {}).get("mapped", {}).get("st_spectral_type", {})
+        if letter:
+            if letter in mapping:
+                return mapping[letter]
+            else:
+                return f"[[Catégorie:Étoile de type spectral {letter}]]"
+        return None
+
+    def _get_spectral_subtype_roman_category(self, star: DataSourceStar) -> Optional[str]:
+        """
+        Catégorie basée sur le sous-type spectral, converti en chiffre romain.
+        """
+        spectral_type_str = star.st_spectral_type.value if star.st_spectral_type else ""
+        letter, subtype, _ = self._parse_spectral_type(spectral_type_str)
+        if letter and subtype:
+            roman = int_to_roman(subtype)
+            if roman:
+                return f"[[Catégorie:Étoile de type spectral {letter}{roman}]]"
+        return None
+
     def _get_luminosity_class_category(self, star: DataSourceStar) -> Optional[str]:
         """
-        Règle personnalisée pour déterminer la catégorie de classe de luminosité.
-        Nécessite une logique pour déduire la classe de luminosité des attributs de l'étoile
-        (ex: du type spectral complet si disponible, ou de la luminosité absolue).
-        Puisque DataSourceStar n'a pas de champ direct 'luminosity_class', cette logique
-        doit être implémentée ici. Pour l'instant, c'est un exemple et nécessiterait
-        une implémentation basée sur les données réelles disponibles pour la détermination
-        de la classe de luminosité (e.g., parsing du spectral_type complet, ou calcul).
+        Catégorie basée sur la classe de luminosité (V, IV, III, etc.)
         """
-        # Exemple: Si spectral_type contient une classe de luminosité (ex: "G2V", "B0Ia")
         spectral_type_str = star.st_spectral_type.value if star.st_spectral_type else ""
-        if 'Iab' in spectral_type_str or 'Ia' in spectral_type_str:
-            return '[[Catégorie:Classe de luminosité Ia]]'
-        elif 'Ib' in spectral_type_str:
-            return '[[Catégorie:Classe de luminosité Ib]]'
-        elif 'II' in spectral_type_str:
-            return '[[Catégorie:Classe de luminosité II]]'
-        elif 'III' in spectral_type_str:
-            return '[[Catégorie:Classe de luminosité III]]'
-        elif 'IV' in spectral_type_str:
-            return '[[Catégorie:Classe de luminosité IV]]'
-        elif 'V' in spectral_type_str: # Séquence principale
-            return '[[Catégorie:Classe de luminosité V]]'
-        elif 'VI' in spectral_type_str: # Sous-naine
-            return '[[Catégorie:Classe de luminosité VI]]'
-        elif 'D' in spectral_type_str: # Naine blanche
-            return '[[Catégorie:Classe de luminosité D]]' # Non dans le YAML précédent, mais commun pour naines blanches
+        _, _, luminosity = self._parse_spectral_type(spectral_type_str)
+        if luminosity:
+            mapping = self.generator.rules.get("star", {}).get("mapped", {}).get("luminosity_class", {})
+            if luminosity in mapping:
+                return mapping[luminosity]
+            else:
+                return f"[[Catégorie:Classe de luminosité {luminosity}]]"
         return None
 
     def _get_star_type_category(self, star: DataSourceStar) -> Optional[str]:
@@ -92,6 +127,8 @@ class StarCategoryGenerator:
         et en ajoutant des règles personnalisées pour les types complexes.
         """
         custom_rules = [
+            self._get_spectral_type_category,
+            self._get_spectral_subtype_roman_category,
             self._get_luminosity_class_category,
             self._get_star_type_category,
             self._get_variable_star_type_category,
