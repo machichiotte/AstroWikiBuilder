@@ -89,7 +89,7 @@ class InfoboxMapper:
             # Découverte
             FieldMapping("discoverers", "découvreurs"),
             FieldMapping("program", "programme"),
-            FieldMapping("method", "méthode"),
+            FieldMapping("discovery_method", "méthode"),
             FieldMapping("discovery_date", "date"),
             FieldMapping("discovery_site", "lieu"),
             FieldMapping("pre_discovery", "prédécouverte"),

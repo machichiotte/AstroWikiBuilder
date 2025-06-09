@@ -99,7 +99,7 @@ class NasaExoplanetArchiveMapper:
         # Découverte
         # "": "discoverers",
         # "": "program",
-        "discoverymethod": "method",
+        "discoverymethod": "discovery_method",
         "disc_year": "discovery_date",
         "disc_facility": "discovery_site",
         # "": "pre_discovery",

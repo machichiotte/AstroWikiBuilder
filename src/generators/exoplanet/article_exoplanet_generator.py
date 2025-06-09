@@ -215,19 +215,17 @@ class ArticleExoplanetGenerator(BaseArticleGenerator):
             mass_value = self.article_utils.format_numeric_value(
                 mass, precision=3 if mass_f is not None and mass_f < 0.1 else (2 if mass_f is not None and mass_f < 1 else 1)
             )
+            
             if mass_f is not None:
                 if mass_f < 0.1:
-                    desc_parts.append(
-                        f"sa masse faible de {mass_value} [[Masse_jovienne|''M''{{{{ind|J}}}}]]"
-                    )
+                    label = "faible"
                 elif mass_f < 1:
-                    desc_parts.append(
-                        f"sa masse modérée de {mass_value} [[Masse_jovienne|''M''{{{{ind|J}}}}]]"
-                    )
+                    label = "modérée"
                 else:
-                    desc_parts.append(
-                        f"sa masse imposante de {mass_value} [[Masse_jovienne|''M''{{{{ind|J}}}}]]"
-                    )
+                    label = "imposante"
+                desc_parts.append(
+                    f"sa masse {label} de {mass_value} [[Masse_jovienne|''M''{{{{ind|J}}}}]]"
+                )
 
         if radius is not None:
             try:
@@ -239,17 +237,13 @@ class ArticleExoplanetGenerator(BaseArticleGenerator):
             )
             if radius_f is not None:
                 if radius_f < 0.5:
-                    desc_parts.append(
-                        f"son rayon compact de {radius_value} [[Rayon_jovien|''R''{{{{ind|J}}}}]]"
-                    )
+                    label = "compact"
                 elif radius_f < 1.5:
-                    desc_parts.append(
-                        f"son rayon de {radius_value} [[Rayon_jovien|''R''{{{{ind|J}}}}]]"
-                    )
+                    label = ""
                 else:
-                    desc_parts.append(
-                        f"son rayon étendu de {radius_value} [[Rayon_jovien|''R''{{{{ind|J}}}}]]"
-                    )
+                    label = "étendu"
+                desc = f"son rayon{' ' + label if label else ''} de {radius_value} [[Rayon_jovien|''R''{{{{ind|J}}}}]]"
+                desc_parts.append(desc)
 
         if (
             temp is not None
@@ -268,11 +262,12 @@ class ArticleExoplanetGenerator(BaseArticleGenerator):
 
             if temp_f is not None:
                 if temp_f < 500:
-                    desc_parts.append(f"sa température de {temp_value} [[Kelvin|K]]")
+                    label = ""
                 elif temp_f < 1000:
-                    desc_parts.append(f"sa température élevée de {temp_value} [[Kelvin|K]]")
+                    label = "élevée "
                 else:
-                    desc_parts.append(f"sa température extrême de {temp_value} [[Kelvin|K]]")
+                    label = "extrême "
+                desc_parts.append(f"sa température {label}de {temp_value} [[Kelvin|K]]")
 
         if desc_parts:
             if len(desc_parts) == 1:

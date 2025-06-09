@@ -1,7 +1,5 @@
-# src/generators/category_generator.py
 import yaml
-from typing import Any, List, Dict
-
+from typing import Any, List, Dict, Optional, Set, Callable
 
 class CategoryGenerator:
     """
@@ -9,48 +7,71 @@ class CategoryGenerator:
     et les données d'un objet (exoplanète, étoile).
     """
 
-    def __init__(self, rules_filepath="src/constants/categories_rules.yaml"):
-        """Charge les règles depuis un fichier YAML."""
+    def __init__(self, rules_filepath: str = "src/constants/categories_rules.yaml"):
         with open(rules_filepath, "r", encoding="utf-8") as f:
-            self.rules = yaml.safe_load(f)
+            self.rules: Dict = yaml.safe_load(f)
 
-    def get_categories(self, data_object: Any) -> List[str]:
+    def _get_value(self, data_object: Any, attribute: str) -> Optional[Any]:
+        """Récupère la valeur d'un attribut, même s'il est dans un objet .value"""
+        if hasattr(data_object, attribute):
+            attr = getattr(data_object, attribute)
+            if hasattr(attr, "value"):
+                return attr.value
+            return attr
+        return None
+
+    def generate(
+        self,
+        data_object: Any,
+        rule_key: str,
+        custom_rules: Optional[List[Callable[[Any], Optional[str]]]] = None,
+    ) -> List[str]:
         """
         Génère une liste de catégories pour l'objet de données fourni.
-
-        Args:
-            data_object: Une instance de classe (ex: Exoplanet) ayant des attributs
-                         correspondant aux clés dans le fichier de règles.
-
-        Returns:
-            Une liste de chaînes de catégories Wikipedia uniques.
         """
-        categories = set()  # Utiliser un set pour éviter les doublons
+        categories: Set[str] = set()
+        config = self.rules.get(rule_key, {})
+        common_config = self.rules.get("common", {})
 
-        # --- Règle 1: Mapped Categories ---
-        if 'mapped' in self.rules:
-            for attribute, mapping in self.rules['mapped'].items():
-                if hasattr(data_object, attribute):
-                    value = getattr(data_object, attribute)
-                    if value:
-                        # Gère les cas comme le type spectral (ex: 'G2V' -> 'G')
-                        # On cherche la correspondance la plus spécifique d'abord
-                        key_to_check = str(value)
-                        if key_to_check in mapping:
-                            categories.add(mapping[key_to_check])
-                        # Sinon, on vérifie avec la première lettre (pour le type spectral)
-                        elif len(key_to_check) > 1 and key_to_check[0] in mapping:
-                            categories.add(mapping[key_to_check[0]])
+        # 1. Catégorie de base
+        if "base" in config:
+            categories.add(config["base"])
 
-        # --- Règle 2: Generated Categories ---
-        if 'generated' in self.rules:
-            for attribute, generator_rule in self.rules['generated'].items():
-                if hasattr(data_object, attribute):
-                    value = getattr(data_object, attribute)
-                    if value:
-                        template = generator_rule['template']
-                        categories.add(template.format(value=value))
+        # 2. Règles de mapping (spécifiques et communes)
+        all_mappings = {**common_config.get("mapped", {}), **config.get("mapped", {})}
+        for attribute, mapping in all_mappings.items():
+            value = self._get_value(data_object, attribute)
+            if value is None:
+                continue
+            
+            value_str = str(value)
+            # Essayer une correspondance exacte
+            if value_str in mapping:
+                categories.add(mapping[value_str])
+                continue
+            
+            # Essayer une correspondance partielle (pour les types spectraux ou instruments)
+            for key, cat in mapping.items():
+                if key in value_str:
+                    categories.add(cat)
+                    break
+        
+        # 3. Règles de génération
+        if "generated" in config:
+            for attribute, rule in config["generated"].items():
+                value = self._get_value(data_object, attribute)
+                if value:
+                    if rule.get("value_extractor") == "year" and hasattr(value, "year"):
+                        value = value.year
+                    
+                    template = rule['template']
+                    categories.add(template.format(value=value))
 
-        # On pourrait ajouter d'autres types de règles ici (ranged, etc.)
-
+        # 4. Règles personnalisées (pour la logique complexe)
+        if custom_rules:
+            for rule_func in custom_rules:
+                category = rule_func(data_object)
+                if category:
+                    categories.add(category)
+        
         return sorted(list(categories))

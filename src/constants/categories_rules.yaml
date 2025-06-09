@@ -1,0 +1,277 @@
+# ===================================================================
+# RÈGLES DE GÉNÉRATION DES CATÉGORIES WIKIPEDIA
+# ===================================================================
+# Ce fichier centralise toutes les règles pour la catégorisation
+# des articles sur les étoiles et les exoplanètes.
+# ===================================================================
+
+# -------------------------------------------------------------------
+# Catégories communes (Étoiles et Exoplanètes)
+# -------------------------------------------------------------------
+common:
+  mapped:
+    constellation:
+      # Nom de la constellation (valeur dans l'objet) -> Catégorie
+      'Andromeda': '[[Catégorie:Constellation d''Andromède]]'
+      'Antlia': '[[Catégorie:Constellation de la Machine pneumatique]]'
+      'Boötes': '[[Catégorie:Constellation du Bouvier]]'
+      'Cancer': '[[Catégorie:Constellation du Cancer]]'
+      'Centaurus': '[[Catégorie:Constellation du Centaure]]'
+      'Capricornus': '[[Catégorie:Constellation du Capricorne]]'
+      'Corvus': '[[Catégorie:Constellation du Corbeau]]'
+      'Corona Borealis': '[[Catégorie:Constellation de la Couronne boréale]]'
+      'Cygnus': '[[Catégorie:Constellation du Cygne]]'
+      'Dorado': '[[Catégorie:Constellation de la Dorade]]'
+      'Draco': '[[Catégorie:Constellation du Dragon]]'
+      'Eridanus': '[[Catégorie:Constellation de l''Éridan]]'
+      'Fornax': '[[Catégorie:Constellation du Fourneau]]'
+      'Gemini': '[[Catégorie:Constellation des Gémeaux]]'
+      'Hydra': '[[Catégorie:Constellation de l''Hydre]]'
+      'Leo': '[[Catégorie:Constellation du Lion]]'
+      'Libra': '[[Catégorie:Constellation de la Balance]]'
+      'Lupus': '[[Catégorie:Constellation du Loup]]'
+      'Ophiuchus': '[[Catégorie:Constellation du Serpentaire]]'
+      'Orion': '[[Catégorie:Constellation d''Orion]]'
+      'Pegasus': '[[Catégorie:Constellation de Pégase]]'
+      'Pisces': '[[Catégorie:Constellation des Poissons]]'
+      'Sagittarius': '[[Catégorie:Constellation du Sagittaire]]'
+      'Scorpius': '[[Catégorie:Constellation du Scorpion]]'
+      'Sculptor': '[[Catégorie:Constellation du Sculpteur]]'
+      'Taurus': '[[Catégorie:Constellation du Taureau]]'
+      'Ursa Major': '[[Catégorie:Constellation de la Grande Ourse]]'
+      'Ursa Minor': '[[Catégorie:Constellation de la Petite Ourse]]'
+      'Virgo': '[[Catégorie:Constellation de la Vierge]]'
+      'Aquarius': '[[Catégorie:Constellation du Verseau]]'
+
+# -------------------------------------------------------------------
+# Catégories spécifiques aux Exoplanètes
+# -------------------------------------------------------------------
+exoplanet:
+  base: "[[Catégorie:Exoplanète]]"
+  mapped:
+    discovery_method:
+      'Radial Velocity': '[[Catégorie:Exoplanète découverte par la méthode des vitesses radiales]]'
+      'Transit': '[[Catégorie:Exoplanète découverte par la méthode des transits]]'
+      'Microlensing': '[[Catégorie:Exoplanète découverte par microlentille gravitationnelle]]'
+      'Imaging': "[[Catégorie:Exoplanète découverte par imagerie directe]]"
+      'Pulsar Timing': '[[Catégorie:Exoplanète découverte par chronométrie de pulsar]]'
+      'Transit Timing Variations': '[[Catégorie:Exoplanète découverte par la méthode de la variation du temps de transit (TTV)]]'
+      'Astrometry': "[[Catégorie:Exoplanète découverte par la méthode de l'astrométrie]]"
+      'Orbital Brightness Modulation': "[[Catégorie:Exoplanète découverte par la méthode du décalage des minima]]"
+
+    discovered_by:
+      'Kepler': '[[Catégorie:Exoplanète découverte grâce à Kepler]]'
+      'Transiting Exoplanet Survey Satellite': '[[Catégorie:Exoplanète découverte grâce au Transiting Exoplanet Survey Satellite]]'
+      'TESS': '[[Catégorie:Exoplanète découverte grâce au Transiting Exoplanet Survey Satellite]]'
+      'CoRoT': '[[Catégorie:Exoplanète découverte grâce au télescope spatial CoRoT]]'
+      'Very Large Telescope': '[[Catégorie:Exoplanète découverte grâce au Very Large Telescope (VLT)]]'
+      'Paranal Observatory': '[[Catégorie:Exoplanète découverte grâce au Very Large Telescope (VLT)]]'
+      'VLT': '[[Catégorie:Exoplanète découverte grâce au Very Large Telescope (VLT)]]'
+      'Hubble Space Telescope': '[[Catégorie:Exoplanète découverte grâce au télescope spatial Hubble]]'
+      'HST': '[[Catégorie:Exoplanète découverte grâce au télescope spatial Hubble]]'
+      'HARPS': '[[Catégorie:Exoplanète découverte grâce à HARPS]]'
+      'La Silla Observatory': '[[Catégorie:Exoplanète découverte grâce à HARPS]]'
+      'James Webb Space Telescope': '[[Catégorie:Exoplanète découverte grâce au télescope spatial James Webb]]'
+      'JWST': '[[Catégorie:Exoplanète découverte grâce au télescope spatial James Webb]]'
+      'Spitzer Space Telescope': '[[Catégorie:Exoplanète découverte grâce au télescope spatial Spitzer]]'
+      'Spitzer': '[[Catégorie:Exoplanète découverte grâce au télescope spatial Spitzer]]'
+      'Gaia': '[[Catégorie:Exoplanète découverte grâce au télescope spatial Gaia]]'
+      'W. M. Keck Observatory': '[[Catégorie:Exoplanète découverte grâce au W. M. Keck Observatory]]'
+      'Keck': '[[Catégorie:Exoplanète découverte grâce au W. M. Keck Observatory]]'
+      'Gemini Observatory': '[[Catégorie:Exoplanète découverte grâce au Gemini Observatory]]'
+      'CHEOPS': '[[Catégorie:Exoplanète découverte grâce au télescope spatial CHEOPS]]'
+    
+    planet_type:
+      'Chthonian planet': '[[Catégorie:Planète chthonienne]]'
+      'Circumbinary planet': '[[Catégorie:Planète circumbinaire]]'
+      'Gas giant': '[[Catégorie:Planète géante gazeuse]]'
+      'Hot Jupiter': '[[Catégorie:Jupiter chaud]]'
+      'Ultra-hot Jupiter': '[[Catégorie:Jupiter ultra-chaud]]'
+      'Hot Saturn': '[[Catégorie:Saturne chaud]]'
+      'Cold Jupiter': '[[Catégorie:Jupiter froid]]'
+      'Eccentric Jupiter': '[[Catégorie:Jupiter excentrique]]'
+      'Warm Jupiter': '[[Catégorie:Jupiter tiède]]'
+      'Mega-Earth': '[[Catégorie:Méga-Terre]]'
+      'Hot Neptune': '[[Catégorie:Neptune chaud]]'
+      'Cold Neptune': '[[Catégorie:Neptune froid]]'
+      'Warm Neptune': '[[Catégorie:Neptune tiède]]'
+      'Ultra-short period planet': '[[Catégorie:Planète à période de révolution ultra-courte]]'
+      'Lava planet': '[[Catégorie:Planète de lave]]'
+      'White dwarf planet': '[[Catégorie:Planète de naine blanche]]'
+      'Ocean planet': '[[Catégorie:Planète-océan]]'
+      'Pulsar planet': '[[Catégorie:Planète de pulsar]]'
+      'Super-Jupiter': '[[Catégorie:Super-Jupiter]]'
+      'Super-Neptune': '[[Catégorie:Super-Neptune]]'
+      'Super-Earth': '[[Catégorie:Super-Terre]]'
+      'Terrestrial planet': '[[Catégorie:Planète tellurique]]'
+      'Habitable zone terrestrial planet': '[[Catégorie:Planète tellurique orbitant en zone habitable]]'
+      'Hypothetical exoplanet': '[[Catégorie:Exoplanète hypothétique]]'
+      'Extragalactic planet': '[[Catégorie:Planète extragalactique]]'
+      'Planet orbiting M-type star': '[[Catégorie:Exoplanète orbitant une étoile de type M]]'
+      'Refuted exoplanet': '[[Catégorie:Exoplanète dont l''existence a été réfutée]]'
+      'Free-floating planet': '[[Catégorie:Objet libre de masse planétaire]]'
+
+  generated:
+    discovery_date:
+      template: "[[Catégorie:Exoplanète découverte en {value}]]"
+      value_extractor: "year" # Indique qu'il faut extraire l'année d'une date
+
+# -------------------------------------------------------------------
+# Catégories spécifiques aux Étoiles
+# -------------------------------------------------------------------
+star:
+  base: "[[Catégorie:Étoile]]"
+  mapped:
+    spectral_type:
+      'O': "[[Catégorie:Étoile de type spectral O]]"
+      'B': "[[Catégorie:Étoile de type spectral B]]"
+      'A': "[[Catégorie:Étoile de type spectral A]]"
+      'F': "[[Catégorie:Étoile de type spectral F]]"
+      'G': "[[Catégorie:Étoile de type spectral G]]"
+      'K': "[[Catégorie:Étoile de type spectral K]]"
+      'M': "[[Catégorie:Étoile de type spectral M]]"
+      'C': "[[Catégorie:Étoile de type spectral C]]"
+      'S': "[[Catégorie:Étoile de type spectral S]]"
+      'L': "[[Catégorie:Objet de type spectral L]]"
+      'T': "[[Catégorie:Objet de type spectral T]]"
+      'Y': "[[Catégorie:Objet de type spectral Y]]"
+      # Les sous-types peuvent être gérés avec une logique plus complexe si nécessaire,
+      # ou mappés individuellement si la liste est finie.
+      'O0': '[[Catégorie:Étoile de type spectral O0]]' # Exemple
+      'O1': '[[Catégorie:Étoile de type spectral O1]]' # Exemple
+      'B0': '[[Catégorie:Étoile de type spectral B0]]' # Exemple
+      'B1': '[[Catégorie:Étoile de type spectral B1]]' # Exemple
+      'A0': '[[Catégorie:Étoile de type spectral A0]]' # Exemple
+      'A1': '[[Catégorie:Étoile de type spectral A1]]' # Exemple
+      'F0': '[[Catégorie:Étoile de type spectral F0]]' # Exemple
+      'G0': '[[Catégorie:Étoile de type spectral G0]]' # Exemple
+      'K0': '[[Catégorie:Étoile de type spectral K0]]' # Exemple
+      'M0': '[[Catégorie:Étoile de type spectral M0]]' # Exemple
+      # Ajout des classifications spécifiques de type spectral avec luminosité (si nécessaire)
+      'AI': '[[Catégorie:Étoile de type spectral AI]]'
+      'AII': '[[Catégorie:Étoile de type spectral AII]]'
+      'AIII': '[[Catégorie:Étoile de type spectral AIII]]'
+      'AIV': '[[Catégorie:Étoile de type spectral AIV]]'
+      'AV': '[[Catégorie:Étoile de type spectral AV]]'
+      'BI': '[[Catégorie:Étoile de type spectral BI]]'
+      'BII': '[[Catégorie:Étoile de type spectral BII]]'
+      'BIII': '[[Catégorie:Étoile de type spectral BIII]]'
+      'BIV': '[[Catégorie:Étoile de type spectral BIV]]'
+      'BV': '[[Catégorie:Étoile de type spectral BV]]'
+      'BVI': '[[Catégorie:Étoile de type spectral BVI]]'
+      'FI': '[[Catégorie:Étoile de type spectral FI]]'
+      'FII': '[[Catégorie:Étoile de type spectral FII]]'
+      'FIII': '[[Catégorie:Étoile de type spectral FIII]]'
+      'FIV': '[[Catégorie:Étoile de type spectral FIV]]'
+      'FV': '[[Catégorie:Étoile de type spectral FV]]'
+      'GI': '[[Catégorie:Étoile de type spectral GI]]'
+      'GII': '[[Catégorie:Étoile de type spectral GII]]'
+      'GIII': '[[Catégorie:Étoile de type spectral GIII]]'
+      'GIV': '[[Catégorie:Étoile de type spectral GIV]]'
+      'GV': '[[Catégorie:Étoile de type spectral GV]]'
+      'GVI': '[[Catégorie:Étoile de type spectral GVI]]'
+      'KI': '[[Catégorie:Étoile de type spectral KI]]'
+      'KII': '[[Catégorie:Étoile de type spectral KII]]'
+      'KIII': '[[Catégorie:Étoile de type spectral KIII]]'
+      'KIV': '[[Catégorie:Étoile de type spectral KIV]]'
+      'KV': '[[Catégorie:Étoile de type spectral KV]]'
+      'KVI': '[[Catégorie:Étoile de type spectral KVI]]'
+      'OI': '[[Catégorie:Étoile de type spectral OI]]'
+      'OII': '[[Catégorie:Étoile de type spectral OII]]'
+      'OIII': '[[Catégorie:Étoile de type spectral OIII]]'
+      'OIV': '[[Catégorie:Étoile de type spectral OIV]]'
+      'OV': '[[Catégorie:Étoile de type spectral OV]]'
+      'OVI': '[[Catégorie:Étoile de type spectral OVI]]'
+
+    luminosity_class:
+      '0': '[[Catégorie:Classe de luminosité 0]]'
+      'I': '[[Catégorie:Classe de luminosité I]]'
+      'II': '[[Catégorie:Classe de luminosité II]]'
+      'III': '[[Catégorie:Classe de luminosité III]]'
+      'IV': '[[Catégorie:Classe de luminosité IV]]'
+      'V': '[[Catégorie:Classe de luminosité V]]'
+      'VI': '[[Catégorie:Classe de luminosité VI]]'
+    
+    star_type: # Types d'étoiles généraux et spécifiques
+      'White Dwarf': '[[Catégorie:Naine blanche]]'
+      'Pre-White Dwarf': '[[Catégorie:Pré-naine blanche]]'
+      'Chemically Peculiar Star': '[[Catégorie:Étoile chimiquement particulière]]'
+      'Am Star': '[[Catégorie:Étoile Am]]'
+      'Ap and Bp Stars': '[[Catégorie:Étoiles Ap et Bp]]'
+      'Barium Star': '[[Catégorie:Étoile à baryum]]'
+      'Lambda Bootis type star': '[[Catégorie:Étoile de type Lambda Bootis]]'
+      'Mercury-Manganese Star': '[[Catégorie:Étoile à mercure et manganèse]]'
+      'Brown Dwarf': '[[Catégorie:Naine brune]]'
+      'L-type Object': '[[Catégorie:Objet de type spectral L]]' # Répété pour clarté si Brown Dwarf est un type plus générique
+      'M-type Brown Dwarf': '[[Catégorie:Naine brune de type spectral M]]'
+      'T-type Object': '[[Catégorie:Objet de type spectral T]]' # Répété
+      'Y-type Object': '[[Catégorie:Objet de type spectral Y]]' # Répété
+      'Neutron Star': '[[Catégorie:Étoile à neutrons]]'
+      'Neutron Star Merger': '[[Catégorie:Fusion d''étoiles à neutrons]]'
+      'Pulsar': '[[Catégorie:Pulsar]]'
+      'Binary Pulsar': '[[Catégorie:Pulsar binaire]]'
+      'Double Pulsar': '[[Catégorie:Pulsar double]]'
+      'Gamma Pulsar': '[[Catégorie:Pulsar gamma]]'
+      'Soft Gamma Repeater': '[[Catégorie:Sursauteur gamma mou]]'
+      'Millisecond Pulsar': '[[Catégorie:Pulsar milliseconde]]'
+      'X-ray Pulsar': '[[Catégorie:Pulsar X]]'
+      'Anomalous X-ray Pulsar': '[[Catégorie:Pulsar X anormal]]'
+      'Population Star': '[[Catégorie:Population stellaire]]'
+      'First-magnitude Star': '[[Catégorie:Étoile de première magnitude]]'
+      'Protostar': '[[Catégorie:Proto-étoile]]'
+      'Extended Green Object': '[[Catégorie:Extended Green Object]]'
+      'Quark Star': '[[Catégorie:Étoile à quarks]]'
+      'Wolf-Rayet Star': '[[Catégorie:Étoile Wolf-Rayet]]'
+      'Pulsating White Dwarf': '[[Catégorie:Naine blanche à pulsations]]'
+      'Extremely Low Mass Pre-White Dwarf': '[[Catégorie:Pré-naine blanche à masse extrêmement faible]]'
+      
+    variable_star_type: # Types d'étoiles variables plus détaillés
+      'Alpha Cygni variable': '[[Catégorie:Étoile variable de type Alpha Cygni]]'
+      'Alpha2 Canum Venaticorum variable': '[[Catégorie:Étoile variable de type Alpha2 Canum Venaticorum]]'
+      'Beta Cephei variable': '[[Catégorie:Étoile variable de type Beta Cephei]]'
+      'BL Herculis variable': '[[Catégorie:Étoile variable de type BL Herculis]]'
+      'BY Draconis variable': '[[Catégorie:Étoile variable de type BY Draconis]]'
+      'Delta Scuti variable': '[[Catégorie:Étoile variable de type Delta Scuti]]'
+      'FK Comae Berenices variable': '[[Catégorie:Étoile variable de type FK Comae Berenices]]'
+      'FS Canis Majoris variable': '[[Catégorie:Étoile variable de type FS Canis Majoris]]'
+      'Gamma Cassiopeiae variable': '[[Catégorie:Étoile variable de type Gamma Cassiopeiae]]'
+      'Gamma Doradus variable': '[[Catégorie:Étoile variable de type Gamma Doradus]]'
+      'Lambda Eridani variable': '[[Catégorie:Étoile variable de type Lambda Eridani]]'
+      'Mira variable': '[[Catégorie:Étoile variable de type Mira]]'
+      'PV Telescopii variable': '[[Catégorie:Étoile variable de type PV Telescopii]]'
+      'R Coronae Borealis variable': '[[Catégorie:Étoile variable de type R Coronae Borealis]]'
+      'RR Lyrae variable': '[[Catégorie:Étoile variable de type RR Lyrae]]'
+      'RS Canum Venaticorum variable': '[[Catégorie:Étoile variable de type RS Canum Venaticorum]]'
+      'RV Tauri variable': '[[Catégorie:Étoile variable de type RV Tauri]]'
+      'Slowly pulsating B-type star': '[[Catégorie:Étoile de type B à pulsation lente]]'
+      'SX Arietis variable': '[[Catégorie:Étoile variable de type SX Arietis]]'
+      'SX Phoenicis variable': '[[Catégorie:Étoile variable de type SX Phoenicis]]'
+      'W Virginis variable': '[[Catégorie:Étoile variable de type W Virginis]]'
+      'Cataclysmic variable': '[[Catégorie:Variable cataclysmique]]'
+      'AM Canum Venaticorum variable': '[[Catégorie:Étoile variable de type AM Canum Venaticorum]]'
+      'Nova': '[[Catégorie:Nova]]'
+      'Dwarf Nova': '[[Catégorie:Nova naine]]'
+      'Recurrent Nova': '[[Catégorie:Nova récurrente]]'
+      'Cepheid': '[[Catégorie:Céphéide]]'
+      'Classical Cepheid': '[[Catégorie:Céphéide classique]]'
+      'Ellipsoidal variable': '[[Catégorie:Étoile variable ellipsoïdale]]'
+      'Flare star': '[[Catégorie:Étoile éruptive]]'
+      'Heartbeat star': '[[Catégorie:Étoile à battements de cœur]]'
+      'Eclipsing binary': '[[Catégorie:Étoile binaire à éclipses]]'
+      'Algol variable': '[[Catégorie:Étoile variable de type Algol]]'
+      'Beta Lyrae variable': '[[Catégorie:Étoile variable de type Beta Lyrae]]'
+      'W Ursae Majoris variable': '[[Catégorie:Étoile variable de type W Ursae Majoris]]'
+      'Irregular variable': '[[Catégorie:Étoile variable irrégulière]]'
+      'Luminous blue variable': '[[Catégorie:Variable lumineuse bleue]]'
+      'Semi-regular variable': '[[Catégorie:Étoile variable semi-régulière]]'
+      'Symbiotic star': '[[Catégorie:Étoile symbiotique]]'
+      'Z Andromedae type variable': '[[Catégorie:Étoile variable de type Z Andromedae]]'
+      'Planetary transit variable star': '[[Catégorie:Étoile variable à transits planétaires]]'
+      'Be Star': '[[Catégorie:Étoile Be]]'
+      'Bp Star': '[[Catégorie:Étoile Bp]]'
+
+
+  generated:
+    discovery_year: # Ajout pour les étoiles si cette donnée est pertinente.
+      template: "[[Catégorie:Étoile découverte en {value}]]"
+      value_extractor: "year"
