@@ -21,18 +21,18 @@ class StarInfoboxGenerator(InfoboxBaseGenerator):
 
     def handle_special_field(self, star: DataSourceStar, mapping: FieldMapping) -> str:
         if mapping.field_type == FieldType.CONSTELLATION:
-            if not (star.right_ascension and star.declination):
+            if not (star.st_right_ascension and star.st_declination):
                 return ""
             constellation = self.constellation_utils.get_constellation_UAI(
-                star.right_ascension.value, star.declination.value
+                star.st_right_ascension.value, star.st_declination.value
             )
             return f"| constellation = {constellation}"
 
         elif mapping.field_type == FieldType.CARTE_UAI:
-            if not (star.right_ascension and star.declination):
+            if not (star.st_right_ascension and star.st_declination):
                 return ""
             carte_uai = self.constellation_utils.get_constellation_name(
-                star.right_ascension.value, star.declination.value
+                star.st_right_ascension.value, star.st_declination.value
             )
             return f"| carte UAI = {carte_uai}"
 

@@ -21,18 +21,18 @@ class ExoplanetInfoboxGenerator(InfoboxBaseGenerator):
 
     def handle_special_field(self, exoplanet: DataSourceExoplanet, mapping: FieldMapping) -> str:
         if mapping.field_type == FieldType.CONSTELLATION:
-            if not (exoplanet.right_ascension and exoplanet.declination):
+            if not (exoplanet.st_right_ascension and exoplanet.st_declination):
                 return ""
             constellation = self.constellation_utils.get_constellation_UAI(
-                exoplanet.right_ascension.value, exoplanet.declination.value
+                exoplanet.st_right_ascension.value, exoplanet.st_declination.value
             )
             return f"| constellation = {constellation}"
 
         elif mapping.field_type == FieldType.CARTE_UAI:
-            if not (exoplanet.right_ascension and exoplanet.declination):
+            if not (exoplanet.st_right_ascension and exoplanet.st_declination):
                 return ""
             carte_uai = self.constellation_utils.get_constellation_name(
-                exoplanet.right_ascension.value, exoplanet.declination.value
+                exoplanet.st_right_ascension.value, exoplanet.st_declination.value
             )
             return f"| carte UAI = {carte_uai}"
 

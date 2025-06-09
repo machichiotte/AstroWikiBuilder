@@ -109,8 +109,8 @@ class ArticleExoplanetGenerator(BaseArticleGenerator):
         """
         orbital_comparison = self.comparison_utils.get_orbital_comparison(exoplanet)
         semi_major_axis_str = self.article_utils.format_datapoint(
-            exoplanet.semi_major_axis,
-            exoplanet.name,
+            exoplanet.pl_semi_major_axis,
+            exoplanet.pl_name,
             self.reference_manager.template_refs,
             self.reference_manager.add_reference,
         )
@@ -130,7 +130,7 @@ class ArticleExoplanetGenerator(BaseArticleGenerator):
             semi_major_axis_val = 0.0
 
         # Determine whether to use singular or plural for "unité astronomique"
-        if exoplanet.semi_major_axis is not None and semi_major_axis_val <= 2:
+        if exoplanet.pl_semi_major_axis is not None and semi_major_axis_val <= 2:
             unit_text = "[[unité astronomique|unité astronomique]]"
         else:
             unit_text = "[[unité astronomique|unités astronomiques]]"
@@ -143,7 +143,7 @@ class ArticleExoplanetGenerator(BaseArticleGenerator):
 
     def _generate_discovery_section(self, exoplanet: DataSourceExoplanet) -> str:
         """Génère la section de découverte."""
-        if not exoplanet.discovery_date:
+        if not exoplanet.disc_year:
             return ""
 
         section = "== Découverte ==\n"
@@ -164,22 +164,22 @@ class ArticleExoplanetGenerator(BaseArticleGenerator):
             "Transit Timing Variations": "des variations temporelles de transit",
         }
 
-        method_raw = exoplanet.discovery_method.value if exoplanet.discovery_method else ""
-        discovery_method = method_translations.get(method_raw, None)
+        method_raw = exoplanet.disc_method.value if exoplanet.disc_method else ""
+        disc_method = method_translations.get(method_raw, None)
 
         # Gestion robuste de la date
         date_value = (
-            exoplanet.discovery_date.value
-            if hasattr(exoplanet.discovery_date, "value")
-            else exoplanet.discovery_date
+            exoplanet.disc_year.value
+            if hasattr(exoplanet.disc_year, "value")
+            else exoplanet.disc_year
         )
         if hasattr(date_value, "year"):
             date_str = f"en {self.article_utils.format_year_value(date_value.year)}"
         else:
             date_str = f"en {str(self.article_utils.format_year_value(date_value))}"
 
-        if discovery_method:
-            section += f"L'exoplanète a été découverte par la méthode {discovery_method} {date_str}.\n"
+        if disc_method:
+            section += f"L'exoplanète a été découverte par la méthode {disc_method} {date_str}.\n"
         else:
             section += f"L'exoplanète a été découverte {date_str}.\n"
 
@@ -195,9 +195,9 @@ class ArticleExoplanetGenerator(BaseArticleGenerator):
                 return value
             return None
 
-        mass = get_value_or_none_if_nan(exoplanet.mass)
-        radius = get_value_or_none_if_nan(exoplanet.radius)
-        temp = get_value_or_none_if_nan(exoplanet.temperature)
+        mass = get_value_or_none_if_nan(exoplanet.pl_mass)
+        radius = get_value_or_none_if_nan(exoplanet.pl_radius)
+        temp = get_value_or_none_if_nan(exoplanet.pl_temperature)
 
         if not any([mass is not None, radius is not None, temp is not None]):
             return ""

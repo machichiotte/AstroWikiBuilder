@@ -81,13 +81,13 @@ class ExoplanetTypeUtils:
         self, m: float, p: DataSourceExoplanet, insolation: Optional[float]
     ) -> str:
         t = (
-            float(p.temperature.value)
-            if p.temperature and p.temperature.value
+            float(p.pl_temperature.value)
+            if p.pl_temperature and p.pl_temperature.value
             else None
         )
         a = (
-            float(p.semi_major_axis.value)
-            if p.semi_major_axis and p.semi_major_axis.value
+            float(p.pl_semi_major_axis.value)
+            if p.pl_semi_major_axis and p.pl_semi_major_axis.value
             else None
         )
 
@@ -131,22 +131,22 @@ class ExoplanetTypeUtils:
         return "Méga-Terre"
 
     def _mass_in_earth(self, p: DataSourceExoplanet) -> Optional[float]:
-        if not p.mass or p.mass.value is None:
+        if not p.pl_mass or p.pl_mass.value is None:
             return None
         try:
-            value = float(p.mass.value)
+            value = float(p.pl_mass.value)
         except (TypeError, ValueError):
             return None
-        return value * (self.JUPITER_MASS if p.mass.unit == "M_J" else 1)
+        return value * (self.JUPITER_MASS if p.pl_mass.unit == "M_J" else 1)
 
     def _radius_in_earth(self, p: DataSourceExoplanet) -> Optional[float]:
-        if not p.radius or p.radius.value is None:
+        if not p.pl_radius or p.pl_radius.value is None:
             return None
         try:
-            value = float(p.radius.value)
+            value = float(p.pl_radius.value)
         except (TypeError, ValueError):
             return None
-        return value * (11.2 if p.radius.unit == "R_J" else 1)
+        return value * (11.2 if p.pl_radius.unit == "R_J" else 1)
 
     def _density(self, p: DataSourceExoplanet) -> Optional[float]:
         m = self._mass_in_earth(p)
@@ -159,15 +159,15 @@ class ExoplanetTypeUtils:
 
     def _stellar_insolation(self, p: DataSourceExoplanet) -> Optional[float]:
         if (
-            not p.host_star
-            or p.host_star.value is None
-            or not p.semi_major_axis
-            or p.semi_major_axis.value is None
+            not p.st_name
+            or p.st_name.value is None
+            or not p.pl_semi_major_axis
+            or p.pl_semi_major_axis.value is None
         ):
             return None
         try:
-            L = float(p.host_star.value)
-            a = float(p.semi_major_axis.value)
+            L = float(p.st_name.value)
+            a = float(p.pl_semi_major_axis.value)
         except (TypeError, ValueError):
             return None
         if a <= 0:

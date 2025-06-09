@@ -45,12 +45,12 @@ class OpenExoplanetCollector(BaseExoplanetCollector):  # MODIFIÉ
                 return None
 
             exoplanet = DataSourceExoplanet(
-                name=str(row["name"]).strip(),
-                host_star=DataPoint(str(row["star_name"]).strip(), ref),
-                discovery_method=DataPoint(str(row["discovery_method"]).strip(), ref)
-                if pd.notna(row["discovery_method"])
+                pl_name=str(row["name"]).strip(),
+                st_name=DataPoint(str(row["star_name"]).strip(), ref),
+                disc_method=DataPoint(str(row["disc_method"]).strip(), ref)
+                if pd.notna(row["disc_method"])
                 else None,
-                discovery_date=DataPoint(str(row["discovery_year"]).strip(), ref)
+                disc_year=DataPoint(str(row["discovery_year"]).strip(), ref)
                 if pd.notna(row["discovery_year"])
                 else None,
             )
@@ -111,8 +111,8 @@ class OpenExoplanetCollector(BaseExoplanetCollector):  # MODIFIÉ
                 names = str(row["alt_names"]).split(",")
                 for name in names:
                     name = name.strip()
-                    if name and name != exoplanet.name:
-                        exoplanet.other_names.append(name)
+                    if name and name != exoplanet.pl_name:
+                        exoplanet.pl_altname.append(name)
 
             return exoplanet
 

@@ -27,7 +27,7 @@ class StarCategoryGenerator:
         de la classe de luminosité (e.g., parsing du spectral_type complet, ou calcul).
         """
         # Exemple: Si spectral_type contient une classe de luminosité (ex: "G2V", "B0Ia")
-        spectral_type_str = star.spectral_type.value if star.spectral_type else ""
+        spectral_type_str = star.st_spectral_type.value if star.st_spectral_type else ""
         if 'Iab' in spectral_type_str or 'Ia' in spectral_type_str:
             return '[[Catégorie:Classe de luminosité Ia]]'
         elif 'Ib' in spectral_type_str:
@@ -53,9 +53,9 @@ class StarCategoryGenerator:
         Cette logique dépendra des attributs disponibles dans DataSourceStar pour classifier l'étoile.
         Exemple rudimentaire basé sur le type spectral ou d'autres attributs comme la masse/rayon si disponibles.
         """
-        spectral_type_str = star.spectral_type.value if star.spectral_type else ""
-        mass_value = star.mass.value if star.mass else None
-        radius_value = star.radius.value if star.radius else None
+        spectral_type_str = star.st_spectral_type.value if star.st_spectral_type else ""
+        mass_value = star.st_mass.value if star.st_mass else None
+        radius_value = star.st_radius.value if star.st_radius else None
 
         if 'D' in spectral_type_str: # Souvent pour les naines blanches
             return '[[Catégorie:Naine blanche]]'

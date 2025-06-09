@@ -54,7 +54,7 @@ FIELD_DEFAULT_UNITS_EXOPLANET: dict[str, str] = {
     "rotation period": "h",        # Heures (si connue)
     "density": "g/cm³",            # g/cm³ selon les conventions fr
     "gravity": "m/s²",             # m/s²
-    "argument of periastron": "°", # Degrés
+    "argument of periastron": "°",  # Degrés
 }
 
 # Champs pour lesquels un lien direct vers un article Wikipédia doit être généré
@@ -77,29 +77,29 @@ METHOD_NAME_MAPPING: dict[str, str] = {
     },
     "imaging": {
         "display": "Imagerie directe",
-        "article": "Imagerie directe des exoplanètes",  # ou "Imagerie directe" si plus générique
+        "article": "Imagerie directe des exoplanètes",
     },
     "microlensing": {
         "display": "Microlentille gravitationnelle",
         "article": "Microlentille gravitationnelle",
     },
-    "gravitational microlensing": {  # Au cas où la source utiliserait ce terme plus long
+    "gravitational microlensing": {
         "display": "Microlentille gravitationnelle",
         "article": "Microlentille gravitationnelle",
     },
-    "timing": {  # Terme générique, peut nécessiter plus de spécificité
+    "timing": {
         "display": "Variations de chronométrage",
-        "article": "Chronométrage (astronomie)",  # Exemple, à vérifier pour la pertinence
+        "article": "Chronométrage (astronomie)",
     },
     "pulsar timing": {
         "display": "Chronométrage de pulsar",
-        "article": "Détection des exoplanètes par chronométrage de pulsar",  # Titre d'article possible
+        "article": "Détection des exoplanètes par chronométrage de pulsar",
     },
     "transit timing variations": {
         "display": "Variation du moment de transit",
-        "article": "Variation du moment de transit",  # TTV
+        "article": "Variation du moment de transit",
     },
-    "ttv": {  # Acronyme commun pour Transit Timing Variations
+    "ttv": {
         "display": "Variation du moment de transit",
         "article": "Variation du moment de transit",
     },
@@ -328,6 +328,3 @@ SPECTRAL_TYPE_LINKS: dict[str, str] = {
     "T": "https://fr.wikipedia.org/wiki/Naine_brune_T",
     "Y": "https://fr.wikipedia.org/wiki/Naine_brune_Y",
 }
-
-
-

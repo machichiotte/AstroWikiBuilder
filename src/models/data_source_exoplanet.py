@@ -7,52 +7,52 @@ from .reference import DataPoint
 @dataclass
 class DataSourceExoplanet:
     # Identifiants
-    name: Optional[DataPoint] = None
-    other_names: Optional[List[str]] = field(default_factory=list)
+    pl_name: Optional[DataPoint] = None
+    pl_altname: Optional[List[str]] = field(default_factory=list)
 
     # Étoile hôte
-    host_star: Optional[DataPoint] = None
-    star_epoch: Optional[DataPoint] = None
-    right_ascension: Optional[DataPoint] = None
-    declination: Optional[DataPoint] = None
-    distance: Optional[DataPoint] = None
-    constellation: Optional[DataPoint] = None
-    spectral_type: Optional[DataPoint] = None
-    apparent_magnitude: Optional[DataPoint] = None
+    st_name: Optional[DataPoint] = None
+    st_epoch: Optional[DataPoint] = None
+    st_right_ascension: Optional[DataPoint] = None
+    st_declination: Optional[DataPoint] = None
+    st_distance: Optional[DataPoint] = None
+    st_constellation: Optional[DataPoint] = None
+    st_spectral_type: Optional[DataPoint] = None
+    st_apparent_magnitude: Optional[DataPoint] = None
 
     # Caractéristiques orbitales
-    semi_major_axis: Optional[DataPoint] = None
-    periastron: Optional[DataPoint] = None
-    apoastron: Optional[DataPoint] = None
-    eccentricity: Optional[DataPoint] = None
-    orbital_period: Optional[DataPoint] = None
-    angular_distance: Optional[DataPoint] = None
-    periastron_time: Optional[DataPoint] = None
-    inclination: Optional[DataPoint] = None
-    argument_of_periastron: Optional[DataPoint] = None
-    epoch: Optional[DataPoint] = None
+    pl_semi_major_axis: Optional[DataPoint] = None
+    pl_periastron: Optional[DataPoint] = None
+    pl_apoastron: Optional[DataPoint] = None
+    pl_eccentricity: Optional[DataPoint] = None
+    pl_orbital_period: Optional[DataPoint] = None
+    pl_angular_distance: Optional[DataPoint] = None
+    pl_periastron_time: Optional[DataPoint] = None
+    pl_inclination: Optional[DataPoint] = None
+    pl_argument_of_periastron: Optional[DataPoint] = None
+    pl_epoch: Optional[DataPoint] = None
 
     # Caractéristiques physiques
-    mass: Optional[DataPoint] = None
-    minimum_mass: Optional[DataPoint] = None
-    radius: Optional[DataPoint] = None
-    density: Optional[DataPoint] = None
-    gravity: Optional[DataPoint] = None
-    rotation_period: Optional[DataPoint] = None
-    temperature: Optional[DataPoint] = None
-    bond_albedo: Optional[DataPoint] = None
+    pl_mass: Optional[DataPoint] = None
+    pl_minimum_mass: Optional[DataPoint] = None
+    pl_radius: Optional[DataPoint] = None
+    pl_density: Optional[DataPoint] = None
+    pl_gravity: Optional[DataPoint] = None
+    pl_rotation_period: Optional[DataPoint] = None
+    pl_temperature: Optional[DataPoint] = None
+    pl_bond_albedo: Optional[DataPoint] = None
 
     # Atmosphère
-    pressure: Optional[DataPoint] = None
-    composition: Optional[DataPoint] = None
-    wind_speed: Optional[DataPoint] = None
+    pl_pressure: Optional[DataPoint] = None
+    pl_composition: Optional[DataPoint] = None
+    pl_wind_speed: Optional[DataPoint] = None
 
     # Découverte
-    discoverers: Optional[DataPoint] = None
-    discovery_program: Optional[DataPoint] = None
-    discovery_method: Optional[DataPoint] = None
-    discovery_date: Optional[DataPoint] = None
-    discovery_location: Optional[DataPoint] = None
+    disc_by: Optional[DataPoint] = None
+    disc_program: Optional[DataPoint] = None
+    disc_method: Optional[DataPoint] = None
+    disc_year: Optional[DataPoint] = None
+    disc_location: Optional[DataPoint] = None
     pre_discovery: Optional[DataPoint] = None
     detection_method: Optional[DataPoint] = None
     status: Optional[DataPoint] = None

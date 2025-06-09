@@ -37,9 +37,9 @@ def generate_exoplanet_draft(exoplanet: DataSourceExoplanet) -> str:
     # Note : Vous pourriez aussi injecter le générateur si vous souhaitez
     # le configurer ou le partager davantage.
     generator = ArticleExoplanetGenerator()
-    logger.debug(f"Génération du brouillon pour l'exoplanète {exoplanet.name}...")
+    logger.debug(f"Génération du brouillon pour l'exoplanète {exoplanet.pl_name}...")
     content = generator.generate_article_content(exoplanet)
-    logger.debug(f"Brouillon pour l'exoplanète {exoplanet.name} généré.")
+    logger.debug(f"Brouillon pour l'exoplanète {exoplanet.pl_name} généré.")
     return content
 
 def generate_star_draft(star: DataSourceStar) -> str:
@@ -56,7 +56,7 @@ def generate_star_draft(star: DataSourceStar) -> str:
     generator = ArticleStarGenerator()
     # Star.name is a DataPoint object, so access its .value attribute for the actual name string.
     star_name_val = (
-        star.name.value if star.name and hasattr(star.name, "value") else "Unknown Star"
+        star.st_name.value if star.st_name and hasattr(star.st_name, "value") else "Unknown Star"
     )
     logger.debug(f"Génération du brouillon pour l'étoile {star_name_val}...")
     content = generator.generate_article_content(star)

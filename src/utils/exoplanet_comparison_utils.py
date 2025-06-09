@@ -29,10 +29,10 @@ class ExoplanetComparisonUtils:
         Génère une comparaison de rayon avec Jupiter ou la Terre.
         Le rayon de l'exoplanète est supposé être en rayons joviens (R_J).
         """
-        if not exoplanet.radius or exoplanet.radius.value is None:
+        if not exoplanet.pl_radius or exoplanet.pl_radius.value is None:
             return ""
 
-        radius_rj = exoplanet.radius.value
+        radius_rj = exoplanet.pl_radius.value
 
         # Seuils pour Jupiter
         JUPITER_SIMILARITY_LOWER_RJ = 1.0 - self.SIMILARITY_MARGIN
@@ -67,10 +67,10 @@ class ExoplanetComparisonUtils:
         Génère une comparaison de masse avec Jupiter ou la Terre.
         La masse de l'exoplanète est supposée être en masses joviennes.
         """
-        if not exoplanet.mass or exoplanet.mass.value is None:
+        if not exoplanet.pl_mass or exoplanet.pl_mass.value is None:
             return ""
 
-        mass_mj = exoplanet.mass.value
+        mass_mj = exoplanet.pl_mass.value
 
         # Seuils pour Jupiter
         JUPITER_SIMILARITY_LOWER_MJ = 1.0 - self.SIMILARITY_MARGIN
@@ -104,7 +104,7 @@ class ExoplanetComparisonUtils:
         Génère une comparaison de l'orbite de l'exoplanète avec les planètes du système solaire.
         La distance est supposée être en Unités Astronomiques (UA).
         """
-        sma = exoplanet.semi_major_axis
+        sma = exoplanet.pl_semi_major_axis
         if hasattr(sma, "value"):
             sma = sma.value
         try:

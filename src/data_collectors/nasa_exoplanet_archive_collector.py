@@ -73,7 +73,7 @@ class NASAExoplanetArchiveCollector(BaseExoplanetCollector):
             star = self._convert_row_to_star(row, base_ref)
             if star:
                 # Avoid duplicates if multiple planets for the same star are processed
-                if not any(s.name.value == star.name.value for s in stars):
+                if not any(s.st_name.value == star.st_name.value for s in stars):
                     stars.append(star)
         return exoplanets, stars
 

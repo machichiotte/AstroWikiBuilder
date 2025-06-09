@@ -10,7 +10,7 @@
 # -------------------------------------------------------------------
 common:
   mapped:
-    constellation:
+    st_constellation:
       # Nom de la constellation (valeur dans l'objet) -> Catégorie
       'Andromeda': '[[Catégorie:Constellation d''Andromède]]'
       'Antlia': '[[Catégorie:Constellation de la Machine pneumatique]]'
@@ -49,7 +49,7 @@ common:
 exoplanet:
   base: "[[Catégorie:Exoplanète]]"
   mapped:
-    discovery_method:
+    disc_method:
       'Radial Velocity': '[[Catégorie:Exoplanète découverte par la méthode des vitesses radiales]]'
       'Transit': '[[Catégorie:Exoplanète découverte par la méthode des transits]]'
       'Microlensing': '[[Catégorie:Exoplanète découverte par microlentille gravitationnelle]]'
@@ -59,7 +59,7 @@ exoplanet:
       'Astrometry': "[[Catégorie:Exoplanète découverte par la méthode de l'astrométrie]]"
       'Orbital Brightness Modulation': "[[Catégorie:Exoplanète découverte par la méthode du décalage des minima]]"
 
-    discovered_by:
+    disc_facility:
       'Kepler': '[[Catégorie:Exoplanète découverte grâce à Kepler]]'
       'Transiting Exoplanet Survey Satellite': '[[Catégorie:Exoplanète découverte grâce au Transiting Exoplanet Survey Satellite]]'
       'TESS': '[[Catégorie:Exoplanète découverte grâce au Transiting Exoplanet Survey Satellite]]'
@@ -112,7 +112,7 @@ exoplanet:
       'Free-floating planet': '[[Catégorie:Objet libre de masse planétaire]]'
 
   generated:
-    discovery_date:
+    disc_year:
       template: "[[Catégorie:Exoplanète découverte en {value}]]"
       value_extractor: "year" # Indique qu'il faut extraire l'année d'une date
 

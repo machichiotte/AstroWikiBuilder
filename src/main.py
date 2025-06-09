@@ -242,7 +242,7 @@ def log_statistics(stats: Dict[str, Any]):
     for source, count in stats.get("data_points_by_source", {}).items():
         logger.info(f"    - {source} : {count}")
     logger.info("  Par méthode de découverte :")
-    for method, count in stats.get("discovery_methods", {}).items():
+    for method, count in stats.get("disc_methods", {}).items():
         logger.info(f"    - {method} : {count}")
     logger.info("  Par année de découverte :")
     for year, count in sorted(
@@ -300,10 +300,10 @@ def exoplanet_run_draft_generation(
     logger.info("Génération des brouillons d'exoplanetes...")
     for exoplanet in all_exoplanets:
         draft_content = generate_exoplanet_draft(exoplanet)
-        if exoplanet.name.value in missing_map:
-            exoplanet_missing_drafts.append((exoplanet.name.value, draft_content))
-        elif exoplanet.name.value in existing_map:
-            exoplanet_existing_drafts.append((exoplanet.name.value, draft_content))
+        if exoplanet.pl_name.value in missing_map:
+            exoplanet_missing_drafts.append((exoplanet.pl_name.value, draft_content))
+        elif exoplanet.pl_name.value in existing_map:
+            exoplanet_existing_drafts.append((exoplanet.pl_name.value, draft_content))
         else:
             # if is_wikipedia_check_skipped:
             # logger.info(
@@ -316,7 +316,7 @@ def exoplanet_run_draft_generation(
             #    f"(even if Wikipedia check was performed). Draft will be saved in the 'missing' "
             #   f"directory by default."
             # )
-            exoplanet_missing_drafts.append((exoplanet.name.value, draft_content))
+            exoplanet_missing_drafts.append((exoplanet.pl_name.value, draft_content))
 
     logger.info(
         f"{len(exoplanet_missing_drafts)} brouillons 'manquants' (ou statut inconnu), {len(exoplanet_existing_drafts)} brouillons 'existants'."
@@ -354,7 +354,7 @@ def star_run_draft_generation(
 
     logger.info("Génération des brouillons d'étoiles ...")
     for star in all_stars:
-        name = star.name.value
+        name = star.st_name.value
         draft_content = generate_star_draft(star)
         if name in missing_map:
             star_missing_drafts.append((name, draft_content))

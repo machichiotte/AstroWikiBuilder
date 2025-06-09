@@ -16,14 +16,14 @@ class ExportService:
         Convertit un objet Exoplanet en dictionnaire avec des valeurs 'plates' (pas d'objets DataPoint).
         Utilise la valeur de DataPoint, et ajoute la source si disponible.
         """
-        data = {'name': exoplanet.name}
+        data = {'name': exoplanet.pl_name}
         
-        other_names_str = ", ".join(exoplanet.other_names) if exoplanet.other_names else None
-        if other_names_str: # Only add if there are other names
-             data['other_names'] = other_names_str
+        pl_altname_str = ", ".join(exoplanet.pl_altname) if exoplanet.pl_altname else None
+        if pl_altname_str: # Only add if there are other names
+             data['pl_altname'] = pl_altname_str
 
         for field_name in exoplanet.__dataclass_fields__:
-            if field_name in ['name', 'other_names']:
+            if field_name in ['name', 'pl_altname']:
                 continue
             
             attr_value = getattr(exoplanet, field_name)

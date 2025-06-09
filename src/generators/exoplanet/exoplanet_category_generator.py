@@ -39,7 +39,7 @@ class ExoplanetCategoryGenerator:
         Règle personnalisée pour déterminer la catégorie 'découverte grâce à'
         en utilisant le champ 'discovery_program' de l'exoplanète.
         """
-        discovered_by_program = exoplanet.discovery_program.value if exoplanet.discovery_program else None
+        discovered_by_program = exoplanet.disc_program.value if exoplanet.disc_program else None
         if discovered_by_program:
             # Mapping direct basé sur les exemples de categories_notes.md
             mapping = {

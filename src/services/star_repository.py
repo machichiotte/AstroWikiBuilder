@@ -23,15 +23,15 @@ class StarRepository:
         added_count = 0
         merged_count = 0
         for star in stars:
-            if not star.name:
+            if not star.st_name:
                 logger.warning("Skipping star with no name.")
                 continue
-            if star.name.value in self.stars:
-                logger.debug(f"Merging data for existing star: {star.name.value}")
+            if star.st_name.value in self.stars:
+                logger.debug(f"Merging data for existing star: {star.st_name.value}")
                 merged_count += 1
             else:
-                logger.debug(f"Adding new star: {star.name.value}")
-                self.stars[star.name.value] = star
+                logger.debug(f"Adding new star: {star.st_name.value}")
+                self.stars[star.st_name.value] = star
                 added_count += 1
         logger.info(
             f"Addition from {source_system} complete. Added: {added_count}, Merged: {merged_count}. Total stars: {len(self.stars)}"

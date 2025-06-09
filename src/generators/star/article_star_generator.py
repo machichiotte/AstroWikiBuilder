@@ -64,22 +64,22 @@ class ArticleStarGenerator(BaseArticleGenerator):
         """
         Génère l'introduction de l'article.
         """
-        star_name = star.name.value if star.name and star.name.value else "Cette étoile"
+        star_name = star.st_name.value if star.st_name and star.st_name.value else "Cette étoile"
         intro = f"'''{star_name}''' est une étoile"
 
-        if star.spectral_type and star.spectral_type.value:
-            intro += f" de type spectral {star.spectral_type.value}"
+        if star.st_spectral_type and star.st_spectral_type.value:
+            intro += f" de type spectral {star.st_spectral_type.value}"
 
         intro += "."
 
-        if star.constellation and star.constellation.value:
-            intro += f" Elle se trouve dans la constellation [[{star.constellation.value}]]."
+        if star.st_constellation and star.st_constellation.value:
+            intro += f" Elle se trouve dans la constellation [[{star.st_constellation.value}]]."
         else:
             intro += " Constellation : {{Placeholder|constellation}}."
 
-        if star.distance_pc and star.distance_pc.value is not None:
+        if star.st_distance_pc and star.st_distance_pc.value is not None:
             try:
-                dist_val = float(star.distance_pc.value)
+                dist_val = float(star.st_distance_pc.value)
                 formatted = self.article_utils.format_numeric_value(dist_val, precision=2)
                 intro += f" Elle est située à environ {formatted} [[parsec|parsecs]] de la [[Terre]]."
             except (ValueError, TypeError):

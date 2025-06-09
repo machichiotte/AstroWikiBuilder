@@ -23,17 +23,17 @@ class ExoplanetRepository:
         added_count = 0
         merged_count = 0
         for exoplanet in exoplanets:
-            if not exoplanet.name:
+            if not exoplanet.pl_name:
                 logger.warning("Skipping exoplanet with no name.")
                 continue
-            if exoplanet.name.value in self.exoplanets:
+            if exoplanet.pl_name.value in self.exoplanets:
                 logger.debug(
-                    f"Merging data for existing exoplanet: {exoplanet.name.value}"
+                    f"Merging data for existing exoplanet: {exoplanet.pl_name.value}"
                 )
                 merged_count += 1
             else:
-                logger.debug(f"Adding new exoplanet: {exoplanet.name.value}")
-                self.exoplanets[exoplanet.name.value] = exoplanet
+                logger.debug(f"Adding new exoplanet: {exoplanet.pl_name.value}")
+                self.exoplanets[exoplanet.pl_name.value] = exoplanet
                 added_count += 1
         logger.info(
             f"Addition from {source_system} complete. Added: {added_count}, Merged: {merged_count}. Total exoplanets: {len(self.exoplanets)}"

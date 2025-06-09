@@ -33,13 +33,13 @@ class WikipediaService:
         context_for_titles: Dict[str, Dict[str, Any]] = {}
 
         for exoplanet in exoplanets:
-            all_results[exoplanet.name] = {}  # Initialize results for this exoplanet
+            all_results[exoplanet.pl_name] = {}  # Initialize results for this exoplanet
 
-            titles_for_this_exoplanet = [exoplanet.name]
-            if exoplanet.other_names:
-                titles_for_this_exoplanet.extend(exoplanet.other_names)
+            titles_for_this_exoplanet = [exoplanet.pl_name]
+            if exoplanet.pl_altname:
+                titles_for_this_exoplanet.extend(exoplanet.pl_altname)
 
-            host_star_name = exoplanet.host_star.value if exoplanet.host_star else None
+            host_star_name = exoplanet.st_name.value if exoplanet.st_name else None
 
             for title_to_check in titles_for_this_exoplanet:
                 if (
@@ -50,9 +50,9 @@ class WikipediaService:
                 # the last one's context will be stored. This assumes titles are unique enough.
                 # A more robust way would be to pass exoplanet objects to checker, but that increases coupling.
                 context_for_titles[title_to_check] = {
-                    "exoplanet_name": exoplanet.name,  # To map back the result
+                    "exoplanet_name": exoplanet.pl_name,  # To map back the result
                     "host_star_name": host_star_name,
-                    "is_primary_name": title_to_check == exoplanet.name,
+                    "is_primary_name": title_to_check == exoplanet.pl_name,
                 }
 
         # Batch process all unique titles
@@ -158,7 +158,7 @@ class WikipediaService:
         formatted_data = []
 
         # Create a quick lookup for exoplanets by name
-        exoplanet_map = {exo.name: exo for exo in exoplanets}
+        exoplanet_map = {exo.pl_name: exo for exo in exoplanets}
 
         for exoplanet_name, articles in exoplanet_articles_info.items():
             exoplanet_obj = exoplanet_map.get(exoplanet_name)
@@ -191,8 +191,8 @@ class WikipediaService:
                     if info.exists and info.is_redirect
                     else None,
                     "url": info.url if info.exists else None,
-                    "host_star": exoplanet_obj.host_star.value
-                    if exoplanet_obj.host_star
+                    "host_star": exoplanet_obj.st_name.value
+                    if exoplanet_obj.st_name
                     else None,
                 }
                 formatted_data.append(record)

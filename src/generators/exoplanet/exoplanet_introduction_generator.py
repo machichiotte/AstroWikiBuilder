@@ -46,17 +46,17 @@ class ExoplanetIntroductionGenerator:
     def _build_host_star_segment(self, exoplanet: DataSourceExoplanet) -> Optional[str]:
         """Construit le segment de phrase concernant l'étoile hôte."""
         if not (
-            exoplanet.host_star
-            and hasattr(exoplanet.host_star, "value")
-            and exoplanet.host_star.value
+            exoplanet.st_name
+            and hasattr(exoplanet.st_name, "value")
+            and exoplanet.st_name.value
         ):
             return None
 
-        host_star_name = exoplanet.host_star.value
+        host_star_name = exoplanet.st_name.value
 
         star_type_description = self._get_exoplanet_spectral_type_formatted_description(
-            exoplanet.spectral_type.value
-            if exoplanet.spectral_type and hasattr(exoplanet.spectral_type, "value")
+            exoplanet.st_spectral_type.value
+            if exoplanet.st_spectral_type and hasattr(exoplanet.st_spectral_type, "value")
             else None
         )
 
@@ -71,14 +71,14 @@ class ExoplanetIntroductionGenerator:
     def _build_distance_segment(self, exoplanet: DataSourceExoplanet) -> Optional[str]:
         """Construit le segment de phrase concernant la distance."""
         if not (
-            exoplanet.distance
-            and hasattr(exoplanet.distance, "value")
-            and exoplanet.distance.value is not None
+            exoplanet.st_distance
+            and hasattr(exoplanet.st_distance, "value")
+            and exoplanet.st_distance.value is not None
         ):
             return None
 
         try:
-            distance_pc = float(exoplanet.distance.value)
+            distance_pc = float(exoplanet.st_distance.value)
             distance_ly = self.article_utils.format_parsecs_to_lightyears(distance_pc)
             if distance_ly is not None:
                 formatted_distance_ly = self.article_utils.format_numeric_value(
@@ -114,14 +114,14 @@ class ExoplanetIntroductionGenerator:
     def _build_constellation_segment(self, exoplanet: DataSourceExoplanet) -> Optional[str]:
         """Construit le segment de phrase concernant la constellation."""
         if not (
-            exoplanet.constellation
-            and hasattr(exoplanet.constellation, "value")
-            and exoplanet.constellation.value
+            exoplanet.st_constellation
+            and hasattr(exoplanet.st_constellation, "value")
+            and exoplanet.st_constellation.value
         ):
             return None
 
         constellation_name_fr = self.constellation_utils.get_constellation_name(
-            exoplanet.constellation.value
+            exoplanet.st_constellation.value
         )
         if constellation_name_fr:
             return self._format_constellation_locative_phrase(constellation_name_fr)
@@ -135,10 +135,10 @@ class ExoplanetIntroductionGenerator:
         # planet_type est supposé être une chaîne comme "Jupiter chaud", pour être utilisé dans "[[Jupiter chaud]]"
 
         planet_name_str = "Nom inconnu"
-        if hasattr(exoplanet, "name") and exoplanet.name and hasattr(exoplanet.name, "value") and exoplanet.name.value:
-            planet_name_str = exoplanet.name.value
-        elif hasattr(exoplanet, "name") and isinstance(exoplanet.name, str): # Fallback if name is already a string
-            planet_name_str = exoplanet.name
+        if hasattr(exoplanet, "name") and exoplanet.pl_name and hasattr(exoplanet.pl_name, "value") and exoplanet.pl_name.value:
+            planet_name_str = exoplanet.pl_name.value
+        elif hasattr(exoplanet, "name") and isinstance(exoplanet.pl_name, str): # Fallback if name is already a string
+            planet_name_str = exoplanet.pl_name
 
 
         base_intro = (

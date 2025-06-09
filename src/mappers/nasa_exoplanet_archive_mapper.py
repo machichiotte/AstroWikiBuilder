@@ -16,97 +16,101 @@ class NasaExoplanetArchiveMapper:
     # Mapping des colonnes NEA vers les attributs Star
     NEA_TO_STAR_MAPPING = {
         # Identifiants
-        "hostname": "name",
+        "hostname": "st_name",
         # Coordonnées
-        "ra": "right_ascension",
-        "dec": "declination",
-        "sy_pmra": "proper_motion_ra",
-        "sy_pmdec": "proper_motion_dec",
-        "sy_plx": "parallax",
-        "sy_dist": "distance_general",
+        "ra": "st_right_ascension",
+        "dec": "st_declination",
+        "sy_pmra": "st_proper_motion_ra",
+        "sy_pmdec": "st_proper_motion_dec",
+        "sy_plx": "st_parallax",
+        "sy_dist": "st_distance",
+
         # Magnitudes
-        "sy_bmag": "apparent_magnitude_b_band",
-        "sy_vmag": "apparent_magnitude_v_band",
-        "sy_jmag": "apparent_magnitude_j_band",
-        "sy_hmag": "apparent_magnitude_h_band",
-        "sy_kmag": "apparent_magnitude_k_band",
-        "sy_gmag": "apparent_magnitude_g_band",
-        "sy_rmag": "apparent_magnitude_r_band",
-        "sy_imag": "apparent_magnitude_i_band",
-        "sy_umag": "apparent_magnitude_u_band",
-        "sy_zmag": "apparent_magnitude_z_band",
-        "sy_w1mag": "apparent_magnitude_w1_band",
-        "sy_w2mag": "apparent_magnitude_w2_band",
-        "sy_w3mag": "apparent_magnitude_w3_band",
-        "sy_w4mag": "apparent_magnitude_w4_band",
-        "sy_gaiamag": "apparent_magnitude_gaia_band",
-        "sy_tmag": "apparent_magnitude_t_band",
-        "sy_kepmag": "apparent_magnitude_kep_band",
+        "sy_bmag": "st_mag_b",
+        "sy_vmag": "st_mag_v",
+        "sy_jmag": "st_mag_j",
+        "sy_hmag": "st_mag_h",
+        "sy_kmag": "st_mag_k",
+        "sy_gmag": "st_mag_g",
+        "sy_rmag": "st_mag_r",
+        "sy_imag": "st_mag_i",
+        "sy_umag": "st_mag_u",
+        "sy_zmag": "st_mag_z",
+        "sy_w1mag": "st_mag_w1",
+        "sy_w2mag": "st_mag_w2",
+        "sy_w3mag": "st_mag_w3",
+        "sy_w4mag": "st_mag_w4",
+        "sy_gaiamag": "st_mag_gaia",
+        "sy_tmag": "st_mag_t",
+        "sy_kepmag": "st_mag_kep",
         # Propriétés stellaires
-        "st_teff": "temperature",
-        "st_mass": "mass",
-        "st_rad": "radius",
-        "st_met": "metallicity",
-        "st_logg": "surface_gravity",
-        "st_lum": "luminosity",
-        "st_dens": "density",
-        "st_age": "age",
-        "st_spectype": "spectral_type",
-        "st_radv": "radial_velocity",
-        "st_rotp": "rotation",
-        "st_vsin": "rotation",  # v*sin(i) - peut être mappé sur rotation
+        "st_teff": "st_temperature",
+        "st_mass": "st_mass",
+        "st_rad": "st_radius",
+        "st_met": "st_metallicity",
+        "st_logg": "st_surface_gravity",
+        "st_lum": "st_luminosity",
+        "st_dens": "st_density",
+        "st_age": "st_age",
+        "st_spectype": "st_spectral_type",
+        "st_radv": "st_radial_velocity",
+        "st_rotp": "st_rotation",
     }
 
     # Mapping des colonnes NEA vers les attributs Exoplanet
     NEA_TO_EXOPLANET_MAPPING = {
         # Identifiants
-        "pl_name": "name",
-        # ÉTOILE
-        "hostname": "star_name",
-        # "": "epoch_star",
-        "ra": "right_ascension",
-        "dec": "declination",
-        "sy_dist": "distance_general",
-        "st_spectype": "spectral_type",
-        "sy_vmag": "apparent_magnitude",
+        "pl_name": "pl_name",
+        "pl_altname": "pl_altname",
+
+        # Étoile hôte
+        "hostname": "st_name",
+        # "": "st_epoch",
+        "ra": "st_right_ascension",
+        "dec": "st_declination",
+        "sy_dist": "st_distance",
+        "st_spectype": "st_spectral_type",
+        "sy_vmag": "st_apparent_magnitude",
+
         # PLANÈTE
-        # Type
-        "": "type",
+
         # Caractéristiques orbitales
-        "pl_orbsmax": "semi_major_axis",
-        "pl_orblper": "argument_of_periastron",
-        # "": "apoastron",
-        "pl_orbeccen": "eccentricity",
-        "pl_orbper": "period",
-        "pl_angsep": "angular_distance",
-        "pl_orbtper": "periastron_time",
-        "pl_orbincl": "inclination",
-        # "": "longitude_of_periastron",
-        # "": "epoch",
+        "pl_orbsmax": "pl_semi_major_axis",
+        # "": "pl_periastron",
+        # "": "pl_apoastron",
+        "pl_orbeccen": "pl_eccentricity",
+        "pl_orbper": "pl_orbital_period",
+        "pl_angsep": "pl_angular_distance",
+        "pl_orbtper": "pl_periastron_time",
+        "pl_orbincl": "pl_inclination",
+        "pl_orblper": "pl_argument_of_periastron",
+        # "": "pl_epoch",
+
         # Caractéristiques physiques
-        "pl_bmassj": "mass",
-        "pl_msinij": "minimum_mass",
-        "pl_radj": "radius",
-        "pl_dens": "density",
-        # "": "surface_gravity",
-        # "": "rotation_period",
-        "pl_eqt": "temperature",
-        # "": "albedo_bond",
+        "pl_bmassj": "pl_mass",
+        "pl_msinij": "pl_minimum_mass",
+        "pl_radj": "pl_radius",
+        "pl_dens": "pl_density",
+        # "": "pl_gravity",
+        # "": "pl_rotation_period",
+        "pl_eqt": "pl_temperature",
+        # "": "pl_albedo_bond",
+
         # Atmosphère
-        # "": "pression",
-        # "": "composition",
-        # "": "wind_speed",
+        # "": "pl_pressure",
+        # "": "pl_composition",
+        # "": "pl_wind_speed",
+
         # Découverte
-        # "": "discoverers",
-        # "": "program",
-        "discoverymethod": "discovery_method",
-        "disc_year": "discovery_date",
-        "disc_facility": "discovery_site",
+        # "": "disc_by",
+        # "": "disc_program",
+        "discoverymethod": "disc_method",
+        "disc_year": "disc_year",
+        "disc_facility": "disc_facility",
         # "": "pre_discovery",
         # "": "detection_type",
         # "": "status",
         # Informations supplémentaires
-        "pl_altname": "other_names",
     }
 
     # Unités par défaut pour certains champs NEA
@@ -174,23 +178,23 @@ class NasaExoplanetArchiveMapper:
                     setattr(star, star_attribute, datapoint)
 
         # Traitement spécial pour les désignations
-        designations = self._extract_designations(nea_data)
+        designations = self._extract_star_altname(nea_data)
         if designations:
-            star.designations = DataPoint(value=designations)
+            star.st_altname = DataPoint(value=designations)
 
         # Autres traitements
         # Special handling for right_ascension (rastr or ra)
         if "rastr" in nea_data and nea_data["rastr"]:
             formatted_ra = self._format_right_ascension_str(nea_data["rastr"])
             if formatted_ra:
-                star.right_ascension.value = formatted_ra
+                star.st_right_ascension.value = formatted_ra
 
         elif "ra" in nea_data and nea_data["ra"] is not None:
             try:
                 ra_deg = float(nea_data["ra"])
                 formatted_ra_deg = self._format_right_ascension_deg(ra_deg)
                 if formatted_ra_deg:
-                    star.right_ascension = DataPoint(
+                    star.st_right_ascension = DataPoint(
                         value=formatted_ra_deg, reference=nea_reference
                     )
             except (ValueError, TypeError):
@@ -201,7 +205,7 @@ class NasaExoplanetArchiveMapper:
         if "decstr" in nea_data and nea_data["decstr"]:
             formatted_dec = self._format_declination_str(nea_data["decstr"])
             if formatted_dec:
-                star.declination = DataPoint(
+                star.st_declination = DataPoint(
                     value=formatted_dec, reference=nea_reference
                 )
         elif "dec" in nea_data and nea_data["dec"] is not None:
@@ -209,7 +213,7 @@ class NasaExoplanetArchiveMapper:
                 dec_deg = float(nea_data["dec"])
                 formatted_dec_deg = self._format_declination_deg(dec_deg)
                 if formatted_dec_deg:
-                    star.declination = DataPoint(
+                    star.st_declination = DataPoint(
                         value=formatted_dec_deg, reference=nea_reference
                     )
             except (ValueError, TypeError):
@@ -224,7 +228,7 @@ class NasaExoplanetArchiveMapper:
         # Create a NEA reference for all data points originating from this source
         nea_reference = Reference(
             source=SourceType.NEA,
-            # TODO ici il faudrait plutot recuperer la dte depuis le retour de l'api, la date de mise a jour des donnees dans l'api
+            # TODO ici il faudrait plutot recuperer la date depuis le retour de l'api, la date de mise a jour des donnees dans l'api
             update_date=datetime.now(),
             consultation_date=datetime.now(),
             star_identifier=nea_data.get("hostname"),
@@ -242,7 +246,8 @@ class NasaExoplanetArchiveMapper:
                 }
 
                 if nea_field in numeric_fields and value not in (None, ""):
-                    value = FieldFormatter.format_numeric_no_trailing_zeros(value)
+                    value = FieldFormatter.format_numeric_no_trailing_zeros(
+                        value)
 
                 # Créer un DataPoint avec la valeur et l'unité par défaut
                 if value is not None and str(value).strip():
@@ -268,7 +273,7 @@ class NasaExoplanetArchiveMapper:
         if "rastr" in nea_data and nea_data["rastr"]:
             formatted_ra = self._format_right_ascension_str(nea_data["rastr"])
             if formatted_ra:
-                exoplanet.right_ascension = DataPoint(
+                exoplanet.st_right_ascension = DataPoint(
                     value=formatted_ra, reference=nea_reference
                 )
         elif "ra" in nea_data and nea_data["ra"] is not None:
@@ -276,7 +281,7 @@ class NasaExoplanetArchiveMapper:
                 ra_deg = float(nea_data["ra"])
                 formatted_ra_deg = self._format_right_ascension_deg(ra_deg)
                 if formatted_ra_deg:
-                    exoplanet.right_ascension = DataPoint(
+                    exoplanet.st_right_ascension = DataPoint(
                         value=formatted_ra_deg, reference=nea_reference
                     )
             except (ValueError, TypeError):
@@ -287,7 +292,7 @@ class NasaExoplanetArchiveMapper:
         if "decstr" in nea_data and nea_data["decstr"]:
             formatted_dec = self._format_declination_str(nea_data["decstr"])
             if formatted_dec:
-                exoplanet.declination = DataPoint(
+                exoplanet.st_declination = DataPoint(
                     value=formatted_dec, reference=nea_reference
                 )
         elif "dec" in nea_data and nea_data["dec"] is not None:
@@ -295,7 +300,7 @@ class NasaExoplanetArchiveMapper:
                 dec_deg = float(nea_data["dec"])
                 formatted_dec_deg = self._format_declination_deg(dec_deg)
                 if formatted_dec_deg:
-                    exoplanet.declination = DataPoint(
+                    exoplanet.st_declination = DataPoint(
                         value=formatted_dec_deg, reference=nea_reference
                     )
             except (ValueError, TypeError):
@@ -315,11 +320,11 @@ class NasaExoplanetArchiveMapper:
                     pl_orbinclerr1_val = float(nea_data["pl_orbinclerr1"])
                     pl_orbinclerr2_val = float(nea_data["pl_orbinclerr2"])
                     formatted_inclination = f"{pl_orbincl_val}{{{{±|{pl_orbinclerr1_val}|{pl_orbinclerr2_val}}}}}"
-                    exoplanet.inclination = DataPoint(
+                    exoplanet.pl_inclination = DataPoint(
                         value=formatted_inclination, reference=nea_reference
                     )
                 else:
-                    exoplanet.inclination = DataPoint(
+                    exoplanet.pl_inclination = DataPoint(
                         value=pl_orbincl_val, reference=nea_reference
                     )
             except (ValueError, TypeError):
@@ -330,7 +335,7 @@ class NasaExoplanetArchiveMapper:
                 pl_tranmidstr = float(nea_data["pl_tranmidstr"])
                 formatted_epoch = self._parse_epoch_string(pl_tranmidstr)
                 if formatted_epoch:
-                    exoplanet.epoch = DataPoint(
+                    exoplanet.pl_epoch = DataPoint(
                         value=formatted_epoch, reference=nea_reference
                     )
             except (ValueError, TypeError):
@@ -341,7 +346,7 @@ class NasaExoplanetArchiveMapper:
                 pl_orbperstr = float(nea_data["pl_orbperstr"])
                 formatted_orb_per = self._parse_epoch_string(pl_orbperstr)
                 if formatted_orb_per:
-                    exoplanet.orbital_period = DataPoint(
+                    exoplanet.pl_orbital_period = DataPoint(
                         value=formatted_orb_per, reference=nea_reference
                     )
             except (ValueError, TypeError):
@@ -349,19 +354,29 @@ class NasaExoplanetArchiveMapper:
 
         return exoplanet
 
-    def _extract_designations(self, nea_data: Dict[str, Any]) -> Optional[list]:
-        """Extrait les différentes désignations d'une étoile, en filtrant les valeurs invalides"""
-        designation_fields = ["hostname", "hd_name", "hip_name", "tic_id"]
-        designations = []
+    def _extract_star_altname(self, nea_data: Dict[str, Any]) -> Optional[list]:
+        """Extrait les différentes désignations d'une étoile, en filtrant les valeurs invalides.
+        Ne rajoute pas hostname (nom principal) et évite les doublons avec hostname.
+        """
+        st_altname_fields = ["hd_name", "hip_name", "tic_id"]
+        alt_names = []
 
-        for field in designation_fields:
+        hostname = str(nea_data.get("hostname", "")).strip()
+        invalid_values = {"nan", "none", ""}
+
+        for field in st_altname_fields:
             if field in nea_data and nea_data[field]:
                 value = str(nea_data[field]).strip()
-                # Filtre les valeurs invalides
-                if value and value.lower() not in {"nan", "none", ""} and value not in designations:
-                    designations.append(value)
+                # Filtre les valeurs invalides et les doublons avec hostname
+                if (
+                    value
+                    and value.lower() not in invalid_values
+                    and value != hostname
+                    and value not in alt_names
+                ):
+                    alt_names.append(value)
 
-        return designations if designations else None
+        return alt_names if alt_names else None
 
     def _format_right_ascension_str(self, rastr_val: str) -> str:
         """
