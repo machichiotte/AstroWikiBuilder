@@ -21,9 +21,10 @@ class FieldFormatter:
             if mapped:
                 value = f"[[{mapped}]]"
         elif infobox_field == "méthode":
-            mapped = METHOD_NAME_MAPPING.get(value)
+            method_key = str(value).strip().lower()
+            mapped = METHOD_NAME_MAPPING.get(method_key)
             if mapped:
-                value = f"[[{mapped}]]"
+                    value = f"[[{mapped['article']}|{mapped['display']}]]"
         elif infobox_field == "âge":
             # Pour le champ âge, on utilise une notation scientifique
             value = f"{value}×10<sup>9</sup>"
