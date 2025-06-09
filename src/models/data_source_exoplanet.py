@@ -7,7 +7,7 @@ from .reference import DataPoint
 @dataclass
 class DataSourceExoplanet:
     # Identifiants
-    pl_name: Optional[DataPoint] = None
+    pl_name: DataPoint = None
     pl_altname: Optional[List[str]] = field(default_factory=list)
 
     # Étoile hôte

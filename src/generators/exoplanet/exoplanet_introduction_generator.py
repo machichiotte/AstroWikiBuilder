@@ -41,7 +41,8 @@ class ExoplanetIntroductionGenerator:
 
         if description:
             return f"[[{description}]]"
-        return "son étoile hôte"  # Placeholder if spectral class not in map or description is None
+        # Placeholder if spectral class not in map or description is None
+        return "son étoile hôte"
 
     def _build_host_star_segment(self, exoplanet: DataSourceExoplanet) -> Optional[str]:
         """Construit le segment de phrase concernant l'étoile hôte."""
@@ -79,7 +80,8 @@ class ExoplanetIntroductionGenerator:
 
         try:
             distance_pc = float(exoplanet.st_distance.value)
-            distance_ly = self.article_utils.format_parsecs_to_lightyears(distance_pc)
+            distance_ly = self.article_utils.format_parsecs_to_lightyears(
+                distance_pc)
             if distance_ly is not None:
                 formatted_distance_ly = self.article_utils.format_numeric_value(
                     distance_ly
@@ -131,15 +133,15 @@ class ExoplanetIntroductionGenerator:
         """
         Génère l'introduction pour une exoplanète.
         """
-        planet_type = self.planet_type_utils.get_exoplanet_planet_type(exoplanet)
+        planet_type = self.planet_type_utils.get_exoplanet_planet_type(
+            exoplanet)
         # planet_type est supposé être une chaîne comme "Jupiter chaud", pour être utilisé dans "[[Jupiter chaud]]"
 
         planet_name_str = "Nom inconnu"
-        if hasattr(exoplanet, "name") and exoplanet.pl_name and hasattr(exoplanet.pl_name, "value") and exoplanet.pl_name.value:
+        if exoplanet.pl_name and hasattr(exoplanet.pl_name, "value") and exoplanet.pl_name.value:
             planet_name_str = exoplanet.pl_name.value
-        elif hasattr(exoplanet, "name") and isinstance(exoplanet.pl_name, str): # Fallback if name is already a string
+        elif isinstance(exoplanet.pl_name, str):  # Fallback if name is already a string
             planet_name_str = exoplanet.pl_name
-
 
         base_intro = (
             f"'''{planet_name_str}''' est une exoplanète de type [[{planet_type}]]"
