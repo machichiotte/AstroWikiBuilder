@@ -256,7 +256,6 @@ class ArticleExoplanetGenerator(BaseArticleGenerator):
             and not (isinstance(temp, str) and temp.lower() == "nan")
             and not (isinstance(temp, float) and math.isnan(temp))
         ):
-            print(f"Température brute : {temp}")
             # Affiche sans décimale inutile, mais garde les décimales significatives
             try:
                 temp_f = float(temp)
@@ -267,8 +266,6 @@ class ArticleExoplanetGenerator(BaseArticleGenerator):
             else:
                 temp_value = str(temp)
 
-            print(f"Température  : {temp}")
-            print(f"Température traitée : {temp_value}")
             if temp_f is not None:
                 if temp_f < 500:
                     desc_parts.append(f"sa température de {temp_value} [[Kelvin|K]]")
