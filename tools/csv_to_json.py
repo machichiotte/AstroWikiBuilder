@@ -26,6 +26,7 @@ def convert_csv_column_to_json(csv_path: str, json_path: str, column: str):
     """
     Convertit une seule colonne d'un fichier CSV en JSON (liste des valeurs non nulles/non NaN).
     """
+    import math
     print(f"Lecture du fichier CSV : {csv_path}")
     df = pd.read_csv(csv_path)
 
@@ -33,8 +34,16 @@ def convert_csv_column_to_json(csv_path: str, json_path: str, column: str):
         print(f"Colonne '{column}' non trouvée dans le CSV.")
         return
 
-    # Récupère la colonne, enlève les NaN/None, convertit en liste
-    values = df[column].dropna().tolist()
+    # Récupère la colonne, enlève les NaN/None/vides, convertit en liste
+    values = [
+        v for v in df[column]
+        if v is not None
+        and not (isinstance(v, float) and math.isnan(v))
+        and not (isinstance(v, str) and v.strip() == "")
+    ]
+
+    # Supprime les doublons en préservant l'ordre
+    values = list(dict.fromkeys(values))
 
     print(f"Écriture du fichier JSON : {json_path}")
     with open(json_path, 'w', encoding='utf-8') as f:
@@ -42,19 +51,19 @@ def convert_csv_column_to_json(csv_path: str, json_path: str, column: str):
 
     print("Conversion terminée (colonne unique) !")
 
-    if __name__ == "__main__":
-        import sys
-        if len(sys.argv) == 3:
-            csv_path = sys.argv[1]
-            json_path = sys.argv[2]
-            convert_csv_to_json(csv_path, json_path)
-        elif len(sys.argv) == 4:
-            csv_path = sys.argv[1]
-            json_path = sys.argv[2]
-            column = sys.argv[3]
-            convert_csv_column_to_json(csv_path, json_path, column)
-        else:
-            print("Usage:")
-            print("  python csv_to_json.py <input_csv> <output_json>")
-            print("  python csv_to_json.py <input_csv> <output_json> <column_name>")
-            sys.exit(1)
+if __name__ == "__main__":
+    import sys
+    if len(sys.argv) == 3:
+        csv_path = sys.argv[1]
+        json_path = sys.argv[2]
+        convert_csv_to_json(csv_path, json_path)
+    elif len(sys.argv) == 4:
+        csv_path = sys.argv[1]
+        json_path = sys.argv[2]
+        column = sys.argv[3]
+        convert_csv_column_to_json(csv_path, json_path, column)
+    else:
+        print("Usage:")
+        print("  python csv_to_json.py <input_csv> <output_json>")
+        print("  python csv_to_json.py <input_csv> <output_json> <column_name>")
+        sys.exit(1)
