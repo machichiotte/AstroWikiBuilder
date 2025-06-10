@@ -1,7 +1,7 @@
 # src/utils/formatters/infobox_field_formatters.py
 from typing import Any, Optional
 
-from src.constants.field_mappings import LIEU_NAME_MAPPING, METHOD_NAME_MAPPING
+from src.constants.field_mappings import DISCOVERY_FACILITY_MAPPING, METHOD_NAME_MAPPING
 from src.models.reference import DataPoint
 from src.models.infobox_fields import FieldType
 
@@ -15,16 +15,16 @@ class FieldFormatter:
         if not value or (isinstance(value, str) and not value.strip()):
             return ""
 
-         # Mapping pour certains champs
+        # Mapping pour certains champs
         if infobox_field == "lieu":
-            mapped = LIEU_NAME_MAPPING.get(value)
+            mapped = DISCOVERY_FACILITY_MAPPING.get(value)
             if mapped:
                 value = f"[[{mapped}]]"
         elif infobox_field == "méthode":
             method_key = str(value).strip().lower()
             mapped = METHOD_NAME_MAPPING.get(method_key)
             if mapped:
-                    value = f"[[{mapped['article']}|{mapped['display']}]]"
+                value = f"[[{mapped['article']}|{mapped['display']}]]"
         elif infobox_field == "âge":
             # Pour le champ âge, on utilise une notation scientifique
             value = f"{value}×10<sup>9</sup>"
@@ -33,11 +33,13 @@ class FieldFormatter:
             if isinstance(value, list):
                 value = ", ".join(
                     FieldFormatter._format_designation_with_template(str(v))
-                    for v in value if str(v).strip()
+                    for v in value
+                    if str(v).strip()
                 )
             else:
                 value = FieldFormatter._format_designation_with_template(
-                    str(value).strip())
+                    str(value).strip()
+                )
 
         output = f" | {infobox_field} = {value}"
 

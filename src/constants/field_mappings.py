@@ -1,59 +1,120 @@
 # astro_wiki/src/constants/field_mappings.py
 
 NOTES_FIELDS_EXOPLANET = [
-    "époque étoile", "ascension droite", "déclinaison", "distance", "constellation",
-    "type spectral", "magnitude apparente", "type", "demi-grand axe", "périastre",
-    "apoastre", "excentricité", "période", "distance angulaire", "t_peri", "inclinaison",
-    "arg_péri", "époque", "masse", "masse minimale", "rayon", "masse volumique",
-    "gravité", "période de rotation", "température", "albedo_bond", "pression",
-    "composition", "vitesse des vents", "découvreurs", "programme", "méthode", "date",
-    "lieu", "prédécouverte", "détection", "statut"
+    "époque étoile",
+    "ascension droite",
+    "déclinaison",
+    "distance",
+    "constellation",
+    "type spectral",
+    "magnitude apparente",
+    "type",
+    "demi-grand axe",
+    "périastre",
+    "apoastre",
+    "excentricité",
+    "période",
+    "distance angulaire",
+    "t_peri",
+    "inclinaison",
+    "arg_péri",
+    "époque",
+    "masse",
+    "masse minimale",
+    "rayon",
+    "masse volumique",
+    "gravité",
+    "période de rotation",
+    "température",
+    "albedo_bond",
+    "pression",
+    "composition",
+    "vitesse des vents",
+    "découvreurs",
+    "programme",
+    "méthode",
+    "date",
+    "lieu",
+    "prédécouverte",
+    "détection",
+    "statut",
 ]
 
 NOTES_FIELDS_STAR = [
-    "époque", "ascension droite", "déclinaison", "distance", "constellation", "carte UAI",
-    "type spectral", "classe de luminosité", "magnitude apparente", "magnitude absolue",
-    "magnitude bolométrique", "indice de couleur B-V", "indice de couleur U-B",
-    "indice de couleur V-R", "indice de couleur R-I", "indice de couleur J-H",
-    "indice de couleur H-K", "mouvement propre", "parallaxe", "vitesse radiale",
-    "métallicité", "masse", "rayon", "luminosité", "température", "gravité", "âge",
-    "rotation", "vitesse de rotation", "densité", "excentricité", "période orbitale",
-    "inclinaison", "argument du périastre", "nœud ascendant", "compagne", "variabilité",
-    "découverte", "désignations", "statut"
+    "époque",
+    "ascension droite",
+    "déclinaison",
+    "distance",
+    "constellation",
+    "carte UAI",
+    "type spectral",
+    "classe de luminosité",
+    "magnitude apparente",
+    "magnitude absolue",
+    "magnitude bolométrique",
+    "indice de couleur B-V",
+    "indice de couleur U-B",
+    "indice de couleur V-R",
+    "indice de couleur R-I",
+    "indice de couleur J-H",
+    "indice de couleur H-K",
+    "mouvement propre",
+    "parallaxe",
+    "vitesse radiale",
+    "métallicité",
+    "masse",
+    "rayon",
+    "luminosité",
+    "température",
+    "gravité",
+    "âge",
+    "rotation",
+    "vitesse de rotation",
+    "densité",
+    "excentricité",
+    "période orbitale",
+    "inclinaison",
+    "argument du périastre",
+    "nœud ascendant",
+    "compagne",
+    "variabilité",
+    "découverte",
+    "désignations",
+    "statut",
 ]
 
 FIELD_DEFAULT_UNITS_STAR: dict[str, str] = {
-    "mass": "M☉",                  # Masse solaire
-    "radius": "R☉",                # Rayon solaire
-    "luminosity": "L☉",            # Luminosité solaire
-    "temperature": "K",            # Kelvin
-    "gravity": "log g",            # Gravité logarithmique
-    "metallicity": "[Fe/H]",       # Métallicité
-    "age": "Ga",                   # Gigannées
-    "rotation": "j",               # Jours
-    "distance": "al",              # Années-lumière (courant sur Wiki fr)
-    "parallax": "mas",             # Millisecondes d'arc
-    "spectral type": "",           # Sans unité
-    "apparent magnitude": "",      # Sans unité
-    "absolute magnitude": "",      # Sans unité
+    "mass": "M☉",  # Masse solaire
+    "radius": "R☉",  # Rayon solaire
+    "luminosity": "L☉",  # Luminosité solaire
+    "temperature": "K",  # Kelvin
+    "gravity": "log g",  # Gravité logarithmique
+    "metallicity": "[Fe/H]",  # Métallicité
+    "age": "Ga",  # Gigannées
+    "rotation": "j",  # Jours
+    "distance": "al",  # Années-lumière (courant sur Wiki fr)
+    "parallax": "mas",  # Millisecondes d'arc
+    "spectral type": "",  # Sans unité
+    "apparent magnitude": "",  # Sans unité
+    "absolute magnitude": "",  # Sans unité
 }
 
 FIELD_DEFAULT_UNITS_EXOPLANET: dict[str, str] = {
-    "mass": "MJ",                  # Masse de Jupiter
-    "minimum mass": "MJ",          # Masse de Jupiter
-    "radius": "RJ",                # Rayon de Jupiter
-    "semi-major axis": "ua",       # Unité astronomique
-    "eccentricity": "",            # Sans unité
-    "period": "j",                 # Jours
-    "inclination": "°",            # Degrés
-    "periastron": "ua",            # UA
-    "apoastron": "ua",             # UA
-    "temperature": "K",            # Kelvin
-    "discovery year": "",          # Sans unité
-    "detection method": "",        # Sans unité
-    "rotation period": "h",        # Heures (si connue)
-    "density": "g/cm³",            # g/cm³ selon les conventions fr
-    "gravity": "m/s²",             # m/s²
+    "mass": "MJ",  # Masse de Jupiter
+    "minimum mass": "MJ",  # Masse de Jupiter
+    "radius": "RJ",  # Rayon de Jupiter
+    "semi-major axis": "ua",  # Unité astronomique
+    "eccentricity": "",  # Sans unité
+    "period": "j",  # Jours
+    "inclination": "°",  # Degrés
+    "periastron": "ua",  # UA
+    "apoastron": "ua",  # UA
+    "temperature": "K",  # Kelvin
+    "discovery year": "",  # Sans unité
+    "detection method": "",  # Sans unité
+    "rotation period": "h",  # Heures (si connue)
+    "density": "g/cm³",  # g/cm³ selon les conventions fr
+    "gravity": "m/s²",  # m/s²
     "argument of periastron": "°",  # Degrés
 }
 
@@ -111,10 +172,79 @@ METHOD_NAME_MAPPING: dict[str, str] = {
     # }
 }
 
-LIEU_NAME_MAPPING = {
-    "Cerro Tololo Inter-American Observatory": "Observatoire interaméricain du Cerro Tololo",
-    "Keck Observatory": "Observatoire W. M. Keck",
+DISCOVERY_FACILITY_MAPPING = {
+    "OGLE": "OGLE",
+    "HATNet": "HATNet",
+    "Kepler": "Télescope spatial Kepler",
+    "Transiting Exoplanet Survey Satellite (TESS)": "TESS",
+    "Haute-Provence Observatory": "Observatoire de Haute-Provence",
+    "W. M. Keck Observatory": "Observatoire W. M. Keck",
+    "Okayama Astrophysical Observatory": "Observatoire astronomique d'Okayama",
+    "K2": "K2",
     "La Silla Observatory": "Observatoire de La Silla",
+    "Bohyunsan Optical Astronomical Observatory": "Observatoire astronomique optique de Bohyunsan",
+    "Multiple Observatories": "Observatoires multiples",
+    "Multiple Facilities": "Installations multiples",
+    "Calar Alto Observatory": "Observatoire de Calar Alto",
+    "Qatar": "Qatar",
+    "SuperWASP-South": "SuperWASP-Sud",
+    "SuperWASP": "SuperWASP",
+    "Thueringer Landessternwarte Tautenburg": "Observatoire de Tautenburg",
+    "Lick Observatory": "Observatoire Lick",
+    "KMTNet": "KMTNet",
+    "Paranal Observatory": "Observatoire du Paranal",
+    "Leoncito Astronomical Complex": "Complexe astronomique El Leoncito",
+    "HATSouth": "HATSouth",
+    "CoRoT": "CoRoT",
+    "Gemini Observatory": "Observatoire Gemini",
+    "Roque de los Muchachos Observatory": "Observatoire du Roque de los Muchachos",
+    "MOA": "MOA",
+    "Spitzer Space Telescope": "Télescope spatial Spitzer",
+    "McDonald Observatory": "Observatoire McDonald",
+    "Anglo-Australian Telescope": "Télescope anglo-australien",
+    "University of Canterbury Mt John Observatory": "Observatoire du mont John",
+    "United Kingdom Infrared Telescope": "Télescope infrarouge du Royaume-Uni",
+    "European Southern Observatory": "Observatoire européen austral",
+    "Next-Generation Transit Survey (NGTS)": "NGTS",
+    "Las Campanas Observatory": "Observatoire de Las Campanas",
+    "NASA Infrared Telescope Facility (IRTF)": "NASA Infrared Telescope Facility (IRTF)",
+    "KELT-North": "KELT-Nord",
+    "SPECULOOS Southern Observatory": "SPECULOOS Sud",
+    "Lowell Observatory": "Observatoire Lowell",
+    "Fred Lawrence Whipple Observatory": "Observatoire Fred Lawrence Whipple",
+    "MEarth Project": "Projet MEarth",
+    "Large Binocular Telescope Observatory": "Observatoire du Grand Télescope Binoculaire",
+    "KELT-South": "KELT-Sud",
+    "XO": "XO",
+    "European Space Agency (ESA) Gaia Satellite": "Satellite Gaia (ESA)",
+    "WASP-South": "WASP-Sud",
+    "KELT": "KELT",
+    "Cerro Tololo Inter-American Observatory": "Observatoire interaméricain du Cerro Tololo",
+    "SuperWASP-North": "SuperWASP-Nord",
+    "Subaru Telescope": "Télescope Subaru",
+    "Mauna Kea Observatory": "Observatoire du Mauna Kea",
+    "South African Radio Astronomy Observatory (SARAO)": "Observatoire sud-africain de radioastronomie (SARAO)",
+    "TrES": "TrES",
+    "CHaracterising ExOPlanets Satellite (CHEOPS)": "CHEOPS",
+    "Winer Observatory": "Observatoire Winer",
+    "Very Long Baseline Array": "Very Long Baseline Array",
+    "Arecibo Observatory": "Observatoire d'Arecibo",
+    "Hubble Space Telescope": "Télescope spatial Hubble",
+    "Apache Point Observatory": "Observatoire Apache Point",
+    "KOINet": "KOINet",
+    "Yunnan Astronomical Observatory": "Observatoire astronomique du Yunnan",
+    "Atacama Large Millimeter Array (ALMA)": "ALMA",
+    "Palomar Observatory": "Observatoire Palomar",
+    "Acton Sky Portal Observatory": "Observatoire Acton Sky Portal",
+    "Haleakala Observatory": "Observatoire Haleakala",
+    "Zwicky Transient Facility": "Zwicky Transient Facility",
+    "Xinglong Station": "Station de Xinglong",
+    "Kitt Peak National Observatory": "Observatoire national de Kitt Peak",
+    "Parkes Observatory": "Observatoire de Parkes",
+    "Infrared Survey Facility": "Infrared Survey Facility",
+    "Teide Observatory": "Observatoire du Teide",
+    "Wide-field Infrared Survey Explorer (WISE) Satellite Mission": "WISE",
+    "James Webb Space Telescope (JWST)": "Télescope spatial James Webb (JWST)",
 }
 
 
