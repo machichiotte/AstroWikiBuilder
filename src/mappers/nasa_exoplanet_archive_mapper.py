@@ -178,9 +178,9 @@ class NasaExoplanetArchiveMapper:
                     setattr(star, star_attribute, datapoint)
 
         # Traitement spécial pour les désignations
-        designations = self._extract_star_altname(nea_data)
-        if designations:
-            star.st_altname = DataPoint(value=designations)
+        st_altnames = self._extract_star_altname(nea_data)
+        if st_altnames:
+            star.st_altname = DataPoint(value=st_altnames)
 
         # Autres traitements
         # Special handling for right_ascension (rastr or ra)
@@ -311,14 +311,18 @@ class NasaExoplanetArchiveMapper:
             try:
                 pl_orbincl_val = float(nea_data["pl_orbincl"])
                 formatted_inclination = f"{pl_orbincl_val}"
+
+                err1 = nea_data.get("pl_orbinclerr1")
+                err2 = nea_data.get("pl_orbinclerr2")
+
+                # Vérifie que les erreurs existent et ne sont pas NaN
                 if (
-                    "pl_orbinclerr1" in nea_data
-                    and "pl_orbinclerr2" in nea_data
-                    and nea_data["pl_orbinclerr1"] is not None
-                    and nea_data["pl_orbinclerr2"] is not None
+                    err1 is not None and err2 is not None
+                    and not (isinstance(err1, float) and math.isnan(err1))
+                    and not (isinstance(err2, float) and math.isnan(err2))
                 ):
-                    pl_orbinclerr1_val = float(nea_data["pl_orbinclerr1"])
-                    pl_orbinclerr2_val = float(nea_data["pl_orbinclerr2"])
+                    pl_orbinclerr1_val = float(err1)
+                    pl_orbinclerr2_val = float(err2)
                     formatted_inclination = f"{pl_orbincl_val}{{{{±|{pl_orbinclerr1_val}|{pl_orbinclerr2_val}}}}}"
                     exoplanet.pl_inclination = DataPoint(
                         value=formatted_inclination, reference=nea_reference

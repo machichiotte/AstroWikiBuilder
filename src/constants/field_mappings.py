@@ -141,6 +141,7 @@ CONSTELLATION_FR: dict[str, str] = {
     "Cepheus": "Céphée",
     "Cetus": "Baleine",
     "Chamaeleon": "Caméléon",
+    "Chamaleon": "Caméléon",
     "Circinus": "Compas",
     "Columba": "Colombe",
     "Coma Berenices": "Chevelure de Bérénice",

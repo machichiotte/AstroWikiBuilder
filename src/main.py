@@ -361,17 +361,17 @@ def star_run_draft_generation(
         elif name in existing_map:
             star_existing_drafts.append((name, draft_content))
         else:
-            if is_wikipedia_check_skipped:
-                logger.info(
-                    f"Wikipedia star check was skipped. Draft for {name} is of unknown status "
-                    f"and will be saved in the 'missing' drafts directory by default."
-                )
-            else:
-                logger.warning(
-                    f"Star {name} was not found in the provided missing_map or existing_map "
-                    f"(even if Wikipedia check was performed). Draft will be saved in the 'missing' "
-                    f"directory by default."
-                )
+            # if is_wikipedia_check_skipped:
+            #     logger.info(
+            #         f"Wikipedia star check was skipped. Draft for {name} is of unknown status "
+            #         f"and will be saved in the 'missing' drafts directory by default."
+            #     )
+            # else:
+            # logger.warning(
+            #    f"Star {name} was not found in the provided missing_map or existing_map "
+            #    f"(even if Wikipedia check was performed). Draft will be saved in the 'missing' "
+            #    f"directory by default."
+            #)
             star_missing_drafts.append((name, draft_content))
 
     logger.info(

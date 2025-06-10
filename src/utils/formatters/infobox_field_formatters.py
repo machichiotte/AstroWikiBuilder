@@ -113,6 +113,10 @@ class FieldFormatter:
     def _format_designation_with_template(designation: str) -> str:
         """Formate une désignation avec le modèle Wikipédia approprié si possible."""
         d = designation.strip()
+        if d.lower().startswith("HD "):
+            return f"{{{{HD|{d.split(' ')[1]}}}}}"
+        if d.lower().startswith("HIP "):
+            return f"{{{{HIP|{d.split(' ')[1]}}}}}"
         if d.lower().startswith("koi "):
             return f"{{{{StarKOI|{d.split(' ')[1]}}}}}"
         if d.lower().startswith("kic "):

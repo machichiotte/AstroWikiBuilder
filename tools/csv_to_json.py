@@ -1,7 +1,6 @@
 import pandas as pd
 import json
 import math
-from pathlib import Path
 
 def convert_csv_to_json(csv_path: str, json_path: str):
     """
@@ -43,19 +42,19 @@ def convert_csv_column_to_json(csv_path: str, json_path: str, column: str):
 
     print("Conversion terminée (colonne unique) !")
 
-if __name__ == "__main__":
-    import sys
-    if len(sys.argv) == 3:
-        csv_path = sys.argv[1]
-        json_path = sys.argv[2]
-        convert_csv_to_json(csv_path, json_path)
-    elif len(sys.argv) == 4:
-        csv_path = sys.argv[1]
-        json_path = sys.argv[2]
-        column = sys.argv[3]
-        convert_csv_column_to_json(csv_path, json_path, column)
-    else:
-        print("Usage:")
-        print("  python csv_to_json.py <input_csv> <output_json>")
-        print("  python csv_to_json.py <input_csv> <output_json> <column_name>")
-        sys.exit(1)
+    if __name__ == "__main__":
+        import sys
+        if len(sys.argv) == 3:
+            csv_path = sys.argv[1]
+            json_path = sys.argv[2]
+            convert_csv_to_json(csv_path, json_path)
+        elif len(sys.argv) == 4:
+            csv_path = sys.argv[1]
+            json_path = sys.argv[2]
+            column = sys.argv[3]
+            convert_csv_column_to_json(csv_path, json_path, column)
+        else:
+            print("Usage:")
+            print("  python csv_to_json.py <input_csv> <output_json>")
+            print("  python csv_to_json.py <input_csv> <output_json> <column_name>")
+            sys.exit(1)
