@@ -6,6 +6,7 @@ from src.utils.formatters.article_formatters import ArticleUtils
 from src.services.reference_manager import ReferenceManager
 from src.generators.star.star_category_generator import StarCategoryGenerator
 from src.generators.base_article_generator import BaseArticleGenerator
+from src.generators.star.star_content_generator import StarContentGenerator
 
 
 class ArticleStarGenerator(BaseArticleGenerator):
@@ -24,10 +25,11 @@ class ArticleStarGenerator(BaseArticleGenerator):
 
         self.infobox_generator = StarInfoboxGenerator(self.reference_manager)
         self.article_utils = ArticleUtils()
+        self.content_generator = StarContentGenerator()
         try:
             locale.setlocale(locale.LC_ALL, "fr_FR.UTF-8")
         except locale.Error:
-            pass  # Optionnel : gérer fallback si besoin
+            pass  # Optionnel : gérer fallback si besoin
 
     def generate_article_content(self, star: DataSourceStar) -> str:
         """
@@ -45,12 +47,8 @@ class ArticleStarGenerator(BaseArticleGenerator):
         # 3. Introduction
         parts.append(self._generate_introduction_section(star))
 
-        # 4. Section Placeholder (ex. Description détaillée)
-        parts.append(
-            self._generate_placeholder_section(
-                "Description détaillée", "Contenu à implémenter…"
-            )
-        )
+        # 4. Contenu principal
+        parts.append(self.content_generator.generate_all_content(star))
 
         # 5. Références et portails
         parts.append(self.generate_references_section())
@@ -64,7 +62,11 @@ class ArticleStarGenerator(BaseArticleGenerator):
         """
         Génère l'introduction de l'article.
         """
-        star_name = star.st_name.value if star.st_name and star.st_name.value else "Cette étoile"
+        star_name = (
+            star.st_name.value
+            if star.st_name and star.st_name.value
+            else "Cette étoile"
+        )
         intro = f"'''{star_name}''' est une étoile"
 
         if star.st_spectral_type and star.st_spectral_type.value:
@@ -74,18 +76,16 @@ class ArticleStarGenerator(BaseArticleGenerator):
 
         if star.st_constellation and star.st_constellation.value:
             intro += f" Elle se trouve dans la constellation [[{star.st_constellation.value}]]."
-        else:
-            intro += " Constellation : {{Placeholder|constellation}}."
-
         if star.st_distance_pc and star.st_distance_pc.value is not None:
             try:
                 dist_val = float(star.st_distance_pc.value)
-                formatted = self.article_utils.format_numeric_value(dist_val, precision=2)
+                formatted = self.article_utils.format_numeric_value(
+                    dist_val, precision=2
+                )
                 intro += f" Elle est située à environ {formatted} [[parsec|parsecs]] de la [[Terre]]."
-            except (ValueError, TypeError):
-                intro += " Distance : {{Placeholder|distance en parsecs}}."
-        else:
-            intro += " Distance : {{Placeholder|distance en parsecs}}."
+
+            except ValueError:
+                formatted = "unknown"
 
         return intro
 

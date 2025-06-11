@@ -27,8 +27,8 @@ class NASAExoplanetArchiveCollector(BaseExoplanetCollector):
         self.mapper = NasaExoplanetArchiveMapper()
 
     def _get_default_cache_filename(self) -> str:
-        return "nea_mock_data_complete.csv"
-        #return "nea_mock_data.csv"
+        # return "nea_mock_data_complete.csv"
+        return "nea_mock_data.csv"
 
     def _get_download_url(self) -> str:
         return "https://exoplanetarchive.ipac.caltech.edu/TAP/sync?query=select+*+from+PSCompPars&format=csv"
@@ -78,7 +78,9 @@ class NASAExoplanetArchiveCollector(BaseExoplanetCollector):
                     stars.append(star)
         return exoplanets, stars
 
-    def _convert_row_to_star(self, row: pd.Series, ref: Reference) -> Optional[DataSourceStar]:
+    def _convert_row_to_star(
+        self, row: pd.Series, ref: Reference
+    ) -> Optional[DataSourceStar]:
         """
         Converts a pandas Series (row from a CSV/DataFrame) to a Star object,
         populating it with data based on predefined mappings.

@@ -20,39 +20,38 @@ class ExoplanetTypeUtils:
     WARM_MIN = 500
     HIGH_INSOLATION_MIN = 100
 
-    def get_exoplanet_planet_type(self, p: DataSourceExoplanet) -> str:
-        m = self._mass_in_earth(p)
-        r = self._radius_in_earth(p)
-        d = self._density(p)
-        insolation = self._stellar_insolation(p)
+    def get_exoplanet_planet_type(self, exoplanet: DataSourceExoplanet) -> str:
+        """
+        Détermine le type de planète basé sur ses caractéristiques physiques.
+        """
+        # Vérifier d'abord si c'est une Super-Terre
+        if exoplanet.pl_mass and exoplanet.pl_radius:
+            try:
+                mass_jupiter = float(exoplanet.pl_mass.value)
+                radius_jupiter = float(exoplanet.pl_radius.value)
 
-        if (
-            r is not None
-            and r >= self.SUPER_PUFF_RADIUS_MIN
-            and (m is None or m <= self.SUPER_EARTH_MAX)
-        ):
-            return "Planète super-enflée"
+                # Une Super-Terre a typiquement une masse entre 1 et 10 masses terrestres
+                # et un rayon entre 1 et 2 rayons terrestres
+                if 0.003 < mass_jupiter < 0.03 and 0.1 < radius_jupiter < 0.2:
+                    return "Super-Terre"
+            except (ValueError, TypeError):
+                pass
+
+        m = self._mass_in_earth(exoplanet)
+        r = self._radius_in_earth(exoplanet)
+        d = self._density(exoplanet)
+        insolation = self._stellar_insolation(exoplanet)
 
         if m is not None and r is not None:
-            return self._classify_combined(m, r, d, p, insolation)
+            return self._classify_combined(m, r, d, exoplanet, insolation)
 
         if m is not None:
-            if m <= self.SUPER_EARTH_MAX:
-                return (
-                    "Super-Terre"
-                    if m > self.EARTH_MAX
-                    else "Planète de dimensions terrestres"
-                )
-            return "Planète géante de masse élevée"
+            return self._classify_by_mass(m)
 
         if r is not None:
-            if r <= self.EARTH_RADIUS_MAX:
-                return "Planète de dimensions terrestres"
-            if r >= self.SUPER_PUFF_RADIUS_MIN:
-                return "Planète super-enflée"
-            return "Planète géante de rayon modéré"
+            return self._classify_by_radius(r)
 
-        return "Type indéfini"
+        return "Exoplanète"  # Type par défaut
 
     def _classify_combined(
         self,
@@ -173,3 +172,19 @@ class ExoplanetTypeUtils:
         if a <= 0:
             return None
         return L / (a**2)
+
+    def _classify_by_mass(self, m: float) -> str:
+        if m <= self.SUPER_EARTH_MAX:
+            return (
+                "Super-Terre"
+                if m > self.EARTH_MAX
+                else "Planète de dimensions terrestres"
+            )
+        return "Planète géante de masse élevée"
+
+    def _classify_by_radius(self, r: float) -> str:
+        if r <= self.EARTH_RADIUS_MAX:
+            return "Planète de dimensions terrestres"
+        if r >= self.SUPER_PUFF_RADIUS_MIN:
+            return "Planète super-enflée"
+        return "Planète géante de rayon modéré"

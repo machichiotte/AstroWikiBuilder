@@ -9,6 +9,7 @@ from src.utils.constellation_utils import ConstellationUtils
 from src.services.reference_manager import ReferenceManager
 from src.utils.validators import infobox_validators
 
+
 class InfoboxBaseGenerator(ABC):
     def __init__(self, reference_manager: ReferenceManager):
         self.reference_manager = reference_manager
@@ -51,8 +52,13 @@ class InfoboxBaseGenerator(ABC):
             if mapping.unit_override:
                 unit = mapping.unit_override
 
-            unit_to_use = unit if infobox_validators.is_needed_infobox_unit(
-                mapping.infobox_field, unit, self.default_mapping) else None
+            unit_to_use = (
+                unit
+                if infobox_validators.is_needed_infobox_unit(
+                    mapping.infobox_field, unit, self.default_mapping
+                )
+                else None
+            )
 
             if mapping.formatter:
                 value_part = mapping.formatter(value).strip()
@@ -66,7 +72,9 @@ class InfoboxBaseGenerator(ABC):
 
         parts = [value_part]
 
-        if infobox_validators.is_valid_infobox_note(mapping.infobox_field, self.get_notes_fields()):
+        if infobox_validators.is_valid_infobox_note(
+            mapping.infobox_field, self.get_notes_fields()
+        ):
             notes_ref = self._extract_notes(datapoint, obj)
             if notes_ref:
                 parts.append(f"| {mapping.infobox_field} notes = {notes_ref}")
@@ -78,7 +86,7 @@ class InfoboxBaseGenerator(ABC):
         if ref is None:
             return None
 
-        name_point = getattr(obj, "name", None)
+        name_point = getattr(obj, "st_name", None)
         current_name = "unknown_object"
         if name_point and hasattr(name_point, "value") and name_point.value:
             current_name = str(name_point.value)

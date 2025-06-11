@@ -111,15 +111,18 @@ class ExoplanetCategoryGenerator:
     ) -> Optional[str]:
         """
         Règle personnalisée pour déterminer la catégorie de type de planète.
-        Cette logique est trop complexe pour le YAML et est gérée en Python,
-        assumant que ExoplanetTypeUtils renvoie déjà la catégorie formatée.
         """
         try:
             planet_type = self.planet_type_utils.get_exoplanet_planet_type(exoplanet)
-            if isinstance(planet_type, str) and planet_type.startswith("[[Catégorie:"):
-                return planet_type
+            if planet_type:
+                mapping = (
+                    self.generator.rules.get("exoplanet", {})
+                    .get("mapped", {})
+                    .get("planet_type", {})
+                )
+                if planet_type in mapping:
+                    return mapping[planet_type]
         except Exception:
-            # En cas de données manquantes ou d'erreur pour la classification
             pass
         return None
 
@@ -143,6 +146,18 @@ class ExoplanetCategoryGenerator:
                     return cat
         return None  # Returns None if no match is found, or if disc_program is None.
 
+    def _get_constellation_category(
+        self, exoplanet: DataSourceExoplanet
+    ) -> Optional[str]:
+        """
+        Règle personnalisée pour déterminer la catégorie de constellation.
+        """
+        if exoplanet.st_constellation and hasattr(exoplanet.st_constellation, "value"):
+            constellation = exoplanet.st_constellation.value
+            if constellation in self.rules["common"]["mapped"]["st_constellation"]:
+                return self.rules["common"]["mapped"]["st_constellation"][constellation]
+        return None
+
     def generate_categories(self, exoplanet: DataSourceExoplanet) -> List[str]:
         """
         Génère les catégories pour une exoplanète en déléguant au générateur de règles
@@ -151,7 +166,7 @@ class ExoplanetCategoryGenerator:
         custom_rules = [
             self._get_planet_type_category,
             self._get_discovered_by_category,
-            # Ajoutez d'autres règles personnalisées ici si nécessaire.
+            self._get_constellation_category,
         ]
 
         # The CategoryGenerator.generate method should be responsible for filtering out
