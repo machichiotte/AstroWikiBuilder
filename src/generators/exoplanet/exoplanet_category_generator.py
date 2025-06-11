@@ -1,11 +1,11 @@
 # src/generators/exoplanet/exoplanet_category_generator.py
-from typing import List, Optional
+from typing import List, Optional, Callable
 from src.models.data_source_exoplanet import DataSourceExoplanet
 from src.utils.exoplanet_type_utils import ExoplanetTypeUtils
-from src.generators.category_generator import CategoryGenerator
+from src.generators.base_category_generator import BaseCategoryGenerator
 
 
-class ExoplanetCategoryGenerator:
+class ExoplanetCategoryGenerator(BaseCategoryGenerator):
     """
     Classe pour générer les catégories des articles d'exoplanètes.
     Utilise un générateur de règles centralisé.
@@ -100,11 +100,17 @@ class ExoplanetCategoryGenerator:
     }
 
     def __init__(self, rules_filepath: str = "src/constants/categories_rules.yaml"):
-        """
-        Initialise le générateur de catégories.
-        """
-        self.generator = CategoryGenerator(rules_filepath)
+        super().__init__(rules_filepath)
         self.planet_type_utils = ExoplanetTypeUtils()
+
+    def get_object_type(self) -> str:
+        return "exoplanet"
+
+    def get_custom_rules(self) -> List[Callable]:
+        return [
+            self._get_planet_type_category,
+            self._get_constellation_category,
+        ]
 
     def _get_planet_type_category(
         self, exoplanet: DataSourceExoplanet
@@ -126,6 +132,24 @@ class ExoplanetCategoryGenerator:
             pass
         return None
 
+    def _get_constellation_category(
+        self, exoplanet: DataSourceExoplanet
+    ) -> Optional[str]:
+        """
+        Règle personnalisée pour déterminer la catégorie de constellation.
+        """
+        if exoplanet.st_constellation:
+            constellation = exoplanet.st_constellation.value
+            if constellation:
+                mapping = (
+                    self.generator.rules.get("exoplanet", {})
+                    .get("mapped", {})
+                    .get("constellation", {})
+                )
+                if constellation in mapping:
+                    return mapping[constellation]
+        return None
+
     def _get_discovered_by_category(
         self, exoplanet: DataSourceExoplanet
     ) -> Optional[str]:
@@ -145,18 +169,6 @@ class ExoplanetCategoryGenerator:
                 if key.lower() in discovered_by_program.lower():
                     return cat
         return None  # Returns None if no match is found, or if disc_program is None.
-
-    def _get_constellation_category(
-        self, exoplanet: DataSourceExoplanet
-    ) -> Optional[str]:
-        """
-        Règle personnalisée pour déterminer la catégorie de constellation.
-        """
-        if exoplanet.st_constellation and hasattr(exoplanet.st_constellation, "value"):
-            constellation = exoplanet.st_constellation.value
-            if constellation in self.rules["common"]["mapped"]["st_constellation"]:
-                return self.rules["common"]["mapped"]["st_constellation"][constellation]
-        return None
 
     def generate_categories(self, exoplanet: DataSourceExoplanet) -> List[str]:
         """

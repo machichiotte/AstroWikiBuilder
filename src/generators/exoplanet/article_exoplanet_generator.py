@@ -9,7 +9,7 @@ from src.utils.constellation_utils import ConstellationUtils
 
 from src.utils.exoplanet_comparison_utils import ExoplanetComparisonUtils
 from src.utils.exoplanet_type_utils import ExoplanetTypeUtils
-from src.generators.exoplanet.exoplanet_infobox_generator_v2 import (
+from src.generators.exoplanet.exoplanet_infobox_generator import (
     ExoplanetInfoboxGenerator,
 )
 from src.generators.exoplanet.exoplanet_introduction_generator import (
@@ -20,7 +20,6 @@ from src.generators.exoplanet.exoplanet_category_generator import (
 )
 from src.services.reference_manager import ReferenceManager
 from src.generators.base_article_generator import BaseArticleGenerator
-
 
 
 class ArticleExoplanetGenerator(BaseArticleGenerator):
@@ -80,7 +79,9 @@ class ArticleExoplanetGenerator(BaseArticleGenerator):
         parts.append(self.infobox_generator.generate(exoplanet))
 
         # 3. Introduction
-        parts.append(self.introduction_generator.generate_exoplanet_introduction(exoplanet))
+        parts.append(
+            self.introduction_generator.generate_exoplanet_introduction(exoplanet)
+        )
 
         # 4. Caractéristiques physiques
         parts.append(self._generate_physical_characteristics_section(exoplanet))
@@ -185,10 +186,17 @@ class ArticleExoplanetGenerator(BaseArticleGenerator):
 
         return section
 
-    def _generate_physical_characteristics_section(self, exoplanet: DataSourceExoplanet) -> str:
+    def _generate_physical_characteristics_section(
+        self, exoplanet: DataSourceExoplanet
+    ) -> str:
         """Génère la section des caractéristiques physiques."""
+
         def get_value_or_none_if_nan(data_point):
-            if data_point and hasattr(data_point, "value") and data_point.value is not None:
+            if (
+                data_point
+                and hasattr(data_point, "value")
+                and data_point.value is not None
+            ):
                 value = data_point.value
                 if isinstance(value, str) and value.lower() == "nan":
                     return None
@@ -213,9 +221,12 @@ class ArticleExoplanetGenerator(BaseArticleGenerator):
             except Exception:
                 mass_f = None
             mass_value = self.article_utils.format_numeric_value(
-                mass, precision=3 if mass_f is not None and mass_f < 0.1 else (2 if mass_f is not None and mass_f < 1 else 1)
+                mass,
+                precision=3
+                if mass_f is not None and mass_f < 0.1
+                else (2 if mass_f is not None and mass_f < 1 else 1),
             )
-            
+
             if mass_f is not None:
                 if mass_f < 0.1:
                     label = "faible"
@@ -233,7 +244,10 @@ class ArticleExoplanetGenerator(BaseArticleGenerator):
             except Exception:
                 radius_f = None
             radius_value = self.article_utils.format_numeric_value(
-                radius, precision=3 if radius_f is not None and radius_f < 0.1 else (2 if radius_f is not None and radius_f < 1 else 1)
+                radius,
+                precision=3
+                if radius_f is not None and radius_f < 0.1
+                else (2 if radius_f is not None and radius_f < 1 else 1),
             )
             if radius_f is not None:
                 if radius_f < 0.5:
