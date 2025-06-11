@@ -3,7 +3,10 @@
 from src.generators.base_infobox_generator import InfoboxBaseGenerator
 from src.models.data_source_exoplanet import DataSourceExoplanet
 from src.models.infobox_fields import InfoboxMapper, FieldMapping, FieldType
-from src.constants.field_mappings import FIELD_DEFAULT_UNITS_EXOPLANET, NOTES_FIELDS_EXOPLANET
+from src.constants.field_mappings import (
+    FIELD_DEFAULT_UNITS_EXOPLANET,
+    NOTES_FIELDS_EXOPLANET,
+)
 
 
 class ExoplanetInfoboxGenerator(InfoboxBaseGenerator):
@@ -19,7 +22,9 @@ class ExoplanetInfoboxGenerator(InfoboxBaseGenerator):
     def is_valid_object(self, obj) -> bool:
         return isinstance(obj, DataSourceExoplanet)
 
-    def handle_special_field(self, exoplanet: DataSourceExoplanet, mapping: FieldMapping) -> str:
+    def handle_special_field(
+        self, exoplanet: DataSourceExoplanet, mapping: FieldMapping
+    ) -> str:
         if mapping.field_type == FieldType.CONSTELLATION:
             if not (exoplanet.st_right_ascension and exoplanet.st_declination):
                 return ""

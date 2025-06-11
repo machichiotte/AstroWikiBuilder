@@ -11,7 +11,7 @@ from src.data_collectors.base_collector import BaseExoplanetCollector
 from src.models.data_source_exoplanet import DataSourceExoplanet
 from src.models.data_source_star import DataSourceStar
 
-from src.models.reference import DataPoint, Reference, SourceType
+from src.models.reference import Reference, SourceType
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -27,8 +27,8 @@ class NASAExoplanetArchiveCollector(BaseExoplanetCollector):
         self.mapper = NasaExoplanetArchiveMapper()
 
     def _get_default_cache_filename(self) -> str:
-        # return "nea_mock_data_complete.csv"
-        return "nea_mock_data.csv"
+        return "nea_mock_data_complete.csv"
+        # return "nea_mock_data.csv"
 
     def _get_download_url(self) -> str:
         return "https://exoplanetarchive.ipac.caltech.edu/TAP/sync?query=select+*+from+PSCompPars&format=csv"
