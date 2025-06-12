@@ -10,9 +10,9 @@ class DataSourceStar:
     st_name: Optional[DataPoint] = None
     st_image: Optional[DataPoint] = None
     st_caption: Optional[DataPoint] = None
-    st_coord_title: Optional[DataPoint] = None  # Added based on the template
-    st_upright: Optional[DataPoint] = None  # Added based on the template
-    st_iau_map: Optional[DataPoint] = None  # Added based on the template
+    st_coord_title: Optional[DataPoint] = None
+    st_upright: Optional[DataPoint] = None
+    st_iau_map: Optional[DataPoint] = None
     st_altname: Optional[DataPoint] = None
 
     # Astrometry
@@ -32,7 +32,7 @@ class DataSourceStar:
     st_parallax_2: Optional[DataPoint] = None
     st_distance_pc: Optional[DataPoint] = None
     st_distance_pc_2: Optional[DataPoint] = None
-    st_distance_light_years: Optional[DataPoint] = None  # distance al
+    st_distance_light_years: Optional[DataPoint] = None
     st_distance_light_years_2: Optional[DataPoint] = None
     st_distance: Optional[DataPoint] = None  # distance
     st_distance_2: Optional[DataPoint] = None
@@ -107,7 +107,5 @@ class DataSourceStar:
     # Caractéristiques système binaire
     st_semi_amplitude_1: Optional[DataPoint] = None
     st_semi_amplitude_2: Optional[DataPoint] = None
-    st_argument_of_periapsis_2: Optional[DataPoint] = (
-        None  # Assuming this refers to the second component's argument of periapsis
-    )
+    st_argument_of_periapsis_2: Optional[DataPoint] = None
     st_epoch_binary: Optional[DataPoint] = None

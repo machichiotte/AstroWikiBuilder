@@ -11,7 +11,6 @@
 common:
   mapped:
     st_constellation:
-      # Nom de la constellation (valeur dans l'objet) -> Catégorie
       'Andromeda': '[[Catégorie:Constellation d''Andromède]]'
       'Antlia': '[[Catégorie:Constellation de la Machine pneumatique]]'
       'Boötes': '[[Catégorie:Constellation du Bouvier]]'
@@ -121,6 +120,17 @@ exoplanet:
 star:
   base: "[[Catégorie:Étoile]]"
   mapped:
+    prefix_mapped:
+      st_name: 
+        'KEPLER-': '[[Catégorie:Catalogue Kepler]]'
+        'K2-': '[[Catégorie:Catalogue K2]]'
+        'KOI-': '[[Catégorie:Catalogue KOI]]'
+        'HD ': '[[Catégorie:Catalogue Henry Draper]]'
+        'HIP ': '[[Catégorie:Catalogue Hipparcos]]'
+        'GJ ': '[[Catégorie:Catalogue Gliese-Jahreiss]]'
+        'GLIESE ': '[[Catégorie:Catalogue Gliese]]'
+        'WASP-': '[[Catégorie:Catalogue SuperWASP]]'
+        'TRAPPIST-': '[[Catégorie:Catalogue TRAPPIST]]'
     st_spectral_type:
       'O': "[[Catégorie:Étoile de type spectral O]]"
       'B': "[[Catégorie:Étoile de type spectral B]]"
