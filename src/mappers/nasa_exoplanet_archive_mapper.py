@@ -3,15 +3,22 @@ from typing import Dict, Any, Optional
 from src.models.reference import Reference, SourceType, DataPoint
 from src.models.data_source_star import DataSourceStar
 from src.models.data_source_exoplanet import DataSourceExoplanet
+from src.utils.constellation_utils import ConstellationUtils
 
 from datetime import datetime
 from src.utils.formatters.infobox_field_formatters import FieldFormatter
-from src.constants.field_mappings import FIELD_DEFAULT_UNITS_STAR, FIELD_DEFAULT_UNITS_EXOPLANET
+from src.constants.field_mappings import (
+    FIELD_DEFAULT_UNITS_STAR,
+    FIELD_DEFAULT_UNITS_EXOPLANET,
+)
 import math
 
 
 class NasaExoplanetArchiveMapper:
     """Mapper pour convertir les données NEA Exoplanet Archive vers le modèle Star"""
+
+    def __init__(self):
+        self.constellation_utils = ConstellationUtils()
 
     # Mapping des colonnes NEA vers les attributs Star
     NEA_TO_STAR_MAPPING = {
@@ -24,7 +31,6 @@ class NasaExoplanetArchiveMapper:
         "sy_pmdec": "st_proper_motion_dec",
         "sy_plx": "st_parallax",
         "sy_dist": "st_distance",
-
         # Magnitudes
         "sy_bmag": "st_mag_b",
         "sy_vmag": "st_mag_v",
@@ -62,7 +68,6 @@ class NasaExoplanetArchiveMapper:
         # Identifiants
         "pl_name": "pl_name",
         "pl_altname": "pl_altname",
-
         # Étoile hôte
         "hostname": "st_name",
         # "": "st_epoch",
@@ -71,9 +76,7 @@ class NasaExoplanetArchiveMapper:
         "sy_dist": "st_distance",
         "st_spectype": "st_spectral_type",
         "sy_vmag": "st_apparent_magnitude",
-
         # PLANÈTE
-
         # Caractéristiques orbitales
         "pl_orbsmax": "pl_semi_major_axis",
         # "": "pl_periastron",
@@ -85,7 +88,6 @@ class NasaExoplanetArchiveMapper:
         "pl_orbincl": "pl_inclination",
         "pl_orblper": "pl_argument_of_periastron",
         # "": "pl_epoch",
-
         # Caractéristiques physiques
         "pl_bmassj": "pl_mass",
         "pl_msinij": "pl_minimum_mass",
@@ -95,12 +97,10 @@ class NasaExoplanetArchiveMapper:
         # "": "pl_rotation_period",
         "pl_eqt": "pl_temperature",
         # "": "pl_albedo_bond",
-
         # Atmosphère
         # "": "pl_pressure",
         # "": "pl_composition",
         # "": "pl_wind_speed",
-
         # Découverte
         # "": "disc_by",
         # "": "disc_program",
@@ -116,35 +116,33 @@ class NasaExoplanetArchiveMapper:
     # Unités par défaut pour certains champs NEA
     NEA_DEFAULT_UNITS: dict[str, str] = {
         # --- Coordonnées et mouvements ---
-        "ra": "°",                     # Ascension droite
-        "dec": "°",                    # Déclinaison
-        "sy_pmra": "mas/an",          # mouvement propre en RA
-        "sy_pmdec": "mas/an",         # mouvement propre en DEC
-        "sy_plx": "mas",              # parallaxe
-        "sy_dist": "pc",              # parsecs
-
+        "ra": "°",  # Ascension droite
+        "dec": "°",  # Déclinaison
+        "sy_pmra": "mas/an",  # mouvement propre en RA
+        "sy_pmdec": "mas/an",  # mouvement propre en DEC
+        "sy_plx": "mas",  # parallaxe
+        "sy_dist": "pc",  # parsecs
         # --- Étoile (préfixe st_) ---
-        "st_teff": "K",               # Température effective
-        "st_mass": "M☉",              # Masse stellaire
-        "st_rad": "R☉",               # Rayon stellaire
-        "st_met": "[Fe/H]",           # Métallicité (dex mais exprimée [Fe/H])
-        "st_logg": "log g",           # Gravité de surface log g
-        "st_lum": "L☉",               # Luminosité stellaire
-        "st_dens": "g/cm³",           # Densité stellaire
-        "st_age": "Ga",               # Âge stellaire
-        "st_radv": "km/s",            # Vitesse radiale
-        "st_rotp": "j",               # Période de rotation (jours)
-        "st_vsin": "km/s",            # Vitesse de rotation projetée
-
+        "st_teff": "K",  # Température effective
+        "st_mass": "M☉",  # Masse stellaire
+        "st_rad": "R☉",  # Rayon stellaire
+        "st_met": "[Fe/H]",  # Métallicité (dex mais exprimée [Fe/H])
+        "st_logg": "log g",  # Gravité de surface log g
+        "st_lum": "L☉",  # Luminosité stellaire
+        "st_dens": "g/cm³",  # Densité stellaire
+        "st_age": "Ga",  # Âge stellaire
+        "st_radv": "km/s",  # Vitesse radiale
+        "st_rotp": "j",  # Période de rotation (jours)
+        "st_vsin": "km/s",  # Vitesse de rotation projetée
         # --- Planète (préfixe pl_) ---
-        "pl_orbper": "j",             # Période orbitale (jours)
-        "pl_angsep": "″",             # Séparation angulaire (arcsec)
-        "pl_orbincl": "°",            # Inclinaison orbitale
-        "pl_msinij": "MJ",            # Masse minimum (Jupiter)
-        "pl_bmassj": "MJ",            # Masse brute (Jupiter)
-        "pl_radj": "RJ",              # Rayon (Jupiter)
-        "pl_dens": "g/cm³",           # Densité planétaire
-        "pl_eqt": "K",                # Température d'équilibre
+        "pl_orbper": "j",  # Période orbitale (jours)
+        "pl_angsep": "″",  # Séparation angulaire (arcsec)
+        "pl_orbincl": "°",  # Inclinaison orbitale
+        "pl_msinij": "MJ",  # Masse minimum (Jupiter)
+        "pl_bmassj": "MJ",  # Masse brute (Jupiter)
+        "pl_radj": "RJ",  # Rayon (Jupiter)
+        "pl_dens": "g/cm³",  # Densité planétaire
+        "pl_eqt": "K",  # Température d'équilibre
     }
 
     def map_nea_data_to_star(self, nea_data: Dict[str, Any]) -> DataSourceStar:
@@ -165,10 +163,18 @@ class NasaExoplanetArchiveMapper:
                 value = nea_data[nea_field]
 
                 # Créer un DataPoint avec la valeur et l'unité par défaut
-                if value is not None and str(value).strip() and not (isinstance(value, float) and math.isnan(value)):
+                if (
+                    value is not None
+                    and str(value).strip()
+                    and not (isinstance(value, float) and math.isnan(value))
+                ):
                     unit = None
 
-                    if self.NEA_DEFAULT_UNITS.get(nea_field) and self.NEA_DEFAULT_UNITS.get(nea_field) != FIELD_DEFAULT_UNITS_STAR.get(star_attribute):
+                    if self.NEA_DEFAULT_UNITS.get(
+                        nea_field
+                    ) and self.NEA_DEFAULT_UNITS.get(
+                        nea_field
+                    ) != FIELD_DEFAULT_UNITS_STAR.get(star_attribute):
                         unit = FIELD_DEFAULT_UNITS_STAR.get(star_attribute)
 
                     datapoint = DataPoint(
@@ -187,7 +193,9 @@ class NasaExoplanetArchiveMapper:
         if "rastr" in nea_data and nea_data["rastr"]:
             formatted_ra = self._format_right_ascension_str(nea_data["rastr"])
             if formatted_ra:
-                star.st_right_ascension.value = formatted_ra
+                star.st_right_ascension = DataPoint(
+                    value=formatted_ra, reference=nea_reference
+                )
 
         elif "ra" in nea_data and nea_data["ra"] is not None:
             try:
@@ -219,9 +227,22 @@ class NasaExoplanetArchiveMapper:
             except (ValueError, TypeError):
                 # Handle cases where 'dec' might not be a valid number
                 pass
+
+        # Calcul de la constellation si on a les coordonnées
+        if star.st_right_ascension and star.st_declination:
+            constellation = self.constellation_utils.get_constellation_name(
+                star.st_right_ascension.value, star.st_declination.value
+            )
+            if constellation:
+                star.st_constellation = DataPoint(
+                    value=constellation, reference=nea_reference
+                )
+
         return star
 
-    def map_nea_data_to_exoplanet(self, nea_data: Dict[str, Any]) -> DataSourceExoplanet:
+    def map_nea_data_to_exoplanet(
+        self, nea_data: Dict[str, Any]
+    ) -> DataSourceExoplanet:
         """Convertit un dictionnaire de données NEA vers un objet Exoplanet"""
         exoplanet = DataSourceExoplanet()
 
@@ -241,27 +262,48 @@ class NasaExoplanetArchiveMapper:
 
                 # Liste des champs à formater
                 numeric_fields = {
-                    "pl_orbsmax", "pl_angsep", "pl_bmassj", "pl_msinij", "pl_radj", "pl_dens", "pl_eqt",
-                    "sy_dist", "st_teff", "st_mass", "st_rad", "st_met", "st_logg", "st_lum", "st_dens", "st_age"
+                    "pl_orbsmax",
+                    "pl_angsep",
+                    "pl_bmassj",
+                    "pl_msinij",
+                    "pl_radj",
+                    "pl_dens",
+                    "pl_eqt",
+                    "sy_dist",
+                    "st_teff",
+                    "st_mass",
+                    "st_rad",
+                    "st_met",
+                    "st_logg",
+                    "st_lum",
+                    "st_dens",
+                    "st_age",
                 }
 
                 if nea_field in numeric_fields and value not in (None, ""):
-                    value = FieldFormatter.format_numeric_no_trailing_zeros(
-                        value)
+                    value = FieldFormatter.format_numeric_no_trailing_zeros(value)
 
                 # Créer un DataPoint avec la valeur et l'unité par défaut
                 if value is not None and str(value).strip():
                     unit = self.NEA_DEFAULT_UNITS.get(nea_field)
                     datapoint = DataPoint(
-                        value=value, unit=unit, reference=nea_reference)
+                        value=value, unit=unit, reference=nea_reference
+                    )
                     setattr(exoplanet, exoplanet_attribute, datapoint)
 
-                if value is not None and str(value).strip() and not (isinstance(value, float) and math.isnan(value)):
+                if (
+                    value is not None
+                    and str(value).strip()
+                    and not (isinstance(value, float) and math.isnan(value))
+                ):
                     unit = None
 
-                    if self.NEA_DEFAULT_UNITS.get(nea_field) and self.NEA_DEFAULT_UNITS.get(nea_field) != FIELD_DEFAULT_UNITS_EXOPLANET.get(exoplanet_attribute):
-                        unit = FIELD_DEFAULT_UNITS_EXOPLANET.get(
-                            exoplanet_attribute)
+                    if self.NEA_DEFAULT_UNITS.get(
+                        nea_field
+                    ) and self.NEA_DEFAULT_UNITS.get(
+                        nea_field
+                    ) != FIELD_DEFAULT_UNITS_EXOPLANET.get(exoplanet_attribute):
+                        unit = FIELD_DEFAULT_UNITS_EXOPLANET.get(exoplanet_attribute)
 
                     datapoint = DataPoint(
                         value=value, unit=unit, reference=nea_reference
@@ -307,6 +349,16 @@ class NasaExoplanetArchiveMapper:
                 # Handle cases where 'dec' might not be a valid number
                 pass
 
+        # Calcul de la constellation si on a les coordonnées
+        if exoplanet.st_right_ascension and exoplanet.st_declination:
+            constellation = self.constellation_utils.get_constellation_name(
+                exoplanet.st_right_ascension.value, exoplanet.st_declination.value
+            )
+            if constellation:
+                exoplanet.st_constellation = DataPoint(
+                    value=constellation, reference=nea_reference
+                )
+
         if "pl_orbincl" in nea_data and nea_data["pl_orbincl"] is not None:
             try:
                 pl_orbincl_val = float(nea_data["pl_orbincl"])
@@ -317,7 +369,8 @@ class NasaExoplanetArchiveMapper:
 
                 # Vérifie que les erreurs existent et ne sont pas NaN
                 if (
-                    err1 is not None and err2 is not None
+                    err1 is not None
+                    and err2 is not None
                     and not (isinstance(err1, float) and math.isnan(err1))
                     and not (isinstance(err2, float) and math.isnan(err2))
                 ):
@@ -393,8 +446,7 @@ class NasaExoplanetArchiveMapper:
             # Handle cases where it might not be a string (e.g., NaN, other types)
             return ""  # Return empty string for invalid input
 
-        formatted_ra = rastr_val.replace(
-            "h", "/").replace("m", "/").replace("s", "")
+        formatted_ra = rastr_val.replace("h", "/").replace("m", "/").replace("s", "")
 
         return formatted_ra.strip()
 
@@ -409,8 +461,7 @@ class NasaExoplanetArchiveMapper:
             # Handle cases where it might not be a string
             return ""  # Return empty string for invalid input
 
-        formatted_dec = decstr_val.replace(
-            "d", "/").replace("m", "/").replace("s", "")
+        formatted_dec = decstr_val.replace("d", "/").replace("m", "/").replace("s", "")
 
         return formatted_dec.strip()
 
@@ -486,8 +537,7 @@ class NasaExoplanetArchiveMapper:
         # Case 2: HTML snippet
         elif "div" in epoch_str_val and "<span" in epoch_str_val:
             # Pre-process the HTML to fix the common malformation: class=value" -> class="value"
-            fixed_html_str = re.sub(
-                r'class=(\w+)"', r'class="\1"', epoch_str_val)
+            fixed_html_str = re.sub(r'class=(\w+)"', r'class="\1"', epoch_str_val)
             soup = BeautifulSoup(fixed_html_str, "html5lib")
 
             base_value_span = soup.find("span", class_="supersubNumber")

@@ -27,13 +27,12 @@ class ConstellationUtils:
 
         return CONSTELLATION_FR.get(constellation_en, constellation_en)
 
-    def get_constellation_UAI(self, right_ascension, declination) -> str:
+    def get_constellation_UAI(self, st_constallation) -> str:
         """
         Génère le lien formaté pour la constellation de l'étoile hôte.
         Ex: [[Cygne (constellation)|Cygne]]
         """
-        constellation_name = self.get_constellation_name(right_ascension, declination)
 
-        if constellation_name and constellation_name != "son étoile hôte":
-            return f"[[{constellation_name} (constellation)|{constellation_name}]]"
+        if st_constallation and st_constallation != "son étoile hôte":
+            return f"[[{st_constallation} (constellation)|{st_constallation}]]"
         return ""

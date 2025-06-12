@@ -118,16 +118,6 @@ FIELD_DEFAULT_UNITS_EXOPLANET: dict[str, str] = {
     "argument of periastron": "°",  # Degrés
 }
 
-# Champs pour lesquels un lien direct vers un article Wikipédia doit être généré
-WIKILINK_FIELDS_DIRECT: list[str] = [
-    "étoile",
-    "constellation",
-    "programme",
-    "lieu",
-    # Ex: "programme": "Programme Kepler" -> [[Programme Kepler]]
-    # Ex: "lieu": "Observatoire de La Silla" -> [[Observatoire de La Silla]]
-]
-
 # Dictionnaire pour traduire les méthodes de découverte et lier vers l'article FR
 # Les clés sont les valeurs attendues de la source de données (en anglais, normalisées en minuscules)
 METHOD_NAME_MAPPING: dict[str, str] = {

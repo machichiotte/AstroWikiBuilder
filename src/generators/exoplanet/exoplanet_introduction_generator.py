@@ -57,7 +57,8 @@ class ExoplanetIntroductionGenerator:
 
         star_type_description = self._get_exoplanet_spectral_type_formatted_description(
             exoplanet.st_spectral_type.value
-            if exoplanet.st_spectral_type and hasattr(exoplanet.st_spectral_type, "value")
+            if exoplanet.st_spectral_type
+            and hasattr(exoplanet.st_spectral_type, "value")
             else None
         )
 
@@ -80,8 +81,7 @@ class ExoplanetIntroductionGenerator:
 
         try:
             distance_pc = float(exoplanet.st_distance.value)
-            distance_ly = self.article_utils.format_parsecs_to_lightyears(
-                distance_pc)
+            distance_ly = self.article_utils.format_parsecs_to_lightyears(distance_pc)
             if distance_ly is not None:
                 formatted_distance_ly = self.article_utils.format_numeric_value(
                     distance_ly
@@ -113,7 +113,9 @@ class ExoplanetIntroductionGenerator:
         else:
             return f"dans la constellation {preposition} {constellation_french_name}"
 
-    def _build_constellation_segment(self, exoplanet: DataSourceExoplanet) -> Optional[str]:
+    def _build_constellation_segment(
+        self, exoplanet: DataSourceExoplanet
+    ) -> Optional[str]:
         """Construit le segment de phrase concernant la constellation."""
         if not (
             exoplanet.st_constellation
@@ -122,9 +124,8 @@ class ExoplanetIntroductionGenerator:
         ):
             return None
 
-        constellation_name_fr = self.constellation_utils.get_constellation_name(
-            exoplanet.st_constellation.value
-        )
+        constellation_name_fr = exoplanet.st_constellation.value
+
         if constellation_name_fr:
             return self._format_constellation_locative_phrase(constellation_name_fr)
         return None
@@ -133,12 +134,15 @@ class ExoplanetIntroductionGenerator:
         """
         Génère l'introduction pour une exoplanète.
         """
-        planet_type = self.planet_type_utils.get_exoplanet_planet_type(
-            exoplanet)
+        planet_type = self.planet_type_utils.get_exoplanet_planet_type(exoplanet)
         # planet_type est supposé être une chaîne comme "Jupiter chaud", pour être utilisé dans "[[Jupiter chaud]]"
 
         planet_name_str = "Nom inconnu"
-        if exoplanet.pl_name and hasattr(exoplanet.pl_name, "value") and exoplanet.pl_name.value:
+        if (
+            exoplanet.pl_name
+            and hasattr(exoplanet.pl_name, "value")
+            and exoplanet.pl_name.value
+        ):
             planet_name_str = exoplanet.pl_name.value
         elif isinstance(exoplanet.pl_name, str):  # Fallback if name is already a string
             planet_name_str = exoplanet.pl_name

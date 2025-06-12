@@ -11,8 +11,6 @@ class FieldType(Enum):
     """Types de champs pour déterminer le formatage approprié"""
 
     SIMPLE = "simple"  # Valeur simple avec unité optionnelle
-    CONSTELLATION = "constellation"  # Champ constellation calculé
-    CARTE_UAI = "carte_uai"  # Carte UAI calculée
 
 
 @dataclass
@@ -50,8 +48,8 @@ class InfoboxMapper:
             FieldMapping("st_right_ascension", "ascension droite"),
             FieldMapping("st_declination", "déclinaison"),
             FieldMapping("st_distance", "distance"),
-            FieldMapping("st_constellation", "constellation", FieldType.CONSTELLATION),
-            FieldMapping("st_carte_uai", "carte UAI", FieldType.CARTE_UAI),
+            FieldMapping("st_constellation", "constellation"),
+            FieldMapping("st_constellation", "carte UAI"),
             FieldMapping("st_spectral_type", "type spectral"),
             FieldMapping("st_apparent_magnitude", "magnitude apparente"),
             # Caractéristiques orbitales
@@ -119,8 +117,8 @@ class InfoboxMapper:
             FieldMapping("st_coord_title", "coord titre"),
             FieldMapping("st_altname", "désignations"),
             # Champs calculés
-            FieldMapping("st_constellation", "constellation", FieldType.CONSTELLATION),
-            FieldMapping("st_carte_uai", "carte UAI", FieldType.CARTE_UAI),
+            FieldMapping("st_constellation", "constellation"),
+            FieldMapping("st_constellation", "carte UAI"),
             # Données d'observation
             FieldMapping("st_epoch", "époque"),
             FieldMapping("st_right_ascension", "ascension droite"),
