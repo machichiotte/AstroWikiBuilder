@@ -44,20 +44,22 @@ class StarCategoryGenerator(BaseCategoryGenerator):
         """
         Génère une catégorie basée sur le catalogue d'origine de l'étoile
         (Kepler, K2, KOI, etc.) en se basant sur le nom principal ou les noms alternatifs.
+        Retourne toutes les catégories de catalogue trouvées.
         """
         catalog_mappings = (
             self.generator.rules.get("star", {})
             .get("mapped", {})
-            .get("prefix_mapped", {})
-            .get("st_name", {})
+            .get("prefix_catalog", {})
         )
+
+        categories = set()  # Utiliser un set pour éviter les doublons
 
         # Vérifier le nom principal
         if star.st_name and star.st_name.value:
             name = star.st_name.value.upper()
             for prefix, category_name in catalog_mappings.items():
                 if name.startswith(prefix):
-                    return f"{category_name}"
+                    categories.add(category_name)
 
         # Vérifier les noms alternatifs
         if star.st_altname and star.st_altname.value:
@@ -67,9 +69,10 @@ class StarCategoryGenerator(BaseCategoryGenerator):
                     alt_name = alt_name.strip().upper()
                     for prefix, category_name in catalog_mappings.items():
                         if alt_name.startswith(prefix):
-                            return f"{category_name}"
+                            categories.add(category_name)
 
-        return None
+        # Retourner toutes les catégories trouvées, séparées par des retours à la ligne
+        return "\n".join(sorted(categories)) if categories else None
 
     def _get_spectral_type_category(self, star: DataSourceStar) -> Optional[str]:
         """

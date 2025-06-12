@@ -120,8 +120,7 @@ exoplanet:
 star:
   base: "[[Catégorie:Étoile]]"
   mapped:
-    prefix_mapped:
-      st_name: 
+    prefix_catalog:
         'KEPLER-': '[[Catégorie:Catalogue Kepler]]'
         'K2-': '[[Catégorie:Catalogue K2]]'
         'KOI-': '[[Catégorie:Catalogue KOI]]'
