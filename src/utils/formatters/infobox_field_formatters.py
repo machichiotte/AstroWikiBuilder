@@ -200,13 +200,14 @@ class FieldFormatter:
         if datapoint.reference and infobox_validators.is_valid_infobox_note(
             mapping.infobox_field, notes_fields
         ):
-            notes_ref = self._extract_notes(datapoint)
+            notes_ref = FieldFormatter._extract_notes(datapoint)
             if notes_ref:
                 parts.append(f"| {mapping.infobox_field} notes = {notes_ref}")
 
         return "\n".join(parts)
 
-    def _extract_notes(self, datapoint: DataPoint) -> Optional[str]:
+    @staticmethod
+    def _extract_notes(datapoint: DataPoint) -> Optional[str]:
         """Extrait les notes d'un DataPoint."""
         ref = datapoint.reference
         if not ref:
