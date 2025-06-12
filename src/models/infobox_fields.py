@@ -11,7 +11,6 @@ class FieldType(Enum):
     """Types de champs pour déterminer le formatage approprié"""
 
     SIMPLE = "simple"  # Valeur simple avec unité optionnelle
-    SEPARATE_UNIT = "separate_unit"  # Champs nécessitant une ligne séparée pour l'unité
     CONSTELLATION = "constellation"  # Champ constellation calculé
     CARTE_UAI = "carte_uai"  # Carte UAI calculée
 
@@ -28,9 +27,9 @@ class FieldMapping:
     formatter: Optional[Callable[[Any], str]] = (
         None  # Fonction de formatage personnalisée
     )
-    condition: Optional[Callable[[Union[DataSourceExoplanet, DataSourceStar]], bool]] = (
-        None  # Condition pour inclure le champ
-    )
+    condition: Optional[
+        Callable[[Union[DataSourceExoplanet, DataSourceStar]], bool]
+    ] = None  # Condition pour inclure le champ
 
 
 class InfoboxMapper:
@@ -43,66 +42,60 @@ class InfoboxMapper:
             # Identifiants
             FieldMapping("name", "nom"),
             FieldMapping("pl_altname", "autres noms"),
-
             FieldMapping("image", "image"),
             FieldMapping("caption", "légende"),
-
             # Étoile hôte
             FieldMapping("st_name", "étoile"),
             FieldMapping("st_epoch", "époque étoile"),
             FieldMapping("st_right_ascension", "ascension droite"),
             FieldMapping("st_declination", "déclinaison"),
             FieldMapping("st_distance", "distance"),
-            FieldMapping("st_constellation", "constellation",
-                         FieldType.CONSTELLATION),
+            FieldMapping("st_constellation", "constellation", FieldType.CONSTELLATION),
             FieldMapping("st_carte_uai", "carte UAI", FieldType.CARTE_UAI),
             FieldMapping("st_spectral_type", "type spectral"),
             FieldMapping("st_apparent_magnitude", "magnitude apparente"),
-
             # Caractéristiques orbitales
-            FieldMapping("pl_semi_major_axis", "demi-grand axe",
-                         FieldType.SEPARATE_UNIT, default_unit="unités astronomiques"),
-            FieldMapping("pl_periastron", "périastre",
-                         FieldType.SEPARATE_UNIT, default_unit="unités astronomiques"),
-            FieldMapping("pl_apoastron", "apoastre", FieldType.SEPARATE_UNIT,
-                         default_unit="unités astronomiques"),
+            FieldMapping(
+                "pl_semi_major_axis",
+                "demi-grand axe",
+                default_unit="unités astronomiques",
+            ),
+            FieldMapping(
+                "pl_periastron", "périastre", default_unit="unités astronomiques"
+            ),
+            FieldMapping(
+                "pl_apoastron", "apoastre", default_unit="unités astronomiques"
+            ),
             FieldMapping("pl_eccentricity", "excentricité"),
-            FieldMapping("pl_orbital_period", "période",
-                         FieldType.SEPARATE_UNIT, default_unit="jours"),
+            FieldMapping("pl_orbital_period", "période", default_unit="jours"),
             FieldMapping("pl_angular_distance", "distance angulaire"),
             FieldMapping("pl_periastron_time", "t_peri"),
-            FieldMapping("pl_inclination", "inclinaison",
-                         FieldType.SEPARATE_UNIT),
-            FieldMapping(
-                "pl_argument_of_periastron", "arg_péri", FieldType.SEPARATE_UNIT
-            ),
+            FieldMapping("pl_inclination", "inclinaison"),
+            FieldMapping("pl_argument_of_periastron", "arg_péri"),
             FieldMapping("pl_epoch", "époque"),
-
             # Caractéristiques physiques
-            FieldMapping("pl_mass", "masse", FieldType.SEPARATE_UNIT,
-                         default_unit="masses joviennes"),
-            FieldMapping("pl_minimum_mass", "masse minimale",
-                         FieldType.SEPARATE_UNIT, default_unit="masses joviennes"),
-            FieldMapping("pl_radius", "rayon", FieldType.SEPARATE_UNIT,
-                         default_unit="rayons joviens"),
-            FieldMapping("pl_density", "masse volumique", FieldType.SEPARATE_UNIT,
-                         default_unit="kilogrammes par mètre cube"),
-            FieldMapping("pl_gravity", "gravité", FieldType.SEPARATE_UNIT,
-                         default_unit="mètres par seconde carrée"),
+            FieldMapping("pl_mass", "masse", default_unit="masses joviennes"),
             FieldMapping(
-                "pl_rotation_period", "période de rotation", FieldType.SEPARATE_UNIT, default_unit="heures"
+                "pl_minimum_mass", "masse minimale", default_unit="masses joviennes"
             ),
-            FieldMapping("pl_temperature", "température",
-                         FieldType.SEPARATE_UNIT, default_unit="kelvins"),
+            FieldMapping("pl_radius", "rayon", default_unit="rayons joviens"),
+            FieldMapping(
+                "pl_density",
+                "masse volumique",
+                default_unit="kilogrammes par mètre cube",
+            ),
+            FieldMapping(
+                "pl_gravity", "gravité", default_unit="mètres par seconde carrée"
+            ),
+            FieldMapping(
+                "pl_rotation_period", "période de rotation", default_unit="heures"
+            ),
+            FieldMapping("pl_temperature", "température", default_unit="kelvins"),
             FieldMapping("pl_albedo_bond", "albedo_bond"),
-
             # Atmosphère
-            FieldMapping("pl_pressure", "pression", FieldType.SEPARATE_UNIT),
-            FieldMapping("pl_composition", "composition",
-                         FieldType.SEPARATE_UNIT),
-            FieldMapping("pl_wind_speed", "vitesse des vents",
-                         FieldType.SEPARATE_UNIT),
-
+            FieldMapping("pl_pressure", "pression"),
+            FieldMapping("pl_composition", "composition"),
+            FieldMapping("pl_wind_speed", "vitesse des vents"),
             # Découverte
             FieldMapping("disc_by", "découvreurs"),
             FieldMapping("disc_program", "programme"),
@@ -126,8 +119,7 @@ class InfoboxMapper:
             FieldMapping("st_coord_title", "coord titre"),
             FieldMapping("st_altname", "désignations"),
             # Champs calculés
-            FieldMapping("st_constellation", "constellation",
-                         FieldType.CONSTELLATION),
+            FieldMapping("st_constellation", "constellation", FieldType.CONSTELLATION),
             FieldMapping("st_carte_uai", "carte UAI", FieldType.CARTE_UAI),
             # Données d'observation
             FieldMapping("st_epoch", "époque"),
@@ -135,74 +127,37 @@ class InfoboxMapper:
             FieldMapping("st_right_ascension_2", "ascension droite 2"),
             FieldMapping("st_declination", "déclinaison"),
             FieldMapping("st_declination_2", "déclinaison 2"),
-            FieldMapping("st_radial_velocity", "vitesse radiale",
-                         FieldType.SEPARATE_UNIT),
-            FieldMapping(
-                "st_radial_velocity_2", "vitesse radiale 2", FieldType.SEPARATE_UNIT
-            ),
-            FieldMapping(
-                "st_proper_motion_ra_2", "mouvement propre ad 2", FieldType.SEPARATE_UNIT
-            ),
-            FieldMapping(
-                "st_proper_motion_dec", "mouvement propre déc", FieldType.SEPARATE_UNIT
-            ),
-            FieldMapping(
-                "st_proper_motion_dec_2", "mouvement propre déc 2", FieldType.SEPARATE_UNIT
-            ),
-            FieldMapping("st_parallax", "parallaxe", FieldType.SEPARATE_UNIT),
-            FieldMapping("st_parallax_2", "parallaxe 2",
-                         FieldType.SEPARATE_UNIT),
+            FieldMapping("st_radial_velocity", "vitesse radiale"),
+            FieldMapping("st_radial_velocity_2", "vitesse radiale 2"),
+            FieldMapping("st_proper_motion_ra_2", "mouvement propre ad 2"),
+            FieldMapping("st_proper_motion_dec", "mouvement propre déc"),
+            FieldMapping("st_proper_motion_dec_2", "mouvement propre déc 2"),
+            FieldMapping("st_parallax", "parallaxe"),
+            FieldMapping("st_parallax_2", "parallaxe 2"),
             FieldMapping("st_distance", "distance"),
             FieldMapping("st_distance_2", "distance 2"),
             # Caractéristiques spectroscopiques et photométriques
             FieldMapping("st_spectral_type", "type spectral"),
             FieldMapping("st_spectral_type_2", "type spectral 2"),
             # Magnitudes apparentes
-            FieldMapping("st_mag_u",
-                         "magnitude apparente bande U"),
-            FieldMapping(
-                "st_mag_u_2", "magnitude apparente bande U 2"
-            ),
-            FieldMapping("st_mag_b",
-                         "magnitude apparente bande B"),
-            FieldMapping(
-                "st_mag_b_2", "magnitude apparente bande B 2"
-            ),
-            FieldMapping("st_mag_v",
-                         "magnitude apparente bande V"),
-            FieldMapping(
-                "st_mag_v_2", "magnitude apparente bande V 2"
-            ),
-            FieldMapping("st_mag_g",
-                         "magnitude apparente bande G"),
-            FieldMapping(
-                "st_mag_g_2", "magnitude apparente bande G 2"
-            ),
-            FieldMapping("st_mag_r",
-                         "magnitude apparente bande R"),
-            FieldMapping(
-                "st_mag_r_2", "magnitude apparente bande R 2"
-            ),
-            FieldMapping("st_mag_i",
-                         "magnitude apparente bande I"),
-            FieldMapping(
-                "st_mag_i_2", "magnitude apparente bande I 2"
-            ),
-            FieldMapping("st_mag_j",
-                         "magnitude apparente bande J"),
-            FieldMapping(
-                "st_mag_j_2", "magnitude apparente bande J 2"
-            ),
-            FieldMapping("st_mag_h",
-                         "magnitude apparente bande H"),
-            FieldMapping(
-                "st_mag_h_2", "magnitude apparente bande H 2"
-            ),
-            FieldMapping("st_mag_k",
-                         "magnitude apparente bande K"),
-            FieldMapping(
-                "st_mag_k_2", "magnitude apparente bande K 2"
-            ),
+            FieldMapping("st_mag_u", "magnitude apparente bande U"),
+            FieldMapping("st_mag_u_2", "magnitude apparente bande U 2"),
+            FieldMapping("st_mag_b", "magnitude apparente bande B"),
+            FieldMapping("st_mag_b_2", "magnitude apparente bande B 2"),
+            FieldMapping("st_mag_v", "magnitude apparente bande V"),
+            FieldMapping("st_mag_v_2", "magnitude apparente bande V 2"),
+            FieldMapping("st_mag_g", "magnitude apparente bande G"),
+            FieldMapping("st_mag_g_2", "magnitude apparente bande G 2"),
+            FieldMapping("st_mag_r", "magnitude apparente bande R"),
+            FieldMapping("st_mag_r_2", "magnitude apparente bande R 2"),
+            FieldMapping("st_mag_i", "magnitude apparente bande I"),
+            FieldMapping("st_mag_i_2", "magnitude apparente bande I 2"),
+            FieldMapping("st_mag_j", "magnitude apparente bande J"),
+            FieldMapping("st_mag_j_2", "magnitude apparente bande J 2"),
+            FieldMapping("st_mag_h", "magnitude apparente bande H"),
+            FieldMapping("st_mag_h_2", "magnitude apparente bande H 2"),
+            FieldMapping("st_mag_k", "magnitude apparente bande K"),
+            FieldMapping("st_mag_k_2", "magnitude apparente bande K 2"),
             # Indices de couleur
             FieldMapping("st_u_b_color", "u-b"),
             FieldMapping("st_u_b_color_2", "u-b 2"),
@@ -221,31 +176,22 @@ class InfoboxMapper:
             FieldMapping("st_variability", "variabilité"),
             FieldMapping("st_variability_2", "variabilité 2"),
             # Caractéristiques physiques
-            FieldMapping("st_mass", "masse", FieldType.SEPARATE_UNIT),
-            FieldMapping("st_mass_2", "masse 2", FieldType.SEPARATE_UNIT),
-            FieldMapping("st_radius", "rayon", FieldType.SEPARATE_UNIT),
-            FieldMapping("st_radius_2", "rayon 2", FieldType.SEPARATE_UNIT),
-            FieldMapping("st_density", "masse volumique",
-                         FieldType.SEPARATE_UNIT),
-            FieldMapping("st_density_2", "masse volumique 2",
-                         FieldType.SEPARATE_UNIT),
-            FieldMapping("st_luminosity", "luminosité",
-                         FieldType.SEPARATE_UNIT),
-            FieldMapping("st_luminosity_2", "luminosité 2",
-                         FieldType.SEPARATE_UNIT),
-            FieldMapping("st_surface_gravity", "gravité",
-                         FieldType.SEPARATE_UNIT),
-            FieldMapping("st_surface_gravity_2", "gravité 2",
-                         FieldType.SEPARATE_UNIT),
-            FieldMapping("st_temperature", "température",
-                         FieldType.SEPARATE_UNIT),
-            FieldMapping("st_temperature_2", "température 2",
-                         FieldType.SEPARATE_UNIT),
+            FieldMapping("st_mass", "masse"),
+            FieldMapping("st_mass_2", "masse 2"),
+            FieldMapping("st_radius", "rayon"),
+            FieldMapping("st_radius_2", "rayon 2"),
+            FieldMapping("st_density", "masse volumique"),
+            FieldMapping("st_density_2", "masse volumique 2"),
+            FieldMapping("st_luminosity", "luminosité"),
+            FieldMapping("st_luminosity_2", "luminosité 2"),
+            FieldMapping("st_surface_gravity", "gravité"),
+            FieldMapping("st_surface_gravity_2", "gravité 2"),
+            FieldMapping("st_temperature", "température"),
+            FieldMapping("st_temperature_2", "température 2"),
             FieldMapping("st_metallicity", "métallicité"),
             FieldMapping("st_metallicity_2", "métallicité 2"),
-            FieldMapping("st_rotation", "rotation", FieldType.SEPARATE_UNIT),
-            FieldMapping("st_rotation_2", "rotation 2",
-                         FieldType.SEPARATE_UNIT),
+            FieldMapping("st_rotation", "rotation"),
+            FieldMapping("st_rotation_2", "rotation 2"),
             FieldMapping("st_age", "âge"),
             FieldMapping("st_age_2", "âge 2"),
             FieldMapping("st_evolutionary_stage", "stade évolutif"),
@@ -255,20 +201,13 @@ class InfoboxMapper:
             FieldMapping("st_companion", "compagnon"),
             FieldMapping("st_planets", "planètes"),
             # Éléments orbitaux binaires
-            FieldMapping("st_semi_major_axis", "demi-grand axe",
-                         FieldType.SEPARATE_UNIT),
+            FieldMapping("st_semi_major_axis", "demi-grand axe"),
             FieldMapping("st_eccentricity", "excentricité"),
-            FieldMapping("st_period", "période", FieldType.SEPARATE_UNIT),
-            FieldMapping("st_inclination", "inclinaison",
-                         FieldType.SEPARATE_UNIT),
-            FieldMapping("st_argument_of_periapsis", "argument",
-                         FieldType.SEPARATE_UNIT),
-            FieldMapping(
-                "st_argument_of_periapsis_2", "argument 2", FieldType.SEPARATE_UNIT
-            ),
-            FieldMapping(
-                "st_longitude_of_ascending_node", "nœud", FieldType.SEPARATE_UNIT
-            ),
+            FieldMapping("st_period", "période"),
+            FieldMapping("st_inclination", "inclinaison"),
+            FieldMapping("st_argument_of_periapsis", "argument"),
+            FieldMapping("st_argument_of_periapsis_2", "argument 2"),
+            FieldMapping("st_longitude_of_ascending_node", "nœud"),
             FieldMapping("st_epoch_binary", "époque binaire"),
             FieldMapping("st_semi_amplitude_1", "demi-amplitude"),
             FieldMapping("st_semi_amplitude_2", "demi-amplitude 2"),

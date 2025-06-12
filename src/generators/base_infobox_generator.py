@@ -64,7 +64,7 @@ class InfoboxBaseGenerator(ABC):
                 value_part = mapping.formatter(value).strip()
             else:
                 value_part = self.field_formatter.format_by_type(
-                    value, unit_to_use, mapping.infobox_field, mapping.field_type
+                    mapping.infobox_field, value, unit_to_use
                 )
 
         if not value_part:

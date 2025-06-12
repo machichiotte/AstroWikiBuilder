@@ -10,10 +10,16 @@ class FieldFormatter:
     """Formatters pour différents types de champs"""
 
     @staticmethod
-    def format_simple_field(value: Any, infobox_field: str = "") -> str:
+    def format_simple_field(
+        infobox_field: str, value: Any, unit: Optional[str] = None
+    ) -> str:
         """Formate un champ simple avec valeur"""
         if not value or (isinstance(value, str) and not value.strip()):
             return ""
+
+        print("infobox_field", infobox_field)
+        print("value", value)
+        print("unit", unit)
 
         # Mapping pour certains champs
         if infobox_field == "lieu":
@@ -43,49 +49,22 @@ class FieldFormatter:
 
         output = f" | {infobox_field} = {value}"
 
+        if unit:
+            # Add newline here if unit exists
+            output += f"\n | {infobox_field} unité = {unit}"
+
         return output
 
     @staticmethod
-    def format_separate_unit_field(
-        value: Any, unit: Optional[str], infobox_field: str
-    ) -> str:
-        """Formate un champ avec unité sur ligne séparée"""
-        if not value:
-            return ""
-
-        result = f" | {infobox_field} = {value}"
-
-        if unit:
-            unit_param = FieldFormatter._get_unit_param_name(infobox_field)
-            # Add newline here if unit exists
-            result += f"\n | {unit_param} = {unit}"
-
-        return result
-
-    @staticmethod
-    def _get_unit_param_name(infobox_field: str) -> str:
-        """Retourne le nom du paramètre d'unité pour un champ donné"""
-        overrides = {
-            "longitude du nœud ascendant (Ω)": "longitude nœud ascendant unité",
-            "argument du périastre (ω)": "argument périastre unité",
-        }
-        return overrides.get(infobox_field, f"{infobox_field} unité")
-
-    @staticmethod
-    def format_by_type(
-        value: Any, unit: Optional[str], infobox_field: str, field_type: FieldType
-    ) -> str:
+    def format_by_type(infobox_field: str, value: Any, unit: Optional[str]) -> str:
         """Formate une valeur selon son type de champ"""
         formatters = {
             FieldType.SIMPLE: lambda: FieldFormatter.format_simple_field(
-                value, infobox_field
-            ),
-            FieldType.SEPARATE_UNIT: lambda: FieldFormatter.format_separate_unit_field(
-                value, unit, infobox_field
+                infobox_field, value, unit
             ),
         }
 
-        formatter = formatters.get(field_type, formatters[FieldType.SIMPLE])
+        formatter = formatters[FieldType.SIMPLE]
 
         return formatter()
 
