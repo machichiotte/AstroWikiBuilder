@@ -2,7 +2,7 @@
 import pandas as pd
 from typing import List, Optional, Dict, Any
 import logging
-from src.data_collectors.base_collector import BaseCollector
+from src.collectors.base_collector import BaseCollector
 from src.models.data_source_exoplanet import (
     DataSourceExoplanet,
 )

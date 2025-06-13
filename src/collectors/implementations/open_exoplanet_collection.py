@@ -3,7 +3,7 @@ import pandas as pd
 from typing import List, Optional
 import logging
 
-from src.data_collectors.base_collector import BaseCollector  # MODIFIÉ
+from src.collectors.base_collector import BaseCollector  # MODIFIÉ
 from src.models.data_source_exoplanet import DataSourceExoplanet
 from src.models.reference import DataPoint, Reference, SourceType
 

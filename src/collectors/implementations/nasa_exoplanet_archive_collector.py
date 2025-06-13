@@ -4,7 +4,7 @@ from typing import List, Optional, Dict, Any
 import logging
 from src.models.data_source_star import DataSourceStar
 from src.mappers.nasa_exoplanet_archive_mapper import NasaExoplanetArchiveMapper
-from src.data_collectors.base_collector import BaseCollector
+from src.collectors.base_collector import BaseCollector
 from src.models.data_source_exoplanet import DataSourceExoplanet
 
 from src.models.reference import Reference, SourceType

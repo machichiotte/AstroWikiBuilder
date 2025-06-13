@@ -6,12 +6,14 @@ from typing import List, Tuple, Dict, Any
 import logging
 
 # Project imports
-from src.data_collectors.nasa_exoplanet_archive_collector import (
+from src.collectors.implementations.nasa_exoplanet_archive_collector import (
     NASAExoplanetArchiveCollector,
 )
 
-from src.data_collectors.exoplanet_eu import ExoplanetEUCollector
-from src.data_collectors.open_exoplanet_collection import OpenExoplanetCollector
+from src.collectors.implementations.exoplanet_eu import ExoplanetEUCollector
+from src.collectors.implementations.open_exoplanet_collection import (
+    OpenExoplanetCollector,
+)
 
 from src.services.data_processor import DataProcessor
 from src.utils.wikipedia.wikipedia_checker import (
