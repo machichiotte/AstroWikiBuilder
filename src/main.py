@@ -186,8 +186,6 @@ def fetch_and_process_data(collectors: Dict[str, Any], processor: DataProcessor)
         try:
             exoplanets, stars = collector.fetch_data()
 
-            print("exooooo", str(exoplanets))
-            print("staaa", str(stars))
             if not isinstance(exoplanets, list):
                 raise TypeError(
                     f"Exoplanets doit être une liste, reçu {type(exoplanets)}"
@@ -283,6 +281,64 @@ def check_and_export_wikipedia_status(
     return existing_map, missing_map
 
 
+def _run_draft_generation(
+    processor: DataProcessor,
+    existing_map: Dict,
+    missing_map: Dict,
+    drafts_dir: str,
+    entity_type: str,
+    get_entities_func: callable,
+    generate_draft_func: callable,
+    get_name_func: callable,
+) -> None:
+    """Génère et sauvegarde les brouillons d'articles de manière générique.
+
+    Args:
+        processor: Le processeur de données
+        existing_map: Map des entités existantes
+        missing_map: Map des entités manquantes
+        drafts_dir: Répertoire de destination des brouillons
+        entity_type: Type d'entité ('exoplanètes' ou 'étoiles')
+        get_entities_func: Fonction pour récupérer les entités (get_all_exoplanets ou get_all_stars)
+        generate_draft_func: Fonction pour générer le brouillon (generate_exoplanet_draft ou generate_star_draft)
+        get_name_func: Fonction pour extraire le nom de l'entité
+    """
+    all_entities = get_entities_func()
+    if not all_entities:
+        logger.warning(f"Aucune {entity_type} pour la génération de brouillons.")
+        return
+
+    missing_drafts: List[Tuple[str, str]] = []
+    existing_drafts: List[Tuple[str, str]] = []
+
+    logger.info(f"Génération des brouillons de {entity_type}...")
+    for entity in all_entities:
+        name = get_name_func(entity)
+        draft_content = generate_draft_func(entity)
+
+        if name in missing_map:
+            missing_drafts.append((name, draft_content))
+        elif name in existing_map:
+            existing_drafts.append((name, draft_content))
+        else:
+            missing_drafts.append((name, draft_content))
+
+    logger.info(
+        f"{len(missing_drafts)} brouillons 'manquants' (ou statut inconnu), {len(existing_drafts)} brouillons 'existants'."
+    )
+
+    if missing_drafts or existing_drafts:
+        save_drafts(
+            missing_drafts,
+            existing_drafts,
+            drafts_dir=drafts_dir,
+            entity=entity_type,
+        )
+        logger.info(f"Brouillons sauvegardés dans {drafts_dir}")
+    else:
+        logger.info("Aucun brouillon n'a été généré.")
+
+
 def exoplanet_run_draft_generation(
     processor: DataProcessor,
     existing_map: Dict,
@@ -290,55 +346,17 @@ def exoplanet_run_draft_generation(
     drafts_dir: str,
     is_wikipedia_check_skipped: bool,
 ):
-    """Génère et sauvegarde les brouillons d'articles."""
-    all_exoplanets = processor.get_all_exoplanets()
-    if not all_exoplanets:
-        logger.warning("Aucune exoplanète pour la génération de brouillons.")
-        return
-
-    exoplanet_missing_drafts: List[Tuple[str, str]] = []
-    exoplanet_existing_drafts: List[Tuple[str, str]] = []
-
-    logger.info("Génération des brouillons d'exoplanetes...")
-    for exoplanet in all_exoplanets:
-        draft_content = generate_exoplanet_draft(exoplanet)
-        if exoplanet.pl_name.value in missing_map:
-            exoplanet_missing_drafts.append((exoplanet.pl_name.value, draft_content))
-        elif exoplanet.pl_name.value in existing_map:
-            exoplanet_existing_drafts.append((exoplanet.pl_name.value, draft_content))
-        else:
-            # if is_wikipedia_check_skipped:
-            # logger.info(
-            #    f"Wikipedia exoplanet check was skipped. Draft for {exoplanet.name} is of unknown status "
-            #    f"and will be saved in the 'missing' drafts directory by default."
-            # )
-            # else:
-            # logger.warning(
-            #    f"Exoplanet {exoplanet.name} was not found in the provided missing_map or existing_map "
-            #    f"(even if Wikipedia check was performed). Draft will be saved in the 'missing' "
-            #   f"directory by default."
-            # )
-            exoplanet_missing_drafts.append((exoplanet.pl_name.value, draft_content))
-
-    logger.info(
-        f"{len(exoplanet_missing_drafts)} brouillons 'manquants' (ou statut inconnu), {len(exoplanet_existing_drafts)} brouillons 'existants'."
+    """Génère et sauvegarde les brouillons d'articles d'exoplanètes."""
+    _run_draft_generation(
+        processor=processor,
+        existing_map=existing_map,
+        missing_map=missing_map,
+        drafts_dir="drafts/exoplanet",
+        entity_type="exoplanètes",
+        get_entities_func=processor.get_all_exoplanets,
+        generate_draft_func=generate_exoplanet_draft,
+        get_name_func=lambda exoplanet: exoplanet.pl_name.value,
     )
-
-    if exoplanet_missing_drafts or exoplanet_existing_drafts:
-        # Assuming save_drafts from draft_utils.py handles only two lists as per its original confirmed signature
-        # If draft_utils.py was successfully updated to handle three lists, this call would need adjustment.
-        # However, the prompt's context implies draft_utils.py might not have been updated.
-
-        save_drafts(
-            exoplanet_missing_drafts,
-            exoplanet_existing_drafts,
-            drafts_dir="drafts/exoplanet",
-            entity="exoplanètes",
-        )
-
-        logger.info(f"Brouillons sauvegardés dans {drafts_dir}")
-    else:
-        logger.info("Aucun brouillon n'a été généré.")
 
 
 def star_run_draft_generation(
@@ -348,57 +366,17 @@ def star_run_draft_generation(
     drafts_dir: str,
     is_wikipedia_check_skipped: bool,
 ):
-    """Génère et sauvegarde les brouillons d'articles."""
-
-    all_stars = processor.get_all_stars()
-
-    if not all_stars:
-        logger.warning("Aucune exoplanète pour la génération de brouillons.")
-        return
-
-    star_missing_drafts: List[Tuple[str, str]] = []
-    star_existing_drafts: List[Tuple[str, str]] = []
-
-    logger.info("Génération des brouillons d'étoiles ...")
-    for star in all_stars:
-        name = star.st_name.value
-        draft_content = generate_star_draft(star)
-        if name in missing_map:
-            star_missing_drafts.append((name, draft_content))
-        elif name in existing_map:
-            star_existing_drafts.append((name, draft_content))
-        else:
-            # if is_wikipedia_check_skipped:
-            #     logger.info(
-            #         f"Wikipedia star check was skipped. Draft for {name} is of unknown status "
-            #         f"and will be saved in the 'missing' drafts directory by default."
-            #     )
-            # else:
-            # logger.warning(
-            #    f"Star {name} was not found in the provided missing_map or existing_map "
-            #    f"(even if Wikipedia check was performed). Draft will be saved in the 'missing' "
-            #    f"directory by default."
-            # )
-            star_missing_drafts.append((name, draft_content))
-
-    logger.info(
-        f"{len(star_missing_drafts)} brouillons 'manquants' (ou statut inconnu), {len(star_existing_drafts)} brouillons 'existants'."
+    """Génère et sauvegarde les brouillons d'articles d'étoiles."""
+    _run_draft_generation(
+        processor=processor,
+        existing_map=existing_map,
+        missing_map=missing_map,
+        drafts_dir="drafts/star",
+        entity_type="étoiles",
+        get_entities_func=processor.get_all_stars,
+        generate_draft_func=generate_star_draft,
+        get_name_func=lambda star: star.st_name.value,
     )
-
-    if star_missing_drafts or star_existing_drafts:
-        # Assuming save_drafts from draft_utils.py handles only two lists as per its original confirmed signature
-        # If draft_utils.py was successfully updated to handle three lists, this call would need adjustment.
-        # However, the prompt's context implies draft_utils.py might not have been updated.
-        save_drafts(
-            star_missing_drafts,
-            star_existing_drafts,
-            drafts_dir="drafts/star",
-            entity="étoiles",
-        )
-
-        logger.info(f"Brouillons sauvegardés dans {drafts_dir}")
-    else:
-        logger.info("Aucun brouillon n'a été généré.")
 
 
 def main():
