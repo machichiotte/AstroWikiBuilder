@@ -343,7 +343,6 @@ def exoplanet_run_draft_generation(
     processor: DataProcessor,
     existing_map: Dict,
     missing_map: Dict,
-    drafts_dir: str,
     is_wikipedia_check_skipped: bool,
 ):
     """Génère et sauvegarde les brouillons d'articles d'exoplanètes."""
@@ -363,7 +362,6 @@ def star_run_draft_generation(
     processor: DataProcessor,
     existing_map: Dict,
     missing_map: Dict,
-    drafts_dir: str,
     is_wikipedia_check_skipped: bool,
 ):
     """Génère et sauvegarde les brouillons d'articles d'étoiles."""
@@ -421,16 +419,13 @@ def main():
             processor,
             existing_map,
             missing_map,
-            drafts_dir,
             is_wikipedia_check_skipped=False,
         )
     else:
         logger.info(
             "Vérification Wikipedia ignorée. Génération des brouillons pour toutes les étoiles."
         )
-        star_run_draft_generation(
-            processor, {}, {}, drafts_dir, is_wikipedia_check_skipped=True
-        )
+        star_run_draft_generation(processor, {}, {}, is_wikipedia_check_skipped=True)
 
     # Export et statistiques
     export_consolidated_data(processor, output_dir, timestamp)
@@ -446,7 +441,6 @@ def main():
             processor,
             existing_map,
             missing_map,
-            drafts_dir,
             is_wikipedia_check_skipped=False,
         )
     else:
@@ -454,7 +448,7 @@ def main():
             "Vérification Wikipedia ignorée. Génération des brouillons pour toutes les exoplanètes."
         )
         exoplanet_run_draft_generation(
-            processor, {}, {}, drafts_dir, is_wikipedia_check_skipped=True
+            processor, {}, {}, is_wikipedia_check_skipped=True
         )
 
     logger.info("Traitement principal terminé.")

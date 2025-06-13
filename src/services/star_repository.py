@@ -22,6 +22,7 @@ class StarRepository:
         )
         added_count = 0
         merged_count = 0
+        print("add_starsadd_starsadd_starsadd_stars")
         for star in stars:
             if not star.st_name:
                 logger.warning("Skipping star with no name.")
