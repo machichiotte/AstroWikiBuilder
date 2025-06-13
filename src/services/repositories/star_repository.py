@@ -1,7 +1,7 @@
-# src/services/star_repository.py
+# src/services/repositories/star_repository.py
 import logging
 from typing import List, Dict
-from src.models.data_source_star import DataSourceStar
+from src.models.data_sources.star_source import DataSourceStar
 
 logger = logging.getLogger(__name__)
 

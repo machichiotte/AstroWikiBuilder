@@ -5,12 +5,14 @@ from src.constants.field_mappings import (
     CONSTELLATION_GENDER,
     SPECTRAL_TYPE_DESCRIPTIONS,
 )
-from src.models.data_source_exoplanet import DataSourceExoplanet
-from src.utils.constellation_utils import ConstellationUtils
+from src.models.entities.exoplanet import Exoplanet
+from src.utils.astro.constellation_utils import ConstellationUtils
 from src.utils.formatters.article_formatters import ArticleUtils
 
-from src.utils.classification.exoplanet_comparison_utils import ExoplanetComparisonUtils
-from src.utils.classification.exoplanet_type_utils import ExoplanetTypeUtils
+from src.utils.astro.classification.exoplanet_comparison_utils import (
+    ExoplanetComparisonUtils,
+)
+from src.utils.astro.classification.exoplanet_type_utils import ExoplanetTypeUtils
 
 
 class ExoplanetIntroductionGenerator:
@@ -44,22 +46,15 @@ class ExoplanetIntroductionGenerator:
         # Placeholder if spectral class not in map or description is None
         return "son étoile hôte"
 
-    def _build_host_star_segment(self, exoplanet: DataSourceExoplanet) -> Optional[str]:
+    def _build_host_star_segment(self, exoplanet: Exoplanet) -> Optional[str]:
         """Construit le segment de phrase concernant l'étoile hôte."""
-        if not (
-            exoplanet.st_name
-            and hasattr(exoplanet.st_name, "value")
-            and exoplanet.st_name.value
-        ):
+        if not exoplanet.st_name:
             return None
 
-        host_star_name = exoplanet.st_name.value
+        host_star_name = exoplanet.st_name
 
         star_type_description = self._get_exoplanet_spectral_type_formatted_description(
-            exoplanet.st_spectral_type.value
-            if exoplanet.st_spectral_type
-            and hasattr(exoplanet.st_spectral_type, "value")
-            else None
+            exoplanet.st_spectral_type.value if exoplanet.st_spectral_type else None
         )
 
         if star_type_description != "son étoile hôte":
@@ -70,13 +65,9 @@ class ExoplanetIntroductionGenerator:
             # Gère correctement le placeholder "son étoile hôte".
             return f" en orbite autour de {star_type_description} {host_star_name}"
 
-    def _build_distance_segment(self, exoplanet: DataSourceExoplanet) -> Optional[str]:
+    def _build_distance_segment(self, exoplanet: Exoplanet) -> Optional[str]:
         """Construit le segment de phrase concernant la distance."""
-        if not (
-            exoplanet.st_distance
-            and hasattr(exoplanet.st_distance, "value")
-            and exoplanet.st_distance.value is not None
-        ):
+        if not exoplanet.st_distance or not exoplanet.st_distance.value:
             return None
 
         try:
@@ -113,15 +104,9 @@ class ExoplanetIntroductionGenerator:
         else:
             return f"dans la constellation {preposition} {constellation_french_name}"
 
-    def _build_constellation_segment(
-        self, exoplanet: DataSourceExoplanet
-    ) -> Optional[str]:
+    def _build_constellation_segment(self, exoplanet: Exoplanet) -> Optional[str]:
         """Construit le segment de phrase concernant la constellation."""
-        if not (
-            exoplanet.st_constellation
-            and hasattr(exoplanet.st_constellation, "value")
-            and exoplanet.st_constellation.value
-        ):
+        if not exoplanet.st_constellation or not exoplanet.st_constellation.value:
             return None
 
         constellation_name_fr = exoplanet.st_constellation.value
@@ -130,22 +115,14 @@ class ExoplanetIntroductionGenerator:
             return self._format_constellation_locative_phrase(constellation_name_fr)
         return None
 
-    def generate_exoplanet_introduction(self, exoplanet: DataSourceExoplanet) -> str:
+    def generate_exoplanet_introduction(self, exoplanet: Exoplanet) -> str:
         """
         Génère l'introduction pour une exoplanète.
         """
         planet_type = self.planet_type_utils.get_exoplanet_planet_type(exoplanet)
         # planet_type est supposé être une chaîne comme "Jupiter chaud", pour être utilisé dans "[[Jupiter chaud]]"
 
-        planet_name_str = "Nom inconnu"
-        if (
-            exoplanet.pl_name
-            and hasattr(exoplanet.pl_name, "value")
-            and exoplanet.pl_name.value
-        ):
-            planet_name_str = exoplanet.pl_name.value
-        elif isinstance(exoplanet.pl_name, str):  # Fallback if name is already a string
-            planet_name_str = exoplanet.pl_name
+        planet_name_str = exoplanet.pl_name or "Nom inconnu"
 
         base_intro = (
             f"'''{planet_name_str}''' est une exoplanète de type [[{planet_type}]]"

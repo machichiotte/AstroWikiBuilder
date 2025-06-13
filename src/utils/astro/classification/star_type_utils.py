@@ -1,6 +1,6 @@
-# src/utils/classification/star_type_utils.py
+# src/utils/astro/classification/star_type_utils.py
 from typing import Optional, Tuple, List
-from src.models.data_source_star import DataSourceStar
+from src.models.data_sources.star_source import DataSourceStar
 
 
 class StarTypeUtils:

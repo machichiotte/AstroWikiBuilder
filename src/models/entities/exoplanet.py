@@ -1,17 +1,24 @@
-# src/models/data_source_exoplanet.py
 from dataclasses import dataclass, field
-from typing import Optional, List
-from .reference import DataPoint
+from typing import Optional, List, Dict, Any
+from datetime import datetime
+
+from .base_entity import BaseEntity
+from ..references.reference import Reference
+from ..references.data_point import DataPoint
 
 
 @dataclass
-class DataSourceExoplanet:
+class Exoplanet(BaseEntity):
+    """Classe de base pour les entités d'exoplanètes"""
+
     # Identifiants
-    pl_name: DataPoint = None
+    pl_name: str = None
     pl_altname: Optional[List[str]] = field(default_factory=list)
+    image: Optional[str] = None
+    caption: Optional[str] = None
 
     # Étoile hôte
-    st_name: Optional[DataPoint] = None
+    st_name: str = None
     st_epoch: Optional[DataPoint] = None
     st_right_ascension: Optional[DataPoint] = None
     st_declination: Optional[DataPoint] = None
@@ -40,7 +47,7 @@ class DataSourceExoplanet:
     pl_gravity: Optional[DataPoint] = None
     pl_rotation_period: Optional[DataPoint] = None
     pl_temperature: Optional[DataPoint] = None
-    pl_bond_albedo: Optional[DataPoint] = None
+    pl_albedo_bond: Optional[DataPoint] = None
 
     # Atmosphère
     pl_pressure: Optional[DataPoint] = None
@@ -52,7 +59,21 @@ class DataSourceExoplanet:
     disc_program: Optional[DataPoint] = None
     disc_method: Optional[DataPoint] = None
     disc_year: Optional[DataPoint] = None
-    disc_location: Optional[DataPoint] = None
+    disc_facility: Optional[DataPoint] = None
     pre_discovery: Optional[DataPoint] = None
-    detection_method: Optional[DataPoint] = None
+    detection_type: Optional[DataPoint] = None
     status: Optional[DataPoint] = None
+
+    # Références
+    references: Dict[str, Reference] = field(default_factory=dict)
+
+    # Métadonnées supplémentaires
+    metadata: Dict[str, Any] = field(default_factory=dict)
+
+    def add_reference(self, reference: Reference) -> None:
+        """Ajoute une référence à l'exoplanète"""
+        self.references[reference.source.value] = reference
+
+    def get_reference(self, source: str) -> Optional[Reference]:
+        """Récupère une référence par sa source"""
+        return self.references.get(source)

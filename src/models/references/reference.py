@@ -1,4 +1,4 @@
-# src/models/reference.py
+# src/models/references/reference.py
 from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
@@ -49,8 +49,8 @@ class Reference:
     source: SourceType
     update_date: datetime
     consultation_date: datetime
-    star_identifier: Optional[str] = None
-    planet_identifier: Optional[str] = None
+    star_id: Optional[str] = None
+    planet_id: Optional[str] = None
 
     def to_url(self, fallback_name: Optional[str] = None) -> str:
         details = SOURCE_DETAILS.get(self.source)
@@ -58,8 +58,8 @@ class Reference:
             raise ValueError(f"Unknown source: {self.source}")
 
         if self.source == SourceType.NEA:
-            star_id = slugify(self.star_identifier or fallback_name or "")
-            planet_id = slugify(self.planet_identifier or fallback_name or "")
+            star_id = slugify(self.star_id or fallback_name or "")
+            planet_id = slugify(self.planet_id or fallback_name or "")
             if not star_id or not planet_id:
                 raise ValueError(
                     "Both star name and planet identifier are required for NEA"
@@ -71,7 +71,7 @@ class Reference:
                 star_id=star_id, planet_id=planet_id
             )
 
-        planet_id = self.identifier or (
+        planet_id = self.planet_id or (
             slugify(fallback_name) if fallback_name else None
         )
         if not planet_id:
@@ -103,23 +103,3 @@ class Reference:
         )
 
         return f'<ref name="{self.source.value}" >{tpl}</ref>'
-
-
-@dataclass
-class DataPoint:
-    """Classe pour stocker une valeur et sa référence"""
-
-    value: any
-    reference: Reference = None
-    unit: str = None  # Unité de mesure (ex: M_J, R_J, K, etc.)
-
-    def to_wiki_value(self) -> str:
-        """Convertit la valeur en format wiki avec sa référence"""
-        if self.value is None:
-            return None
-        if self.reference:
-            # Pour les noms alternatifs, on ne retourne que la valeur
-            if hasattr(self, "_is_alternate_name") and self._is_alternate_name:
-                return str(self.value)
-            return f"{self.value} {self.reference.to_wiki_ref()}"
-        return str(self.value)

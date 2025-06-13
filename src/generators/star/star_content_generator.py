@@ -1,4 +1,4 @@
-from src.models.data_source_star import DataSourceStar
+from src.models.entities.star import Star
 from src.utils.formatters.article_formatters import ArticleUtils
 
 
@@ -11,7 +11,7 @@ class StarContentGenerator:
     def __init__(self):
         self.article_utils = ArticleUtils()
 
-    def generate_all_content(self, star: DataSourceStar) -> str:
+    def generate_all_content(self, star: Star) -> str:
         """
         Génère l'ensemble du contenu de l'article pour une étoile.
         """
@@ -25,7 +25,7 @@ class StarContentGenerator:
         # Filtrer les sections vides et les combiner
         return "\n\n".join(filter(None, sections))
 
-    def generate_physical_characteristics(self, star: DataSourceStar) -> str:
+    def generate_physical_characteristics(self, star: Star) -> str:
         """
         Génère la section des caractéristiques physiques de l'étoile.
         """
@@ -67,7 +67,7 @@ class StarContentGenerator:
 
         return "\n".join(content)
 
-    def generate_observation_section(self, star: DataSourceStar) -> str:
+    def generate_observation_section(self, star: Star) -> str:
         """
         Génère la section sur l'observation de l'étoile.
         """
@@ -91,7 +91,7 @@ class StarContentGenerator:
 
         return "\n".join(content)
 
-    def generate_stellar_environment(self, star: DataSourceStar) -> str:
+    def generate_stellar_environment(self, star: Star) -> str:
         """
         Génère la section sur l'environnement stellaire.
         """
@@ -113,7 +113,7 @@ class StarContentGenerator:
 
         return "\n".join(content)
 
-    def generate_history_section(self, star: DataSourceStar) -> str:
+    def generate_history_section(self, star: Star) -> str:
         """
         Génère la section historique de l'étoile.
         """

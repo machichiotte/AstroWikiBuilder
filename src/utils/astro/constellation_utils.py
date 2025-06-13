@@ -1,4 +1,4 @@
-# src/utils/constellation_utils.py
+# src/utils/astro/constellation_utils.py
 from src.constants.field_mappings import CONSTELLATION_FR
 from src.utils.formatters.article_formatters import ArticleUtils
 

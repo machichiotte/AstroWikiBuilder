@@ -1,20 +1,22 @@
 # src/mappers/nasa_exoplanet_archive_mapper.py
 from typing import Dict, Any, Optional
-from src.models.reference import Reference, SourceType, DataPoint
-from src.models.data_source_star import DataSourceStar
-from src.models.data_source_exoplanet import DataSourceExoplanet
-from src.utils.constellation_utils import ConstellationUtils
+from src.models.references.reference import Reference, SourceType
+from src.models.references.data_point import DataPoint
+from src.models.data_sources.star_source import DataSourceStar
+from src.models.data_sources.exoplanet_source import DataSourceExoplanet
+from src.utils.astro.constellation_utils import ConstellationUtils
+from src.models.entities.exoplanet import Exoplanet
+from src.constants.field_mappings import FIELD_DEFAULT_UNITS_EXOPLANET
 
 from datetime import datetime
 from src.constants.field_mappings import (
     FIELD_DEFAULT_UNITS_STAR,
-    FIELD_DEFAULT_UNITS_EXOPLANET,
 )
 import math
 
 
 class NasaExoplanetArchiveMapper:
-    """Mapper pour convertir les données NEA Exoplanet Archive vers le modèle Star"""
+    """Mapper pour convertir les données NEA Exoplanet Archive vers le modèle Exoplanet"""
 
     def __init__(self):
         self.constellation_utils = ConstellationUtils()
@@ -64,52 +66,27 @@ class NasaExoplanetArchiveMapper:
 
     # Mapping des colonnes NEA vers les attributs Exoplanet
     NEA_TO_EXOPLANET_MAPPING = {
-        # Identifiants
         "pl_name": "pl_name",
         "pl_altname": "pl_altname",
-        # Étoile hôte
         "hostname": "st_name",
-        # "": "st_epoch",
-        "ra": "st_right_ascension",
-        "dec": "st_declination",
-        "sy_dist": "st_distance",
         "st_spectype": "st_spectral_type",
+        "sy_dist": "st_distance",
         "sy_vmag": "st_apparent_magnitude",
-        # PLANÈTE
-        # Caractéristiques orbitales
         "pl_orbsmax": "pl_semi_major_axis",
-        # "": "pl_periastron",
-        # "": "pl_apoastron",
         "pl_orbeccen": "pl_eccentricity",
         "pl_orbper": "pl_orbital_period",
         "pl_angsep": "pl_angular_distance",
         "pl_orbtper": "pl_periastron_time",
         "pl_orbincl": "pl_inclination",
         "pl_orblper": "pl_argument_of_periastron",
-        # "": "pl_epoch",
-        # Caractéristiques physiques
         "pl_bmassj": "pl_mass",
         "pl_msinij": "pl_minimum_mass",
         "pl_radj": "pl_radius",
         "pl_dens": "pl_density",
-        # "": "pl_gravity",
-        # "": "pl_rotation_period",
         "pl_eqt": "pl_temperature",
-        # "": "pl_albedo_bond",
-        # Atmosphère
-        # "": "pl_pressure",
-        # "": "pl_composition",
-        # "": "pl_wind_speed",
-        # Découverte
-        # "": "disc_by",
-        # "": "disc_program",
         "discoverymethod": "disc_method",
         "disc_year": "disc_year",
         "disc_facility": "disc_facility",
-        # "": "pre_discovery",
-        # "": "detection_type",
-        # "": "status",
-        # Informations supplémentaires
     }
 
     # Unités par défaut pour certains champs NEA
@@ -150,8 +127,8 @@ class NasaExoplanetArchiveMapper:
             source=SourceType.NEA,
             update_date=datetime.now(),
             consultation_date=datetime.now(),
-            star_identifier=nea_data.get("hostname"),
-            planet_identifier=nea_data.get("pl_name"),
+            star_id=nea_data.get("hostname"),
+            planet_id=nea_data.get("pl_name"),
         )
 
     def _process_coordinates(
@@ -221,10 +198,7 @@ class NasaExoplanetArchiveMapper:
                 if self.NEA_DEFAULT_UNITS.get(nea_field) != default_units.get(
                     attribute
                 ):
-                    unit = default_units.get(attribute)
-                else:
                     unit = self.NEA_DEFAULT_UNITS.get(nea_field)
-
             return DataPoint(value=value, unit=unit, reference=reference)
         return None
 
@@ -412,24 +386,37 @@ class NasaExoplanetArchiveMapper:
                 logger.warning(f"Unrecognized epoch format: {epoch_str_val}")
                 return None
 
-    def map_nea_data_to_star(self, nea_data: Dict[str, Any]) -> DataSourceStar:
-        """Convertit un dictionnaire de données NEA vers un objet Star"""
-        star = DataSourceStar()
-        reference = self._create_nea_reference(nea_data)
+    def map_nea_data_to_star(
+        self, nea_data: Dict[str, Any], reference: Optional[Reference] = None
+    ) -> DataSourceStar:
+        """Convertit les données NEA en objet Star."""
+        if reference is None:
+            reference = self._create_nea_reference(nea_data)
 
-        # Mapping des champs standards
-        for nea_field, star_attribute in self.NEA_TO_STAR_MAPPING.items():
+        # Créer l'étoile avec les paramètres obligatoires
+        star = DataSourceStar(
+            name=nea_data.get("hostname", ""),
+            source_type=SourceType.NEA,
+            update_date=datetime.now(),
+            consultation_date=datetime.now(),
+            raw_data=nea_data,
+            metadata={},
+        )
+
+        # Mapper les champs selon le mapping défini
+        for nea_field, attribute in self.NEA_TO_STAR_MAPPING.items():
             if nea_field in nea_data:
                 value = nea_data[nea_field]
-                datapoint = self._create_datapoint(
-                    value,
-                    nea_field,
-                    star_attribute,
-                    reference,
-                    FIELD_DEFAULT_UNITS_STAR,
-                )
-                if datapoint:
-                    setattr(star, star_attribute, datapoint)
+                if value is not None and str(value).strip():
+                    datapoint = self._create_datapoint(
+                        value,
+                        nea_field,
+                        attribute,
+                        reference,
+                        FIELD_DEFAULT_UNITS_STAR,
+                    )
+                    if datapoint:
+                        setattr(star, attribute, datapoint)
 
         # Traitement spécial pour les désignations
         st_altnames = self._extract_star_altname(nea_data)
@@ -442,101 +429,43 @@ class NasaExoplanetArchiveMapper:
         return star
 
     def map_nea_data_to_exoplanet(
-        self, nea_data: Dict[str, Any]
-    ) -> DataSourceExoplanet:
-        """Convertit un dictionnaire de données NEA vers un objet Exoplanet"""
-        exoplanet = DataSourceExoplanet()
-        reference = self._create_nea_reference(nea_data)
+        self, nea_data: Dict[str, Any], reference: Optional[Reference] = None
+    ) -> Exoplanet:
+        """Convertit les données NEA en objet Exoplanet."""
+        if not reference:
+            reference = self._create_nea_reference(nea_data)
 
-        # Liste des champs à formater
-        numeric_fields = {
-            "pl_orbsmax",
-            "pl_angsep",
-            "pl_bmassj",
-            "pl_msinij",
-            "pl_radj",
-            "pl_dens",
-            "pl_eqt",
-            "sy_dist",
-            "st_teff",
-            "st_mass",
-            "st_rad",
-            "st_met",
-            "st_logg",
-            "st_lum",
-            "st_dens",
-            "st_age",
-        }
+        exoplanet = Exoplanet()
 
-        # Mapping des champs standards
-        for nea_field, exoplanet_attribute in self.NEA_TO_EXOPLANET_MAPPING.items():
-            if nea_field in nea_data:
-                value = nea_data[nea_field]
+        # Traitement spécial pour pl_name (string simple)
+        if "pl_name" in nea_data and nea_data["pl_name"]:
+            exoplanet.pl_name = nea_data["pl_name"]
 
-                # Formatage des valeurs numériques
-                if nea_field in numeric_fields and value not in (None, ""):
-                    value = self._format_numeric_no_trailing_zeros(value)
+        # Traitement spécial pour pl_altname (liste de strings)
+        if "pl_altname" in nea_data and nea_data["pl_altname"]:
+            exoplanet.pl_altname = nea_data["pl_altname"].split(",")
 
-                datapoint = self._create_datapoint(
-                    value,
-                    nea_field,
-                    exoplanet_attribute,
-                    reference,
-                    FIELD_DEFAULT_UNITS_EXOPLANET,
-                )
-                if datapoint:
-                    setattr(exoplanet, exoplanet_attribute, datapoint)
+        # Traitement spécial pour st_name (string simple)
+        if "hostname" in nea_data and nea_data["hostname"]:
+            exoplanet.st_name = nea_data["hostname"]
 
         # Traitement des coordonnées
         self._process_coordinates(exoplanet, nea_data, reference)
 
-        # Traitement spécial pour l'inclinaison
-        if "pl_orbincl" in nea_data and nea_data["pl_orbincl"] is not None:
-            try:
-                pl_orbincl_val = float(nea_data["pl_orbincl"])
-                formatted_inclination = f"{pl_orbincl_val}"
-
-                err1 = nea_data.get("pl_orbinclerr1")
-                err2 = nea_data.get("pl_orbinclerr2")
-
-                if (
-                    err1 is not None
-                    and err2 is not None
-                    and not (isinstance(err1, float) and math.isnan(err1))
-                    and not (isinstance(err2, float) and math.isnan(err2))
-                ):
-                    pl_orbinclerr1_val = float(err1)
-                    pl_orbinclerr2_val = float(err2)
-                    formatted_inclination = f"{pl_orbincl_val}{{{{±|{pl_orbinclerr1_val}|{pl_orbinclerr2_val}}}}}"
-
-                exoplanet.pl_inclination = DataPoint(
-                    value=formatted_inclination, reference=reference
+        # Traitement des autres champs avec DataPoint
+        for nea_field, attribute in self.NEA_TO_EXOPLANET_MAPPING.items():
+            if nea_field in ["pl_name", "pl_altname", "hostname"]:
+                continue  # Skip fields already processed
+            if nea_field in nea_data:
+                value = nea_data[nea_field]
+                datapoint = self._create_datapoint(
+                    value,
+                    nea_field,
+                    attribute,
+                    reference,
+                    FIELD_DEFAULT_UNITS_EXOPLANET,
                 )
-            except (ValueError, TypeError):
-                pass
-
-        # Traitement spécial pour l'époque
-        if "pl_tranmidstr" in nea_data and nea_data["pl_tranmidstr"] is not None:
-            try:
-                pl_tranmidstr = float(nea_data["pl_tranmidstr"])
-                formatted_epoch = self._parse_epoch_string(pl_tranmidstr)
-                if formatted_epoch:
-                    exoplanet.pl_epoch = DataPoint(
-                        value=formatted_epoch, reference=reference
-                    )
-            except (ValueError, TypeError):
-                pass
-
-        # Traitement spécial pour la période orbitale
-        if "pl_orbperstr" in nea_data and nea_data["pl_orbperstr"] is not None:
-            try:
-                pl_orbperstr = float(nea_data["pl_orbperstr"])
-                formatted_orb_per = self._parse_epoch_string(pl_orbperstr)
-                if formatted_orb_per:
-                    exoplanet.pl_orbital_period = DataPoint(
-                        value=formatted_orb_per, reference=reference
-                    )
-            except (ValueError, TypeError):
-                pass
+                if datapoint:
+                    setattr(exoplanet, attribute, datapoint)
 
         return exoplanet

@@ -3,8 +3,8 @@ from typing import List, Optional, Callable, Any, Union
 from dataclasses import dataclass
 from enum import Enum
 
-from src.models.data_source_exoplanet import DataSourceExoplanet
-from src.models.data_source_star import DataSourceStar
+from src.models.data_sources.exoplanet_source import DataSourceExoplanet
+from src.models.data_sources.star_source import DataSourceStar
 
 
 class FieldType(Enum):

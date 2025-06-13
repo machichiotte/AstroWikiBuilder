@@ -1,7 +1,7 @@
 # src/services/reference_manager.py
 from datetime import datetime
 from typing import Optional, Dict
-from src.models.reference import SOURCE_DETAILS, Reference, SourceType
+from src.models.references.reference import SOURCE_DETAILS, Reference, SourceType
 
 
 class ReferenceManager:
@@ -21,8 +21,8 @@ class ReferenceManager:
         self,
         source: SourceType,
         update_date: datetime,
-        planet_identifier: Optional[str] = None,
-        star_identifier: Optional[str] = None,
+        planet_id: Optional[str] = None,
+        star_id: Optional[str] = None,
     ) -> Reference:
         """
         Crée et renvoie une Reference avec date de consultation actuelle.
@@ -31,8 +31,8 @@ class ReferenceManager:
             source=source,
             update_date=update_date,
             consultation_date=datetime.now(),
-            planet_identifier=planet_identifier,
-            star_identifier=star_identifier,
+            planet_id=planet_id,
+            star_id=star_id,
         )
 
     def add_reference(self, ref_name: str, ref_content: str) -> str:

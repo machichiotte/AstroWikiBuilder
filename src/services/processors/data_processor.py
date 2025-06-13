@@ -1,14 +1,15 @@
 # src/utils/data_processor.py
 import logging
 from typing import List, Dict, Tuple, Any
-from src.models.data_source_star import DataSourceStar
-from src.models.data_source_exoplanet import DataSourceExoplanet
+from src.models.entities.exoplanet import Exoplanet
+from src.models.entities.star import Star
 from src.utils.wikipedia.wikipedia_checker import WikiArticleInfo
-from src.services.star_repository import StarRepository
-from src.services.exoplanet_repository import ExoplanetRepository
-from src.services.statistics_service import StatisticsService
-from src.services.export_service import ExportService
-from src.services.wikipedia_service import WikipediaService
+from src.services.repositories.star_repository import StarRepository
+from src.services.repositories.exoplanet_repository import ExoplanetRepository
+from src.services.processors.statistics_service import StatisticsService
+from src.services.external.export_service import ExportService
+from src.services.external.wikipedia_service import WikipediaService
+from src.mappers.nasa_exoplanet_archive_mapper import NasaExoplanetArchiveMapper
 
 # Setup basic logging
 logging.basicConfig(
@@ -31,23 +32,24 @@ class DataProcessor:
         self.stat_service = stat_service
         self.wiki_service = wiki_service
         self.export_service = export_service
+        self.nea_mapper = NasaExoplanetArchiveMapper()
         logger.info("DataProcessor initialized with all services.")
 
     def add_exoplanets_from_source(
-        self, exoplanets: List[DataSourceExoplanet], source_name: str
+        self, exoplanets: List[Exoplanet], source_name: str
     ) -> None:
         """Ajoute ou fusionne les exoplanètes dans le référentiel."""
         self.exoplanet_repository.add_exoplanets(exoplanets, source_name)
 
-    def add_stars_from_source(self, stars: List[DataSourceStar], source_name: str) -> None:
+    def add_stars_from_source(self, stars: List[Star], source_name: str) -> None:
         """Ajoute ou fusionne les étoiles dans le référentiel."""
         self.star_repository.add_stars(stars, source_name)
 
-    def get_all_exoplanets(self) -> List[DataSourceExoplanet]:
+    def get_all_exoplanets(self) -> List[Exoplanet]:
         """Récupère toutes les exoplanètes consolidées."""
         return self.exoplanet_repository.get_all_exoplanets()
 
-    def get_all_stars(self) -> List[DataSourceStar]:
+    def get_all_stars(self) -> List[Star]:
         """Récupère toutes les étoiles consolidées."""
         return self.star_repository.get_all_stars()
 
@@ -55,11 +57,8 @@ class DataProcessor:
         """Retourne des statistiques sur les données collectées."""
         statistics_star = self._get_statistics_star()
         statistics_exoplanet = self._get_statistics_exoplanet()
-        return {
-            "exoplanet": statistics_exoplanet,
-            "star": statistics_star
-        }
-   
+        return {"exoplanet": statistics_exoplanet, "star": statistics_star}
+
     def get_and_separate_wikipedia_articles_by_status(
         self,
     ) -> Tuple[

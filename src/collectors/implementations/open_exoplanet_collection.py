@@ -3,17 +3,16 @@ import pandas as pd
 from typing import List, Optional
 import logging
 
-from src.collectors.base_collector import BaseCollector  # MODIFIÉ
-from src.models.data_source_exoplanet import DataSourceExoplanet
-from src.models.reference import DataPoint, Reference, SourceType
+from src.collectors.base_collector import BaseCollector
+from src.models.data_sources.exoplanet_source import DataSourceExoplanet
+from src.models.references.reference import Reference, SourceType
+from src.models.references.data_point import DataPoint
 
 logger = logging.getLogger(__name__)
 
 
-class OpenExoplanetCollector(BaseCollector):  # MODIFIÉ
-    def __init__(
-        self, cache_dir: str = "data/cache/oec", use_mock_data: bool = False
-    ):  # MODIFIÉ
+class OpenExoplanetCollector(BaseCollector):
+    def __init__(self, cache_dir: str = "data/cache/oec", use_mock_data: bool = False):
         super().__init__(cache_dir, use_mock_data)
 
     def _get_default_cache_filename(self) -> str:

@@ -1,8 +1,8 @@
 # src/generators/star/star_category_generator.py
 from typing import List, Optional, Callable
-from src.models.data_source_star import DataSourceStar
+from src.models.entities.star import Star
 from src.generators.base_category_generator import BaseCategoryGenerator
-from src.utils.classification.star_type_utils import StarTypeUtils
+from src.utils.astro.classification.star_type_utils import StarTypeUtils
 
 
 def int_to_roman(num):
@@ -30,17 +30,15 @@ class StarCategoryGenerator(BaseCategoryGenerator):
 
     def get_custom_rules(self) -> List[Callable]:
         return [
+            self._get_catalog_category,
             self._get_spectral_type_category,
             self._get_spectral_subtype_roman_category,
             self._get_luminosity_class_category,
             self._get_star_type_category,
             self._get_variable_star_type_category,
-            self._get_constellation_category,
-            self._get_catalog_category,
-            self._get_navigation_and_portal,
         ]
 
-    def _get_catalog_category(self, star: DataSourceStar) -> Optional[str]:
+    def _get_catalog_category(self, star: Star) -> Optional[str]:
         """
         Génère une catégorie basée sur le catalogue d'origine de l'étoile
         (Kepler, K2, KOI, etc.) en se basant sur le nom principal ou les noms alternatifs.
@@ -74,7 +72,7 @@ class StarCategoryGenerator(BaseCategoryGenerator):
         # Retourner toutes les catégories trouvées, séparées par des retours à la ligne
         return "\n".join(sorted(categories)) if categories else None
 
-    def _get_spectral_type_category(self, star: DataSourceStar) -> Optional[str]:
+    def _get_spectral_type_category(self, star: Star) -> Optional[str]:
         """
         Catégorie basée sur la lettre principale du type spectral.
         """
@@ -92,9 +90,7 @@ class StarCategoryGenerator(BaseCategoryGenerator):
                 return f"[[Catégorie:Étoile de type spectral {spectral_class}]]"
         return None
 
-    def _get_spectral_subtype_roman_category(
-        self, star: DataSourceStar
-    ) -> Optional[str]:
+    def _get_spectral_subtype_roman_category(self, star: Star) -> Optional[str]:
         """
         Catégorie basée sur le sous-type spectral, converti en chiffre romain.
         """
@@ -113,7 +109,7 @@ class StarCategoryGenerator(BaseCategoryGenerator):
                 return None
         return None
 
-    def _get_luminosity_class_category(self, star: DataSourceStar) -> Optional[str]:
+    def _get_luminosity_class_category(self, star: Star) -> Optional[str]:
         """
         Catégorie basée sur la classe de luminosité (V, IV, III, etc.)
         """
@@ -130,7 +126,7 @@ class StarCategoryGenerator(BaseCategoryGenerator):
                 return f"[[Catégorie:Classe de luminosité {luminosity}]]"
         return None
 
-    def _get_star_type_category(self, star: DataSourceStar) -> Optional[str]:
+    def _get_star_type_category(self, star: Star) -> Optional[str]:
         """
         Règle personnalisée pour déterminer la catégorie de type d'étoile.
         """
@@ -167,36 +163,8 @@ class StarCategoryGenerator(BaseCategoryGenerator):
 
         return "\n".join(categories) if categories else None
 
-    def _get_variable_star_type_category(self, star: DataSourceStar) -> Optional[str]:
+    def _get_variable_star_type_category(self, star: Star) -> Optional[str]:
         """
         Règle personnalisée pour déterminer la catégorie de type d'étoile variable.
         """
         return None
-
-    def _get_constellation_category(self, star: DataSourceStar) -> Optional[str]:
-        """
-        Catégorie basée sur la constellation de l'étoile.
-        """
-        if star.st_constellation:
-            constellation = star.st_constellation.value
-            if constellation:
-                mapping = (
-                    self.generator.rules.get("common", {})
-                    .get("mapped", {})
-                    .get("st_constellation", {})
-                )
-                if constellation in mapping:
-                    return mapping[constellation]
-                else:
-                    return f"[[Catégorie:Constellation de {constellation}]]"
-        return None
-
-    def _get_navigation_and_portal(self, star: DataSourceStar) -> Optional[str]:
-        """
-        Ajoute la palette de navigation et le portail pour les étoiles.
-        """
-        if star.st_constellation:
-            constellation = star.st_constellation.value
-            if constellation:
-                return f"{{{{Palette|Étoiles de {constellation}}}}}\n{{{{Portail|astronomie|étoiles}}}}"
-        return "{{Portail|astronomie|étoiles}}"

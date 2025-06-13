@@ -1,7 +1,7 @@
 # src/utils/formatters/article_formatters.py
 import locale
 from typing import Optional
-from src.models.reference import DataPoint
+from src.models.references.data_point import DataPoint
 
 
 class ArticleUtils:

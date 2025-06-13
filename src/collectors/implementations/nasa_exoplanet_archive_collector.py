@@ -2,12 +2,12 @@
 import pandas as pd
 from typing import List, Optional, Dict, Any
 import logging
-from src.models.data_source_star import DataSourceStar
+from src.models.entities.star import Star
 from src.mappers.nasa_exoplanet_archive_mapper import NasaExoplanetArchiveMapper
 from src.collectors.base_collector import BaseCollector
-from src.models.data_source_exoplanet import DataSourceExoplanet
+from src.models.entities.exoplanet import Exoplanet
 
-from src.models.reference import Reference, SourceType
+from src.models.references.reference import Reference, SourceType
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -45,9 +45,9 @@ class NASAExoplanetArchiveCollector(BaseCollector):
 
     def _convert_row_to_exoplanet(
         self, row: pd.Series, ref: Reference
-    ) -> Optional[DataSourceExoplanet]:
+    ) -> Optional[Exoplanet]:
         """
-        Converts a pandas Series (row from a CSV/DataFrame) to a Star object,
+        Converts a pandas Series (row from a CSV/DataFrame) to an Exoplanet object,
         populating it with data based on predefined mappings.
         """
         try:
@@ -60,7 +60,7 @@ class NASAExoplanetArchiveCollector(BaseCollector):
                 return None
 
             # Déléguer toute la logique de mappage et de création de l'objet au mapper.
-            exoplanet = self.mapper.map_nea_data_to_exoplanet(nea_data_dict)
+            exoplanet = self.mapper.map_nea_data_to_exoplanet(nea_data_dict, ref)
             return exoplanet
         except Exception as e:
             logger.error(
@@ -69,9 +69,7 @@ class NASAExoplanetArchiveCollector(BaseCollector):
             )
             return None
 
-    def _convert_row_to_star(
-        self, row: pd.Series, ref: Reference
-    ) -> Optional[DataSourceStar]:
+    def _convert_row_to_star(self, row: pd.Series, ref: Reference) -> Optional[Star]:
         """
         Converts a pandas Series (row from a CSV/DataFrame) to a Star object,
         populating it with data based on predefined mappings.
@@ -86,7 +84,7 @@ class NASAExoplanetArchiveCollector(BaseCollector):
                 return None
 
             # Déléguer toute la logique de mappage et de création de l'objet au mapper.
-            star = self.mapper.map_nea_data_to_star(nea_data_dict)
+            star = self.mapper.map_nea_data_to_star(nea_data_dict, ref)
             return star
         except Exception as e:
             logger.error(

@@ -1,6 +1,6 @@
-# src/utils/classification/exoplatnet_comparison_utils.py
+# src/utils/astro/classification/exoplatnet_comparison_utils.py
 
-from src.models.data_source_exoplanet import DataSourceExoplanet
+from src.models.data_sources.exoplanet_source import DataSourceExoplanet
 from src.utils.formatters.article_formatters import ArticleUtils
 
 

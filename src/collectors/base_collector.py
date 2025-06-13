@@ -7,10 +7,10 @@ from datetime import datetime
 import logging
 from abc import ABC, abstractmethod
 
-from src.models.data_source_star import DataSourceStar
-from src.models.data_source_exoplanet import DataSourceExoplanet
-from src.models.reference import Reference, SourceType
-from src.services.reference_manager import ReferenceManager
+from src.models.entities.star import Star
+from src.models.entities.exoplanet import Exoplanet
+from src.models.references.reference import Reference, SourceType
+from src.services.processors.reference_manager import ReferenceManager
 
 logger = logging.getLogger(__name__)
 
@@ -54,15 +54,13 @@ class BaseCollector(ABC):
     @abstractmethod
     def _convert_row_to_exoplanet(
         self, row: pd.Series, ref: Reference
-    ) -> Optional[DataSourceExoplanet]:
-        """Convertit une ligne du DataFrame en objet DataSourceExoplanet."""
+    ) -> Optional[Exoplanet]:
+        """Convertit une ligne du DataFrame en objet Exoplanet."""
         pass
 
     @abstractmethod
-    def _convert_row_to_star(
-        self, row: pd.Series, ref: Reference
-    ) -> Optional[DataSourceStar]:
-        """Convertit une ligne du DataFrame en objet DataSourceStar."""
+    def _convert_row_to_star(self, row: pd.Series, ref: Reference) -> Optional[Star]:
+        """Convertit une ligne du DataFrame en objet Star."""
         pass
 
     def _read_csv_from_path(self, file_path: str) -> Optional[pd.DataFrame]:
@@ -103,9 +101,9 @@ class BaseCollector(ABC):
             )
         return None
 
-    def fetch_data(self) -> Tuple[List[DataSourceExoplanet], List[DataSourceStar]]:
-        exoplanets: List[DataSourceExoplanet] = []
-        stars: List[DataSourceStar] = []
+    def fetch_data(self) -> Tuple[List[Exoplanet], List[Star]]:
+        exoplanets: List[Exoplanet] = []
+        stars: List[Star] = []
         df = None
 
         if self.use_mock_data:

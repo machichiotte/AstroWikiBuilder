@@ -5,8 +5,8 @@ from typing import Any
 from src.models.infobox_fields import FieldMapping
 from src.utils.formatters.infobox_field_formatters import FieldFormatter
 from src.utils.formatters.article_formatters import ArticleUtils
-from src.utils.constellation_utils import ConstellationUtils
-from src.services.reference_manager import ReferenceManager
+from src.utils.astro.constellation_utils import ConstellationUtils
+from src.services.processors.reference_manager import ReferenceManager
 
 
 class InfoboxBaseGenerator(ABC):

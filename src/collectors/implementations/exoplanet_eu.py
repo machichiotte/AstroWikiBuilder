@@ -3,10 +3,9 @@ import pandas as pd
 from typing import List, Optional, Dict, Any
 import logging
 from src.collectors.base_collector import BaseCollector
-from src.models.data_source_exoplanet import (
-    DataSourceExoplanet,
-)
-from src.models.reference import DataPoint, Reference, SourceType
+from src.models.data_sources.exoplanet_source import DataSourceExoplanet
+from src.models.references.reference import Reference, SourceType
+from src.models.references.data_point import DataPoint
 
 logger = logging.getLogger(__name__)
 

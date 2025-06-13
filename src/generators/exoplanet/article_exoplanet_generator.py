@@ -2,13 +2,15 @@
 import locale
 import math
 
-from src.models.data_source_exoplanet import DataSourceExoplanet
+from src.models.entities.exoplanet import Exoplanet
 
 from src.utils.formatters.article_formatters import ArticleUtils
-from src.utils.constellation_utils import ConstellationUtils
+from src.utils.astro.constellation_utils import ConstellationUtils
 
-from src.utils.classification.exoplanet_comparison_utils import ExoplanetComparisonUtils
-from src.utils.classification.exoplanet_type_utils import ExoplanetTypeUtils
+from src.utils.astro.classification.exoplanet_comparison_utils import (
+    ExoplanetComparisonUtils,
+)
+from src.utils.astro.classification.exoplanet_type_utils import ExoplanetTypeUtils
 from src.generators.exoplanet.exoplanet_infobox_generator import (
     ExoplanetInfoboxGenerator,
 )
@@ -18,7 +20,7 @@ from src.generators.exoplanet.exoplanet_introduction_generator import (
 from src.generators.exoplanet.exoplanet_category_generator import (
     ExoplanetCategoryGenerator,
 )
-from src.services.reference_manager import ReferenceManager
+from src.services.processors.reference_manager import ReferenceManager
 from src.generators.base_article_generator import BaseArticleGenerator
 
 
@@ -46,7 +48,7 @@ class ArticleExoplanetGenerator(BaseArticleGenerator):
             self.comparison_utils, self.article_utils
         )
 
-    def generate_article_content(self, exoplanet: DataSourceExoplanet) -> str:
+    def generate_article_content(self, exoplanet: Exoplanet) -> str:
         """
         Génère l'ensemble du contenu de l'article Wikipédia pour une exoplanète.
         Appelle des sous-fonctions dédiées pour chaque partie.
@@ -86,7 +88,7 @@ class ArticleExoplanetGenerator(BaseArticleGenerator):
         # On assemble le tout en filtrant les chaînes vides
         return "\n\n".join(filter(None, parts))
 
-    def _generate_orbit_section(self, exoplanet: DataSourceExoplanet) -> str:
+    def _generate_orbit_section(self, exoplanet: Exoplanet) -> str:
         """
         Génère la section de l'orbite de l'exoplanète
         """
@@ -123,7 +125,7 @@ class ArticleExoplanetGenerator(BaseArticleGenerator):
 
         return section
 
-    def _generate_discovery_section(self, exoplanet: DataSourceExoplanet) -> str:
+    def _generate_discovery_section(self, exoplanet: Exoplanet) -> str:
         """Génère la section de découverte."""
         if not exoplanet.disc_year:
             return ""
@@ -167,9 +169,7 @@ class ArticleExoplanetGenerator(BaseArticleGenerator):
 
         return section
 
-    def _generate_physical_characteristics_section(
-        self, exoplanet: DataSourceExoplanet
-    ) -> str:
+    def _generate_physical_characteristics_section(self, exoplanet: Exoplanet) -> str:
         """Génère la section des caractéristiques physiques."""
 
         def get_value_or_none_if_nan(data_point):
@@ -272,7 +272,7 @@ class ArticleExoplanetGenerator(BaseArticleGenerator):
 
         return section
 
-    def _generate_habitability_section(self, exoplanet: DataSourceExoplanet) -> str:
+    def _generate_habitability_section(self, exoplanet: Exoplanet) -> str:
         """
         Génère la section sur l'habitabilité de l'exoplanète
         """

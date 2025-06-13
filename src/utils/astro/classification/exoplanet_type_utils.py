@@ -1,6 +1,6 @@
-# src/utils/classification/exoplanet_type_utils.py
+# src/utils/astro/classification/exoplanet_type_utils.py
 from typing import Optional
-from src.models.data_source_exoplanet import DataSourceExoplanet
+from src.models.data_sources.exoplanet_source import DataSourceExoplanet
 
 
 class ExoplanetTypeUtils:

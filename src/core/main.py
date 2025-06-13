@@ -2,6 +2,7 @@ import os
 from datetime import datetime
 import argparse
 from typing import Tuple, Dict, Any
+import json
 
 from src.core.config import (
     logger,
@@ -20,13 +21,13 @@ from src.collectors.implementations.open_exoplanet_collection import (
     OpenExoplanetCollector,
 )
 
-from src.services.data_processor import DataProcessor
+from src.services.processors.data_processor import DataProcessor
 from src.utils.wikipedia.wikipedia_checker import WikipediaChecker, WikiArticleInfo
-from src.services.star_repository import StarRepository
-from src.services.exoplanet_repository import ExoplanetRepository
-from src.services.statistics_service import StatisticsService
-from src.services.wikipedia_service import WikipediaService
-from src.services.export_service import ExportService
+from src.services.repositories.star_repository import StarRepository
+from src.services.repositories.exoplanet_repository import ExoplanetRepository
+from src.services.processors.statistics_service import StatisticsService
+from src.services.external.wikipedia_service import WikipediaService
+from src.services.external.export_service import ExportService
 
 from src.utils.wikipedia.draft_utils import (
     generate_exoplanet_draft,
@@ -224,19 +225,57 @@ def export_consolidated_data(processor: DataProcessor, output_dir: str, timestam
 
 def log_statistics(stats: Dict[str, Any]):
     """Affiche les statistiques collectées."""
+    # Statistiques des exoplanètes
     logger.info("Statistiques des exoplanètes collectées :")
-    logger.info(f"  Total : {stats.get('total_exoplanets', 0)}")
-    logger.info("  Par source :")
-    for source, count in stats.get("data_points_by_source", {}).items():
-        logger.info(f"    - {source} : {count}")
+    logger.info(f"  Total : {stats.get('exoplanet', {}).get('total', 0)}")
+
     logger.info("  Par méthode de découverte :")
-    for method, count in stats.get("disc_methods", {}).items():
+    for method, count in (
+        stats.get("exoplanet", {}).get("discovery_methods", {}).items()
+    ):
         logger.info(f"    - {method} : {count}")
+
     logger.info("  Par année de découverte :")
     for year, count in sorted(
-        stats.get("discovery_years", {}).items(), key=lambda x: str(x[0])
+        stats.get("exoplanet", {}).get("discovery_years", {}).items(),
+        key=lambda x: str(x[0]),
     ):
         logger.info(f"    - {year} : {count}")
+
+    logger.info("  Par plage de masse (MJ) :")
+    for range_name, count in stats.get("exoplanet", {}).get("mass_ranges", {}).items():
+        logger.info(f"    - {range_name} : {count}")
+
+    logger.info("  Par plage de rayon (RJ) :")
+    for range_name, count in (
+        stats.get("exoplanet", {}).get("radius_ranges", {}).items()
+    ):
+        logger.info(f"    - {range_name} : {count}")
+
+    # Statistiques des étoiles
+    logger.info("\nStatistiques des étoiles collectées :")
+    logger.info(f"  Total : {stats.get('star', {}).get('total_stars', 0)}")
+
+    logger.info("  Par type spectral :")
+    for spectral_type, count in stats.get("star", {}).get("spectral_types", {}).items():
+        logger.info(f"    - {spectral_type} : {count}")
+
+    logger.info("  Par source de données :")
+    for source, count in stats.get("star", {}).get("data_points_by_source", {}).items():
+        logger.info(f"    - {source} : {count}")
+
+
+def save_statistics(stats: Dict[str, Any], output_dir: str, timestamp: str):
+    """Sauvegarde les statistiques dans un fichier JSON."""
+    # Créer le répertoire des statistiques s'il n'existe pas
+    stats_dir = os.path.join(output_dir, "statistics")
+    os.makedirs(stats_dir, exist_ok=True)
+
+    # Sauvegarder les statistiques
+    stats_path = os.path.join(stats_dir, f"statistics_{timestamp}.json")
+    with open(stats_path, "w", encoding="utf-8") as f:
+        json.dump(stats, f, indent=2, ensure_ascii=False)
+    logger.info(f"Statistiques sauvegardées dans {stats_path}")
 
 
 def check_and_export_wikipedia_status(
@@ -271,21 +310,30 @@ def _run_draft_generation(
 ) -> None:
     """Génère les brouillons d'articles."""
     logger.info(f"Génération des brouillons pour les {entity_type}...")
+    logger.info(f"Nombre d'entités dans missing_map: {len(missing_map)}")
+    logger.info(
+        f"Clés dans missing_map: {list(missing_map.keys())[:5]}..."
+    )  # Affiche les 5 premières clés
 
     # Récupérer les entités
     entities = get_entities_func()
+    logger.info(f"Nombre d'entités récupérées: {len(entities)}")
 
     # Générer les brouillons
     drafts = []
     for entity in entities:
         name = get_name_func(entity)
+        logger.debug(f"Vérification de l'entité: {name}")
         if name in missing_map:
-            draft = generate_draft_func(entity, missing_map[name])
-            drafts.append(draft)
+            logger.debug(f"Génération du draft pour: {name}")
+            draft = generate_draft_func(entity)
+            drafts.append((name, draft))
+        else:
+            logger.debug(f"Entité {name} non trouvée dans missing_map")
 
     # Sauvegarder les brouillons
     if drafts:
-        save_drafts(drafts, drafts_dir)
+        save_drafts(drafts, [], drafts_dir, entity_type)
         logger.info(f"{len(drafts)} brouillons générés pour les {entity_type}")
     else:
         logger.info(f"Aucun brouillon généré pour les {entity_type}")
@@ -296,6 +344,7 @@ def exoplanet_run_draft_generation(
     existing_map: Dict,
     missing_map: Dict,
     is_wikipedia_check_skipped: bool,
+    drafts_dir: str,
 ):
     """Génère les brouillons pour les exoplanètes."""
     if is_wikipedia_check_skipped:
@@ -303,19 +352,19 @@ def exoplanet_run_draft_generation(
         drafts = []
         for exoplanet in processor.get_all_exoplanets():
             draft = generate_exoplanet_draft(exoplanet, None)
-            drafts.append(draft)
-        save_drafts(drafts, "drafts")
+            drafts.append((exoplanet.pl_name, draft))
+        save_drafts(drafts, [], drafts_dir, "exoplanètes")
         logger.info(f"{len(drafts)} brouillons générés pour les exoplanètes")
     else:
         _run_draft_generation(
             processor,
             existing_map,
             missing_map,
-            "drafts",
+            drafts_dir,
             "exoplanètes",
             processor.get_all_exoplanets,
             generate_exoplanet_draft,
-            lambda x: x.name,
+            lambda x: x.pl_name,
         )
 
 
@@ -324,6 +373,7 @@ def star_run_draft_generation(
     existing_map: Dict,
     missing_map: Dict,
     is_wikipedia_check_skipped: bool,
+    drafts_dir: str,
 ):
     """Génère les brouillons pour les étoiles."""
     if is_wikipedia_check_skipped:
@@ -331,19 +381,19 @@ def star_run_draft_generation(
         drafts = []
         for star in processor.get_all_stars():
             draft = generate_star_draft(star, None)
-            drafts.append(draft)
-        save_drafts(drafts, "drafts")
+            drafts.append((star.st_name, draft))
+        save_drafts(drafts, [], drafts_dir, "étoiles")
         logger.info(f"{len(drafts)} brouillons générés pour les étoiles")
     else:
         _run_draft_generation(
             processor,
             existing_map,
             missing_map,
-            "drafts",
+            drafts_dir,
             "étoiles",
             processor.get_all_stars,
             generate_star_draft,
-            lambda x: x.name,
+            lambda x: x.st_name,
         )
 
 
@@ -372,8 +422,8 @@ def main():
     processor = DataProcessor(
         exoplanet_repository=exoplanet_repository,
         star_repository=star_repository,
-        statistics_service=stat_service,
-        wikipedia_service=wiki_service,
+        stat_service=stat_service,
+        wiki_service=wiki_service,
         export_service=export_service,
     )
 
@@ -383,8 +433,10 @@ def main():
     # Export des données consolidées
     export_consolidated_data(processor, args.output_dir, timestamp)
 
-    # Affichage des statistiques
-    log_statistics(processor.get_statistics())
+    # Affichage et sauvegarde des statistiques
+    stats = processor.get_statistics()
+    log_statistics(stats)
+    save_statistics(stats, args.output_dir, timestamp)
 
     # Vérification et génération des brouillons Wikipedia
     if not args.skip_wikipedia_check:
@@ -394,10 +446,18 @@ def main():
 
         # Génération des brouillons
         exoplanet_run_draft_generation(
-            processor, existing_map, missing_map, args.skip_wikipedia_check
+            processor,
+            existing_map,
+            missing_map,
+            args.skip_wikipedia_check,
+            args.drafts_dir,
         )
         star_run_draft_generation(
-            processor, existing_map, missing_map, args.skip_wikipedia_check
+            processor,
+            existing_map,
+            missing_map,
+            args.skip_wikipedia_check,
+            args.drafts_dir,
         )
 
     logger.info("Traitement terminé avec succès.")

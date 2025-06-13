@@ -1,3 +1,0 @@
-"""
-Wikipedia utils package
-"""

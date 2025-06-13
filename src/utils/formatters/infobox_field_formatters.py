@@ -4,7 +4,7 @@ import logging
 from typing import Any, Optional
 
 from src.constants.field_mappings import DISCOVERY_FACILITY_MAPPING, METHOD_NAME_MAPPING
-from src.models.reference import DataPoint
+from src.models.references.data_point import DataPoint
 from src.utils.validators import infobox_validators
 from src.models.infobox_fields import FieldMapping
 

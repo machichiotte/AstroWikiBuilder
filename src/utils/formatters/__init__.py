@@ -1,3 +1,0 @@
-"""
-Formatters package
-"""

@@ -1,9 +1,9 @@
 # src/generators/wikipedia_star_generator.py
 import locale
-from src.models.data_source_star import DataSourceStar
+from src.models.entities.star import Star
 from src.generators.star.star_infobox_generator import StarInfoboxGenerator
 from src.utils.formatters.article_formatters import ArticleUtils
-from src.services.reference_manager import ReferenceManager
+from src.services.processors.reference_manager import ReferenceManager
 from src.generators.star.star_category_generator import StarCategoryGenerator
 from src.generators.base_article_generator import BaseArticleGenerator
 from src.generators.star.star_content_generator import StarContentGenerator
@@ -31,7 +31,7 @@ class ArticleStarGenerator(BaseArticleGenerator):
         except locale.Error:
             pass  # Optionnel : gérer fallback si besoin
 
-    def generate_article_content(self, star: DataSourceStar) -> str:
+    def generate_article_content(self, star: Star) -> str:
         """
         Génère l'ensemble du contenu de l'article Wikipédia pour une étoile.
         """
@@ -58,7 +58,7 @@ class ArticleStarGenerator(BaseArticleGenerator):
 
         return "\n\n".join(filter(None, parts))
 
-    def _generate_introduction_section(self, star: DataSourceStar) -> str:
+    def _generate_introduction_section(self, star: Star) -> str:
         """
         Génère l'introduction de l'article.
         """

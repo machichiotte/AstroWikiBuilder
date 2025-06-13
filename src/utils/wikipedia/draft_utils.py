@@ -1,11 +1,11 @@
 # src/utils/draft_utils.py
 import os
 import logging
-from typing import List, Literal, Tuple
+from typing import List, Literal, Tuple, Optional
 
 # Project imports
-from src.models.data_source_exoplanet import DataSourceExoplanet
-from src.models.data_source_star import DataSourceStar
+from src.models.entities.exoplanet import Exoplanet
+from src.models.entities.star import Star
 from src.generators.exoplanet.article_exoplanet_generator import (
     ArticleExoplanetGenerator,
 )
@@ -30,38 +30,29 @@ def clean_filename(filename: str) -> str:
     filename = filename.strip("_")
     return filename
 
-def generate_exoplanet_draft(exoplanet: DataSourceExoplanet) -> str:
+
+def generate_exoplanet_draft(exoplanet: Exoplanet) -> str:
     """
     Génère le contenu d'un brouillon d'article pour une exoplanète.
     """
-    # Note : Vous pourriez aussi injecter le générateur si vous souhaitez
-    # le configurer ou le partager davantage.
     generator = ArticleExoplanetGenerator()
     logger.debug(f"Génération du brouillon pour l'exoplanète {exoplanet.pl_name}...")
     content = generator.generate_article_content(exoplanet)
     logger.debug(f"Brouillon pour l'exoplanète {exoplanet.pl_name} généré.")
     return content
 
-def generate_star_draft(star: DataSourceStar) -> str:
+
+def generate_star_draft(star: Star) -> str:
     """
     Génère le contenu d'un brouillon d'article pour une étoile.
-
-    Args:
-        star: L'objet Star pour lequel générer le brouillon.
-
-    Returns:
-        Le contenu du brouillon généré.
     """
-
     generator = ArticleStarGenerator()
-    # Star.name is a DataPoint object, so access its .value attribute for the actual name string.
-    star_name_val = (
-        star.st_name.value if star.st_name and hasattr(star.st_name, "value") else "Unknown Star"
-    )
-    logger.debug(f"Génération du brouillon pour l'étoile {star_name_val}...")
+    star_name = star.st_name if star.st_name else "Unknown Star"
+    logger.debug(f"Génération du brouillon pour l'étoile {star_name}...")
     content = generator.generate_article_content(star)
-    logger.debug(f"Brouillon pour l'étoile {star_name_val} généré.")
+    logger.debug(f"Brouillon pour l'étoile {star_name} généré.")
     return content
+
 
 def save_exoplanet_drafts(
     missing_drafts: List[Tuple[str, str]],
@@ -109,6 +100,7 @@ def save_exoplanet_drafts(
         except Exception as e:
             logger.error(f"Erreur inattendue lors de la sauvegarde de {filename}: {e}")
 
+
 def save_star_drafts(
     missing_drafts: List[Tuple[str, str]],
     existing_drafts: List[Tuple[str, str]],
@@ -155,11 +147,12 @@ def save_star_drafts(
         except Exception as e:
             logger.error(f"Erreur inattendue lors de la sauvegarde de {filename}: {e}")
 
+
 def save_drafts(
     missing_drafts: List[Tuple[str, str]],
     existing_drafts: List[Tuple[str, str]],
     drafts_dir: str,
-    entity: Literal["exoplanètes", "étoiles"] = "entités"
+    entity: Literal["exoplanètes", "étoiles"] = "entités",
 ) -> None:
     """
     Fonction générique pour sauvegarder les brouillons d'entités (exoplanètes, étoiles, etc.)
@@ -186,7 +179,9 @@ def save_drafts(
             except IOError as e:
                 logger.error(f"Impossible de sauvegarder le brouillon {filename}: {e}")
             except Exception as e:
-                logger.error(f"Erreur inattendue lors de la sauvegarde de {filename}: {e}")
+                logger.error(
+                    f"Erreur inattendue lors de la sauvegarde de {filename}: {e}"
+                )
 
     _save_to_directory(missing_drafts, missing_dir, f"{entity} manquants")
     _save_to_directory(existing_drafts, existing_dir, f"{entity} existants")
