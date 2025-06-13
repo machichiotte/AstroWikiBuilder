@@ -2,7 +2,7 @@
 import pandas as pd
 from typing import List, Optional, Dict, Any
 import logging
-from src.data_collectors.base_collector import BaseExoplanetCollector
+from src.data_collectors.base_collector import BaseCollector
 from src.models.data_source_exoplanet import (
     DataSourceExoplanet,
 )
@@ -11,7 +11,7 @@ from src.models.reference import DataPoint, Reference, SourceType
 logger = logging.getLogger(__name__)
 
 
-class ExoplanetEUCollector(BaseExoplanetCollector):
+class ExoplanetEUCollector(BaseCollector):
     def __init__(
         self, cache_dir: str = "data/cache/exoplanet_eu", use_mock_data: bool = False
     ):

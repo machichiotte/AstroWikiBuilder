@@ -186,6 +186,8 @@ def fetch_and_process_data(collectors: Dict[str, Any], processor: DataProcessor)
         try:
             exoplanets, stars = collector.fetch_data()
 
+            print("exooooo", str(exoplanets))
+            print("staaa", str(stars))
             if not isinstance(exoplanets, list):
                 raise TypeError(
                     f"Exoplanets doit être une liste, reçu {type(exoplanets)}"
@@ -326,8 +328,13 @@ def exoplanet_run_draft_generation(
         # Assuming save_drafts from draft_utils.py handles only two lists as per its original confirmed signature
         # If draft_utils.py was successfully updated to handle three lists, this call would need adjustment.
         # However, the prompt's context implies draft_utils.py might not have been updated.
-        
-        save_drafts(exoplanet_missing_drafts, exoplanet_existing_drafts, drafts_dir="drafts/exoplanet", entity="exoplanètes")
+
+        save_drafts(
+            exoplanet_missing_drafts,
+            exoplanet_existing_drafts,
+            drafts_dir="drafts/exoplanet",
+            entity="exoplanètes",
+        )
 
         logger.info(f"Brouillons sauvegardés dans {drafts_dir}")
     else:
@@ -371,7 +378,7 @@ def star_run_draft_generation(
             #    f"Star {name} was not found in the provided missing_map or existing_map "
             #    f"(even if Wikipedia check was performed). Draft will be saved in the 'missing' "
             #    f"directory by default."
-            #)
+            # )
             star_missing_drafts.append((name, draft_content))
 
     logger.info(
@@ -382,7 +389,12 @@ def star_run_draft_generation(
         # Assuming save_drafts from draft_utils.py handles only two lists as per its original confirmed signature
         # If draft_utils.py was successfully updated to handle three lists, this call would need adjustment.
         # However, the prompt's context implies draft_utils.py might not have been updated.
-        save_drafts(star_missing_drafts, star_existing_drafts, drafts_dir="drafts/star", entity="étoiles")
+        save_drafts(
+            star_missing_drafts,
+            star_existing_drafts,
+            drafts_dir="drafts/star",
+            entity="étoiles",
+        )
 
         logger.info(f"Brouillons sauvegardés dans {drafts_dir}")
     else:

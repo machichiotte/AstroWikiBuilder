@@ -15,7 +15,7 @@ from src.services.reference_manager import ReferenceManager
 logger = logging.getLogger(__name__)
 
 
-class BaseExoplanetCollector(ABC):
+class BaseCollector(ABC):
     def __init__(self, cache_dir: str, use_mock_data: bool = False):
         self.cache_dir = cache_dir
         os.makedirs(self.cache_dir, exist_ok=True)
@@ -73,7 +73,14 @@ class BaseExoplanetCollector(ABC):
     def _convert_row_to_exoplanet(
         self, row: pd.Series, ref: Reference
     ) -> Optional[DataSourceExoplanet]:
-        """Convertit une ligne du DataFrame en objet Exoplanet."""
+        """Convertit une ligne du DataFrame en objet DataSourceExoplanet."""
+        pass
+
+    @abstractmethod
+    def _convert_row_to_star(
+        self, row: pd.Series, ref: Reference
+    ) -> Optional[DataSourceStar]:
+        """Convertit une ligne du DataFrame en objet DataSourceStar."""
         pass
 
     def _read_csv_from_path(self, file_path: str) -> Optional[pd.DataFrame]:
