@@ -1,10 +1,25 @@
 # src/utils/formatters/infobox_field_formatters.py
+from enum import Enum
+import logging
 from typing import Any, Optional
 
 from src.constants.field_mappings import DISCOVERY_FACILITY_MAPPING, METHOD_NAME_MAPPING
 from src.models.reference import DataPoint
 from src.utils.validators import infobox_validators
 from src.models.infobox_fields import FieldMapping
+
+logger = logging.getLogger(__name__)
+
+
+class InfoboxField(str, Enum):
+    """Enumération des champs d'infobox"""
+
+    LOCATION = "lieu"
+    METHOD = "méthode"
+    AGE = "âge"
+    DESIGNATIONS = "désignations"
+    UAI_MAP = "carte UAI"
+    CONSTELLATION = "constellation"
 
 
 class FieldFormatter:
@@ -13,62 +28,88 @@ class FieldFormatter:
     @staticmethod
     def _apply_special_formatting(infobox_field: str, value: Any) -> str:
         """Applique le formatage spécial selon le type de champ"""
-        formatters = {
-            "lieu": FieldFormatter._format_discovery_facility,
-            "méthode": FieldFormatter._format_discovery_method,
-            "âge": lambda v: f"{v}×10<sup>9</sup>",
-            "désignations": FieldFormatter._format_designations,
-            "carte UAI": lambda v: v,
-            "constellation": lambda v: f"[[{v} (constellation)|{v}]]",
-        }
-
-        formatter = formatters.get(infobox_field)
-        return formatter(value) if formatter else value
+        try:
+            formatter = FieldFormatter._FORMATTERS.get(infobox_field)
+            return formatter(value) if formatter else value
+        except Exception as e:
+            logger.error(f"Erreur lors du formatage du champ {infobox_field}: {str(e)}")
+            return str(value)
 
     @staticmethod
     def _format_discovery_facility(value: Any) -> str:
         """Formate le lieu de découverte"""
-        mapped = DISCOVERY_FACILITY_MAPPING.get(value)
-        return f"[[{mapped}]]" if mapped else str(value)
+        try:
+            mapped = DISCOVERY_FACILITY_MAPPING.get(value)
+            return f"[[{mapped}]]" if mapped else str(value)
+        except Exception as e:
+            logger.error(
+                f"Erreur lors du formatage du lieu de découverte {value}: {str(e)}"
+            )
+            return str(value)
 
     @staticmethod
     def _format_discovery_method(value: Any) -> str:
         """Formate la méthode de découverte"""
-        method_key = str(value).strip().lower()
-        mapped = METHOD_NAME_MAPPING.get(method_key)
-        return f"[[{mapped['article']}|{mapped['display']}]]" if mapped else str(value)
+        try:
+            method_key = str(value).strip().lower()
+            mapped = METHOD_NAME_MAPPING.get(method_key)
+            return (
+                f"[[{mapped['article']}|{mapped['display']}]]" if mapped else str(value)
+            )
+        except Exception as e:
+            logger.error(f"Erreur lors du formatage de la méthode {value}: {str(e)}")
+            return str(value)
 
     @staticmethod
     def _format_designations(value: Any) -> str:
         """Formate les désignations en liste avec les modèles Wikipédia appropriés."""
+        try:
 
-        def format_single_designation(d: str) -> str:
-            d = d.strip()
-            if d.lower().startswith("hd "):
-                return f"{{{{HD|{d.split(' ')[1]}}}}}"
-            if d.lower().startswith("hip "):
-                return f"{{{{HIP|{d.split(' ')[1]}}}}}"
-            if d.lower().startswith("koi "):
-                return f"{{{{StarKOI|{d.split(' ')[1]}}}}}"
-            if d.lower().startswith("kic "):
-                return f"{{{{StarKIC|{d.split(' ')[1]}}}}}"
-            if d.lower().startswith("tic "):
-                return f"{{{{StarTIC|{d.split(' ')[1]}}}}}"
-            if d.lower().startswith("2mass j"):
-                core = d[7:].strip()
-                if "+" in core or "-" in core:
-                    for sep in ["+", "-"]:
-                        if sep in core:
-                            parts = core.split(sep)
-                            if len(parts) == 2:
-                                return f"{{{{Star2MASS|{parts[0]}|{sep}{parts[1]}}}}}"
-            return d
+            def format_single_designation(d: str) -> str:
+                try:
+                    d = d.strip()
+                    if d.lower().startswith("hd "):
+                        return f"{{{{HD|{d.split(' ')[1]}}}}}"
+                    if d.lower().startswith("hip "):
+                        return f"{{{{HIP|{d.split(' ')[1]}}}}}"
+                    if d.lower().startswith("koi "):
+                        return f"{{{{StarKOI|{d.split(' ')[1]}}}}}"
+                    if d.lower().startswith("kic "):
+                        return f"{{{{StarKIC|{d.split(' ')[1]}}}}}"
+                    if d.lower().startswith("tic "):
+                        return f"{{{{StarTIC|{d.split(' ')[1]}}}}}"
+                    if d.lower().startswith("2mass j"):
+                        core = d[7:].strip()
+                        if "+" in core or "-" in core:
+                            for sep in ["+", "-"]:
+                                if sep in core:
+                                    parts = core.split(sep)
+                                    if len(parts) == 2:
+                                        return f"{{{{Star2MASS|{parts[0]}|{sep}{parts[1]}}}}}"
+                    return d
+                except Exception as e:
+                    logger.error(
+                        f"Erreur lors du formatage de la désignation {d}: {str(e)}"
+                    )
+                    return d
 
-        if isinstance(value, list):
-            return ", ".join(
-                format_single_designation(str(v)) for v in value if str(v).strip()
-            )
-        return format_single_designation(str(value).strip())
+            if isinstance(value, list):
+                return ", ".join(
+                    format_single_designation(str(v)) for v in value if str(v).strip()
+                )
+            return format_single_designation(str(value).strip())
+        except Exception as e:
+            logger.error(f"Erreur lors du formatage des désignations {value}: {str(e)}")
+            return str(value)
+
+    _FORMATTERS = {
+        InfoboxField.LOCATION: _format_discovery_facility,
+        InfoboxField.METHOD: _format_discovery_method,
+        InfoboxField.AGE: lambda v: f"{v}×10<sup>9</sup>",
+        InfoboxField.DESIGNATIONS: _format_designations,
+        InfoboxField.UAI_MAP: lambda v: v,
+        InfoboxField.CONSTELLATION: lambda v: f"[[{v} (constellation)|{v}]]",
+    }
 
     @staticmethod
     def _extract_field_value(
