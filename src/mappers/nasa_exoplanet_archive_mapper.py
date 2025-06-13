@@ -7,6 +7,7 @@ from src.models.data_sources.exoplanet_source import DataSourceExoplanet
 from src.utils.astro.constellation_utils import ConstellationUtils
 from src.models.entities.exoplanet import Exoplanet
 from src.constants.field_mappings import FIELD_DEFAULT_UNITS_EXOPLANET
+from src.models.entities.star import Star
 
 from datetime import datetime
 from src.constants.field_mappings import (
@@ -421,7 +422,7 @@ class NasaExoplanetArchiveMapper:
         # Traitement spécial pour les désignations
         st_altnames = self._extract_star_altname(nea_data)
         if st_altnames:
-            star.st_altname = DataPoint(value=st_altnames)
+            star.st_altname = st_altnames
 
         # Traitement des coordonnées
         self._process_coordinates(star, nea_data, reference)
@@ -469,3 +470,46 @@ class NasaExoplanetArchiveMapper:
                     setattr(exoplanet, attribute, datapoint)
 
         return exoplanet
+
+    def map_nea_data_to_star_entity(
+        self, nea_data: Dict[str, Any], reference: Optional[Reference] = None
+    ) -> "Star":
+        from src.models.entities.star import Star
+
+        if reference is None:
+            reference = self._create_nea_reference(nea_data)
+
+        star = Star()
+
+        # Nom principal
+        if "hostname" in nea_data and nea_data["hostname"]:
+            star.st_name = nea_data["hostname"]
+
+        # Désignations alternatives
+        st_altnames = self._extract_star_altname(nea_data)
+        if st_altnames:
+            star.st_altname = st_altnames
+
+        # Coordonnées
+        self._process_coordinates(star, nea_data, reference)
+
+        # Mapper les autres champs
+        for nea_field, attribute in self.NEA_TO_STAR_MAPPING.items():
+            if nea_field in ["hostname"]:
+                continue  # déjà traité
+            if nea_field in nea_data:
+                value = nea_data[nea_field]
+                if value is not None and str(value).strip():
+                    datapoint = self._create_datapoint(
+                        value,
+                        nea_field,
+                        attribute,
+                        reference,
+                        FIELD_DEFAULT_UNITS_STAR,
+                    )
+                    if datapoint:
+                        setattr(star, attribute, datapoint)
+
+        # Ajout de la référence
+        star.add_reference(reference)
+        return star

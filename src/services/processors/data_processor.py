@@ -125,7 +125,7 @@ class DataProcessor:
             return
 
         # data_to_format is now directly wiki_data_map_to_export
-        formatted_list = self.wiki_service.format_wiki_links_data_for_export(
+        formatted_list = self.wiki_service.format_wikipedia_links_for_exoplanets(
             all_exoplanets_from_repo,  # Pass all exoplanets for context
             wiki_data_map_to_export,  # Pass the already filtered map
         )

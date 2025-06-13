@@ -95,7 +95,7 @@ class StarContentGenerator:
         """
         Génère la section sur l'environnement stellaire.
         """
-        if not any([star.st_constellation, star.st_distance_pc]):
+        if not any([star.st_constellation, star.st_distance]):
             return ""
 
         content = ["== Environnement stellaire ==\n"]
@@ -105,8 +105,8 @@ class StarContentGenerator:
                 f"L'étoile se trouve dans la constellation [[{star.st_constellation.value}]]."
             )
 
-        if star.st_distance_pc and star.st_distance_pc.value:
-            dist = self.article_utils.format_numeric_value(star.st_distance_pc.value)
+        if star.st_distance and star.st_distance.value:
+            dist = self.article_utils.format_numeric_value(star.st_distance.value)
             content.append(
                 f"Elle est située à environ {dist} [[parsec|parsecs]] de la [[Terre]]."
             )
@@ -117,12 +117,12 @@ class StarContentGenerator:
         """
         Génère la section historique de l'étoile.
         """
-        if not star.st_name or not star.st_name.value:
+        if not star.st_name:
             return ""
 
         content = ["== Histoire ==\n"]
         content.append(
-            f"L'étoile {star.st_name.value} a été découverte et cataloguée dans le cadre des observations astronomiques modernes."
+            f"L'étoile {star.st_name} a été découverte et cataloguée dans le cadre des observations astronomiques modernes."
         )
 
         return "\n".join(content)

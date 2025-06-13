@@ -1,7 +1,7 @@
 # src/utils/draft_utils.py
 import os
 import logging
-from typing import List, Literal, Tuple, Optional
+from typing import List, Literal, Tuple, Optional, Dict
 
 # Project imports
 from src.models.entities.exoplanet import Exoplanet
@@ -149,39 +149,48 @@ def save_star_drafts(
 
 
 def save_drafts(
-    missing_drafts: List[Tuple[str, str]],
-    existing_drafts: List[Tuple[str, str]],
+    missing_drafts: Dict[str, str],
+    existing_drafts: Dict[str, str],
     drafts_dir: str,
-    entity: Literal["exoplanètes", "étoiles"] = "entités",
+    entity_type: str,
 ) -> None:
     """
-    Fonction générique pour sauvegarder les brouillons d'entités (exoplanètes, étoiles, etc.)
+    Sauvegarde les brouillons dans les répertoires appropriés.
 
     Args:
-        missing_drafts: Brouillons manquants (non présents dans la base Wikipédia).
-        existing_drafts: Brouillons existants (déjà présents, mais peut-être à améliorer).
-        drafts_dir: Répertoire de base de sauvegarde (ex: "drafts/exoplanet").
-        entity: Nom lisible pour les logs (ex: "étoiles", "exoplanètes").
+        missing_drafts: Dictionnaire des brouillons manquants {nom: contenu}
+        existing_drafts: Dictionnaire des brouillons existants {nom: contenu}
+        drafts_dir: Répertoire de base pour les brouillons
+        entity_type: Type d'entité ('exoplanet' ou 'star')
     """
-    missing_dir = os.path.join(drafts_dir, "missing")
-    existing_dir = os.path.join(drafts_dir, "existing")
-    os.makedirs(missing_dir, exist_ok=True)
-    os.makedirs(existing_dir, exist_ok=True)
+    try:
+        # Créer les répertoires s'ils n'existent pas
+        missing_dir = os.path.join(drafts_dir, "missing")
+        existing_dir = os.path.join(drafts_dir, "existing")
 
-    def _save_to_directory(drafts: List[Tuple[str, str]], path: str, label: str):
-        logger.info(f"Sauvegarde de {len(drafts)} brouillons {label} dans {path}")
-        for name, content in drafts:
-            safe_filename = clean_filename(name)
-            filename = os.path.join(path, f"{safe_filename}.wiki")
-            try:
-                with open(filename, "w", encoding="utf-8") as f:
-                    f.write(content)
-            except IOError as e:
-                logger.error(f"Impossible de sauvegarder le brouillon {filename}: {e}")
-            except Exception as e:
-                logger.error(
-                    f"Erreur inattendue lors de la sauvegarde de {filename}: {e}"
-                )
+        # Créer les sous-répertoires pour le type d'entité
+        missing_entity_dir = os.path.join(missing_dir, entity_type)
+        existing_entity_dir = os.path.join(existing_dir, entity_type)
 
-    _save_to_directory(missing_drafts, missing_dir, f"{entity} manquants")
-    _save_to_directory(existing_drafts, existing_dir, f"{entity} existants")
+        os.makedirs(missing_entity_dir, exist_ok=True)
+        os.makedirs(existing_entity_dir, exist_ok=True)
+
+        # Sauvegarder les brouillons manquants
+        for name, content in missing_drafts.items():
+            filename = clean_filename(name) + ".wiki"
+            filepath = os.path.join(missing_entity_dir, filename)
+            with open(filepath, "w", encoding="utf-8") as f:
+                f.write(content)
+            logger.info(f"Brouillon manquant sauvegardé : {filepath}")
+
+        # Sauvegarder les brouillons existants
+        for name, content in existing_drafts.items():
+            filename = clean_filename(name) + ".wiki"
+            filepath = os.path.join(existing_entity_dir, filename)
+            with open(filepath, "w", encoding="utf-8") as f:
+                f.write(content)
+            logger.info(f"Brouillon existant sauvegardé : {filepath}")
+
+    except Exception as e:
+        logger.error(f"Erreur lors de la sauvegarde des brouillons : {str(e)}")
+        raise

@@ -148,15 +148,18 @@ class ArticleExoplanetGenerator(BaseArticleGenerator):
             "Transit Timing Variations": "des variations temporelles de transit",
         }
 
-        method_raw = exoplanet.disc_method.value if exoplanet.disc_method else ""
+        method_raw = (
+            exoplanet.disc_method.value
+            if exoplanet.disc_method and hasattr(exoplanet.disc_method, "value")
+            else ""
+        )
         disc_method = method_translations.get(method_raw, None)
 
         # Gestion robuste de la date
-        date_value = (
-            exoplanet.disc_year.value
-            if hasattr(exoplanet.disc_year, "value")
-            else exoplanet.disc_year
-        )
+        date_value = exoplanet.disc_year
+        if hasattr(date_value, "value"):
+            date_value = date_value.value
+
         if hasattr(date_value, "year"):
             date_str = f"en {self.article_utils.format_year_value(date_value.year)}"
         else:

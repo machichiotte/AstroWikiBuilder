@@ -138,6 +138,8 @@ class InfoboxMapper:
             FieldMapping("st_spectral_type", "type spectral"),
             FieldMapping("st_spectral_type_2", "type spectral 2"),
             # Magnitudes apparentes
+            FieldMapping("st_apparent_magnitude", "magnitude apparente"),
+            FieldMapping("st_apparent_magnitude_2", "magnitude apparente 2"),
             FieldMapping("st_mag_u", "magnitude apparente bande U"),
             FieldMapping("st_mag_u_2", "magnitude apparente bande U 2"),
             FieldMapping("st_mag_b", "magnitude apparente bande B"),

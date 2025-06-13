@@ -16,8 +16,6 @@ class InfoboxBaseGenerator(ABC):
         self.article_utils = ArticleUtils()
         self.constellation_utils = ConstellationUtils()
 
-        # TODO CHECK ICI LE SOUCIS DE REFERENCE
-
     def generate(self, obj: Any) -> str:
         if not self.is_valid_object(obj):
             raise TypeError("Invalid data source object.")

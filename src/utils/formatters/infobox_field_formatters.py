@@ -200,16 +200,27 @@ class FieldFormatter:
             str: Le champ formaté avec sa valeur, son unité et ses notes si présents
         """
         # Vérification des conditions préalables
-        if not datapoint or not datapoint.value:
+        if not datapoint:
             return ""
 
         try:
             # Extraction des valeurs brutes
-            raw_value = datapoint.value
-            raw_unit = datapoint.unit if datapoint.unit else None
-            reference = (
-                datapoint.reference.to_wiki_ref() if datapoint.reference else None
-            )
+            if isinstance(datapoint, str):
+                raw_value = datapoint
+                raw_unit = None
+                reference = None
+            else:
+                raw_value = datapoint.value
+                raw_unit = datapoint.unit if datapoint.unit else None
+                # Tenter d'obtenir la référence, mais ignorer si elle est incomplète ou invalide
+                try:
+                    reference = (
+                        datapoint.reference.to_wiki_ref()
+                        if datapoint.reference
+                        else None
+                    )
+                except Exception:
+                    reference = None
         except AttributeError as e:
             logger.error(
                 f"Erreur lors de l'extraction des attributs du DataPoint: {str(e)}"

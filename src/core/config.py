@@ -22,6 +22,10 @@ AVAILABLE_SOURCES = ["nasa_exoplanet_archive", "exoplanet_eu", "open_exoplanet"]
 
 # Chemins de cache pour les différentes sources
 CACHE_PATHS = {
+    "nasa_exoplanet_archive": {
+        "mock": "data/cache/nasa_exoplanet_archive_mock.csv",
+        "real": "data/cache/nasa_exoplanet_archive_downloaded.csv",
+    },
     "exoplanet_eu": {
         "mock": "data/cache/exoplanet_eu_mock.csv",
         "real": "data/cache/exoplanet_eu_downloaded.csv",

@@ -88,3 +88,35 @@ class ExportService:
             logger.info(f"Successfully exported exoplanets to {filename}")
         except Exception as e:
             logger.error(f"Error exporting exoplanets to JSON {filename}: {e}")
+
+    def export_generic_list_of_dicts_to_csv(
+        self, filename: str, data: list, headers: list = None
+    ) -> None:
+        """Exporte une liste de dictionnaires vers un fichier CSV générique."""
+        logger.info(f"Exporting generic data to CSV: {filename}")
+        if not data:
+            logger.warning("No data to export to CSV.")
+            return
+        try:
+            with open(filename, "w", newline="", encoding="utf-8") as f:
+                if not headers:
+                    headers = list(data[0].keys())
+                writer = csv.DictWriter(f, fieldnames=headers)
+                writer.writeheader()
+                writer.writerows(data)
+            logger.info(f"Successfully exported generic data to {filename}")
+        except Exception as e:
+            logger.error(f"Error exporting generic data to CSV {filename}: {e}")
+
+    def export_generic_list_of_dicts_to_json(self, filename: str, data: list) -> None:
+        """Exporte une liste de dictionnaires vers un fichier JSON générique."""
+        logger.info(f"Exporting generic data to JSON: {filename}")
+        if not data:
+            logger.warning("No data to export to JSON.")
+            return
+        try:
+            with open(filename, "w", encoding="utf-8") as f:
+                json.dump(data, f, indent=2, ensure_ascii=False)
+            logger.info(f"Successfully exported generic data to {filename}")
+        except Exception as e:
+            logger.error(f"Error exporting generic data to JSON {filename}: {e}")

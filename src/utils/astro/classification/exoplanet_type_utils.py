@@ -156,21 +156,28 @@ class ExoplanetTypeUtils:
         vol_cm3 = 4 / 3 * 3.1416 * (r * 6.371e8) ** 3
         return mass_g / vol_cm3
 
-    def _stellar_insolation(self, p: DataSourceExoplanet) -> Optional[float]:
+    def _stellar_insolation(self, p: DataSourceExoplanet) -> float:
+        # Rendre robuste l'accès à st_name et pl_semi_major_axis
+        st_name = p.st_name.value if hasattr(p.st_name, "value") else p.st_name
+        semi_major_axis = (
+            p.pl_semi_major_axis.value
+            if (hasattr(p.pl_semi_major_axis, "value"))
+            else p.pl_semi_major_axis
+        )
         if (
-            not p.st_name
-            or p.st_name.value is None
-            or not p.pl_semi_major_axis
-            or p.pl_semi_major_axis.value is None
+            not st_name
+            or st_name is None
+            or not semi_major_axis
+            or semi_major_axis is None
         ):
-            return None
+            return float("nan")
         try:
-            L = float(p.st_name.value)
-            a = float(p.pl_semi_major_axis.value)
+            L = float(st_name)
+            a = float(semi_major_axis)
         except (TypeError, ValueError):
-            return None
+            return float("nan")
         if a <= 0:
-            return None
+            return float("nan")
         return L / (a**2)
 
     def _classify_by_mass(self, m: float) -> str:

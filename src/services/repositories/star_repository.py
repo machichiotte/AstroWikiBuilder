@@ -2,6 +2,7 @@
 import logging
 from typing import List, Dict
 from src.models.data_sources.star_source import DataSourceStar
+from src.models.entities.star import Star
 
 logger = logging.getLogger(__name__)
 
@@ -11,7 +12,7 @@ class StarRepository:
         self.stars: Dict[str, DataSourceStar] = {}
         logger.info("StarRepository initialized.")
 
-    def add_stars(self, stars: List[DataSourceStar], source_system: str) -> None:
+    def add_stars(self, stars: List[Star], source_system: str) -> None:
         """
         Ajoute ou fusionne les exoplanètes dans le dictionnaire.
         Le paramètre 'source_system' indique le système ou le lot d'où proviennent ces données,
@@ -26,16 +27,16 @@ class StarRepository:
             if not star.st_name:
                 logger.warning("Skipping star with no name.")
                 continue
-            if star.st_name.value in self.stars:
-                logger.debug(f"Merging data for existing star: {star.st_name.value}")
+            if star.st_name in self.stars:
+                logger.debug(f"Merging data for existing star: {star.st_name}")
                 merged_count += 1
             else:
-                logger.debug(f"Adding new star: {star.st_name.value}")
-                self.stars[star.st_name.value] = star
+                logger.debug(f"Adding new star: {star.st_name}")
+                self.stars[star.st_name] = star
                 added_count += 1
         logger.info(
             f"Addition from {source_system} complete. Added: {added_count}, Merged: {merged_count}. Total stars: {len(self.stars)}"
         )
 
-    def get_all_stars(self) -> List[DataSourceStar]:
+    def get_all_stars(self) -> List[Star]:
         return list(self.stars.values())

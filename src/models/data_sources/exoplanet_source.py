@@ -1,6 +1,6 @@
 from datetime import datetime
-from typing import Dict, Any, Optional
-from src.models.references.reference import Reference, SourceType
+from typing import Dict, Any
+from src.models.references.reference import SourceType
 
 
 class DataSourceExoplanet:
@@ -21,12 +21,3 @@ class DataSourceExoplanet:
         self.consultation_date = consultation_date
         self.raw_data = raw_data
         self.metadata = metadata or {}
-
-    def _parse_date(self, date_str: Optional[str]) -> Optional[datetime]:
-        """Parse une date depuis une chaîne de caractères"""
-        if not date_str:
-            return None
-        try:
-            return datetime.strptime(date_str, "%Y-%m-%d")
-        except ValueError:
-            return None

@@ -52,18 +52,17 @@ class StarCategoryGenerator(BaseCategoryGenerator):
 
         categories = set()  # Utiliser un set pour éviter les doublons
 
-        # Vérifier le nom principal
-        if star.st_name and star.st_name.value:
-            name = star.st_name.value.upper()
+        # Check the primary name
+        if star.st_name:
+            name = star.st_name.upper()
             for prefix, category_name in catalog_mappings.items():
                 if name.startswith(prefix):
                     categories.add(category_name)
 
-        # Vérifier les noms alternatifs
-        if star.st_altname and star.st_altname.value:
-            # st_altname.value est déjà une liste
-            for alt_name in star.st_altname.value:
-                if alt_name:  # Vérifier que le nom n'est pas None ou vide
+        # Check the alternative names
+        if star.st_altname:
+            for alt_name in star.st_altname:
+                if alt_name:  # Check that the name is not None or empty
                     alt_name = alt_name.strip().upper()
                     for prefix, category_name in catalog_mappings.items():
                         if alt_name.startswith(prefix):
