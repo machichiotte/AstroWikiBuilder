@@ -1,4 +1,4 @@
-# src/utils/exoplanet_type_utils.py
+# src/utils/classification/exoplanet_type_utils.py
 from typing import Optional
 from src.models.data_source_exoplanet import DataSourceExoplanet
 

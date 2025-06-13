@@ -13,7 +13,7 @@ from src.data_collectors.nasa_exoplanet_archive_collector import (
 from src.data_collectors.exoplanet_eu import ExoplanetEUCollector
 from src.data_collectors.open_exoplanet_collection import OpenExoplanetCollector
 
-from src.utils.data_processor import DataProcessor
+from src.services.data_processor import DataProcessor
 from src.utils.wikipedia.wikipedia_checker import (
     WikipediaChecker,
     WikiArticleInfo,
@@ -24,7 +24,7 @@ from src.services.statistics_service import StatisticsService
 from src.services.wikipedia_service import WikipediaService
 from src.services.export_service import ExportService
 
-from src.utils.draft_utils import (
+from src.utils.wikipedia.draft_utils import (
     generate_exoplanet_draft,
     generate_star_draft,
     save_drafts,

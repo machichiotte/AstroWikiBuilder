@@ -7,8 +7,8 @@ from src.models.data_source_exoplanet import DataSourceExoplanet
 from src.utils.formatters.article_formatters import ArticleUtils
 from src.utils.constellation_utils import ConstellationUtils
 
-from src.utils.exoplanet_comparison_utils import ExoplanetComparisonUtils
-from src.utils.exoplanet_type_utils import ExoplanetTypeUtils
+from src.utils.classification.exoplanet_comparison_utils import ExoplanetComparisonUtils
+from src.utils.classification.exoplanet_type_utils import ExoplanetTypeUtils
 from src.generators.exoplanet.exoplanet_infobox_generator import (
     ExoplanetInfoboxGenerator,
 )
@@ -26,24 +26,6 @@ class ArticleExoplanetGenerator(BaseArticleGenerator):
     """
     Classe pour générer les articles Wikipedia des exoplanètes
     """
-
-    # Constantes de classification des planètes
-    EXOPLANET_MASS_THRESHOLDS = {
-        "GAS_GIANT": 1.0,  # Masse en M_J
-        "TERRESTRIAL": 1.0,  # Masse en M_J
-    }
-
-    EXOPLANET_RADIUS_THRESHOLDS = {
-        "ICE_GIANT": 0.8,  # Rayon en R_J
-        "SUPER_EARTH": 1.5,  # Rayon en R_J
-        "EARTH_LIKE": 0.8,  # Rayon en R_J
-    }
-
-    EXOPLANET_TEMPERATURE_THRESHOLDS = {
-        "ULTRA_HOT": 2200,  # Température en K
-        "HOT": 1000,  # Température en K
-        "WARM": 500,  # Température en K
-    }
 
     def __init__(self):
         locale.setlocale(locale.LC_ALL, "fr_FR.UTF-8")
@@ -112,7 +94,6 @@ class ArticleExoplanetGenerator(BaseArticleGenerator):
         semi_major_axis_str = self.article_utils.format_datapoint(
             exoplanet.pl_semi_major_axis,
             exoplanet.pl_name,
-            self.reference_manager.template_refs,
             self.reference_manager.add_reference,
         )
 

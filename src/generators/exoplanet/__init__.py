@@ -1,3 +1,0 @@
-"""
-Exoplanet utils package
-"""

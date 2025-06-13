@@ -2,7 +2,7 @@
 from typing import List, Optional, Callable
 from src.models.data_source_star import DataSourceStar
 from src.generators.base_category_generator import BaseCategoryGenerator
-from src.utils.star_type_utils import StarTypeUtils
+from src.utils.classification.star_type_utils import StarTypeUtils
 
 
 def int_to_roman(num):

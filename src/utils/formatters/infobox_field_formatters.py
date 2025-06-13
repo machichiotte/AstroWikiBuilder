@@ -165,19 +165,15 @@ class FieldFormatter:
         return f"\n | {mapping.infobox_field} unité = {unit_to_use}"
 
     def _format_notes(
-        self, datapoint: DataPoint, mapping: FieldMapping, notes_fields: list[str]
+        self, reference: Optional[str], field_name: str, notes_fields: list[str]
     ) -> Optional[str]:
         """Formate les notes de référence si présentes."""
-        if not datapoint.reference or not infobox_validators.is_valid_infobox_note(
-            mapping.infobox_field, notes_fields
+        if not reference or not infobox_validators.is_valid_infobox_note(
+            field_name, notes_fields
         ):
             return None
 
-        notes_ref = FieldFormatter._extract_notes(datapoint)
-        if not notes_ref:
-            return None
-
-        return f"\n | {mapping.infobox_field} notes = {notes_ref}"
+        return f"\n | {field_name} notes = {reference}"
 
     def process_field(
         self,
@@ -210,8 +206,10 @@ class FieldFormatter:
         try:
             # Extraction des valeurs brutes
             raw_value = datapoint.value
-            raw_unit = getattr(datapoint, "unit", None)
-            raw_notes = getattr(datapoint, "notes", None)
+            raw_unit = datapoint.unit if datapoint.unit else None
+            reference = (
+                datapoint.reference.to_wiki_ref() if datapoint.reference else None
+            )
         except AttributeError as e:
             logger.error(
                 f"Erreur lors de l'extraction des attributs du DataPoint: {str(e)}"
@@ -234,7 +232,9 @@ class FieldFormatter:
                 output += unit_output
 
             # Ajout des notes si nécessaire
-            notes_output = self._format_notes(datapoint, mapping, notes_fields)
+            notes_output = self._format_notes(
+                reference, mapping.infobox_field, notes_fields
+            )
             if notes_output:
                 output += notes_output
 

@@ -1,6 +1,6 @@
 # src/utils/formatters/article_formatters.py
 import locale
-from typing import Optional, Dict
+from typing import Optional
 from src.models.reference import DataPoint
 
 
@@ -28,7 +28,11 @@ class ArticleUtils:
         if fval.is_integer():
             return str(int(fval))
 
-        return locale.format_string(f"%.{precision}f", fval, grouping=True).rstrip("0").rstrip(".")
+        return (
+            locale.format_string(f"%.{precision}f", fval, grouping=True)
+            .rstrip("0")
+            .rstrip(".")
+        )
 
     def format_year_value(self, value: Optional[float]) -> str:
         """
@@ -48,7 +52,6 @@ class ArticleUtils:
         self,
         datapoint: DataPoint,
         exoplanet_name: str,
-        template_refs: Dict[str, str],
         add_reference_func,
     ) -> str:
         """
@@ -77,19 +80,3 @@ class ArticleUtils:
             return f"{value_str} {add_reference_func(ref_name, ref_content_full)}"
 
         return value_str
-
-    def format_right_ascension(self, rastr_val: str) -> str:
-        """
-        Formats a right ascension string by replacing 'h', 'm', 's'
-        with '/' as needed for Wikipedia formatting.
-
-        Example: "12h34m56s" becomes "12/34/56"
-        """
-        if not isinstance(rastr_val, str):
-            # Handle cases where it might not be a string (e.g., NaN, other types)
-            # Or raise an error, or return a default value
-            return str(rastr_val)
-
-        formatted_ra = rastr_val.replace(
-            "h", "/").replace("m", "/").replace("s", "")
-        return formatted_ra

@@ -9,8 +9,8 @@ from src.models.data_source_exoplanet import DataSourceExoplanet
 from src.utils.constellation_utils import ConstellationUtils
 from src.utils.formatters.article_formatters import ArticleUtils
 
-from src.utils.exoplanet_comparison_utils import ExoplanetComparisonUtils
-from src.utils.exoplanet_type_utils import ExoplanetTypeUtils
+from src.utils.classification.exoplanet_comparison_utils import ExoplanetComparisonUtils
+from src.utils.classification.exoplanet_type_utils import ExoplanetTypeUtils
 
 
 class ExoplanetIntroductionGenerator:
