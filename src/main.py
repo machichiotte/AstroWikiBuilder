@@ -315,7 +315,6 @@ def _run_draft_generation(
     for entity in all_entities:
         name = get_name_func(entity)
         draft_content = generate_draft_func(entity)
-
         if name in missing_map:
             missing_drafts.append((name, draft_content))
         elif name in existing_map:

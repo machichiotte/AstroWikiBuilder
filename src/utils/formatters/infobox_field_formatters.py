@@ -112,29 +112,6 @@ class FieldFormatter:
     }
 
     @staticmethod
-    def _extract_field_value(
-        datapoint: DataPoint,
-    ) -> tuple[Optional[Any], Optional[str], Optional[Any]]:
-        """
-        Returns a tuple (value, unit) from the DataPoint.
-        If the DataPoint has no value or it's invalid, returns (None, None).
-        """
-        try:
-            raw_value = datapoint.value
-            raw_unit = getattr(datapoint, "unit", None)
-            raw_ref: Any | None = getattr(datapoint, "notes", None)
-        except AttributeError:
-            return None, None
-
-        # If the raw_value is None or empty, treat as invalid
-        if raw_value is None or (
-            isinstance(raw_value, str) and raw_value.strip() == ""
-        ):
-            return None, None, None
-
-        return raw_value, raw_unit, raw_ref
-
-    @staticmethod
     def _get_unit_to_use(
         unit: Optional[str], mapping: FieldMapping, default_mapping: dict
     ) -> Optional[str]:
@@ -168,13 +145,46 @@ class FieldFormatter:
         except Exception:
             return None
 
+    def _format_field_value(self, value: Any, field_name: str) -> str:
+        """Formate la valeur principale du champ."""
+        try:
+            return FieldFormatter._apply_special_formatting(field_name, value)
+        except Exception as e:
+            logger.error(
+                f"Erreur lors du formatage de la valeur {value} pour le champ {field_name}: {str(e)}"
+            )
+            return str(value)
+
+    def _format_unit(
+        self, unit: Optional[str], mapping: FieldMapping, default_mapping: dict
+    ) -> Optional[str]:
+        """Formate l'unité du champ si nécessaire."""
+        unit_to_use = FieldFormatter._get_unit_to_use(unit, mapping, default_mapping)
+        if not unit_to_use:
+            return None
+        return f"\n | {mapping.infobox_field} unité = {unit_to_use}"
+
+    def _format_notes(
+        self, datapoint: DataPoint, mapping: FieldMapping, notes_fields: list[str]
+    ) -> Optional[str]:
+        """Formate les notes de référence si présentes."""
+        if not datapoint.reference or not infobox_validators.is_valid_infobox_note(
+            mapping.infobox_field, notes_fields
+        ):
+            return None
+
+        notes_ref = FieldFormatter._extract_notes(datapoint)
+        if not notes_ref:
+            return None
+
+        return f"\n | {mapping.infobox_field} notes = {notes_ref}"
+
     def process_field(
         self,
-        datapoint: DataPoint | None,
+        datapoint: DataPoint,
         mapping: FieldMapping,
         default_mapping: dict,
         notes_fields: list[str],
-        obj: Any,
     ) -> str:
         """Traite un champ complet avec sa valeur, unité et notes.
 
@@ -189,38 +199,49 @@ class FieldFormatter:
             mapping: La configuration de mapping du champ
             default_mapping: Le mapping par défaut pour les unités
             notes_fields: Liste des champs qui peuvent avoir des notes
-            obj: L'objet source pour la vérification des conditions
 
         Returns:
             str: Le champ formaté avec sa valeur, son unité et ses notes si présents
         """
-        if mapping.condition and not mapping.condition(obj):
-            return ""
-
+        # Vérification des conditions préalables
         if not datapoint or not datapoint.value:
             return ""
 
-        value, unit, ref = FieldFormatter._extract_field_value(datapoint)
-        if not value:
+        try:
+            # Extraction des valeurs brutes
+            raw_value = datapoint.value
+            raw_unit = getattr(datapoint, "unit", None)
+            raw_notes = getattr(datapoint, "notes", None)
+        except AttributeError as e:
+            logger.error(
+                f"Erreur lors de l'extraction des attributs du DataPoint: {str(e)}"
+            )
             return ""
 
-        formatted_value = FieldFormatter._apply_special_formatting(
-            mapping.infobox_field, value
-        )
+        # Vérification de la validité de la valeur
+        if raw_value is None or (isinstance(raw_value, str) and not raw_value.strip()):
+            return ""
 
-        output = f" | {mapping.infobox_field} = {formatted_value}"
+        # Construction du champ formaté
+        try:
+            # Formatage de la valeur principale
+            formatted_value = self._format_field_value(raw_value, mapping.infobox_field)
+            output = f" | {mapping.infobox_field} = {formatted_value}"
 
-        # Ajout du champ unité si nécessaire
-        unit_to_use = FieldFormatter._get_unit_to_use(unit, mapping, default_mapping)
-        if unit_to_use:
-            output += f"\n | {mapping.infobox_field} unité = {unit_to_use}"
+            # Ajout de l'unité si nécessaire
+            unit_output = self._format_unit(raw_unit, mapping, default_mapping)
+            if unit_output:
+                output += unit_output
 
-        # Ajoute les notes au champ si nécessaire
-        if ref and infobox_validators.is_valid_infobox_note(
-            mapping.infobox_field, notes_fields
-        ):
-            notes_ref = FieldFormatter._extract_notes(datapoint)
-            if notes_ref:
-                output += f"\n | {mapping.infobox_field} notes = {notes_ref}"
+            # Ajout des notes si nécessaire
+            notes_output = self._format_notes(datapoint, mapping, notes_fields)
+            if notes_output:
+                output += notes_output
 
-        return output
+            return output
+
+        except Exception as e:
+            logger.error(
+                f"Erreur lors du formatage du champ {mapping.infobox_field}: {str(e)}"
+            )
+            return ""

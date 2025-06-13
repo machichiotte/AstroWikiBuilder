@@ -16,6 +16,8 @@ class InfoboxBaseGenerator(ABC):
         self.article_utils = ArticleUtils()
         self.constellation_utils = ConstellationUtils()
 
+        # TODO CHECK ICI LE SOUCIS DE REFERENCE
+
     def generate(self, obj: Any) -> str:
         if not self.is_valid_object(obj):
             raise TypeError("Invalid data source object.")
@@ -25,7 +27,7 @@ class InfoboxBaseGenerator(ABC):
         for mapping in self.get_field_mappings():
             datapoint = getattr(obj, mapping.source_attribute, None)
             field_block = self.field_formatter.process_field(
-                datapoint, mapping, self.default_mapping, self.get_notes_fields(), obj
+                datapoint, mapping, self.default_mapping, self.get_notes_fields()
             )
             if field_block:
                 lines.append(field_block)

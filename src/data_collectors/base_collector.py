@@ -51,24 +51,6 @@ class BaseCollector(ABC):
         """Liste des colonnes CSV requises pour cette source."""
         return []  # Optionnel, retournera une liste vide si non surchargé
 
-    def _get_csv_reader_kwargs(self) -> Dict[str, Any]:
-        """Arguments optionnels pour pd.read_csv (ex: comment char)."""
-        return {}  # Par défaut, aucun argument spécial
-
-    def _safe_float_conversion(self, value: any) -> Optional[float]:
-        if pd.isna(value):
-            return None
-        try:
-            return float(value)
-        except (ValueError, TypeError):
-            return None
-
-    def _create_reference(self) -> Reference:
-        return self.reference_manager.create_reference(
-            source=self._get_source_type(),
-            update_date=self.last_update_date,
-        )
-
     @abstractmethod
     def _convert_row_to_exoplanet(
         self, row: pd.Series, ref: Reference
@@ -189,3 +171,21 @@ class BaseCollector(ABC):
             logger.error("Impossible de charger ou télécharger les données.")
 
         return exoplanets, stars
+
+    def _get_csv_reader_kwargs(self) -> Dict[str, Any]:
+        """Arguments optionnels pour pd.read_csv (ex: comment char)."""
+        return {}  # Par défaut, aucun argument spécial
+
+    def _safe_float_conversion(self, value: any) -> Optional[float]:
+        if pd.isna(value):
+            return None
+        try:
+            return float(value)
+        except (ValueError, TypeError):
+            return None
+
+    def _create_reference(self) -> Reference:
+        return self.reference_manager.create_reference(
+            source=self._get_source_type(),
+            update_date=self.last_update_date,
+        )

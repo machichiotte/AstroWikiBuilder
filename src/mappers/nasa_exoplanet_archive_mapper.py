@@ -539,6 +539,4 @@ class NasaExoplanetArchiveMapper:
             except (ValueError, TypeError):
                 pass
 
-        print("this is compelte exo ", exoplanet)
-
         return exoplanet
