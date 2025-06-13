@@ -6,7 +6,6 @@ from src.models.data_source_exoplanet import DataSourceExoplanet
 from src.utils.constellation_utils import ConstellationUtils
 
 from datetime import datetime
-from src.utils.formatters.infobox_field_formatters import FieldFormatter
 from src.constants.field_mappings import (
     FIELD_DEFAULT_UNITS_STAR,
     FIELD_DEFAULT_UNITS_EXOPLANET,
@@ -240,6 +239,13 @@ class NasaExoplanetArchiveMapper:
 
         return star
 
+    def format_numeric_no_trailing_zeros(self, value):
+        try:
+            fval = float(value)
+            return f"{fval:.5f}".rstrip("0").rstrip(".")
+        except Exception:
+            return str(value)
+
     def map_nea_data_to_exoplanet(
         self, nea_data: Dict[str, Any]
     ) -> DataSourceExoplanet:
@@ -281,7 +287,7 @@ class NasaExoplanetArchiveMapper:
                 }
 
                 if nea_field in numeric_fields and value not in (None, ""):
-                    value = FieldFormatter.format_numeric_no_trailing_zeros(value)
+                    value = self.format_numeric_no_trailing_zeros(value)
 
                 # Créer un DataPoint avec la valeur et l'unité par défaut
                 if value is not None and str(value).strip():
