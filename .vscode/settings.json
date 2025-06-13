@@ -1,0 +1,15 @@
+{
+  "files.exclude": {
+    "**/__pycache__": true,
+    "**/*.pyc": true,
+    "**/*.pyo": true,
+    "**/*.pyd": true,
+    ".Python": true,
+    "*.so": true,
+    ".coverage": true,
+    "htmlcov": true,
+    ".pytest_cache": true,
+    ".mypy_cache": true,
+    ".ruff_cache": true
+  }
+}
