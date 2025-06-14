@@ -94,8 +94,14 @@ class FieldFormatter:
                     return d
 
             if isinstance(value, list):
-                return ", ".join(
-                    format_single_designation(str(v)) for v in value if str(v).strip()
+                formatted_designations = []
+                for v in value:
+                    if v and str(v).strip():
+                        formatted = format_single_designation(str(v))
+                        if formatted:
+                            formatted_designations.append(formatted)
+                return (
+                    ", ".join(formatted_designations) if formatted_designations else ""
                 )
             return format_single_designation(str(value).strip())
         except Exception as e:
@@ -116,37 +122,47 @@ class FieldFormatter:
         unit: Optional[str], mapping: FieldMapping, default_mapping: dict
     ) -> Optional[str]:
         """Détermine l'unité à utiliser pour le champ."""
-        if mapping.unit_override:
-            return mapping.unit_override
-
         if not unit:
             return None
 
-        return (
-            unit
-            if infobox_validators.is_needed_infobox_unit(
-                mapping.infobox_field, unit, default_mapping
-            )
-            else None
-        )
+        # Si l'unité est explicitement définie dans le mapping, l'utiliser
+        if mapping.unit_override:
+            return mapping.unit_override
+
+        # Si l'unité est la même que celle par défaut, ne pas l'afficher
+        default_unit = default_mapping.get(mapping.infobox_field)
+        if unit == default_unit:
+            return None
+
+        # Sinon, utiliser l'unité fournie
+        return unit
 
     @staticmethod
     def _extract_notes(datapoint: DataPoint) -> Optional[str]:
         """Extrait les notes d'un DataPoint."""
-        ref = datapoint.reference
-        if not ref:
+        if not datapoint or not datapoint.reference:
             return None
 
         try:
+            ref = datapoint.reference
+            if not ref:
+                return None
+
             full_ref = ref.to_wiki_ref()
             if not full_ref:
                 return None
+
+            # Vérifier si la référence est déjà enregistrée
+            if hasattr(ref, "id") and ref.id:
+                return f'<ref name="{ref.id}" />'
             return full_ref
-        except Exception:
+        except Exception as e:
+            logger.error(f"Erreur lors de l'extraction des notes: {str(e)}")
             return None
 
     def _format_field_value(self, value: Any, field_name: str) -> str:
         """Formate la valeur principale du champ."""
+        print("foransdubfoubsdfbsk ", field_name)
         try:
             return FieldFormatter._apply_special_formatting(field_name, value)
         except Exception as e:
@@ -206,6 +222,10 @@ class FieldFormatter:
         try:
             # Extraction des valeurs brutes
             if isinstance(datapoint, str):
+                raw_value = datapoint
+                raw_unit = None
+                reference = None
+            elif isinstance(datapoint, list):
                 raw_value = datapoint
                 raw_unit = None
                 reference = None
