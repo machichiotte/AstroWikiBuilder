@@ -43,9 +43,7 @@ class NASAExoplanetArchiveCollector(BaseCollector):
         # Si le fichier que vous sauvegardez/mockez en a, ajustez ici.
         return {}
 
-    def _convert_row_to_exoplanet(
-        self, row: pd.Series, ref: Reference
-    ) -> Optional[Exoplanet]:
+    def _convert_row_to_exoplanet(self, row: pd.Series) -> Optional[Exoplanet]:
         """
         Converts a pandas Series (row from a CSV/DataFrame) to an Exoplanet object,
         populating it with data based on predefined mappings.
@@ -60,7 +58,7 @@ class NASAExoplanetArchiveCollector(BaseCollector):
                 return None
 
             # Déléguer toute la logique de mappage et de création de l'objet au mapper.
-            exoplanet = self.mapper.map_nea_data_to_exoplanet(nea_data_dict, ref)
+            exoplanet = self.mapper.map_nea_data_to_exoplanet(nea_data_dict)
             return exoplanet
         except Exception as e:
             logger.error(
@@ -69,7 +67,7 @@ class NASAExoplanetArchiveCollector(BaseCollector):
             )
             return None
 
-    def _convert_row_to_star(self, row: pd.Series, ref: Reference) -> Optional[Star]:
+    def _convert_row_to_star(self, row: pd.Series) -> Optional[Star]:
         """
         Converts a pandas Series (row from a CSV/DataFrame) to a Star object,
         populating it with data based on predefined mappings.
@@ -84,7 +82,7 @@ class NASAExoplanetArchiveCollector(BaseCollector):
                 return None
 
             # Déléguer toute la logique de mappage et de création de l'objet au mapper.
-            star = self.mapper.map_nea_data_to_star(nea_data_dict, ref)
+            star = self.mapper.map_nea_data_to_star(nea_data_dict)
             return star
         except Exception as e:
             logger.error(

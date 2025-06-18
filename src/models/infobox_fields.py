@@ -1,40 +1,21 @@
 # src/utils/formatters/infobox_fields.py
-from typing import List, Optional, Callable, Any, Union
+from typing import List
 from dataclasses import dataclass
-from enum import Enum
-
-from src.models.data_sources.exoplanet_source import DataSourceExoplanet
-from src.models.data_sources.star_source import DataSourceStar
-
-
-class FieldType(Enum):
-    """Types de champs pour déterminer le formatage approprié"""
-
-    SIMPLE = "simple"  # Valeur simple avec unité optionnelle
 
 
 @dataclass
 class FieldMapping:
     """Configuration pour mapper un champ de source de données vers l'infobox"""
 
-    source_attribute: str  # Attribut de DataSourceExoplanet ou DataSourceStar
+    source_attribute: str
     infobox_field: str
-    field_type: FieldType = FieldType.SIMPLE
-    default_unit: Optional[str] = None  # Unité par défaut pour ce champ
-    unit_override: Optional[str] = None  # Pour remplacer l'unité par défaut
-    formatter: Optional[Callable[[Any], str]] = (
-        None  # Fonction de formatage personnalisée
-    )
-    condition: Optional[
-        Callable[[Union[DataSourceExoplanet, DataSourceStar]], bool]
-    ] = None  # Condition pour inclure le champ
 
 
 class InfoboxMapper:
     """Configuration centralisée des mappings de sources de données -> Infobox"""
 
     @classmethod
-    def get_exoplanet_field_mappings(cls) -> List[FieldMapping]:
+    def convert_exoplanet_to_infobox(cls) -> List[FieldMapping]:
         """Retourne la liste complète des mappings de champs pour les exoplanètes"""
         return [
             # Identifiants
@@ -53,42 +34,27 @@ class InfoboxMapper:
             FieldMapping("st_spectral_type", "type spectral"),
             FieldMapping("st_apparent_magnitude", "magnitude apparente"),
             # Caractéristiques orbitales
-            FieldMapping(
-                "pl_semi_major_axis",
-                "demi-grand axe",
-                default_unit="unités astronomiques",
-            ),
-            FieldMapping(
-                "pl_periastron", "périastre", default_unit="unités astronomiques"
-            ),
-            FieldMapping(
-                "pl_apoastron", "apoastre", default_unit="unités astronomiques"
-            ),
+            FieldMapping("pl_semi_major_axis", "demi-grand axe"),
+            FieldMapping("pl_periastron", "périastre"),
+            FieldMapping("pl_apoastron", "apoastre"),
             FieldMapping("pl_eccentricity", "excentricité"),
-            FieldMapping("pl_orbital_period", "période", default_unit="jours"),
+            FieldMapping("pl_orbital_period", "période"),
             FieldMapping("pl_angular_distance", "distance angulaire"),
             FieldMapping("pl_periastron_time", "t_peri"),
             FieldMapping("pl_inclination", "inclinaison"),
             FieldMapping("pl_argument_of_periastron", "arg_péri"),
             FieldMapping("pl_epoch", "époque"),
             # Caractéristiques physiques
-            FieldMapping("pl_mass", "masse", default_unit="masses joviennes"),
-            FieldMapping(
-                "pl_minimum_mass", "masse minimale", default_unit="masses joviennes"
-            ),
-            FieldMapping("pl_radius", "rayon", default_unit="rayons joviens"),
+            FieldMapping("pl_mass", "masse"),
+            FieldMapping("pl_minimum_mass", "masse minimale"),
+            FieldMapping("pl_radius", "rayon"),
             FieldMapping(
                 "pl_density",
                 "masse volumique",
-                default_unit="kilogrammes par mètre cube",
             ),
-            FieldMapping(
-                "pl_gravity", "gravité", default_unit="mètres par seconde carrée"
-            ),
-            FieldMapping(
-                "pl_rotation_period", "période de rotation", default_unit="heures"
-            ),
-            FieldMapping("pl_temperature", "température", default_unit="kelvins"),
+            FieldMapping("pl_gravity", "gravité"),
+            FieldMapping("pl_rotation_period", "période de rotation"),
+            FieldMapping("pl_temperature", "température"),
             FieldMapping("pl_albedo_bond", "albedo_bond"),
             # Atmosphère
             FieldMapping("pl_pressure", "pression"),
@@ -106,7 +72,7 @@ class InfoboxMapper:
         ]
 
     @classmethod
-    def get_star_field_mappings(cls) -> List[FieldMapping]:
+    def convert_star_to_infobox(cls) -> List[FieldMapping]:
         """Retourne la liste complète des mappings de champs pour les étoiles"""
         return [
             # Identifiants

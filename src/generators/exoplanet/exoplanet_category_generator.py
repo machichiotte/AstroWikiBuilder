@@ -134,8 +134,8 @@ class ExoplanetCategoryGenerator(BaseCategoryGenerator):
         """
         Règle personnalisée pour déterminer la catégorie de constellation.
         """
-        if exoplanet.st_constellation and exoplanet.st_constellation.value:
-            constellation = exoplanet.st_constellation.value
+        if exoplanet.st_constellation:
+            constellation = exoplanet.st_constellation
             mapping = (
                 self.generator.rules.get("exoplanet", {})
                 .get("mapped", {})

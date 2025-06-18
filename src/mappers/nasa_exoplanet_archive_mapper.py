@@ -1,18 +1,12 @@
 # src/mappers/nasa_exoplanet_archive_mapper.py
 from typing import Dict, Any, Optional
 from src.models.references.reference import Reference, SourceType
-from src.models.references.data_point import DataPoint
-from src.models.data_sources.star_source import DataSourceStar
-from src.models.data_sources.exoplanet_source import DataSourceExoplanet
+from src.models.entities.exoplanet import ValueWithUncertainty
 from src.utils.astro.constellation_utils import ConstellationUtils
 from src.models.entities.exoplanet import Exoplanet
-from src.constants.field_mappings import FIELD_DEFAULT_UNITS_EXOPLANET
 from src.models.entities.star import Star
 
 from datetime import datetime
-from src.constants.field_mappings import (
-    FIELD_DEFAULT_UNITS_STAR,
-)
 import math
 
 
@@ -122,14 +116,14 @@ class NasaExoplanetArchiveMapper:
         "pl_eqt": "K",  # Température d'équilibre
     }
 
-    def _create_nea_reference(self, nea_data: Dict[str, Any]) -> Reference:
+    def _create_reference(self, nea_data: Dict[str, Any], isPlanet: False) -> Reference:
         """Crée une référence NEA pour les points de données."""
         return Reference(
             source=SourceType.NEA,
             update_date=datetime.now(),
             consultation_date=datetime.now(),
             star_id=nea_data.get("hostname"),
-            planet_id=nea_data.get("pl_name"),
+            planet_id=nea_data.get("pl_name") if isPlanet else None,
         )
 
     def _process_coordinates(
@@ -140,16 +134,14 @@ class NasaExoplanetArchiveMapper:
         if "rastr" in nea_data and nea_data["rastr"]:
             formatted_ra = self._format_right_ascension_str(nea_data["rastr"])
             if formatted_ra:
-                obj.st_right_ascension = DataPoint(
-                    value=formatted_ra, reference=reference
-                )
+                obj.st_right_ascension = ValueWithUncertainty(value=formatted_ra)
         elif "ra" in nea_data and nea_data["ra"] is not None:
             try:
                 ra_deg = float(nea_data["ra"])
                 formatted_ra_deg = self._format_right_ascension_deg(ra_deg)
                 if formatted_ra_deg:
-                    obj.st_right_ascension = DataPoint(
-                        value=formatted_ra_deg, reference=reference
+                    obj.st_right_ascension = ValueWithUncertainty(
+                        value=formatted_ra_deg
                     )
             except (ValueError, TypeError):
                 pass
@@ -158,15 +150,13 @@ class NasaExoplanetArchiveMapper:
         if "decstr" in nea_data and nea_data["decstr"]:
             formatted_dec = self._format_declination_str(nea_data["decstr"])
             if formatted_dec:
-                obj.st_declination = DataPoint(value=formatted_dec, reference=reference)
+                obj.st_declination = ValueWithUncertainty(value=formatted_dec)
         elif "dec" in nea_data and nea_data["dec"] is not None:
             try:
                 dec_deg = float(nea_data["dec"])
                 formatted_dec_deg = self._format_declination_deg(dec_deg)
                 if formatted_dec_deg:
-                    obj.st_declination = DataPoint(
-                        value=formatted_dec_deg, reference=reference
-                    )
+                    obj.st_declination = ValueWithUncertainty(value=formatted_dec_deg)
             except (ValueError, TypeError):
                 pass
 
@@ -176,31 +166,27 @@ class NasaExoplanetArchiveMapper:
                 obj.st_right_ascension.value, obj.st_declination.value
             )
             if constellation:
-                obj.st_constellation = DataPoint(
-                    value=constellation, reference=reference
-                )
+                obj.st_constellation = constellation
 
-    def _create_datapoint(
+    def _create_value_with_uncertainty(
         self,
         value: Any,
-        nea_field: str,
-        attribute: str,
-        reference: Reference,
-        default_units: dict,
-    ) -> Optional[DataPoint]:
-        """Crée un DataPoint avec la valeur et l'unité appropriée."""
+        error_positive: Optional[float] = None,
+        error_negative: Optional[float] = None,
+        sign: Optional[str] = None,
+    ) -> Optional[ValueWithUncertainty]:
+        """Crée une valeur avec incertitude."""
         if (
             value is not None
             and str(value).strip()
             and not (isinstance(value, float) and math.isnan(value))
         ):
-            unit = None
-            if self.NEA_DEFAULT_UNITS.get(nea_field):
-                if self.NEA_DEFAULT_UNITS.get(nea_field) != default_units.get(
-                    attribute
-                ):
-                    unit = self.NEA_DEFAULT_UNITS.get(nea_field)
-            return DataPoint(value=value, unit=unit, reference=reference)
+            return ValueWithUncertainty(
+                value=value,
+                error_positive=error_positive,
+                error_negative=error_negative,
+                sign=sign,
+            )
         return None
 
     def _format_numeric_no_trailing_zeros(self, value):
@@ -305,15 +291,28 @@ class NasaExoplanetArchiveMapper:
 
         return f"{sign}{degrees:02d}/{arcminutes:02d}/{arcseconds}"
 
-    def _parse_epoch_string(self, epoch_str: str) -> Optional[str]:
+    def _parse_signed_value(self, value: Any) -> tuple[float, Optional[str]]:
         """
-        Parses the epoch string (pl_tranmidstr) which can be in several formats:
-        1. "2458950.09242&plusmn0.00076" -> "2458950.09242 ± 0.00076"
+        Parses a value string to extract a leading sign (>, <) if present.
+        Returns the cleaned value and the sign.
+        """
+        if isinstance(value, str):
+            value_str = value.strip()
+            if value_str.startswith(">"):
+                return value_str[1:].strip(), ">"
+            elif value_str.startswith("<"):
+                return value_str[1:].strip(), "<"
+        return value, None
+
+    def _parse_composite_string(raw_value: str) -> Optional[ValueWithUncertainty]:
+        """
+        Parses the composite string (pl_tranmidstr) which can be in several formats:
+        1. "2458950.09242&plusmn0.00076" -> [2458950.09242,0.00076, , ±]
         2. "<div><span class=supersubNumber">2458360.0754</span><span class="superscript">+0.0049</span><span class="subscript">-0.0078</span></div>"
-           -> "2458360.0754{{±|0.0049|0.0078}}"
-        3. "2458360.0754" (a simple numerical value) -> "2458360.0754"
-        4. "&gt789" -> "> 789"
-        5. "&lt1084" -> "< 1084"
+           -> [2458360.0754,0.0049,0.0078,±]"
+        3. "2458360.0754" (a simple numerical value) -> [2458360.0754,,,]
+        4. "&gt789" -> [789, , >]
+        5. "&lt1084" -> [1084, , <]
 
         Returns the formatted string or None if parsing fails.
         """
@@ -324,100 +323,103 @@ class NasaExoplanetArchiveMapper:
 
         logger = logging.getLogger(__name__)
 
-        if pd.isna(epoch_str) or not isinstance(epoch_str, str):
+        if pd.isna(raw_value) or not isinstance(raw_value, str):
             return None
 
-        epoch_str_val = epoch_str.strip()
+        epoch_str_val = raw_value.strip()
 
-        # Case 1: Simple string with &plusmn
+        # Cas 1 : format avec &plusmn
         if "&plusmn" in epoch_str_val:
-            return epoch_str_val.replace("&plusmn", " ± ")
+            try:
+                parts = epoch_str_val.split("&plusmn")
+                value = float(parts[0].strip())
+                error = float(parts[1].strip()) if len(parts) > 1 else None
+                return ValueWithUncertainty(
+                    value=value, error_positive=error, error_negative=error, sign="±"
+                )
+            except ValueError:
+                logger.warning(f"Erreur de parsing dans '&plusmn': {epoch_str_val}")
+                return None
 
-        # Case 2: HTML snippet
-        elif "div" in epoch_str_val and "<span" in epoch_str_val:
-            # Pre-process the HTML to fix the common malformation: class=value" -> class="value"
+        # Cas 2 : HTML
+        elif "<div" in epoch_str_val and "<span" in epoch_str_val:
             fixed_html_str = re.sub(r'class=(\w+)"', r'class="\1"', epoch_str_val)
             soup = BeautifulSoup(fixed_html_str, "html5lib")
 
-            base_value_span = soup.find("span", class_="supersubNumber")
-            superscript_span = soup.find("span", class_="superscript")
-            subscript_span = soup.find("span", class_="subscript")
+            try:
+                val = soup.find("span", class_="supersubNumber")
+                pos = soup.find("span", class_="superscript")
+                neg = soup.find("span", class_="subscript")
 
-            if base_value_span:
-                formatted_epoch = base_value_span.get_text().strip()
-                error_part = ""
-
-                pos_error = (
-                    superscript_span.get_text().strip().replace("+", "")
-                    if superscript_span
-                    else ""
+                value = float(val.get_text().strip()) if val else None
+                err_pos = (
+                    float(pos.get_text().strip().replace("+", "")) if pos else None
                 )
-                neg_error = (
-                    subscript_span.get_text().strip().replace("-", "")
-                    if subscript_span
-                    else ""
+                err_neg = (
+                    float(neg.get_text().strip().replace("-", "")) if neg else None
                 )
 
-                if pos_error and neg_error:
-                    error_part = f"{{{{±|{pos_error}|{neg_error}}}}}"
-                elif pos_error:
-                    error_part = f"{{{{±|{pos_error}|}}}}"
-                elif neg_error:
-                    error_part = f"{{{{±||{neg_error}}}}}"
-
-                return formatted_epoch + error_part
-            else:
+                return ValueWithUncertainty(
+                    value=value,
+                    error_positive=err_pos,
+                    error_negative=err_neg,
+                    sign="±",
+                )
+            except Exception as e:
                 logger.warning(
-                    f"Could not find base value span in HTML epoch (even after fixing and html5lib): {epoch_str_val}"
+                    f"Erreur de parsing HTML: {e} | contenu: {epoch_str_val}"
                 )
                 return None
 
-        # Case 3 & 4: Greater than or Less than (e.g., "&gt789", "&lt1084")
+        # Cas 3 : &gt
         elif epoch_str_val.startswith("&gt"):
-            return f"> {epoch_str_val[3:].strip()}"
-        elif epoch_str_val.startswith("&lt"):
-            return f"< {epoch_str_val[3:].strip()}"
+            try:
+                value = float(epoch_str_val[3:].strip())
+                return ValueWithUncertainty(value=value, sign=">")
+            except ValueError:
+                logger.warning(f"Erreur parsing &gt : {epoch_str_val}")
+                return None
 
-        # Case 5: Simple numerical value (as a last resort)
+        # Cas 4 : &lt
+        elif epoch_str_val.startswith("&lt"):
+            try:
+                value = float(epoch_str_val[3:].strip())
+                return ValueWithUncertainty(value=value, sign="<")
+            except ValueError:
+                logger.warning(f"Erreur parsing &lt : {epoch_str_val}")
+                return None
+
+        # Cas 5 : simple valeur numérique
         else:
             try:
-                float(epoch_str_val)
-                return epoch_str_val
+                value = float(epoch_str_val)
+                return ValueWithUncertainty(value=value)
             except ValueError:
-                logger.warning(f"Unrecognized epoch format: {epoch_str_val}")
+                logger.warning(f"Format d'époque non reconnu : {epoch_str_val}")
                 return None
 
-    def map_nea_data_to_star(
-        self, nea_data: Dict[str, Any], reference: Optional[Reference] = None
-    ) -> DataSourceStar:
+    def map_nea_data_to_star(self, nea_data: Dict[str, Any]) -> Star:
         """Convertit les données NEA en objet Star."""
-        if reference is None:
-            reference = self._create_nea_reference(nea_data)
+
+        reference = self._create_reference(nea_data, False)
 
         # Créer l'étoile avec les paramètres obligatoires
-        star = DataSourceStar(
-            name=nea_data.get("hostname", ""),
-            source_type=SourceType.NEA,
-            update_date=datetime.now(),
-            consultation_date=datetime.now(),
-            raw_data=nea_data,
-            metadata={},
+        star = Star(
+            st_name=nea_data.get("hostname", ""),
+            reference=reference,
         )
 
         # Mapper les champs selon le mapping défini
         for nea_field, attribute in self.NEA_TO_STAR_MAPPING.items():
+            # alors ici, on a quelques champs qui sont ValueWithUncertainty et d'autres dont on peut directement avoir la valeur
             if nea_field in nea_data:
                 value = nea_data[nea_field]
                 if value is not None and str(value).strip():
-                    datapoint = self._create_datapoint(
-                        value,
-                        nea_field,
-                        attribute,
-                        reference,
-                        FIELD_DEFAULT_UNITS_STAR,
+                    value_with_uncertainty = self._create_value_with_uncertainty(
+                        value=value
                     )
-                    if datapoint:
-                        setattr(star, attribute, datapoint)
+                    if value_with_uncertainty:
+                        setattr(star, attribute, value_with_uncertainty)
 
         # Traitement spécial pour les désignations
         st_altnames = self._extract_star_altname(nea_data)
@@ -429,87 +431,77 @@ class NasaExoplanetArchiveMapper:
 
         return star
 
-    def map_nea_data_to_exoplanet(
-        self, nea_data: Dict[str, Any], reference: Optional[Reference] = None
-    ) -> Exoplanet:
-        """Convertit les données NEA en objet Exoplanet."""
-        if not reference:
-            reference = self._create_nea_reference(nea_data)
+    def _looks_like_composite_string(self, raw_value: str) -> bool:
+        """Heuristique pour détecter si une chaîne contient une valeur composite (HTML, entités HTML, etc.)"""
+        raw_value = raw_value.strip()
+        return any(
+            sub in raw_value for sub in ("<span", "<div", "&plusmn", "&gt", "&lt")
+        )
 
-        exoplanet = Exoplanet()
+    def map_nea_data_to_exoplanet(self, nea_data: Dict[str, Any]) -> Exoplanet:
+        """Mappe les données NEA vers un objet Exoplanet."""
+        reference = self._create_reference(nea_data, True)
 
-        # Traitement spécial pour pl_name (string simple)
-        if "pl_name" in nea_data and nea_data["pl_name"]:
-            exoplanet.pl_name = nea_data["pl_name"]
-
-        # Traitement spécial pour pl_altname (liste de strings)
-        if "pl_altname" in nea_data and nea_data["pl_altname"]:
-            exoplanet.pl_altname = nea_data["pl_altname"].split(",")
-
-        # Traitement spécial pour st_name (string simple)
-        if "hostname" in nea_data and nea_data["hostname"]:
-            exoplanet.st_name = nea_data["hostname"]
+        exoplanet = Exoplanet(
+            pl_name=nea_data.get("pl_name"),
+            st_name=nea_data.get("hostname"),
+            reference=reference,
+        )
 
         # Traitement des coordonnées
         self._process_coordinates(exoplanet, nea_data, reference)
 
-        # Traitement des autres champs avec DataPoint
+        # Traitement des autres champs avec ValueWithUncertainty
         for nea_field, attribute in self.NEA_TO_EXOPLANET_MAPPING.items():
-            if nea_field in ["pl_name", "pl_altname", "hostname"]:
-                continue  # Skip fields already processed
-            if nea_field in nea_data:
-                value = nea_data[nea_field]
-                datapoint = self._create_datapoint(
-                    value,
-                    nea_field,
-                    attribute,
-                    reference,
-                    FIELD_DEFAULT_UNITS_EXOPLANET,
-                )
-                if datapoint:
-                    setattr(exoplanet, attribute, datapoint)
+            if (
+                nea_field in nea_data
+                and nea_field != "pl_name"
+                and nea_field != "hostname"
+                and nea_field != "reference"
+            ):
+                raw_value = nea_data[nea_field]
 
-        return exoplanet
+                if isinstance(raw_value, str) and self._looks_like_composite_string(
+                    raw_value
+                ):
+                    parsed_vwu = self._parse_composite_string(raw_value)
+                    if parsed_vwu:
+                        setattr(exoplanet, attribute, parsed_vwu)
+                        continue
+                elif raw_value:
+                    if isinstance(raw_value, str) and self._looks_like_composite_string(
+                        raw_value
+                    ):
+                        parsed_vwu = self._parse_composite_string(raw_value)
+                        if parsed_vwu:
+                            setattr(exoplanet, attribute, parsed_vwu)
+                            continue
 
-    def map_nea_data_to_star_entity(
-        self, nea_data: Dict[str, Any], reference: Optional[Reference] = None
-    ) -> "Star":
-        from src.models.entities.star import Star
+                    try:
+                        numeric_value = float(raw_value)
+                        error_positive = nea_data.get(f"{nea_field}_err1")
+                        error_negative = nea_data.get(f"{nea_field}_err2")
 
-        if reference is None:
-            reference = self._create_nea_reference(nea_data)
+                        err1_clean = (
+                            float(str(error_positive).replace("+", "").replace("-", ""))
+                            if error_positive
+                            else None
+                        )
+                        err2_clean = (
+                            float(str(error_negative).replace("+", "").replace("-", ""))
+                            if error_negative
+                            else None
+                        )
 
-        star = Star()
-
-        # Nom principal
-        if "hostname" in nea_data and nea_data["hostname"]:
-            star.st_name = nea_data["hostname"]
-
-        # Désignations alternatives
-        st_altnames = self._extract_star_altname(nea_data)
-        if st_altnames:
-            star.st_altname = st_altnames
-
-        # Coordonnées
-        self._process_coordinates(star, nea_data, reference)
-
-        # Mapper les autres champs
-        for nea_field, attribute in self.NEA_TO_STAR_MAPPING.items():
-            if nea_field in ["hostname"]:
-                continue  # déjà traité
-            if nea_field in nea_data:
-                value = nea_data[nea_field]
-                if value is not None and str(value).strip():
-                    datapoint = self._create_datapoint(
-                        value,
-                        nea_field,
-                        attribute,
-                        reference,
-                        FIELD_DEFAULT_UNITS_STAR,
-                    )
-                    if datapoint:
-                        setattr(star, attribute, datapoint)
-
-        # Ajout de la référence
-        star.add_reference(reference)
-        return star
+                        value_with_uncertainty = ValueWithUncertainty(
+                            value=numeric_value,
+                            error_positive=err1_clean,
+                            error_negative=err2_clean,
+                            sign="±" if err1_clean or err2_clean else None,
+                        )
+                        setattr(exoplanet, attribute, value_with_uncertainty)
+                        continue
+                    except (ValueError, TypeError):
+                        # C'est un string "pur" (ex: identifiant, classe spectrale, etc.)
+                        setattr(exoplanet, attribute, raw_value)
+                        continue

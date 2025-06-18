@@ -100,13 +100,13 @@ class StarContentGenerator:
 
         content = ["== Environnement stellaire ==\n"]
 
-        if star.st_constellation and star.st_constellation.value:
+        if star.st_constellation:
             content.append(
-                f"L'étoile se trouve dans la constellation [[{star.st_constellation.value}]]."
+                f"L'étoile se trouve dans la constellation [[{star.st_constellation}]]."
             )
 
-        if star.st_distance and star.st_distance.value:
-            dist = self.article_utils.format_numeric_value(star.st_distance.value)
+        if star.st_distance:
+            dist = self.article_utils.format_numeric_value(star.st_distance)
             content.append(
                 f"Elle est située à environ {dist} [[parsec|parsecs]] de la [[Terre]]."
             )

@@ -1,6 +1,6 @@
 # src/utils/astro/classification/exoplanet_type_utils.py
 from typing import Optional
-from src.models.data_sources.exoplanet_source import DataSourceExoplanet
+from src.models.entities.exoplanet import Exoplanet
 
 
 class ExoplanetTypeUtils:
@@ -20,7 +20,7 @@ class ExoplanetTypeUtils:
     WARM_MIN = 500
     HIGH_INSOLATION_MIN = 100
 
-    def get_exoplanet_planet_type(self, exoplanet: DataSourceExoplanet) -> str:
+    def get_exoplanet_planet_type(self, exoplanet: Exoplanet) -> str:
         """
         Détermine le type de planète basé sur ses caractéristiques physiques.
         """
@@ -58,7 +58,7 @@ class ExoplanetTypeUtils:
         m: float,
         r: float,
         d: Optional[float],
-        p: DataSourceExoplanet,
+        p: Exoplanet,
         insolation: Optional[float],
     ) -> str:
         # Petite masse et petit rayon → probablement terrestre
@@ -77,7 +77,7 @@ class ExoplanetTypeUtils:
         return self._classify_terrestrial(m, r)
 
     def _classify_giant(
-        self, m: float, p: DataSourceExoplanet, insolation: Optional[float]
+        self, m: float, p: Exoplanet, insolation: Optional[float]
     ) -> str:
         t = (
             float(p.pl_temperature.value)
@@ -129,25 +129,27 @@ class ExoplanetTypeUtils:
             return "Super-Terre"
         return "Méga-Terre"
 
-    def _mass_in_earth(self, p: DataSourceExoplanet) -> Optional[float]:
+    def _mass_in_earth(self, p: Exoplanet) -> Optional[float]:
         if not p.pl_mass or p.pl_mass.value is None:
             return None
         try:
             value = float(p.pl_mass.value)
+            # On suppose que la masse est en masses de Jupiter
+            return value * self.JUPITER_MASS
         except (TypeError, ValueError):
             return None
-        return value * (self.JUPITER_MASS if p.pl_mass.unit == "M_J" else 1)
 
-    def _radius_in_earth(self, p: DataSourceExoplanet) -> Optional[float]:
+    def _radius_in_earth(self, p: Exoplanet) -> Optional[float]:
         if not p.pl_radius or p.pl_radius.value is None:
             return None
         try:
             value = float(p.pl_radius.value)
+            # On suppose que le rayon est en rayons de Jupiter
+            return value * 11.2
         except (TypeError, ValueError):
             return None
-        return value * (11.2 if p.pl_radius.unit == "R_J" else 1)
 
-    def _density(self, p: DataSourceExoplanet) -> Optional[float]:
+    def _density(self, p: Exoplanet) -> Optional[float]:
         m = self._mass_in_earth(p)
         r = self._radius_in_earth(p)
         if m is None or r is None:
@@ -156,9 +158,9 @@ class ExoplanetTypeUtils:
         vol_cm3 = 4 / 3 * 3.1416 * (r * 6.371e8) ** 3
         return mass_g / vol_cm3
 
-    def _stellar_insolation(self, p: DataSourceExoplanet) -> float:
+    def _stellar_insolation(self, p: Exoplanet) -> float:
         # Rendre robuste l'accès à st_name et pl_semi_major_axis
-        st_name = p.st_name.value if hasattr(p.st_name, "value") else p.st_name
+        st_name = p.st_name
         semi_major_axis = (
             p.pl_semi_major_axis.value
             if (hasattr(p.pl_semi_major_axis, "value"))

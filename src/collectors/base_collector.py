@@ -52,14 +52,12 @@ class BaseCollector(ABC):
         return []  # Optionnel, retournera une liste vide si non surchargé
 
     @abstractmethod
-    def _convert_row_to_exoplanet(
-        self, row: pd.Series, ref: Reference
-    ) -> Optional[Exoplanet]:
+    def _convert_row_to_exoplanet(self, row: pd.Series) -> Optional[Exoplanet]:
         """Convertit une ligne du DataFrame en objet Exoplanet."""
         pass
 
     @abstractmethod
-    def _convert_row_to_star(self, row: pd.Series, ref: Reference) -> Optional[Star]:
+    def _convert_row_to_star(self, row: pd.Series) -> Optional[Star]:
         """Convertit une ligne du DataFrame en objet Star."""
         pass
 
@@ -145,14 +143,13 @@ class BaseCollector(ABC):
                     )
                     return [], []
 
-            ref = self._create_reference()
             for _, row in df.iterrows():
                 try:
-                    exoplanet = self._convert_row_to_exoplanet(row, ref)
+                    exoplanet = self._convert_row_to_exoplanet(row)
                     if exoplanet:
                         exoplanets.append(exoplanet)
 
-                    star = self._convert_row_to_star(row, ref)
+                    star = self._convert_row_to_star(row)
                     if star:
                         stars.append(star)
 
@@ -181,9 +178,3 @@ class BaseCollector(ABC):
             return float(value)
         except (ValueError, TypeError):
             return None
-
-    def _create_reference(self) -> Reference:
-        return self.reference_manager.create_reference(
-            source=self._get_source_type(),
-            update_date=self.last_update_date,
-        )

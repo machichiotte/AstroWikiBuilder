@@ -1,6 +1,7 @@
 # src/utils/astro/classification/star_type_utils.py
 from typing import Optional, Tuple, List
-from src.models.data_sources.star_source import DataSourceStar
+
+from src.models.entities.star import Star
 
 
 class StarTypeUtils:
@@ -45,7 +46,7 @@ class StarTypeUtils:
 
     @staticmethod
     def _get_evolutionary_stage(
-        star: DataSourceStar, letter: str, luminosity: Optional[str]
+        star: Star, letter: str, luminosity: Optional[str]
     ) -> Optional[str]:
         """
         Détermine le stade évolutif de l'étoile basé sur ses caractéristiques.
@@ -84,7 +85,7 @@ class StarTypeUtils:
         return None
 
     @staticmethod
-    def get_star_type(star: DataSourceStar) -> List[str]:
+    def get_star_type(star: Star) -> List[str]:
         """
         Détermine le type d'étoile basé sur ses caractéristiques.
         Retourne une liste de types d'étoiles (ex: ["Étoile de type spectral KIII", "Géante rouge"])
@@ -177,7 +178,7 @@ class StarTypeUtils:
         return types
 
     @staticmethod
-    def get_luminosity_class(star: DataSourceStar) -> Optional[str]:
+    def get_luminosity_class(star: Star) -> Optional[str]:
         """
         Détermine la classe de luminosité de l'étoile.
         Retourne la classe de luminosité (ex: "V", "III", etc.)
@@ -193,7 +194,7 @@ class StarTypeUtils:
         return luminosity
 
     @staticmethod
-    def get_spectral_class(star: DataSourceStar) -> Optional[str]:
+    def get_spectral_class(star: Star) -> Optional[str]:
         """
         Détermine la classe spectrale de l'étoile.
         Retourne la classe spectrale (ex: "K", "G", etc.)

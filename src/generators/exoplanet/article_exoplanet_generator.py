@@ -89,41 +89,54 @@ class ArticleExoplanetGenerator(BaseArticleGenerator):
         return "\n\n".join(filter(None, parts))
 
     def _generate_orbit_section(self, exoplanet: Exoplanet) -> str:
-        """
-        Génère la section de l'orbite de l'exoplanète
-        """
-        orbital_comparison = self.comparison_utils.get_orbital_comparison(exoplanet)
-        semi_major_axis_str = self.article_utils.format_datapoint(
-            exoplanet.pl_semi_major_axis,
-            exoplanet.pl_name,
-            self.reference_manager.add_reference,
-        )
+        """Génère la section sur l'orbite de l'exoplanète."""
+        if not any(
+            [
+                exoplanet.pl_semi_major_axis,
+                exoplanet.pl_eccentricity,
+                exoplanet.pl_orbital_period,
+                exoplanet.pl_inclination,
+            ]
+        ):
+            return ""
 
-        section = "== Orbite ==\n"
+        content = ["== Orbite ==\n"]
 
-        cleaned_semi_major_axis_str = (
-            semi_major_axis_str.replace(",", ".").split("<ref")[0].strip()
-        )
+        if exoplanet.pl_semi_major_axis:
+            semi_major_axis_str = self.article_utils.format_value_with_uncertainty(
+                exoplanet.pl_semi_major_axis
+            )
+            if semi_major_axis_str:
+                content.append(
+                    f"L'exoplanète orbite à une distance de {semi_major_axis_str} [[unité astronomique|UA]] de son étoile."
+                )
 
-        try:
-            semi_major_axis_val = float(cleaned_semi_major_axis_str)
-        except ValueError:
-            # Handle cases where conversion might still fail (e.g., if semi_major_axis is None or non-numeric)
-            # You might want to log this or set a default value, or skip the comparison.
-            # For now, let's assume a default that will likely result in plural if the value is unparseable.
-            semi_major_axis_val = 0.0
+        if exoplanet.pl_eccentricity:
+            eccentricity_str = self.article_utils.format_value_with_uncertainty(
+                exoplanet.pl_eccentricity
+            )
+            if eccentricity_str:
+                content.append(f"L'orbite a une excentricité de {eccentricity_str}.")
 
-        # Determine whether to use singular or plural for "unité astronomique"
-        if exoplanet.pl_semi_major_axis is not None and semi_major_axis_val <= 2:
-            unit_text = "[[unité astronomique|unité astronomique]]"
-        else:
-            unit_text = "[[unité astronomique|unités astronomiques]]"
+        if exoplanet.pl_orbital_period:
+            period_str = self.article_utils.format_value_with_uncertainty(
+                exoplanet.pl_orbital_period
+            )
+            if period_str:
+                content.append(
+                    f"La période orbitale est de {period_str} [[jour|jours]]."
+                )
 
-        section += f"Elle orbite à {{{{unité|{semi_major_axis_str}|{unit_text}}}}} de son étoile."
-        section += " "
-        section += f"{orbital_comparison}."
+        if exoplanet.pl_inclination:
+            inclination_str = self.article_utils.format_value_with_uncertainty(
+                exoplanet.pl_inclination
+            )
+            if inclination_str:
+                content.append(
+                    f"L'inclinaison de l'orbite est de {inclination_str} [[degré (angle)|degrés]]."
+                )
 
-        return section
+        return "\n".join(content)
 
     def _generate_discovery_section(self, exoplanet: Exoplanet) -> str:
         """Génère la section de découverte."""

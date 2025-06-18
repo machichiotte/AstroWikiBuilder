@@ -9,8 +9,8 @@ from src.constants.field_mappings import (
 
 
 class StarInfoboxGenerator(InfoboxBaseGenerator):
-    def get_field_mappings(self) -> list[FieldMapping]:
-        return InfoboxMapper.get_star_field_mappings()
+    def retrieve_infobox_field_mappings(self) -> list[FieldMapping]:
+        return InfoboxMapper.convert_star_to_infobox()
 
     def get_infobox_header(self) -> str:
         return "{{Infobox Étoile}"

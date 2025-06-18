@@ -1,12 +1,13 @@
 # src/utils/formatters/infobox_field_formatters.py
 from enum import Enum
 import logging
-from typing import Any, Optional
+from typing import Any, Optional, Dict
 
 from src.constants.field_mappings import DISCOVERY_FACILITY_MAPPING, METHOD_NAME_MAPPING
-from src.models.references.data_point import DataPoint
+from src.models.entities.exoplanet import ValueWithUncertainty
 from src.utils.validators import infobox_validators
 from src.models.infobox_fields import FieldMapping
+from src.models.references.reference import Reference
 
 logger = logging.getLogger(__name__)
 
@@ -20,20 +21,44 @@ class InfoboxField(str, Enum):
     DESIGNATIONS = "désignations"
     UAI_MAP = "carte UAI"
     CONSTELLATION = "constellation"
+    EPOCH = "test_epoch"
+
+
+def _format_error_number(value: ValueWithUncertainty) -> str:
+    """Formate une valeur avec incertitude pour l'infobox"""
+    if not value:
+        return ""
+
+    try:
+        raw_value = float(value.value)
+        formatted_value = f"{raw_value:.2f}"
+
+        raw_pos_error = float(value.error_positive)
+        pos_error = f"{raw_pos_error:.2f}"
+
+        raw_neg_error = float(value.error_negative)
+        neg_error = f"{raw_neg_error:.2f}"
+
+        if pos_error and neg_error:
+            error_part = f"{{{{±|{pos_error}|{neg_error}}}}}"
+        elif pos_error:
+            error_part = f"{{{{±|{pos_error}|}}}}"
+        elif neg_error:
+            error_part = f"{{{{±||{neg_error}}}}}"
+
+        formatted_value += error_part
+
+        # if hasattr(value, "sign") and value.sign:
+        #    formatted_value = f"{value.sign}{formatted_value}"
+
+        return formatted_value
+    except (ValueError, AttributeError) as e:
+        logger.error(f"Erreur lors du formatage de la valeur {value}: {str(e)}")
+        return str(value)
 
 
 class FieldFormatter:
     """Formatters pour différents types de champs"""
-
-    @staticmethod
-    def _apply_special_formatting(infobox_field: str, value: Any) -> str:
-        """Applique le formatage spécial selon le type de champ"""
-        try:
-            formatter = FieldFormatter._FORMATTERS.get(infobox_field)
-            return formatter(value) if formatter else value
-        except Exception as e:
-            logger.error(f"Erreur lors du formatage du champ {infobox_field}: {str(e)}")
-            return str(value)
 
     @staticmethod
     def _format_discovery_facility(value: Any) -> str:
@@ -108,171 +133,84 @@ class FieldFormatter:
             logger.error(f"Erreur lors du formatage des désignations {value}: {str(e)}")
             return str(value)
 
-    _FORMATTERS = {
-        InfoboxField.LOCATION: _format_discovery_facility,
-        InfoboxField.METHOD: _format_discovery_method,
-        InfoboxField.AGE: lambda v: f"{v}×10<sup>9</sup>",
-        InfoboxField.DESIGNATIONS: _format_designations,
-        InfoboxField.UAI_MAP: lambda v: v,
-        InfoboxField.CONSTELLATION: lambda v: f"[[{v} (constellation)|{v}]]",
-    }
-
-    @staticmethod
-    def _get_unit_to_use(
-        unit: Optional[str], mapping: FieldMapping, default_mapping: dict
-    ) -> Optional[str]:
-        """Détermine l'unité à utiliser pour le champ."""
-        if not unit:
-            return None
-
-        # Si l'unité est explicitement définie dans le mapping, l'utiliser
-        if mapping.unit_override:
-            return mapping.unit_override
-
-        # Si l'unité est la même que celle par défaut, ne pas l'afficher
-        default_unit = default_mapping.get(mapping.infobox_field)
-        if unit == default_unit:
-            return None
-
-        # Sinon, utiliser l'unité fournie
-        return unit
-
-    @staticmethod
-    def _extract_notes(datapoint: DataPoint) -> Optional[str]:
-        """Extrait les notes d'un DataPoint."""
-        if not datapoint or not datapoint.reference:
-            return None
-
-        try:
-            ref = datapoint.reference
-            if not ref:
-                return None
-
-            full_ref = ref.to_wiki_ref()
-            if not full_ref:
-                return None
-
-            # Vérifier si la référence est déjà enregistrée
-            if hasattr(ref, "id") and ref.id:
-                return f'<ref name="{ref.id}" />'
-            return full_ref
-        except Exception as e:
-            logger.error(f"Erreur lors de l'extraction des notes: {str(e)}")
-            return None
-
     def _format_field_value(self, value: Any, field_name: str) -> str:
         """Formate la valeur principale du champ."""
-        print("foransdubfoubsdfbsk ", field_name)
+
         try:
-            return FieldFormatter._apply_special_formatting(field_name, value)
+            # Si c'est une ValueWithUncertainty, on la formate d'abord
+            if isinstance(value, ValueWithUncertainty):
+                formatted_value = _format_error_number(value)
+                # On récupère le formatter spécifique
+                formatter = _FORMATTERS.get(field_name)
+                # Si un formatter existe, on l'applique sur la valeur formatée
+                if formatter:
+                    return formatter(formatted_value)
+                return formatted_value
+
+            # Pour les autres types, on applique le formatter normalement
+            formatter = _FORMATTERS.get(field_name)
+            return formatter(value) if formatter else value
         except Exception as e:
             logger.error(
                 f"Erreur lors du formatage de la valeur {value} pour le champ {field_name}: {str(e)}"
             )
             return str(value)
 
-    def _format_unit(
-        self, unit: Optional[str], mapping: FieldMapping, default_mapping: dict
-    ) -> Optional[str]:
-        """Formate l'unité du champ si nécessaire."""
-        unit_to_use = FieldFormatter._get_unit_to_use(unit, mapping, default_mapping)
-        if not unit_to_use:
-            return None
-        return f"\n | {mapping.infobox_field} unité = {unit_to_use}"
-
-    def _format_notes(
-        self, reference: Optional[str], field_name: str, notes_fields: list[str]
-    ) -> Optional[str]:
-        """Formate les notes de référence si présentes."""
-        if not reference or not infobox_validators.is_valid_infobox_note(
-            field_name, notes_fields
-        ):
-            return None
-
-        return f"\n | {field_name} notes = {reference}"
-
     def process_field(
         self,
-        datapoint: DataPoint,
+        value: Any,
         mapping: FieldMapping,
-        default_mapping: dict,
         notes_fields: list[str],
+        entity_reference: Reference = None,
     ) -> str:
-        """Traite un champ complet avec sa valeur, unité et notes.
-
-        Cette méthode gère le formatage complet d'un champ d'infobox en :
-        1. Vérifiant les conditions préalables
-        2. Extrayant et formatant la valeur principale
-        3. Ajoutant l'unité si nécessaire
-        4. Ajoutant les notes de référence si présentes
-
-        Args:
-            datapoint: Le point de données contenant la valeur et potentiellement une référence
-            mapping: La configuration de mapping du champ
-            default_mapping: Le mapping par défaut pour les unités
-            notes_fields: Liste des champs qui peuvent avoir des notes
-
-        Returns:
-            str: Le champ formaté avec sa valeur, son unité et ses notes si présents
-        """
-        # Vérification des conditions préalables
-        if not datapoint:
+        """Traite un champ complet avec sa valeur, unité et notes."""
+        if not value:
             return ""
+
+        reference = entity_reference.to_wiki_ref() if entity_reference else None
 
         try:
             # Extraction des valeurs brutes
-            if isinstance(datapoint, str):
-                raw_value = datapoint
-                raw_unit = None
-                reference = None
-            elif isinstance(datapoint, list):
-                raw_value = datapoint
-                raw_unit = None
-                reference = None
+            if (
+                isinstance(value, str)
+                | isinstance(value, list)
+                | isinstance(value, ValueWithUncertainty)
+            ):
+                raw_value = value
             else:
-                raw_value = datapoint.value
-                raw_unit = datapoint.unit if datapoint.unit else None
-                # Tenter d'obtenir la référence, mais ignorer si elle est incomplète ou invalide
-                try:
-                    reference = (
-                        datapoint.reference.to_wiki_ref()
-                        if datapoint.reference
-                        else None
-                    )
-                except Exception:
-                    reference = None
+                raw_value = None
+
         except AttributeError as e:
             logger.error(
-                f"Erreur lors de l'extraction des attributs du DataPoint: {str(e)}"
+                f"Erreur lors de l'extraction des attributs de la valeur: {str(e)}"
             )
             return ""
 
         # Vérification de la validité de la valeur
-        if raw_value is None or (isinstance(raw_value, str) and not raw_value.strip()):
+        if not raw_value:
             return ""
 
-        # Construction du champ formaté
-        try:
-            # Formatage de la valeur principale
-            formatted_value = self._format_field_value(raw_value, mapping.infobox_field)
-            output = f" | {mapping.infobox_field} = {formatted_value}"
+        # Formatage de la valeur principale
+        formatted_value = self._format_field_value(raw_value, mapping.infobox_field)
 
-            # Ajout de l'unité si nécessaire
-            unit_output = self._format_unit(raw_unit, mapping, default_mapping)
-            if unit_output:
-                output += unit_output
+        # Construction du champ complet
+        field = f" | {mapping.infobox_field} = {formatted_value}"
 
-            # Ajout des notes si nécessaire
-            notes_output = self._format_notes(
-                reference, mapping.infobox_field, notes_fields
-            )
-            if notes_output:
-                output += notes_output
+        # Ajout des notes si nécessaire
+        if reference and infobox_validators.is_valid_infobox_note(
+            mapping.infobox_field, notes_fields
+        ):
+            field += f"\n | {mapping.infobox_field} notes = {reference}"
 
-            return output
+        return field
 
-        except Exception as e:
-            logger.error(
-                f"Erreur lors du formatage du champ {mapping.infobox_field}: {str(e)}"
-            )
-            return ""
+
+# Dictionnaire des formatters spécifiques
+_FORMATTERS = {
+    InfoboxField.LOCATION: FieldFormatter._format_discovery_facility,
+    InfoboxField.METHOD: FieldFormatter._format_discovery_method,
+    InfoboxField.AGE: lambda v: f"{v}×10<sup>9</sup>",
+    InfoboxField.DESIGNATIONS: FieldFormatter._format_designations,
+    InfoboxField.UAI_MAP: lambda v: v,
+    InfoboxField.CONSTELLATION: lambda v: f"[[{v} (constellation)|{v}]]",
+}

@@ -1,14 +1,36 @@
 from dataclasses import dataclass, field
-from typing import Optional, List, Dict, Any
-from datetime import datetime
+from typing import Optional, List
 
-from .base_entity import BaseEntity
 from ..references.reference import Reference
-from ..references.data_point import DataPoint
+
+
+@dataclass(frozen=True)
+class ValueWithUncertainty:
+    """Classe pour représenter une valeur avec ses incertitudes et son signe"""
+
+    value: Optional[float] = None
+    error_positive: Optional[float] = None
+    error_negative: Optional[float] = None
+    sign: Optional[str] = None  # Ex "<", ">", "±", etc.
+
+    def __hash__(self) -> int:
+        """Permet d'utiliser la classe comme clé dans un dictionnaire"""
+        return hash((self.value, self.error_positive, self.error_negative, self.sign))
+
+    def __eq__(self, other: object) -> bool:
+        """Permet de comparer deux instances de ValueWithUncertainty"""
+        if not isinstance(other, ValueWithUncertainty):
+            return NotImplemented
+        return (
+            self.value == other.value
+            and self.error_positive == other.error_positive
+            and self.error_negative == other.error_negative
+            and self.sign == other.sign
+        )
 
 
 @dataclass
-class Exoplanet(BaseEntity):
+class Exoplanet:
     """Classe de base pour les entités d'exoplanètes"""
 
     # Identifiants
@@ -19,61 +41,62 @@ class Exoplanet(BaseEntity):
 
     # Étoile hôte
     st_name: str = None
-    st_epoch: Optional[DataPoint] = None
-    st_right_ascension: Optional[DataPoint] = None
-    st_declination: Optional[DataPoint] = None
-    st_distance: Optional[DataPoint] = None
-    st_constellation: Optional[DataPoint] = None
-    st_spectral_type: Optional[DataPoint] = None
-    st_apparent_magnitude: Optional[DataPoint] = None
+    st_epoch: Optional[float] = None
+    st_right_ascension: Optional[float] = None
+    st_declination: Optional[float] = None
+    st_distance: Optional[ValueWithUncertainty] = None  # Distance avec incertitude
+    st_constellation: Optional[str] = None
+    st_spectral_type: Optional[str] = None
+    st_apparent_magnitude: Optional[float] = None
 
     # Caractéristiques orbitales
-    pl_semi_major_axis: Optional[DataPoint] = None
-    pl_periastron: Optional[DataPoint] = None
-    pl_apoastron: Optional[DataPoint] = None
-    pl_eccentricity: Optional[DataPoint] = None
-    pl_orbital_period: Optional[DataPoint] = None
-    pl_angular_distance: Optional[DataPoint] = None
-    pl_periastron_time: Optional[DataPoint] = None
-    pl_inclination: Optional[DataPoint] = None
-    pl_argument_of_periastron: Optional[DataPoint] = None
-    pl_epoch: Optional[DataPoint] = None
+    pl_semi_major_axis: Optional[ValueWithUncertainty] = (
+        None  # Axe semi-major avec incertitude
+    )
+    pl_periastron: Optional[float] = None
+    pl_apoastron: Optional[float] = None
+    pl_eccentricity: Optional[ValueWithUncertainty] = (
+        None  # Excentricité avec incertitude
+    )
+    pl_orbital_period: Optional[ValueWithUncertainty] = (
+        None  # Période orbitale avec incertitude
+    )
+    pl_angular_distance: Optional[float] = None
+    pl_periastron_time: Optional[float] = None
+    pl_inclination: Optional[ValueWithUncertainty] = (
+        None  # Inclinaison avec incertitude
+    )
+    pl_argument_of_periastron: Optional[float] = None
+    pl_epoch: Optional[float] = None
 
     # Caractéristiques physiques
-    pl_mass: Optional[DataPoint] = None
-    pl_minimum_mass: Optional[DataPoint] = None
-    pl_radius: Optional[DataPoint] = None
-    pl_density: Optional[DataPoint] = None
-    pl_gravity: Optional[DataPoint] = None
-    pl_rotation_period: Optional[DataPoint] = None
-    pl_temperature: Optional[DataPoint] = None
-    pl_albedo_bond: Optional[DataPoint] = None
+    pl_mass: Optional[ValueWithUncertainty] = None  # Masse avec incertitude
+    pl_minimum_mass: Optional[ValueWithUncertainty] = (
+        None  # Masse minimale avec incertitude
+    )
+    pl_radius: Optional[ValueWithUncertainty] = None  # Rayon avec incertitude
+    pl_density: Optional[ValueWithUncertainty] = None  # Densité avec incertitude
+    pl_gravity: Optional[float] = None
+    pl_rotation_period: Optional[float] = None
+    pl_temperature: Optional[ValueWithUncertainty] = (
+        None  # Température avec incertitude
+    )
+    pl_albedo_bond: Optional[float] = None
 
     # Atmosphère
-    pl_pressure: Optional[DataPoint] = None
-    pl_composition: Optional[DataPoint] = None
-    pl_wind_speed: Optional[DataPoint] = None
+    pl_pressure: Optional[float] = None
+    pl_composition: Optional[str] = None
+    pl_wind_speed: Optional[float] = None
 
     # Découverte
-    disc_by: Optional[DataPoint] = None
-    disc_program: Optional[DataPoint] = None
-    disc_method: Optional[DataPoint] = None
-    disc_year: Optional[DataPoint] = None
-    disc_facility: Optional[DataPoint] = None
-    pre_discovery: Optional[DataPoint] = None
-    detection_type: Optional[DataPoint] = None
-    status: Optional[DataPoint] = None
+    disc_by: Optional[str] = None
+    disc_program: Optional[str] = None
+    disc_method: Optional[str] = None
+    disc_year: Optional[int] = None
+    disc_facility: Optional[str] = None
+    pre_discovery: Optional[str] = None
+    detection_type: Optional[str] = None
+    status: Optional[str] = None
 
     # Références
-    references: Dict[str, Reference] = field(default_factory=dict)
-
-    # Métadonnées supplémentaires
-    metadata: Dict[str, Any] = field(default_factory=dict)
-
-    def add_reference(self, reference: Reference) -> None:
-        """Ajoute une référence à l'exoplanète"""
-        self.references[reference.source.value] = reference
-
-    def get_reference(self, source: str) -> Optional[Reference]:
-        """Récupère une référence par sa source"""
-        return self.references.get(source)
+    reference: Reference = None

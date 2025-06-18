@@ -1,7 +1,7 @@
 # src/utils/formatters/article_formatters.py
 import locale
 from typing import Optional
-from src.models.references.data_point import DataPoint
+from src.models.entities.exoplanet import ValueWithUncertainty
 
 
 class ArticleUtils:
@@ -48,35 +48,38 @@ class ArticleUtils:
         """Convertit les parsecs en années-lumière."""
         return parsecs * 3.26156
 
-    def format_datapoint(
+    def format_value_with_uncertainty(
         self,
-        datapoint: DataPoint,
-        exoplanet_name: str,
-        add_reference_func,
+        value_with_uncertainty: ValueWithUncertainty,
     ) -> str:
         """
-        Formate un DataPoint pour l'affichage dans l'article
+        Formate une valeur avec incertitude pour l'affichage dans l'article
         """
-        if not datapoint or not datapoint.value:
+        if not value_with_uncertainty or not value_with_uncertainty.value:
             return ""
 
         # Essayer de convertir la valeur en nombre si possible
         try:
-            value = float(datapoint.value)
+            value = float(value_with_uncertainty.value)
             value_str = self.format_numeric_value(value)
         except (ValueError, TypeError):
             # Si la conversion échoue, utiliser la valeur telle quelle
-            value_str = str(datapoint.value)
+            value_str = str(value_with_uncertainty.value)
 
-        if datapoint.reference:
-            # Standardized ref_name derivation
-            ref_name = (
-                str(datapoint.reference.source.value)
-                if hasattr(datapoint.reference.source, "value")
-                else str(datapoint.reference.source)
-            )
-            # Pass templates and exoplanet name to to_wiki_ref
-            ref_content_full = datapoint.reference.to_wiki_ref(exoplanet_name)
-            return f"{value_str} {add_reference_func(ref_name, ref_content_full)}"
+        # Ajouter les incertitudes si présentes
+        if (
+            value_with_uncertainty.error_positive
+            or value_with_uncertainty.error_negative
+        ):
+            error_str = ""
+            if value_with_uncertainty.error_positive:
+                error_str += f"+{self.format_numeric_value(value_with_uncertainty.error_positive)}"
+            if value_with_uncertainty.error_negative:
+                error_str += f"-{self.format_numeric_value(value_with_uncertainty.error_negative)}"
+            value_str = f"{value_str} {error_str}"
+
+        # Ajouter le signe si présent
+        if value_with_uncertainty.sign:
+            value_str = f"{value_with_uncertainty.sign}{value_str}"
 
         return value_str

@@ -1,7 +1,7 @@
 # src/utils/draft_utils.py
 import os
 import logging
-from typing import List, Literal, Tuple, Optional, Dict
+from typing import List, Tuple, Dict
 
 # Project imports
 from src.models.entities.exoplanet import Exoplanet
@@ -22,6 +22,12 @@ def clean_filename(filename: str) -> str:
     Nettoie un nom de fichier en supprimant les caractères invalides
     et en simplifiant les underscores.
     """
+    # Si c'est un objet ValueWithUncertainty, on utilise sa valeur
+    if hasattr(filename, "value"):
+        filename = str(filename.value)
+    else:
+        filename = str(filename)
+
     invalid_chars = '<>:"/\\|?*\t\n\r'
     for char in invalid_chars:
         filename = filename.replace(char, "_")
@@ -36,9 +42,9 @@ def generate_exoplanet_draft(exoplanet: Exoplanet) -> str:
     Génère le contenu d'un brouillon d'article pour une exoplanète.
     """
     generator = ArticleExoplanetGenerator()
-    logger.debug(f"Génération du brouillon pour l'exoplanète {exoplanet.pl_name}...")
+    print(f"Génération du brouillon pour l'exoplanète {exoplanet.pl_name}...")
     content = generator.generate_article_content(exoplanet)
-    logger.debug(f"Brouillon pour l'exoplanète {exoplanet.pl_name} généré.")
+    print(f"Brouillon pour l'exoplanète {exoplanet.pl_name} généré.")
     return content
 
 
@@ -48,9 +54,9 @@ def generate_star_draft(star: Star) -> str:
     """
     generator = ArticleStarGenerator()
     star_name = star.st_name if star.st_name else "Unknown Star"
-    logger.debug(f"Génération du brouillon pour l'étoile {star_name}...")
+    print(f"Génération du brouillon pour l'étoile {star_name}...")
     content = generator.generate_article_content(star)
-    logger.debug(f"Brouillon pour l'étoile {star_name} généré.")
+    print(f"Brouillon pour l'étoile {star_name} généré.")
     return content
 
 

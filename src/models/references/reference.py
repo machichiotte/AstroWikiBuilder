@@ -52,48 +52,52 @@ class Reference:
     star_id: Optional[str] = None
     planet_id: Optional[str] = None
 
-    def to_url(self, fallback_name: Optional[str] = None) -> str:
+    def to_url(self) -> str:
         details = SOURCE_DETAILS.get(self.source)
         if not details:
             raise ValueError(f"Unknown source: {self.source}")
 
+        print("Reference to_url star", self.star_id)
+        print("Reference to_url exo", self.planet_id)
         if self.source == SourceType.NEA:
-            star_id = slugify(self.star_id or fallback_name or "")
-            planet_id = slugify(self.planet_id or fallback_name or "")
-            if not star_id or not planet_id:
+            star_id = slugify(self.star_id or "")
+            planet_id = slugify(self.planet_id or "")
+            if not star_id and not planet_id:
                 raise ValueError(
                     "Both star name and planet identifier are required for NEA"
                 )
             elif not planet_id:
-                return details["url_pattern_exo"].format(star_id=star_id)
+                return details["url_pattern_star"].format(star_id=star_id)
 
             return details["url_pattern_exo"].format(
                 star_id=star_id, planet_id=planet_id
             )
 
-        planet_id = self.planet_id or (
-            slugify(fallback_name) if fallback_name else None
-        )
         if not planet_id:
             raise ValueError("Identifier is required for generating the URL")
         return details["url_pattern"].format(planet_id=planet_id)
 
-    def to_wiki_ref(self, exoplanet_name: Optional[str] = None) -> str:
+    def to_wiki_ref(self, short: bool = True) -> str:
+        """Convertit la référence en format wiki, avec option pour version courte"""
         details = SOURCE_DETAILS.get(self.source)
         if not details:
             return f'<ref name="{self.source.value}">Unknown source</ref>'
 
-        name_str = ""
-        if exoplanet_name:
-            # Vérifier si l'objet est une instance de DataPoint et extraire sa valeur
-            if hasattr(exoplanet_name, "value"):
-                name_str = exoplanet_name.value
-            else:
-                # S'il s'agit déjà d'une chaîne de caractères, l'utiliser directement
-                name_str = str(exoplanet_name)
+        print("to_wiki_ref", self.source)
+        print("to_wiki_ref star_id", self.star_id)
+        print("to_wiki_ref planet_id", self.planet_id)
 
-        url = self.to_url(fallback_name=name_str)
+        name_str = ""
+        if self.planet_id:
+            name_str = self.planet_id
+        else:
+            name_str = self.star_id
+
+        url = self.to_url()
         title = f"{details['display_title']}{' - ' + name_str if name_str else ''}"
+
+        if short:
+            return f'<ref name="{self.source.value}" />'
 
         tpl = details["template"].format(
             title=title,
@@ -102,4 +106,4 @@ class Reference:
             consultation_date=self.consultation_date.strftime("%Y-%m-%d"),
         )
 
-        return f'<ref name="{self.source.value}" >{tpl}</ref>'
+        return f'<ref name="{self.source.value}">{tpl}</ref>'

@@ -1,7 +1,6 @@
 # src/services/repositories/star_repository.py
 import logging
 from typing import List, Dict
-from src.models.data_sources.star_source import DataSourceStar
 from src.models.entities.star import Star
 
 logger = logging.getLogger(__name__)
@@ -9,7 +8,7 @@ logger = logging.getLogger(__name__)
 
 class StarRepository:
     def __init__(self):
-        self.stars: Dict[str, DataSourceStar] = {}
+        self.stars: Dict[str, Star] = {}
         logger.info("StarRepository initialized.")
 
     def add_stars(self, stars: List[Star], source_system: str) -> None:

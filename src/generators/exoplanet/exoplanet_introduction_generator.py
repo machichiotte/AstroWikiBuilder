@@ -1,5 +1,5 @@
 # src/generators/exoplanet/exoplanet_introduction_generator.py
-from typing import Optional  # Ajouté Optional
+from typing import Optional
 
 from src.constants.field_mappings import (
     CONSTELLATION_GENDER,
@@ -54,7 +54,7 @@ class ExoplanetIntroductionGenerator:
         host_star_name = exoplanet.st_name
 
         star_type_description = self._get_exoplanet_spectral_type_formatted_description(
-            exoplanet.st_spectral_type.value if exoplanet.st_spectral_type else None
+            exoplanet.st_spectral_type if exoplanet.st_spectral_type else None
         )
 
         if star_type_description != "son étoile hôte":
@@ -106,11 +106,10 @@ class ExoplanetIntroductionGenerator:
 
     def _build_constellation_segment(self, exoplanet: Exoplanet) -> Optional[str]:
         """Construit le segment de phrase concernant la constellation."""
-        if not exoplanet.st_constellation or not exoplanet.st_constellation.value:
+        if not exoplanet.st_constellation:
             return None
 
-        constellation_name_fr = exoplanet.st_constellation.value
-
+        constellation_name_fr = exoplanet.st_constellation
         if constellation_name_fr:
             return self._format_constellation_locative_phrase(constellation_name_fr)
         return None

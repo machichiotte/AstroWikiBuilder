@@ -3,7 +3,6 @@ import logging
 from typing import List, Dict, Any
 from src.models.entities.exoplanet import Exoplanet
 from src.models.entities.star import Star
-from src.models.references.data_point import DataPoint
 
 logger = logging.getLogger(__name__)
 
@@ -39,8 +38,8 @@ class StatisticsService:
 
         for exoplanet in exoplanets:
             # Méthodes de découverte
-            if exoplanet.disc_method and exoplanet.disc_method.value:
-                method = exoplanet.disc_method.value
+            if exoplanet.disc_method:
+                method = exoplanet.disc_method
                 stats["discovery_methods"][method] = (
                     stats["discovery_methods"].get(method, 0) + 1
                 )
@@ -91,14 +90,12 @@ class StatisticsService:
             logger.warning("No stars provided for statistics generation.")
             return {
                 "total_stars": 0,
-                "data_points_by_source": {},
                 "spectral_types": {},
                 "discovery_years": {},
             }
 
         stats = {
             "total_stars": len(stars),
-            "data_points_by_source": {},
             "spectral_types": {},
             "discovery_years": {},
         }
@@ -106,25 +103,6 @@ class StatisticsService:
         logger.info(f"Generating statistics for {len(stars)} stars.")
 
         for star in stars:
-            # Statistiques par source de données (pour chaque DataPoint)
-            for field_name in star.__dataclass_fields__:
-                if field_name in [
-                    "st_name",
-                    "pl_altname",
-                ]:
-                    continue
-
-                value_attr = getattr(star, field_name)
-                if (
-                    isinstance(value_attr, DataPoint)
-                    and value_attr.reference
-                    and value_attr.reference.source
-                ):
-                    source_key = value_attr.reference.source.value
-                    stats["data_points_by_source"][source_key] = (
-                        stats["data_points_by_source"].get(source_key, 0) + 1
-                    )
-
             # Statistiques par type spectral
             if (
                 hasattr(star, "st_spectral_type")

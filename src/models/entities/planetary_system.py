@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import Optional, List, Dict, Any
+from typing import Optional, List, Dict
 
 from .base_entity import BaseEntity
 from ..references.reference import Reference
@@ -22,9 +22,6 @@ class PlanetarySystem(BaseEntity):
     # Références
     references: Dict[str, Reference] = field(default_factory=dict)
 
-    # Métadonnées supplémentaires
-    metadata: Dict[str, Any] = field(default_factory=dict)
-
     def add_planet(self, planet: Exoplanet) -> None:
         """Ajoute une planète au système"""
         self.planets.append(planet)
@@ -41,11 +38,3 @@ class PlanetarySystem(BaseEntity):
             if planet.name == planet_name:
                 return planet
         return None
-
-    def add_reference(self, reference: Reference) -> None:
-        """Ajoute une référence au système"""
-        self.references[reference.source.value] = reference
-
-    def get_reference(self, source: str) -> Optional[Reference]:
-        """Récupère une référence par sa source"""
-        return self.references.get(source)

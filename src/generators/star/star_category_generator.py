@@ -54,9 +54,9 @@ class StarCategoryGenerator(BaseCategoryGenerator):
 
         # Check the primary name
         if star.st_name:
-            name = star.st_name.upper()
+            st_name = star.st_name
             for prefix, category_name in catalog_mappings.items():
-                if name.startswith(prefix):
+                if st_name.startswith(prefix):
                     categories.add(category_name)
 
         # Check the alternative names

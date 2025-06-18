@@ -435,17 +435,3 @@ SPECTRAL_TYPE_DESCRIPTIONS: dict[str, str] = {
     "T": "naine brune de type T",
     "Y": "naine brune de type Y",
 }
-
-# Liens Wikipédia pour chaque "type d'astre" (en français)
-SPECTRAL_TYPE_LINKS: dict[str, str] = {
-    "O": "https://fr.wikipedia.org/wiki/%C3%89toile_bleue_de_la_s%C3%A9quence_principale",
-    "B": "https://fr.wikipedia.org/wiki/%C3%89toile_bleu-blanc_de_la_s%C3%A9quence_principale",
-    "A": "https://fr.wikipedia.org/wiki/%C3%89toile_blanche_de_la_s%C3%A9quence_principale",
-    "F": "https://fr.wikipedia.org/wiki/%C3%89toile_jaune-blanc_de_la_s%C3%A9quence_principale",
-    "G": "https://fr.wikipedia.org/wiki/Naine_jaune",
-    "K": "https://fr.wikipedia.org/wiki/%C3%89toile_orange_de_la_s%C3%A9quence_principale",
-    "M": "https://fr.wikipedia.org/wiki/%C3%89toile_rouge_de_la_s%C3%A9quence_principale",
-    "L": "https://fr.wikipedia.org/wiki/Naine_brunne_L",
-    "T": "https://fr.wikipedia.org/wiki/Naine_brune_T",
-    "Y": "https://fr.wikipedia.org/wiki/Naine_brune_Y",
-}
