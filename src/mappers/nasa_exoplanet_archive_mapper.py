@@ -134,15 +134,13 @@ class NasaExoplanetArchiveMapper:
         if "rastr" in nea_data and nea_data["rastr"]:
             formatted_ra = self._format_right_ascension_str(nea_data["rastr"])
             if formatted_ra:
-                obj.st_right_ascension = ValueWithUncertainty(value=formatted_ra)
+                obj.st_right_ascension = formatted_ra
         elif "ra" in nea_data and nea_data["ra"] is not None:
             try:
                 ra_deg = float(nea_data["ra"])
                 formatted_ra_deg = self._format_right_ascension_deg(ra_deg)
                 if formatted_ra_deg:
-                    obj.st_right_ascension = ValueWithUncertainty(
-                        value=formatted_ra_deg
-                    )
+                    obj.st_right_ascension = formatted_ra_deg
             except (ValueError, TypeError):
                 pass
 
@@ -150,20 +148,20 @@ class NasaExoplanetArchiveMapper:
         if "decstr" in nea_data and nea_data["decstr"]:
             formatted_dec = self._format_declination_str(nea_data["decstr"])
             if formatted_dec:
-                obj.st_declination = ValueWithUncertainty(value=formatted_dec)
+                obj.st_declination = formatted_dec
         elif "dec" in nea_data and nea_data["dec"] is not None:
             try:
                 dec_deg = float(nea_data["dec"])
                 formatted_dec_deg = self._format_declination_deg(dec_deg)
                 if formatted_dec_deg:
-                    obj.st_declination = ValueWithUncertainty(value=formatted_dec_deg)
+                    obj.st_declination = formatted_dec_deg
             except (ValueError, TypeError):
                 pass
 
         # Calcul de la constellation
         if obj.st_right_ascension and obj.st_declination:
             constellation = self.constellation_utils.get_constellation_name(
-                obj.st_right_ascension.value, obj.st_declination.value
+                obj.st_right_ascension, obj.st_declination
             )
             if constellation:
                 obj.st_constellation = constellation
@@ -398,6 +396,13 @@ class NasaExoplanetArchiveMapper:
                 logger.warning(f"Format d'époque non reconnu : {epoch_str_val}")
                 return None
 
+    def _looks_like_composite_string(self, raw_value: str) -> bool:
+        """Heuristique pour détecter si une chaîne contient une valeur composite (HTML, entités HTML, etc.)"""
+        raw_value = raw_value.strip()
+        return any(
+            sub in raw_value for sub in ("<span", "<div", "&plusmn", "&gt", "&lt")
+        )
+
     def map_nea_data_to_star(self, nea_data: Dict[str, Any]) -> Star:
         """Convertit les données NEA en objet Star."""
 
@@ -413,16 +418,23 @@ class NasaExoplanetArchiveMapper:
             # alors ici, on a quelques champs qui sont ValueWithUncertainty et d'autres dont on peut directement avoir la valeur
             if (
                 nea_field in nea_data
-                and nea_field != "hostname"
-                and nea_field != "reference"
+                and attribute != "st_name"
+                and attribute != "pl_name"
             ):
                 value = nea_data[nea_field]
-                if value is not None and str(value).strip():
-                    value_with_uncertainty = self._create_value_with_uncertainty(
-                        value=value
-                    )
-                    if value_with_uncertainty:
-                        setattr(star, attribute, value_with_uncertainty)
+                print("vakkkkaaaa", attribute)
+
+                if attribute != "st_declination" or attribute != "st_right_ascension":
+                    print("vakkkk", attribute)
+                    if value is not None and str(value).strip():
+                        value_with_uncertainty = self._create_value_with_uncertainty(
+                            value=value
+                        )
+                        if value_with_uncertainty:
+                            setattr(star, attribute, value_with_uncertainty)
+                else:
+                    if value is not None and str(value).strip():
+                        setattr(star, attribute, value)
 
         # Traitement spécial pour les désignations
         st_altnames = self._extract_star_altname(nea_data)
@@ -433,13 +445,6 @@ class NasaExoplanetArchiveMapper:
         self._process_coordinates(star, nea_data, reference)
 
         return star
-
-    def _looks_like_composite_string(self, raw_value: str) -> bool:
-        """Heuristique pour détecter si une chaîne contient une valeur composite (HTML, entités HTML, etc.)"""
-        raw_value = raw_value.strip()
-        return any(
-            sub in raw_value for sub in ("<span", "<div", "&plusmn", "&gt", "&lt")
-        )
 
     def map_nea_data_to_exoplanet(self, nea_data: Dict[str, Any]) -> Exoplanet:
         """Mappe les données NEA vers un objet Exoplanet."""

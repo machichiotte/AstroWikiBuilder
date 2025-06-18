@@ -83,8 +83,8 @@ class StarContentGenerator:
             content.append(f"Sa magnitude apparente est de {mag}.")
 
         if star.st_right_ascension and star.st_declination:
-            ra = star.st_right_ascension.value
-            dec = star.st_declination.value
+            ra = star.st_right_ascension
+            dec = star.st_declination
             content.append(
                 f"Ses coordonnées célestes sont : ascension droite {ra}, déclinaison {dec}."
             )

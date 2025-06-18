@@ -1,7 +1,7 @@
 # src/utils/formatters/infobox_field_formatters.py
 from enum import Enum
 import logging
-from typing import Any, Optional, Dict
+from typing import Any
 
 from src.constants.field_mappings import DISCOVERY_FACILITY_MAPPING, METHOD_NAME_MAPPING
 from src.models.entities.exoplanet import ValueWithUncertainty
@@ -26,18 +26,22 @@ class InfoboxField(str, Enum):
 
 def _format_error_number(value: ValueWithUncertainty) -> str:
     """Formate une valeur avec incertitude pour l'infobox"""
-    if not value:
+    if not value or value.value is None:
         return ""
 
     try:
-        raw_value = float(value.value)
-        formatted_value = f"{raw_value:.2f}"
+        formatted_value = f"{float(value.value):.2f}"
 
-        raw_pos_error = float(value.error_positive)
-        pos_error = f"{raw_pos_error:.2f}"
-
-        raw_neg_error = float(value.error_negative)
-        neg_error = f"{raw_neg_error:.2f}"
+        pos_error = (
+            f"{float(value.error_positive):.2f}"
+            if value.error_positive is not None
+            else ""
+        )
+        neg_error = (
+            f"{float(value.error_negative):.2f}"
+            if value.error_negative is not None
+            else ""
+        )
 
         if pos_error and neg_error:
             error_part = f"{{{{±|{pos_error}|{neg_error}}}}}"
@@ -45,14 +49,13 @@ def _format_error_number(value: ValueWithUncertainty) -> str:
             error_part = f"{{{{±|{pos_error}|}}}}"
         elif neg_error:
             error_part = f"{{{{±||{neg_error}}}}}"
+        else:
+            error_part = ""
+        print("+formatted_value", formatted_value)
+        print("+error_part", error_part)
+        return formatted_value + error_part
 
-        formatted_value += error_part
-
-        # if hasattr(value, "sign") and value.sign:
-        #    formatted_value = f"{value.sign}{formatted_value}"
-
-        return formatted_value
-    except (ValueError, AttributeError) as e:
+    except (ValueError, TypeError) as e:
         logger.error(f"Erreur lors du formatage de la valeur {value}: {str(e)}")
         return str(value)
 
@@ -135,16 +138,14 @@ class FieldFormatter:
 
     def _format_field_value(self, value: Any, field_name: str) -> str:
         """Formate la valeur principale du champ."""
-
+        print("_format_field_value field_name", field_name)
+        print("_format_field_value value", value)
         try:
             # Si c'est une ValueWithUncertainty, on la formate d'abord
             if isinstance(value, ValueWithUncertainty):
+                print("nucertain")
                 formatted_value = _format_error_number(value)
-                # On récupère le formatter spécifique
-                formatter = _FORMATTERS.get(field_name)
-                # Si un formatter existe, on l'applique sur la valeur formatée
-                if formatter:
-                    return formatter(formatted_value)
+                print("form form form", formatted_value)
                 return formatted_value
 
             # Pour les autres types, on applique le formatter normalement
