@@ -52,9 +52,10 @@ class StarCategoryGenerator(BaseCategoryGenerator):
 
         categories = set()  # Utiliser un set pour éviter les doublons
 
+        print("ydfsif", star)
         # Check the primary name
         if star.st_name:
-            st_name: str = star.st_name
+            st_name: str = star.st_name.strip().upper()
             for prefix, category_name in catalog_mappings.items():
                 if st_name.startswith(prefix):
                     categories.add(category_name)

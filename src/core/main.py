@@ -335,9 +335,9 @@ def _generate_and_save_star_drafts(
 
     save_drafts(
         star_drafts,
-        other_drafts={},
-        output_dir=drafts_dir,
-        draft_type="star",
+        {},
+        drafts_dir,
+        "star",
     )
 
 

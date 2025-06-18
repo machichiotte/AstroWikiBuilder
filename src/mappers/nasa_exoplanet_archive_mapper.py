@@ -403,7 +403,6 @@ class NasaExoplanetArchiveMapper:
 
         reference = self._create_reference(nea_data, False)
 
-        # Créer l'étoile avec les paramètres obligatoires
         star = Star(
             st_name=nea_data.get("hostname", ""),
             reference=reference,
@@ -412,7 +411,11 @@ class NasaExoplanetArchiveMapper:
         # Mapper les champs selon le mapping défini
         for nea_field, attribute in self.NEA_TO_STAR_MAPPING.items():
             # alors ici, on a quelques champs qui sont ValueWithUncertainty et d'autres dont on peut directement avoir la valeur
-            if nea_field in nea_data:
+            if (
+                nea_field in nea_data
+                and nea_field != "hostname"
+                and nea_field != "reference"
+            ):
                 value = nea_data[nea_field]
                 if value is not None and str(value).strip():
                     value_with_uncertainty = self._create_value_with_uncertainty(
