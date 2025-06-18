@@ -354,7 +354,7 @@ def _generate_and_save_exoplanet_drafts(
     )
     exoplanet_drafts = {}
     for exoplanet in exoplanets:
-        exoplanet_name: str = exoplanet.st_name
+        exoplanet_name: str = exoplanet.pl_name
         if isinstance(exoplanet, Exoplanet):
             logger.info(
                 f"Génération draft exoplanet: {exoplanet_name} (type: {type(exoplanet)})"

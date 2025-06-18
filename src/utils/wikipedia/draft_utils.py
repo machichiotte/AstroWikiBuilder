@@ -53,7 +53,7 @@ def generate_star_draft(star: Star) -> str:
     Génère le contenu d'un brouillon d'article pour une étoile.
     """
     generator = ArticleStarGenerator()
-    star_name = star.st_name if star.st_name else "Unknown Star"
+    star_name = star.st_name
     print(f"Génération du brouillon pour l'étoile {star_name}...")
     content = generator.generate_article_content(star)
     print(f"Brouillon pour l'étoile {star_name} généré.")

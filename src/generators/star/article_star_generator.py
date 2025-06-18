@@ -65,8 +65,8 @@ class ArticleStarGenerator(BaseArticleGenerator):
         star_name = star.st_name if star.st_name else "Cette étoile"
         intro = f"'''{star_name}''' est une étoile"
 
-        if star.st_spectral_type and star.st_spectral_type.value:
-            intro += f" de type spectral {star.st_spectral_type.value}"
+        if star.st_spectral_type:
+            intro += f" de type spectral {star.st_spectral_type}"
 
         intro += "."
 

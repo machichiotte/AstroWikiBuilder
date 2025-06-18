@@ -42,9 +42,9 @@ class StarContentGenerator:
 
         content = ["== Caractéristiques physiques ==\n"]
 
-        if star.st_spectral_type and star.st_spectral_type.value:
+        if star.st_spectral_type and star.st_spectral_type:
             content.append(
-                f"Cette étoile est de type spectral {star.st_spectral_type.value}."
+                f"Cette étoile est de type spectral {star.st_spectral_type}."
             )
 
         if star.st_temperature and star.st_temperature.value:

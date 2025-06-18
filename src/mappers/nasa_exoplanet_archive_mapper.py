@@ -168,7 +168,7 @@ class NasaExoplanetArchiveMapper:
 
     def _create_value_with_uncertainty(
         self,
-        value: Any,
+        value: str | float,
         error_positive: Optional[float] = None,
         error_negative: Optional[float] = None,
         sign: Optional[str] = None,
@@ -422,10 +422,12 @@ class NasaExoplanetArchiveMapper:
                 and attribute != "pl_name"
             ):
                 value = nea_data[nea_field]
-                print("vakkkkaaaa", attribute)
 
-                if attribute != "st_declination" or attribute != "st_right_ascension":
-                    print("vakkkk", attribute)
+                if (
+                    attribute != "st_declination"
+                    or attribute != "st_right_ascension"
+                    or attribute != "st_spectral"
+                ):
                     if value is not None and str(value).strip():
                         value_with_uncertainty = self._create_value_with_uncertainty(
                             value=value
@@ -459,24 +461,18 @@ class NasaExoplanetArchiveMapper:
         # Traitement des coordonnées
         self._process_coordinates(exoplanet, nea_data, reference)
 
+        print("map exo /??")
         # Traitement des autres champs avec ValueWithUncertainty
         for nea_field, attribute in self.NEA_TO_EXOPLANET_MAPPING.items():
             if (
                 nea_field in nea_data
-                and nea_field != "pl_name"
-                and nea_field != "hostname"
-                and nea_field != "reference"
+                and attribute != "pl_name"
+                and attribute != "st_name"
+                and attribute != "reference"
             ):
                 raw_value = nea_data[nea_field]
 
-                if isinstance(raw_value, str) and self._looks_like_composite_string(
-                    raw_value
-                ):
-                    parsed_vwu = self._parse_composite_string(raw_value)
-                    if parsed_vwu:
-                        setattr(exoplanet, attribute, parsed_vwu)
-                        continue
-                elif raw_value:
+                if raw_value:
                     if isinstance(raw_value, str) and self._looks_like_composite_string(
                         raw_value
                     ):
@@ -486,7 +482,10 @@ class NasaExoplanetArchiveMapper:
                             continue
 
                     try:
+                        print("avant")
                         numeric_value = float(raw_value)
+                        print("numeric_value", numeric_value)
+
                         error_positive = nea_data.get(f"{nea_field}_err1")
                         error_negative = nea_data.get(f"{nea_field}_err2")
 

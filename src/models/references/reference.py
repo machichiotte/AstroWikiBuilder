@@ -83,10 +83,6 @@ class Reference:
         if not details:
             return f'<ref name="{self.source.value}">Unknown source</ref>'
 
-        print("to_wiki_ref", self.source)
-        print("to_wiki_ref star_id", self.star_id)
-        print("to_wiki_ref planet_id", self.planet_id)
-
         name_str = ""
         if self.planet_id:
             name_str = self.planet_id
