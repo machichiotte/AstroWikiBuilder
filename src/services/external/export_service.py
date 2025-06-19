@@ -5,7 +5,7 @@ import json
 from typing import List, Dict, Any
 from src.models.entities.exoplanet import Exoplanet
 
-logger = logging.getLogger(__name__)
+logger: logging.Logger = logging.getLogger(__name__)
 
 
 class ExportService:

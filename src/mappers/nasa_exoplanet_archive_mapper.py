@@ -1,122 +1,184 @@
-# src/mappers/nasa_exoplanet_archive_mapper.py
-from typing import Dict, Any, Optional
+# ============================================================================
+# IMPORTS
+# ============================================================================
+from typing import Any, Optional
 from src.models.references.reference import Reference, SourceType
 from src.models.entities.exoplanet import ValueWithUncertainty
 from src.utils.astro.constellation_utils import ConstellationUtils
 from src.models.entities.exoplanet import Exoplanet
 from src.models.entities.star import Star
-
+from src.models.entities.nea_entity import (
+    NEA_TO_STAR_MAPPING,
+    NEA_TO_EXOPLANET_MAPPING,
+    NEA_ENTITY,
+)
 from datetime import datetime
 import math
 
 
+def is_invalid_raw_value(value: Any) -> bool:
+    try:
+        if value is None:
+            return True
+        str_val = str(value).strip().lower()
+        return str_val in {"", "nan", "none"}
+    except Exception:
+        return True
+
+
+# ============================================================================
+# DÉCLARATION DE LA CLASSE NasaExoplanetArchiveMapper
+# ============================================================================
 class NasaExoplanetArchiveMapper:
     """Mapper pour convertir les données NEA Exoplanet Archive vers le modèle Exoplanet"""
 
     def __init__(self):
         self.constellation_utils = ConstellationUtils()
 
-    # Mapping des colonnes NEA vers les attributs Star
-    NEA_TO_STAR_MAPPING = {
-        # Identifiants
-        "hostname": "st_name",
-        # Coordonnées
-        "ra": "st_right_ascension",
-        "dec": "st_declination",
-        "sy_pmra": "st_proper_motion_ra",
-        "sy_pmdec": "st_proper_motion_dec",
-        "sy_plx": "st_parallax",
-        "sy_dist": "st_distance",
-        # Magnitudes
-        "sy_bmag": "st_mag_b",
-        "sy_vmag": "st_mag_v",
-        "sy_jmag": "st_mag_j",
-        "sy_hmag": "st_mag_h",
-        "sy_kmag": "st_mag_k",
-        "sy_gmag": "st_mag_g",
-        "sy_rmag": "st_mag_r",
-        "sy_imag": "st_mag_i",
-        "sy_umag": "st_mag_u",
-        "sy_zmag": "st_mag_z",
-        "sy_w1mag": "st_mag_w1",
-        "sy_w2mag": "st_mag_w2",
-        "sy_w3mag": "st_mag_w3",
-        "sy_w4mag": "st_mag_w4",
-        "sy_gaiamag": "st_mag_gaia",
-        "sy_tmag": "st_mag_t",
-        "sy_kepmag": "st_mag_kep",
-        # Propriétés stellaires
-        "st_teff": "st_temperature",
-        "st_mass": "st_mass",
-        "st_rad": "st_radius",
-        "st_met": "st_metallicity",
-        "st_logg": "st_surface_gravity",
-        "st_lum": "st_luminosity",
-        "st_dens": "st_density",
-        "st_age": "st_age",
-        "st_spectype": "st_spectral_type",
-        "st_radv": "st_radial_velocity",
-        "st_rotp": "st_rotation",
-    }
+    # ============================================================================
+    # MAPPING PRINCIPAL : STAR
+    # ============================================================================
+    def map_star_from_nea_record(self, nea_data: NEA_ENTITY) -> Star:
+        """Convertit les données NEA en objet Star."""
+        reference = self.build_reference_from_nea(nea_data, False)
 
-    # Mapping des colonnes NEA vers les attributs Exoplanet
-    NEA_TO_EXOPLANET_MAPPING = {
-        "pl_name": "pl_name",
-        "pl_altname": "pl_altname",
-        "hostname": "st_name",
-        "st_spectype": "st_spectral_type",
-        "sy_dist": "st_distance",
-        "sy_vmag": "st_apparent_magnitude",
-        "pl_orbsmax": "pl_semi_major_axis",
-        "pl_orbeccen": "pl_eccentricity",
-        "pl_orbper": "pl_orbital_period",
-        "pl_angsep": "pl_angular_distance",
-        "pl_orbtper": "pl_periastron_time",
-        "pl_orbincl": "pl_inclination",
-        "pl_orblper": "pl_argument_of_periastron",
-        "pl_bmassj": "pl_mass",
-        "pl_msinij": "pl_minimum_mass",
-        "pl_radj": "pl_radius",
-        "pl_dens": "pl_density",
-        "pl_eqt": "pl_temperature",
-        "discoverymethod": "disc_method",
-        "disc_year": "disc_year",
-        "disc_facility": "disc_facility",
-    }
+        star = Star(
+            st_name=nea_data.get("hostname", ""),
+            reference=reference,
+        )
 
-    # Unités par défaut pour certains champs NEA
-    NEA_DEFAULT_UNITS: dict[str, str] = {
-        # --- Coordonnées et mouvements ---
-        "ra": "°",  # Ascension droite
-        "dec": "°",  # Déclinaison
-        "sy_pmra": "mas/an",  # mouvement propre en RA
-        "sy_pmdec": "mas/an",  # mouvement propre en DEC
-        "sy_plx": "mas",  # parallaxe
-        "sy_dist": "pc",  # parsecs
-        # --- Étoile (préfixe st_) ---
-        "st_teff": "K",  # Température effective
-        "st_mass": "M☉",  # Masse stellaire
-        "st_rad": "R☉",  # Rayon stellaire
-        "st_met": "[Fe/H]",  # Métallicité (dex mais exprimée [Fe/H])
-        "st_logg": "log g",  # Gravité de surface log g
-        "st_lum": "L☉",  # Luminosité stellaire
-        "st_dens": "g/cm³",  # Densité stellaire
-        "st_age": "Ga",  # Âge stellaire
-        "st_radv": "km/s",  # Vitesse radiale
-        "st_rotp": "j",  # Période de rotation (jours)
-        "st_vsin": "km/s",  # Vitesse de rotation projetée
-        # --- Planète (préfixe pl_) ---
-        "pl_orbper": "j",  # Période orbitale (jours)
-        "pl_angsep": "″",  # Séparation angulaire (arcsec)
-        "pl_orbincl": "°",  # Inclinaison orbitale
-        "pl_msinij": "MJ",  # Masse minimum (Jupiter)
-        "pl_bmassj": "MJ",  # Masse brute (Jupiter)
-        "pl_radj": "RJ",  # Rayon (Jupiter)
-        "pl_dens": "g/cm³",  # Densité planétaire
-        "pl_eqt": "K",  # Température d'équilibre
-    }
+        # Mapper les champs selon le mapping défini
+        for nea_field, attribute in NEA_TO_STAR_MAPPING.items():
+            if (
+                nea_field in nea_data
+                and attribute != "st_name"
+                and attribute != "pl_name"
+            ):
+                raw_value = nea_data[nea_field]
+                if is_invalid_raw_value(raw_value):
+                    print(
+                        f"Ignored {nea_field} ({attribute}) due to invalid value: {raw_value}"
+                    )
+                    continue
 
-    def _create_reference(self, nea_data: Dict[str, Any], isPlanet: False) -> Reference:
+                if raw_value is not None:
+                    if attribute not in (
+                        "st_declination",
+                        "st_right_ascension",
+                        "st_spectral_type",
+                    ):
+                        value_with_uncertainty: ValueWithUncertainty | None = (
+                            self.convert_to_value_with_uncertainty(value=raw_value)
+                        )
+                        if value_with_uncertainty:
+                            setattr(star, attribute, value_with_uncertainty)
+                    else:
+                        setattr(star, attribute, raw_value)
+
+        # Traitement spécial pour les désignations
+        st_altnames = self.extract_star_alternative_names(nea_data)
+        if st_altnames:
+            star.st_altname = st_altnames
+
+        # Traitement des coordonnées
+        self.set_coordinates_and_constellation(star, nea_data, reference)
+
+        return star
+
+    # ============================================================================
+    # MAPPING PRINCIPAL : EXOPLANET
+    # ============================================================================
+    def map_exoplanet_from_nea_record(self, nea_data: NEA_ENTITY) -> Exoplanet:
+        """Mappe les données NEA vers un objet Exoplanet."""
+        reference = self.build_reference_from_nea(nea_data, True)
+
+        exoplanet = Exoplanet(
+            pl_name=nea_data.get("pl_name"),
+            st_name=nea_data.get("hostname"),
+            reference=reference,
+        )
+
+        # Traitement des coordonnées
+        self.set_coordinates_and_constellation(exoplanet, nea_data, reference)
+
+        # Traitement des autres champs avec ValueWithUncertainty
+        for nea_field, attribute in NEA_TO_EXOPLANET_MAPPING.items():
+            if (
+                nea_field in nea_data
+                and attribute != "pl_name"
+                and attribute != "st_name"
+                and attribute != "reference"
+            ):
+                raw_value = nea_data[nea_field]
+
+                if (
+                    attribute != "st_declination"
+                    or attribute != "st_right_ascension"
+                    or attribute != "st_spectral_type"
+                    or attribute != "disc_method"
+                    or attribute != "disc_facility"
+                ):
+                    if raw_value:
+                        if isinstance(
+                            raw_value, str
+                        ) and self.is_composite_formatted_string(raw_value):
+                            parsed_vwu = self.parse_composite_formatted_value(raw_value)
+                            if parsed_vwu:
+                                setattr(exoplanet, attribute, parsed_vwu)
+
+                        else:
+                            try:
+                                numeric_value = float(raw_value)
+                                error_positive = nea_data.get(f"{nea_field}_err1")
+                                error_negative = nea_data.get(f"{nea_field}_err2")
+
+                                err1_clean = (
+                                    float(
+                                        str(error_positive)
+                                        .replace("+", "")
+                                        .replace("-", "")
+                                    )
+                                    if error_positive
+                                    else None
+                                )
+                                err2_clean = (
+                                    float(
+                                        str(error_negative)
+                                        .replace("+", "")
+                                        .replace("-", "")
+                                    )
+                                    if error_negative
+                                    else None
+                                )
+
+                                value_with_uncertainty = ValueWithUncertainty(
+                                    value=numeric_value,
+                                    error_positive=err1_clean,
+                                    error_negative=err2_clean,
+                                    sign="±" if err1_clean or err2_clean else None,
+                                )
+                                setattr(exoplanet, attribute, value_with_uncertainty)
+
+                            except (ValueError, TypeError):
+                                # C'est un string "pur" (ex: identifiant, classe spectrale, etc.)
+                                setattr(exoplanet, attribute, raw_value)
+
+        # Traitement spécial pour les désignations
+        pl_altnames = self.extract_exoplanet_alternative_names(nea_data)
+        if pl_altnames:
+            exoplanet.pl_altname = pl_altnames
+
+        # Traitement des coordonnées
+        self.set_coordinates_and_constellation(exoplanet, nea_data, reference)
+
+        return exoplanet
+
+    # ============================================================================
+    # UTILITAIRES DE MAPPING ET DE FORMATAGE
+    # ============================================================================
+    def build_reference_from_nea(
+        self, nea_data: NEA_ENTITY, isPlanet: False
+    ) -> Reference:
         """Crée une référence NEA pour les points de données."""
         return Reference(
             source=SourceType.NEA,
@@ -126,8 +188,8 @@ class NasaExoplanetArchiveMapper:
             planet_id=nea_data.get("pl_name") if isPlanet else None,
         )
 
-    def _process_coordinates(
-        self, obj: Any, nea_data: Dict[str, Any], reference: Reference
+    def set_coordinates_and_constellation(
+        self, obj: Any, nea_data: NEA_ENTITY, reference: Reference
     ) -> None:
         """Traite les coordonnées (RA et DEC) pour un objet."""
         # Traitement de l'ascension droite
@@ -166,7 +228,40 @@ class NasaExoplanetArchiveMapper:
             if constellation:
                 obj.st_constellation = constellation
 
-    def _create_value_with_uncertainty(
+    def extract_star_alternative_names(self, nea_data: NEA_ENTITY) -> Optional[list]:
+        """Extrait les différentes désignations d'une étoile, en filtrant les valeurs invalides.
+        Ne rajoute pas hostname (nom principal) et évite les doublons avec hostname.
+        """
+        st_altname_fields: list[str] = ["hd_name", "hip_name", "tic_id"]
+        alt_names: list = []
+
+        hostname: str = str(nea_data.get("hostname", "")).strip()
+        invalid_values: set[str] = {"nan", "none", ""}
+
+        for field in st_altname_fields:
+            if field in nea_data and nea_data[field]:
+                value: str = str(nea_data[field]).strip()
+                # Filtre les valeurs invalides et les doublons avec hostname
+                if (
+                    value
+                    and value.lower() not in invalid_values
+                    and value != hostname
+                    and value not in alt_names
+                ):
+                    alt_names.append(value)
+
+        return alt_names if alt_names else None
+
+    def extract_exoplanet_alternative_names(
+        self, nea_data: NEA_ENTITY
+    ) -> Optional[list]:
+        """Extrait les différentes désignations d'une étoile, en filtrant les valeurs invalides.
+        Ne rajoute pas hostname (nom principal) et évite les doublons avec hostname.
+        """
+
+        return None
+
+    def convert_to_value_with_uncertainty(
         self,
         value: str | float,
         error_positive: Optional[float] = None,
@@ -174,6 +269,7 @@ class NasaExoplanetArchiveMapper:
         sign: Optional[str] = None,
     ) -> Optional[ValueWithUncertainty]:
         """Crée une valeur avec incertitude."""
+
         if (
             value is not None
             and str(value).strip()
@@ -187,122 +283,23 @@ class NasaExoplanetArchiveMapper:
             )
         return None
 
-    def _format_numeric_no_trailing_zeros(self, value):
+    def format_trimmed_numeric_string(self, value):
         try:
             fval = float(value)
             return f"{fval:.5f}".rstrip("0").rstrip(".")
         except Exception:
             return str(value)
 
-    def _extract_star_altname(self, nea_data: Dict[str, Any]) -> Optional[list]:
-        """Extrait les différentes désignations d'une étoile, en filtrant les valeurs invalides.
-        Ne rajoute pas hostname (nom principal) et évite les doublons avec hostname.
-        """
-        st_altname_fields = ["hd_name", "hip_name", "tic_id"]
-        alt_names = []
+    def is_composite_formatted_string(self, raw_value: str) -> bool:
+        """Heuristique pour détecter si une chaîne contient une valeur composite (HTML, entités HTML, etc.)"""
+        raw_value = raw_value.strip()
+        return any(
+            sub in raw_value for sub in ("<span", "<div", "&plusmn", "&gt", "&lt")
+        )
 
-        hostname = str(nea_data.get("hostname", "")).strip()
-        invalid_values = {"nan", "none", ""}
-
-        for field in st_altname_fields:
-            if field in nea_data and nea_data[field]:
-                value = str(nea_data[field]).strip()
-                # Filtre les valeurs invalides et les doublons avec hostname
-                if (
-                    value
-                    and value.lower() not in invalid_values
-                    and value != hostname
-                    and value not in alt_names
-                ):
-                    alt_names.append(value)
-
-        return alt_names if alt_names else None
-
-    def _format_right_ascension_str(self, rastr_val: str) -> str:
-        """
-        Formats a right ascension string by replacing 'h', 'm', 's'
-        with '/' as needed for Wikipedia formatting.
-
-        Example: "12h34m56s" becomes "12/34/56"
-        """
-        if not isinstance(rastr_val, str):
-            # Handle cases where it might not be a string (e.g., NaN, other types)
-            return ""  # Return empty string for invalid input
-
-        formatted_ra = rastr_val.replace("h", "/").replace("m", "/").replace("s", "")
-
-        return formatted_ra.strip()
-
-    def _format_declination_str(self, decstr_val: str) -> str:
-        """
-        Formats a declination string by replacing 'd', 'm', 's'
-        with '/' as needed for Wikipedia formatting.
-
-        Example: "+23d45m01s" becomes "+23/45/01"
-        """
-        if not isinstance(decstr_val, str):
-            # Handle cases where it might not be a string
-            return ""  # Return empty string for invalid input
-
-        formatted_dec = decstr_val.replace("d", "/").replace("m", "/").replace("s", "")
-
-        return formatted_dec.strip()
-
-    def _format_right_ascension_deg(self, ra_deg: float) -> str:
-        """
-        Formats a right ascension in degrees to HH/MM/SS.ss.
-        Example: 296.2300306 becomes 19/44/55.21
-        """
-        if ra_deg is None:
-            return ""
-
-        # Convert degrees to hours
-        hours_float = ra_deg / 15.0
-        hours = int(hours_float)
-        minutes_float = (hours_float - hours) * 60
-        minutes = int(minutes_float)
-        seconds_float = (minutes_float - minutes) * 60
-
-        # Format seconds to two decimal places
-        seconds = f"{seconds_float:.2f}"
-
-        return f"{hours:02d}/{minutes:02d}/{seconds}"
-
-    def _format_declination_deg(self, dec_deg: float) -> str:
-        """
-        Formats a declination in degrees to +/-DD/MM/SS.ss.
-        Example: 50.2752091 becomes +50/16/30.75
-        """
-        if dec_deg is None:
-            return ""
-
-        sign = "+" if dec_deg >= 0 else "-"
-        abs_dec_deg = abs(dec_deg)
-
-        degrees = int(abs_dec_deg)
-        arcminutes_float = (abs_dec_deg - degrees) * 60
-        arcminutes = int(arcminutes_float)
-        arcseconds_float = (arcminutes_float - arcminutes) * 60
-
-        # Format arcseconds to two decimal places
-        arcseconds = f"{arcseconds_float:.2f}"
-
-        return f"{sign}{degrees:02d}/{arcminutes:02d}/{arcseconds}"
-
-    def _parse_signed_value(self, value: Any) -> tuple[float, Optional[str]]:
-        """
-        Parses a value string to extract a leading sign (>, <) if present.
-        Returns the cleaned value and the sign.
-        """
-        if isinstance(value, str):
-            value_str = value.strip()
-            if value_str.startswith(">"):
-                return value_str[1:].strip(), ">"
-            elif value_str.startswith("<"):
-                return value_str[1:].strip(), "<"
-        return value, None
-
-    def _parse_composite_string(raw_value: str) -> Optional[ValueWithUncertainty]:
+    def parse_composite_formatted_value(
+        raw_value: str,
+    ) -> Optional[ValueWithUncertainty]:
         """
         Parses the composite string (pl_tranmidstr) which can be in several formats:
         1. "2458950.09242&plusmn0.00076" -> [2458950.09242,0.00076, , ±]
@@ -396,119 +393,73 @@ class NasaExoplanetArchiveMapper:
                 logger.warning(f"Format d'époque non reconnu : {epoch_str_val}")
                 return None
 
-    def _looks_like_composite_string(self, raw_value: str) -> bool:
-        """Heuristique pour détecter si une chaîne contient une valeur composite (HTML, entités HTML, etc.)"""
-        raw_value = raw_value.strip()
-        return any(
-            sub in raw_value for sub in ("<span", "<div", "&plusmn", "&gt", "&lt")
-        )
+    def _format_right_ascension_str(self, rastr_val: str) -> str:
+        """
+        Formats a right ascension string by replacing 'h', 'm', 's'
+        with '/' as needed for Wikipedia formatting.
 
-    def map_nea_data_to_star(self, nea_data: Dict[str, Any]) -> Star:
-        """Convertit les données NEA en objet Star."""
+        Example: "12h34m56s" becomes "12/34/56"
+        """
+        if not isinstance(rastr_val, str):
+            # Handle cases where it might not be a string (e.g., NaN, other types)
+            return ""  # Return empty string for invalid input
 
-        reference = self._create_reference(nea_data, False)
+        formatted_ra = rastr_val.replace("h", "/").replace("m", "/").replace("s", "")
 
-        star = Star(
-            st_name=nea_data.get("hostname", ""),
-            reference=reference,
-        )
+        return formatted_ra.strip()
 
-        # Mapper les champs selon le mapping défini
-        for nea_field, attribute in self.NEA_TO_STAR_MAPPING.items():
-            # alors ici, on a quelques champs qui sont ValueWithUncertainty et d'autres dont on peut directement avoir la valeur
-            if (
-                nea_field in nea_data
-                and attribute != "st_name"
-                and attribute != "pl_name"
-            ):
-                value = nea_data[nea_field]
+    def _format_declination_str(self, decstr_val: str) -> str:
+        """
+        Formats a declination string by replacing 'd', 'm', 's'
+        with '/' as needed for Wikipedia formatting.
 
-                if (
-                    attribute != "st_declination"
-                    or attribute != "st_right_ascension"
-                    or attribute != "st_spectral"
-                ):
-                    if value is not None and str(value).strip():
-                        value_with_uncertainty = self._create_value_with_uncertainty(
-                            value=value
-                        )
-                        if value_with_uncertainty:
-                            setattr(star, attribute, value_with_uncertainty)
-                else:
-                    if value is not None and str(value).strip():
-                        setattr(star, attribute, value)
+        Example: "+23d45m01s" becomes "+23/45/01"
+        """
+        if not isinstance(decstr_val, str):
+            # Handle cases where it might not be a string
+            return ""  # Return empty string for invalid input
 
-        # Traitement spécial pour les désignations
-        st_altnames = self._extract_star_altname(nea_data)
-        if st_altnames:
-            star.st_altname = st_altnames
+        formatted_dec = decstr_val.replace("d", "/").replace("m", "/").replace("s", "")
 
-        # Traitement des coordonnées
-        self._process_coordinates(star, nea_data, reference)
+        return formatted_dec.strip()
 
-        return star
+    def _format_right_ascension_deg(self, ra_deg: float) -> str:
+        """
+        Formats a right ascension in degrees to HH/MM/SS.ss.
+        Example: 296.2300306 becomes 19/44/55.21
+        """
+        if ra_deg is None:
+            return ""
 
-    def map_nea_data_to_exoplanet(self, nea_data: Dict[str, Any]) -> Exoplanet:
-        """Mappe les données NEA vers un objet Exoplanet."""
-        reference = self._create_reference(nea_data, True)
+        # Convert degrees to hours
+        hours_float = ra_deg / 15.0
+        hours = int(hours_float)
+        minutes_float = (hours_float - hours) * 60
+        minutes = int(minutes_float)
+        seconds_float = (minutes_float - minutes) * 60
 
-        exoplanet = Exoplanet(
-            pl_name=nea_data.get("pl_name"),
-            st_name=nea_data.get("hostname"),
-            reference=reference,
-        )
+        # Format seconds to two decimal places
+        seconds = f"{seconds_float:.2f}"
 
-        # Traitement des coordonnées
-        self._process_coordinates(exoplanet, nea_data, reference)
+        return f"{hours:02d}/{minutes:02d}/{seconds}"
 
-        print("map exo /??")
-        # Traitement des autres champs avec ValueWithUncertainty
-        for nea_field, attribute in self.NEA_TO_EXOPLANET_MAPPING.items():
-            if (
-                nea_field in nea_data
-                and attribute != "pl_name"
-                and attribute != "st_name"
-                and attribute != "reference"
-            ):
-                raw_value = nea_data[nea_field]
+    def _format_declination_deg(self, dec_deg: float) -> str:
+        """
+        Formats a declination in degrees to +/-DD/MM/SS.ss.
+        Example: 50.2752091 becomes +50/16/30.75
+        """
+        if dec_deg is None:
+            return ""
 
-                if raw_value:
-                    if isinstance(raw_value, str) and self._looks_like_composite_string(
-                        raw_value
-                    ):
-                        parsed_vwu = self._parse_composite_string(raw_value)
-                        if parsed_vwu:
-                            setattr(exoplanet, attribute, parsed_vwu)
-                            continue
+        sign = "+" if dec_deg >= 0 else "-"
+        abs_dec_deg = abs(dec_deg)
 
-                    try:
-                        print("avant")
-                        numeric_value = float(raw_value)
-                        print("numeric_value", numeric_value)
+        degrees = int(abs_dec_deg)
+        arcminutes_float = (abs_dec_deg - degrees) * 60
+        arcminutes = int(arcminutes_float)
+        arcseconds_float = (arcminutes_float - arcminutes) * 60
 
-                        error_positive = nea_data.get(f"{nea_field}_err1")
-                        error_negative = nea_data.get(f"{nea_field}_err2")
+        # Format arcseconds to two decimal places
+        arcseconds = f"{arcseconds_float:.2f}"
 
-                        err1_clean = (
-                            float(str(error_positive).replace("+", "").replace("-", ""))
-                            if error_positive
-                            else None
-                        )
-                        err2_clean = (
-                            float(str(error_negative).replace("+", "").replace("-", ""))
-                            if error_negative
-                            else None
-                        )
-
-                        value_with_uncertainty = ValueWithUncertainty(
-                            value=numeric_value,
-                            error_positive=err1_clean,
-                            error_negative=err2_clean,
-                            sign="±" if err1_clean or err2_clean else None,
-                        )
-                        setattr(exoplanet, attribute, value_with_uncertainty)
-                        continue
-                    except (ValueError, TypeError):
-                        # C'est un string "pur" (ex: identifiant, classe spectrale, etc.)
-                        setattr(exoplanet, attribute, raw_value)
-                        continue
+        return f"{sign}{degrees:02d}/{arcminutes:02d}/{arcseconds}"

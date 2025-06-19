@@ -9,7 +9,7 @@ from abc import ABC, abstractmethod
 
 from src.models.entities.star import Star
 from src.models.entities.exoplanet import Exoplanet
-from src.models.references.reference import Reference, SourceType
+from src.models.references.reference import SourceType
 from src.services.processors.reference_manager import ReferenceManager
 
 logger = logging.getLogger(__name__)
@@ -67,105 +67,41 @@ class BaseCollector(ABC):
         except FileNotFoundError:
             logger.warning(f"Fichier non trouvé : {file_path}")
         except pd.errors.EmptyDataError:
-            logger.error(
-                f"Aucune donnée trouvée dans le fichier : {file_path}. Le fichier est vide."
-            )
+            logger.error(f"Fichier vide : {file_path}")
         except Exception as e:
-            logger.error(
-                f"Une erreur est survenue lors de la lecture du fichier {file_path}: {e}"
-            )
+            logger.error(f"Erreur lecture CSV {file_path}: {e}")
         return None
 
-    def _download_and_save_data(self) -> Optional[pd.DataFrame]:
-        download_url = self._get_download_url()
-        logger.info(f"Téléchargement des données depuis {download_url}")
+    def _download_data_to_cache_and_parse_csv(self) -> Optional[pd.DataFrame]:
+        url = self._get_download_url()
+        logger.info(f"Téléchargement depuis {url}")
+
         try:
-            response = requests.get(download_url)
+            response: requests.Response = requests.get(url, timeout=10)
             response.raise_for_status()
 
             with open(self.cache_path, "w", encoding="utf-8") as f:
                 f.write(response.text)
-            logger.info(
-                f"Données téléchargées et sauvegardées avec succès dans {self.cache_path}"
-            )
             return self._read_csv_from_path(self.cache_path)
         except requests.exceptions.RequestException as e:
-            logger.error(
-                f"Erreur lors du téléchargement des données depuis {download_url}: {e}"
-            )
+            logger.error(f"Erreur HTTP depuis {url}: {e}")
         except Exception as e:
-            logger.error(
-                f"Une erreur est survenue lors du traitement des données téléchargées depuis {self.cache_path}: {e}"
-            )
+            logger.error(f"Erreur d'écriture du cache {self.cache_path}: {e}")
+
         return None
 
-    def fetch_data(self) -> Tuple[List[Exoplanet], List[Star]]:
-        exoplanets: List[Exoplanet] = []
-        stars: List[Star] = []
-        df = None
+    def collect_exoplanets_and_stars_from_source(
+        self,
+    ) -> Tuple[List[Exoplanet], List[Star]]:
+        df: Optional[pd.DataFrame] = self._load_data()
+        if df is None:
+            logger.error("Chargement des données impossible.")
+            return [], []
 
-        if self.use_mock_data:
-            logger.info(
-                f"Utilisation des données mockées/cache depuis {self.cache_path}"
-            )
-            if not os.path.exists(self.cache_path):
-                logger.warning(f"Fichier mock/cache non trouvé : {self.cache_path}")
-                return [], []
-            df = self._read_csv_from_path(self.cache_path)
-        else:
-            logger.info(
-                "Tentative de chargement des données depuis le cache ou téléchargement."
-            )
-            if os.path.exists(self.cache_path):
-                logger.info("Fichier cache trouvé. Chargement des données.")
-                df = self._read_csv_from_path(self.cache_path)
-                if df is None:
-                    logger.warning(
-                        "Échec de la lecture du cache. Tentative de téléchargement."
-                    )
-            if df is None:
-                df = self._download_and_save_data()
-                if df is None and os.path.exists(self.cache_path):
-                    logger.info(
-                        "Échec du téléchargement. Rechargement du cache existant."
-                    )
-                    df = self._read_csv_from_path(self.cache_path)
+        if not self._validate_columns(df):
+            return [], []
 
-        if df is not None:
-            required_cols = self._get_required_columns()
-            if required_cols:
-                missing_columns = [
-                    col for col in required_cols if col not in df.columns
-                ]
-                if missing_columns:
-                    logger.error(
-                        f"Colonnes manquantes : {missing_columns} (source: {self.cache_path})"
-                    )
-                    return [], []
-
-            for _, row in df.iterrows():
-                try:
-                    exoplanet = self._convert_row_to_exoplanet(row)
-                    if exoplanet:
-                        exoplanets.append(exoplanet)
-
-                    star = self._convert_row_to_star(row)
-                    if star:
-                        stars.append(star)
-
-                except Exception as e:
-                    logger.error(
-                        f"Erreur de conversion pour {self._get_source_type().name}: {e}",
-                        exc_info=True,
-                    )
-
-            logger.info(
-                f"{len(exoplanets)} exoplanètes et {len(stars)} étoiles traitées avec succès."
-            )
-        else:
-            logger.error("Impossible de charger ou télécharger les données.")
-
-        return exoplanets, stars
+        return self._parse_entities_from_dataframe(df)
 
     def _get_csv_reader_kwargs(self) -> Dict[str, Any]:
         """Arguments optionnels pour pd.read_csv (ex: comment char)."""
@@ -178,3 +114,56 @@ class BaseCollector(ABC):
             return float(value)
         except (ValueError, TypeError):
             return None
+
+    def _load_data(self) -> Optional[pd.DataFrame]:
+        if self.use_mock_data:
+            logger.info("Chargement depuis les données mockées.")
+            return (
+                self._read_csv_from_path(self.cache_path)
+                if os.path.exists(self.cache_path)
+                else None
+            )
+
+        if os.path.exists(self.cache_path):
+            df: Optional[pd.DataFrame] = self._read_csv_from_path(self.cache_path)
+            if df is not None:
+                return df
+            logger.warning("Échec lecture cache, tentative de téléchargement.")
+
+        df = self._download_data_to_cache_and_parse_csv()
+        if df is None and os.path.exists(self.cache_path):
+            logger.info("Relecture du cache après échec du téléchargement.")
+            return self._read_csv_from_path(self.cache_path)
+
+        return df
+
+    def _validate_columns(self, df: pd.DataFrame) -> bool:
+        required: List[str] = self._get_required_columns()
+        missing: List[str] = [col for col in required if col not in df.columns]
+        if missing:
+            logger.error(f"Colonnes manquantes : {missing} (dans {self.cache_path})")
+            return False
+        return True
+
+    def _parse_entities_from_dataframe(
+        self, df: pd.DataFrame
+    ) -> Tuple[List[Exoplanet], List[Star]]:
+        exoplanets: List[Exoplanet] = []
+        stars: List[Star] = []
+
+        for idx, row in df.iterrows():
+            try:
+                exo: Optional[Exoplanet] = self._convert_row_to_exoplanet(row)
+                if exo:
+                    exoplanets.append(exo)
+
+                star: Optional[Star] = self._convert_row_to_star(row)
+                if star:
+                    stars.append(star)
+            except Exception as e:
+                logger.exception(
+                    f"Erreur conversion ligne {idx} ({self._get_source_type().name}): {e}"
+                )
+
+        logger.info(f"{len(exoplanets)} exoplanètes et {len(stars)} étoiles extraites.")
+        return exoplanets, stars

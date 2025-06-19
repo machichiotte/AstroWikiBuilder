@@ -1,3 +1,5 @@
+# src/models/entities/exoplanet.py
+
 from dataclasses import dataclass, field
 from typing import Optional, List
 
@@ -48,6 +50,7 @@ class Exoplanet:
     st_constellation: Optional[str] = None
     st_spectral_type: Optional[str] = None
     st_apparent_magnitude: Optional[float] = None
+    st_luminosity: Optional[ValueWithUncertainty] = None
 
     # Caractéristiques orbitales
     pl_semi_major_axis: Optional[ValueWithUncertainty] = (

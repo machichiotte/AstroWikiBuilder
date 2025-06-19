@@ -3,7 +3,7 @@ import logging
 from typing import List, Dict
 from src.models.entities.star import Star
 
-logger = logging.getLogger(__name__)
+logger: logging.Logger = logging.getLogger(__name__)
 
 
 class StarRepository:

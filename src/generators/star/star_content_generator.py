@@ -1,31 +1,48 @@
+# ============================================================================
+# IMPORTS
+# ============================================================================
 from src.models.entities.star import Star
 from src.utils.formatters.article_formatters import ArticleUtils
 
 
+# ============================================================================
+# DÉCLARATION DE LA CLASSE StarContentGenerator
+# ============================================================================
 class StarContentGenerator:
     """
     Générateur de contenu pour les articles d'étoiles.
     Responsable de la génération des différentes sections de l'article.
     """
 
+    # ============================================================================
+    # INITIALISATION
+    # ============================================================================
     def __init__(self):
         self.article_utils = ArticleUtils()
 
-    def generate_all_content(self, star: Star) -> str:
+    # ============================================================================
+    # MÉTHODE PRINCIPALE
+    # ============================================================================
+    def compose_full_article(self, star: Star) -> str:
         """
         Génère l'ensemble du contenu de l'article pour une étoile.
         """
-        sections = [
-            self.generate_physical_characteristics(star),
-            self.generate_observation_section(star),
-            self.generate_stellar_environment(star),
-            self.generate_history_section(star),
+        sections: list[str] = [
+            self.build_physical_section(star),
+            self.build_observation_section(star),
+            self.build_environment_section(star),
+            self.write_history_paragraph(star),
         ]
 
         # Filtrer les sections vides et les combiner
         return "\n\n".join(filter(None, sections))
 
-    def generate_physical_characteristics(self, star: Star) -> str:
+    # ============================================================================
+    # GÉNÉRATION DES SECTIONS DE CONTENU
+    # ============================================================================
+
+    # --- CARACTÉRISTIQUES PHYSIQUES ---
+    def build_physical_section(self, star: Star) -> str:
         """
         Génère la section des caractéristiques physiques de l'étoile.
         """
@@ -40,7 +57,7 @@ class StarContentGenerator:
         ):
             return ""
 
-        content = ["== Caractéristiques physiques ==\n"]
+        content: list[str] = ["== Caractéristiques physiques ==\n"]
 
         if star.st_spectral_type and star.st_spectral_type:
             content.append(
@@ -48,26 +65,35 @@ class StarContentGenerator:
             )
 
         if star.st_temperature and star.st_temperature.value:
-            temp = self.article_utils.format_numeric_value(star.st_temperature.value)
+            temp: str = self.article_utils.format_number_as_french_string(
+                star.st_temperature.value
+            )
             content.append(
                 f"Sa température effective est d'environ {temp} [[kelvin|K]]."
             )
 
         if star.st_mass and star.st_mass.value:
-            mass = self.article_utils.format_numeric_value(star.st_mass.value)
+            mass: str = self.article_utils.format_number_as_french_string(
+                star.st_mass.value
+            )
             content.append(f"Sa masse est estimée à {mass} fois celle du [[Soleil]].")
 
         if star.st_radius and star.st_radius.value:
-            radius = self.article_utils.format_numeric_value(star.st_radius.value)
+            radius: str = self.article_utils.format_number_as_french_string(
+                star.st_radius.value
+            )
             content.append(f"Son rayon est d'environ {radius} fois celui du Soleil.")
 
         if star.st_luminosity and star.st_luminosity.value:
-            lum = self.article_utils.format_numeric_value(star.st_luminosity.value)
+            lum: str = self.article_utils.format_number_as_french_string(
+                star.st_luminosity.value
+            )
             content.append(f"Sa luminosité est d'environ {lum} fois celle du Soleil.")
 
         return "\n".join(content)
 
-    def generate_observation_section(self, star: Star) -> str:
+    # --- OBSERVATION ---
+    def build_observation_section(self, star: Star) -> str:
         """
         Génère la section sur l'observation de l'étoile.
         """
@@ -76,29 +102,32 @@ class StarContentGenerator:
         ):
             return ""
 
-        content = ["== Observation ==\n"]
+        content: list[str] = ["== Observation ==\n"]
 
         if star.st_apparent_magnitude and star.st_apparent_magnitude.value:
-            mag = self.article_utils.format_numeric_value(star.st_magnitude.value)
+            mag: str = self.article_utils.format_number_as_french_string(
+                star.st_magnitude.value
+            )
             content.append(f"Sa magnitude apparente est de {mag}.")
 
         if star.st_right_ascension and star.st_declination:
-            ra = star.st_right_ascension
-            dec = star.st_declination
+            ra: str = star.st_right_ascension
+            dec: str = star.st_declination
             content.append(
                 f"Ses coordonnées célestes sont : ascension droite {ra}, déclinaison {dec}."
             )
 
         return "\n".join(content)
 
-    def generate_stellar_environment(self, star: Star) -> str:
+    # --- ENVIRONNEMENT STELLAIRE ---
+    def build_environment_section(self, star: Star) -> str:
         """
         Génère la section sur l'environnement stellaire.
         """
         if not any([star.st_constellation, star.st_distance]):
             return ""
 
-        content = ["== Environnement stellaire ==\n"]
+        content: list[str] = ["== Environnement stellaire ==\n"]
 
         if star.st_constellation:
             content.append(
@@ -106,14 +135,16 @@ class StarContentGenerator:
             )
 
         if star.st_distance:
-            dist = self.article_utils.format_numeric_value(star.st_distance)
+            dist_val = float(star.st_distance.value)
+            formatted = f"{dist_val:.2f}"
             content.append(
-                f"Elle est située à environ {dist} [[parsec|parsecs]] de la [[Terre]]."
+                f"Elle est située à environ {formatted} [[parsec|parsecs]] de la [[Terre]]."
             )
 
         return "\n".join(content)
 
-    def generate_history_section(self, star: Star) -> str:
+    # --- HISTOIRE ---
+    def write_history_paragraph(self, star: Star) -> str:
         """
         Génère la section historique de l'étoile.
         """

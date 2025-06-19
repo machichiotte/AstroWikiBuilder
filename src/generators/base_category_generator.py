@@ -19,7 +19,7 @@ class BaseCategoryGenerator(ABC):
         self.generator = CategoryGenerator(rules_filepath)
 
     @abstractmethod
-    def get_custom_rules(self) -> List[Callable]:
+    def list_category_rules(self) -> List[Callable]:
         """
         Retourne la liste des règles personnalisées pour le type d'objet.
         À implémenter par les classes filles.
@@ -37,7 +37,7 @@ class BaseCategoryGenerator(ABC):
         Returns:
             Liste des catégories générées
         """
-        custom_rules = self.get_custom_rules()
+        custom_rules = self.list_category_rules()
         return self.generator.generate(
             obj, self.get_object_type(), custom_rules=custom_rules
         )

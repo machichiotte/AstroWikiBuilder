@@ -11,7 +11,7 @@ class ExoplanetCategoryGenerator(BaseCategoryGenerator):
     Utilise un générateur de règles centralisé.
     """
 
-    DISCOVERY_FACILITY_CATEGORY_MAPPING = {
+    DISCOVERY_FACILITY_CATEGORY_MAPPING: dict[str, str] = {
         "Kepler": "[[Catégorie:Exoplanète découverte grâce à Kepler]]",
         "Transiting Exoplanet Survey Satellite (TESS)": "[[Catégorie:Exoplanète découverte grâce au Transiting Exoplanet Survey Satellite]]",
         "TESS": "[[Catégorie:Exoplanète découverte grâce au Transiting Exoplanet Survey Satellite]]",
@@ -106,7 +106,7 @@ class ExoplanetCategoryGenerator(BaseCategoryGenerator):
     def get_object_type(self) -> str:
         return "exoplanet"
 
-    def get_custom_rules(self) -> List[Callable]:
+    def list_category_rules(self) -> List[Callable]:
         return [
             self._get_planet_type_category,
             self._get_constellation_category,
@@ -117,7 +117,9 @@ class ExoplanetCategoryGenerator(BaseCategoryGenerator):
         Règle personnalisée pour déterminer la catégorie de type de planète.
         """
         try:
-            planet_type = self.planet_type_utils.get_exoplanet_planet_type(exoplanet)
+            planet_type: str = (
+                self.planet_type_utils.determine_exoplanet_classification(exoplanet)
+            )
             if planet_type:
                 mapping = (
                     self.generator.rules.get("exoplanet", {})
@@ -135,7 +137,7 @@ class ExoplanetCategoryGenerator(BaseCategoryGenerator):
         Règle personnalisée pour déterminer la catégorie de constellation.
         """
         if exoplanet.st_constellation:
-            constellation = exoplanet.st_constellation
+            constellation: str = exoplanet.st_constellation
             mapping = (
                 self.generator.rules.get("exoplanet", {})
                 .get("mapped", {})
@@ -150,7 +152,7 @@ class ExoplanetCategoryGenerator(BaseCategoryGenerator):
         Règle personnalisée pour déterminer la catégorie 'découverte grâce à'
         en utilisant le champ 'discovery_program' de l'exoplanète et le mapping.
         """
-        discovered_by_program = (
+        discovered_by_program: str | None = (
             exoplanet.disc_program.value if exoplanet.disc_program else None
         )
         if discovered_by_program:

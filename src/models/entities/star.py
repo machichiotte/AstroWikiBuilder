@@ -1,3 +1,4 @@
+# src/models/entities/star.py
 from dataclasses import dataclass, field
 from typing import Optional, List
 
@@ -21,9 +22,9 @@ class Star:
     st_constellation: Optional[str] = None
     apparent_magnitude: Optional[ValueWithUncertainty] = None
     st_epoch: Optional[ValueWithUncertainty] = None
-    st_right_ascension: Optional[ValueWithUncertainty] = None
+    st_right_ascension: Optional[str] = None
     st_right_ascension_2: Optional[ValueWithUncertainty] = None
-    st_declination: Optional[ValueWithUncertainty] = None
+    st_declination: Optional[str] = None
     st_declination_2: Optional[ValueWithUncertainty] = None
     st_radial_velocity: Optional[ValueWithUncertainty] = None
     st_radial_velocity_2: Optional[ValueWithUncertainty] = None

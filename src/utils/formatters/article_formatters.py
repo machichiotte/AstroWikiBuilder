@@ -12,7 +12,9 @@ class ArticleUtils:
     def __init__(self):
         locale.setlocale(locale.LC_ALL, "fr_FR.UTF-8")
 
-    def format_numeric_value(self, value: Optional[float], precision: int = 2) -> str:
+    def format_number_as_french_string(
+        self, value: Optional[float], precision: int = 2
+    ) -> str:
         """
         Formate une valeur numérique avec le format français, sans décimale inutile.
         """
@@ -34,7 +36,7 @@ class ArticleUtils:
             .rstrip(".")
         )
 
-    def format_year_value(self, value: Optional[float]) -> str:
+    def format_year_without_decimals(self, value: Optional[float]) -> str:
         """
         Formate une valeur d'année (date) sans décimale.
         """
@@ -44,11 +46,11 @@ class ArticleUtils:
             return str(int(value))
         return str(value)
 
-    def format_parsecs_to_lightyears(self, parsecs: float) -> float:
+    def convert_parsecs_to_lightyears(self, parsecs: float) -> float:
         """Convertit les parsecs en années-lumière."""
         return parsecs * 3.26156
 
-    def format_value_with_uncertainty(
+    def format_uncertain_value_for_article(
         self,
         value_with_uncertainty: ValueWithUncertainty,
     ) -> str:
@@ -61,7 +63,7 @@ class ArticleUtils:
         # Essayer de convertir la valeur en nombre si possible
         try:
             value = float(value_with_uncertainty.value)
-            value_str = self.format_numeric_value(value)
+            value_str: str = self.format_number_as_french_string(value)
         except (ValueError, TypeError):
             # Si la conversion échoue, utiliser la valeur telle quelle
             value_str = str(value_with_uncertainty.value)
@@ -71,11 +73,11 @@ class ArticleUtils:
             value_with_uncertainty.error_positive
             or value_with_uncertainty.error_negative
         ):
-            error_str = ""
+            error_str: str = None
             if value_with_uncertainty.error_positive:
-                error_str += f"+{self.format_numeric_value(value_with_uncertainty.error_positive)}"
+                error_str += f"+{self.format_number_as_french_string(value_with_uncertainty.error_positive)}"
             if value_with_uncertainty.error_negative:
-                error_str += f"-{self.format_numeric_value(value_with_uncertainty.error_negative)}"
+                error_str += f"-{self.format_number_as_french_string(value_with_uncertainty.error_negative)}"
             value_str = f"{value_str} {error_str}"
 
         # Ajouter le signe si présent

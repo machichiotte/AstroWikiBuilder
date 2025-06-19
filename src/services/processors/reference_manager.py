@@ -11,7 +11,7 @@ class ReferenceManager:
 
     def __init__(self):
         # Pour gérer les références répétées
-        self._used_refs: set[str] = set()
+        self._reference_registry: set[str] = set()
         self._ref_contents: Dict[str, str] = {}
         self.template_refs: Dict[str, str] = {
             src.value: details["template"] for src, details in SOURCE_DETAILS.items()
@@ -35,26 +35,27 @@ class ReferenceManager:
             star_id=star_id,
         )
 
-    def add_reference(self, ref_name: str, ref_content: str) -> str:
+    def format_or_reuse_reference(self, reference_key: str, content: str) -> str:
         """
         Retourne la balise <ref> complète la première fois,
         ou la référence courte (<ref name="..." />) ensuite.
         """
-        if ref_name not in self._used_refs:
-            self._used_refs.add(ref_name)
-            if ref_content.startswith("<ref") and ref_content.endswith("</ref>"):
-                return ref_content
-            return f'<ref name="{ref_name}" >{ref_content}</ref>'
-        return f'<ref name="{ref_name}" />'
+        if reference_key not in self._reference_registry:
+            self._reference_registry.add(reference_key)
+            if content.startswith("<ref") and content.endswith("</ref>"):
+                return content
+            return f'<ref name="{reference_key}" >{content}</ref>'
+        return f'<ref name="{reference_key}" />'
 
-    def reset_references(self):
+    def clear_all(self) -> None:
         """
-        Réinitialise le suivi des références.
+        Réinitialise l’état du manager (utile entre deux articles).
         """
-        self._used_refs.clear()
+        self._used_reference_keys.clear()
+        self._reference_registry.clear()
 
     @property
-    def registered(self) -> Dict[str, str]:
+    def all_registered_references(self) -> Dict[str, str]:
         """
         Expose le dictionnaire ref_name → contenu complet de chaque référence,
         tel que stocké dans _ref_contents.

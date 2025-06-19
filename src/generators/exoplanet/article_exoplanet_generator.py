@@ -48,47 +48,46 @@ class ArticleExoplanetGenerator(BaseArticleGenerator):
             self.comparison_utils, self.article_utils
         )
 
-    def generate_article_content(self, exoplanet: Exoplanet) -> str:
+    def compose_exoplanet_article(self, exoplanet: Exoplanet) -> str:
         """
         Génère l'ensemble du contenu de l'article Wikipédia pour une exoplanète.
         Appelle des sous-fonctions dédiées pour chaque partie.
         """
-        self.reference_manager.reset_references()
         parts = []
 
         # 1. Templates de base (stub + source)
-        parts.append(self.generate_stub_and_source())
+        parts.append(self.compose_stub_and_source())
 
         # 2. Infobox
         parts.append(self.infobox_generator.generate(exoplanet))
 
         # 3. Introduction
         parts.append(
-            self.introduction_generator.generate_exoplanet_introduction(exoplanet)
+            self.introduction_generator.compose_exoplanet_introduction(exoplanet)
         )
 
         # 4. Caractéristiques physiques
-        parts.append(self._generate_physical_characteristics_section(exoplanet))
+        parts.append(self.build_physical_characteristics_section(exoplanet))
 
         # 5. Orbite
-        parts.append(self._generate_orbit_section(exoplanet))
+        parts.append(self.build_orbit_section(exoplanet))
 
         # 6. Découverte
-        parts.append(self._generate_discovery_section(exoplanet))
+        parts.append(self.build_discovery_section(exoplanet))
 
         # 7. Habitabilité
-        parts.append(self._generate_habitability_section(exoplanet))
+        parts.append(self.build_habitability_section(exoplanet))
 
         # 8. Références et portails
-        parts.append(self.generate_references_section())
+        parts.append(self.build_references_section())
 
         # 9. Catégories
-        parts.append(self.generate_category_section(exoplanet))
+        parts.append(self.build_category_section(exoplanet))
 
         # On assemble le tout en filtrant les chaînes vides
         return "\n\n".join(filter(None, parts))
 
-    def _generate_orbit_section(self, exoplanet: Exoplanet) -> str:
+    def build_orbit_section(self, exoplanet: Exoplanet) -> str:
         """Génère la section sur l'orbite de l'exoplanète."""
         if not any(
             [
@@ -100,10 +99,10 @@ class ArticleExoplanetGenerator(BaseArticleGenerator):
         ):
             return ""
 
-        content = ["== Orbite ==\n"]
+        content: list[str] = ["== Orbite ==\n"]
 
         if exoplanet.pl_semi_major_axis:
-            semi_major_axis_str = self.article_utils.format_value_with_uncertainty(
+            semi_major_axis_str = self.article_utils.format_uncertain_value_for_article(
                 exoplanet.pl_semi_major_axis
             )
             if semi_major_axis_str:
@@ -112,14 +111,16 @@ class ArticleExoplanetGenerator(BaseArticleGenerator):
                 )
 
         if exoplanet.pl_eccentricity:
-            eccentricity_str = self.article_utils.format_value_with_uncertainty(
-                exoplanet.pl_eccentricity
+            eccentricity_str: str = (
+                self.article_utils.format_uncertain_value_for_article(
+                    exoplanet.pl_eccentricity
+                )
             )
             if eccentricity_str:
                 content.append(f"L'orbite a une excentricité de {eccentricity_str}.")
 
         if exoplanet.pl_orbital_period:
-            period_str = self.article_utils.format_value_with_uncertainty(
+            period_str: str = self.article_utils.format_uncertain_value_for_article(
                 exoplanet.pl_orbital_period
             )
             if period_str:
@@ -128,8 +129,10 @@ class ArticleExoplanetGenerator(BaseArticleGenerator):
                 )
 
         if exoplanet.pl_inclination:
-            inclination_str = self.article_utils.format_value_with_uncertainty(
-                exoplanet.pl_inclination
+            inclination_str: str = (
+                self.article_utils.format_uncertain_value_for_article(
+                    exoplanet.pl_inclination
+                )
             )
             if inclination_str:
                 content.append(
@@ -138,7 +141,7 @@ class ArticleExoplanetGenerator(BaseArticleGenerator):
 
         return "\n".join(content)
 
-    def _generate_discovery_section(self, exoplanet: Exoplanet) -> str:
+    def build_discovery_section(self, exoplanet: Exoplanet) -> str:
         """Génère la section de découverte."""
         if not exoplanet.disc_year:
             return ""
@@ -146,7 +149,7 @@ class ArticleExoplanetGenerator(BaseArticleGenerator):
         section = "== Découverte ==\n"
 
         # Traduction des méthodes de découverte
-        method_translations = {
+        method_translations: dict[str, str] = {
             "Transit": "des transits",
             "Radial Velocity": "des vitesses radiales",
             "Imaging": "de l'imagerie directe",
@@ -166,7 +169,7 @@ class ArticleExoplanetGenerator(BaseArticleGenerator):
             if exoplanet.disc_method and hasattr(exoplanet.disc_method, "value")
             else ""
         )
-        disc_method = method_translations.get(method_raw, None)
+        disc_method: str | None = method_translations.get(method_raw, None)
 
         # Gestion robuste de la date
         date_value = exoplanet.disc_year
@@ -174,9 +177,13 @@ class ArticleExoplanetGenerator(BaseArticleGenerator):
             date_value = date_value.value
 
         if hasattr(date_value, "year"):
-            date_str = f"en {self.article_utils.format_year_value(date_value.year)}"
+            date_str: str = (
+                f"en {self.article_utils.format_year_without_decimals(date_value.year)}"
+            )
         else:
-            date_str = f"en {str(self.article_utils.format_year_value(date_value))}"
+            date_str: str = (
+                f"en {str(self.article_utils.format_year_without_decimals(date_value))}"
+            )
 
         if disc_method:
             section += f"L'exoplanète a été découverte par la méthode {disc_method} {date_str}.\n"
@@ -185,7 +192,7 @@ class ArticleExoplanetGenerator(BaseArticleGenerator):
 
         return section
 
-    def _generate_physical_characteristics_section(self, exoplanet: Exoplanet) -> str:
+    def build_physical_characteristics_section(self, exoplanet: Exoplanet) -> str:
         """Génère la section des caractéristiques physiques."""
 
         def get_value_or_none_if_nan(data_point):
@@ -200,9 +207,9 @@ class ArticleExoplanetGenerator(BaseArticleGenerator):
                 return value
             return None
 
-        mass = get_value_or_none_if_nan(exoplanet.pl_mass)
-        radius = get_value_or_none_if_nan(exoplanet.pl_radius)
-        temp = get_value_or_none_if_nan(exoplanet.pl_temperature)
+        mass: float | int | None = get_value_or_none_if_nan(exoplanet.pl_mass)
+        radius: float | int | None = get_value_or_none_if_nan(exoplanet.pl_radius)
+        temp: float | int | None = get_value_or_none_if_nan(exoplanet.pl_temperature)
 
         if not any([mass is not None, radius is not None, temp is not None]):
             return ""
@@ -217,7 +224,7 @@ class ArticleExoplanetGenerator(BaseArticleGenerator):
                 mass_f = float(mass)
             except Exception:
                 mass_f = None
-            mass_value = self.article_utils.format_numeric_value(
+            mass_value = self.article_utils.format_number_as_french_string(
                 mass,
                 precision=3
                 if mass_f is not None and mass_f < 0.1
@@ -240,7 +247,7 @@ class ArticleExoplanetGenerator(BaseArticleGenerator):
                 radius_f = float(radius)
             except Exception:
                 radius_f = None
-            radius_value = self.article_utils.format_numeric_value(
+            radius_value: str = self.article_utils.format_number_as_french_string(
                 radius,
                 precision=3
                 if radius_f is not None and radius_f < 0.1
@@ -250,10 +257,10 @@ class ArticleExoplanetGenerator(BaseArticleGenerator):
                 if radius_f < 0.5:
                     label = "compact"
                 elif radius_f < 1.5:
-                    label = ""
+                    label: str = None
                 else:
                     label = "étendu"
-                desc = f"son rayon{' ' + label if label else ''} de {radius_value} [[Rayon_jovien|''R''{{{{ind|J}}}}]]"
+                desc: str = f"son rayon{' ' + label if label else ''} de {radius_value} [[Rayon_jovien|''R''{{{{ind|J}}}}]]"
                 desc_parts.append(desc)
 
         if (
@@ -267,7 +274,7 @@ class ArticleExoplanetGenerator(BaseArticleGenerator):
             except Exception:
                 temp_f = None
             if isinstance(temp, (int, float)):
-                temp_value = f"{float(temp):.5f}".rstrip("0").rstrip(".")
+                temp_value: str = f"{float(temp):.5f}".rstrip("0").rstrip(".")
             else:
                 temp_value = str(temp)
 
@@ -288,7 +295,7 @@ class ArticleExoplanetGenerator(BaseArticleGenerator):
 
         return section
 
-    def _generate_habitability_section(self, exoplanet: Exoplanet) -> str:
+    def build_habitability_section(self, exoplanet: Exoplanet) -> str:
         """
         Génère la section sur l'habitabilité de l'exoplanète
         """

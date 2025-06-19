@@ -24,6 +24,11 @@ class InfoboxBaseGenerator(ABC):
 
         lines = [self.get_infobox_header()]
 
+        # TODO ici on prepare la reference, pour la passer au process_field
+        wiki_reference: str | None = (
+            obj.reference.to_wiki_ref() if obj.reference else None
+        )
+
         for mapping in self.retrieve_infobox_field_mappings():
             value = getattr(obj, mapping.source_attribute, None)
 
@@ -31,12 +36,12 @@ class InfoboxBaseGenerator(ABC):
                 value=value,
                 mapping=mapping,
                 notes_fields=self.get_notes_fields(),
-                entity_reference=obj.reference,
+                wiki_reference=wiki_reference,
             )
             if field_block:
                 lines.append(field_block)
 
-        for full_ref in self.reference_manager.registered.values():
+        for full_ref in self.reference_manager.all_registered_references.values():
             lines.append(full_ref)
 
         lines.append("}}")

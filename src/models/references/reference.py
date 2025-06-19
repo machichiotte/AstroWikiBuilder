@@ -53,15 +53,13 @@ class Reference:
     planet_id: Optional[str] = None
 
     def to_url(self) -> str:
-        details = SOURCE_DETAILS.get(self.source)
+        details: dict[str, str] | None = SOURCE_DETAILS.get(self.source)
         if not details:
             raise ValueError(f"Unknown source: {self.source}")
 
-        print("Reference to_url star", self.star_id)
-        print("Reference to_url exo", self.planet_id)
         if self.source == SourceType.NEA:
-            star_id = slugify(self.star_id or "")
-            planet_id = slugify(self.planet_id or "")
+            star_id: str = slugify(self.star_id or "")
+            planet_id: str = slugify(self.planet_id or "")
             if not star_id and not planet_id:
                 raise ValueError(
                     "Both star name and planet identifier are required for NEA"
@@ -79,23 +77,23 @@ class Reference:
 
     def to_wiki_ref(self, short: bool = True) -> str:
         """Convertit la référence en format wiki, avec option pour version courte"""
-        details = SOURCE_DETAILS.get(self.source)
+        details: dict[str, str] | None = SOURCE_DETAILS.get(self.source)
         if not details:
             return f'<ref name="{self.source.value}">Unknown source</ref>'
 
-        name_str = ""
+        name_str: str = ""
         if self.planet_id:
             name_str = self.planet_id
         else:
             name_str = self.star_id
 
-        url = self.to_url()
-        title = f"{details['display_title']}{' - ' + name_str if name_str else ''}"
+        url: str = self.to_url()
+        title: str = f"{details['display_title']}{' - ' + name_str if name_str else ''}"
 
         if short:
             return f'<ref name="{self.source.value}" />'
 
-        tpl = details["template"].format(
+        tpl: str = details["template"].format(
             title=title,
             url=url,
             update_date=self.update_date.strftime("%Y-%m-%d"),

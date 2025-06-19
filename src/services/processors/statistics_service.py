@@ -4,7 +4,7 @@ from typing import List, Dict, Any
 from src.models.entities.exoplanet import Exoplanet
 from src.models.entities.star import Star
 
-logger = logging.getLogger(__name__)
+logger: logging.Logger = logging.getLogger(__name__)
 
 
 class StatisticsService:
@@ -39,21 +39,21 @@ class StatisticsService:
         for exoplanet in exoplanets:
             # Méthodes de découverte
             if exoplanet.disc_method:
-                method = exoplanet.disc_method
+                method: str = exoplanet.disc_method
                 stats["discovery_methods"][method] = (
                     stats["discovery_methods"].get(method, 0) + 1
                 )
 
             # Années de découverte
             if exoplanet.disc_year and exoplanet.disc_year.value:
-                year = exoplanet.disc_year.value
+                year: int = int(exoplanet.disc_year.value)
                 stats["discovery_years"][year] = (
                     stats["discovery_years"].get(year, 0) + 1
                 )
 
             # Plages de masse
             if exoplanet.pl_mass and exoplanet.pl_mass.value:
-                mass = exoplanet.pl_mass.value
+                mass: float = exoplanet.pl_mass.value
                 if mass <= 1:
                     stats["mass_ranges"]["0-1"] += 1
                 elif mass <= 2:
@@ -67,7 +67,7 @@ class StatisticsService:
 
             # Plages de rayon
             if exoplanet.pl_radius and exoplanet.pl_radius.value:
-                radius = exoplanet.pl_radius.value
+                radius: float = exoplanet.pl_radius.value
                 if radius <= 1:
                     stats["radius_ranges"]["0-1"] += 1
                 elif radius <= 2:
@@ -104,12 +104,8 @@ class StatisticsService:
 
         for star in stars:
             # Statistiques par type spectral
-            if (
-                hasattr(star, "st_spectral_type")
-                and star.st_spectral_type
-                and star.st_spectral_type.value
-            ):
-                spectral = str(star.st_spectral_type.value)
+            if star.st_spectral_type:
+                spectral = str(star.st_spectral_type)
                 stats["spectral_types"][spectral] = (
                     stats["spectral_types"].get(spectral, 0) + 1
                 )
@@ -117,24 +113,9 @@ class StatisticsService:
             # Statistiques par année de découverte
             if hasattr(star, "disc_year") and star.disc_year and star.disc_year.value:
                 try:
-                    year_val = star.disc_year.value
-                    if hasattr(year_val, "year"):
-                        year = year_val.year
-                    elif (
-                        isinstance(year_val, str)
-                        and len(year_val) >= 4
-                        and year_val[:4].isdigit()
-                    ):
-                        year = int(year_val[:4])
-                    elif isinstance(year_val, (int, float)):
-                        year = int(year_val)
-                    else:
-                        logger.debug(
-                            f"Could not parse year from disc_year.value: {year_val}"
-                        )
-                        continue
-                    stats["discovery_years"][year] = (
-                        stats["discovery_years"].get(year, 0) + 1
+                    disc_year: int = int(star.disc_year.value)
+                    stats["discovery_years"][disc_year] = (
+                        stats["discovery_years"].get(disc_year, 0) + 1
                     )
                 except ValueError:
                     logger.warning(

@@ -7,7 +7,7 @@ from src.mappers.nasa_exoplanet_archive_mapper import NasaExoplanetArchiveMapper
 from src.collectors.base_collector import BaseCollector
 from src.models.entities.exoplanet import Exoplanet
 
-from src.models.references.reference import Reference, SourceType
+from src.models.references.reference import SourceType
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -58,7 +58,9 @@ class NASAExoplanetArchiveCollector(BaseCollector):
                 return None
 
             # Déléguer toute la logique de mappage et de création de l'objet au mapper.
-            exoplanet = self.mapper.map_nea_data_to_exoplanet(nea_data_dict)
+            exoplanet: Exoplanet = self.mapper.map_exoplanet_from_nea_record(
+                nea_data_dict
+            )
             return exoplanet
         except Exception as e:
             logger.error(
@@ -82,7 +84,7 @@ class NASAExoplanetArchiveCollector(BaseCollector):
                 return None
 
             # Déléguer toute la logique de mappage et de création de l'objet au mapper.
-            star = self.mapper.map_nea_data_to_star(nea_data_dict)
+            star: Star = self.mapper.map_star_from_nea_record(nea_data_dict)
             return star
         except Exception as e:
             logger.error(

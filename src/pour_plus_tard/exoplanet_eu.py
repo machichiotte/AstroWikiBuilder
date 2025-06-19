@@ -7,7 +7,7 @@ from src.models.references.reference import Reference, SourceType
 from src.models.entities.exoplanet import ValueWithUncertainty
 from src.models.entities.exoplanet import Exoplanet
 
-logger = logging.getLogger(__name__)
+logger: logging.Logger = logging.getLogger(__name__)
 
 
 class ExoplanetEUCollector(BaseCollector):
@@ -59,7 +59,7 @@ class ExoplanetEUCollector(BaseCollector):
                 ("argument_of_periastron", "argument_of_periastron"),
                 ("periastron_time", "periastron_time"),
             ]:
-                value = self._safe_float_conversion(row.get(csv_field))
+                value: float | None = self._safe_float_conversion(row.get(csv_field))
                 if value is not None:
                     setattr(exoplanet, field, ValueWithUncertainty(value=value))
 
@@ -84,7 +84,7 @@ class ExoplanetEUCollector(BaseCollector):
             ]:
                 value = row.get(csv_field)
                 if pd.notna(value):
-                    processed_value = (
+                    processed_value: float | None | str = (
                         self._safe_float_conversion(value)
                         if isinstance(value, (int, float, str))
                         and str(value).replace(".", "", 1).isdigit()
@@ -101,9 +101,9 @@ class ExoplanetEUCollector(BaseCollector):
                             setattr(exoplanet, field, processed_value)
 
             if pd.notna(row.get("alt_names")):
-                names = str(row["alt_names"]).split(",")
+                names: List[str] = str(row["alt_names"]).split(",")
                 for name in names:
-                    name = name.strip()
+                    name: str = name.strip()
                     if name and name != exoplanet.pl_name:
                         exoplanet.pl_altname.append(name)
 

@@ -1,5 +1,6 @@
 # src/utils/astro/classification/exoplatnet_comparison_utils.py
 
+from src.models.entities.exoplanet import ValueWithUncertainty
 from src.models.entities.exoplanet import Exoplanet
 from src.utils.formatters.article_formatters import ArticleUtils
 
@@ -9,8 +10,8 @@ class ExoplanetComparisonUtils:
     Classe utilitaire pour les comparaisons physiques des exoplanètes
     """
 
-    R_JUPITER_IN_EARTH_RADII = 11.209
-    M_JUPITER_IN_EARTH_MASSES = 317.8
+    _R_JUPITER_IN_RE = 11.209
+    _M_JUPITER_IN_ME = 317.8
     SIMILARITY_MARGIN = 0.2
 
     def __init__(self):
@@ -24,7 +25,7 @@ class ExoplanetComparisonUtils:
         self.uranus_orbit_au = 19.229
         self.neptune_orbit_au = 30.103
 
-    def get_radius_comparison(self, exoplanet: Exoplanet) -> str:
+    def describe_radius_vs_known_planets(self, exoplanet: Exoplanet) -> str:
         """
         Génère une comparaison de rayon avec Jupiter ou la Terre.
         Le rayon de l'exoplanète est supposé être en rayons joviens (R_J).
@@ -32,7 +33,7 @@ class ExoplanetComparisonUtils:
         if not exoplanet.pl_radius or exoplanet.pl_radius.value is None:
             return ""
 
-        radius_rj = exoplanet.pl_radius.value
+        radius_rj: float = exoplanet.pl_radius.value
 
         # Seuils pour Jupiter
         JUPITER_SIMILARITY_LOWER_RJ = 1.0 - self.SIMILARITY_MARGIN
@@ -43,12 +44,12 @@ class ExoplanetComparisonUtils:
             if radius_rj <= JUPITER_SIMILARITY_UPPER_RJ:
                 return "d'un rayon environ similaire à celui de [[Jupiter (planète)|Jupiter]]"
             else:
-                return f"d'un rayon environ {self.article_utils.format_numeric_value(radius_rj, 1)} fois celui de [[Jupiter (planète)|Jupiter]]"
+                return f"d'un rayon environ {self.article_utils.format_number_as_french_string(radius_rj, 1)} fois celui de [[Jupiter (planète)|Jupiter]]"
 
         # Comparaison avec la Terre
-        radius_re = radius_rj * self.R_JUPITER_IN_EARTH_RADII
-        EARTH_SIMILARITY_LOWER_RE = 1.0 - self.SIMILARITY_MARGIN
-        EARTH_SIMILARITY_UPPER_RE = 1.0 + self.SIMILARITY_MARGIN
+        radius_re: float = radius_rj * self._R_JUPITER_IN_RE
+        EARTH_SIMILARITY_LOWER_RE: float = 1.0 - self.SIMILARITY_MARGIN
+        EARTH_SIMILARITY_UPPER_RE: float = 1.0 + self.SIMILARITY_MARGIN
 
         if (
             radius_re >= EARTH_SIMILARITY_LOWER_RE
@@ -56,13 +57,13 @@ class ExoplanetComparisonUtils:
         ):
             return "d'un rayon environ similaire à celui de la [[Terre]]"
         elif radius_re > EARTH_SIMILARITY_UPPER_RE:
-            return f"d'un rayon environ {self.article_utils.format_numeric_value(radius_re, 1)} fois celui de la [[Terre]]"
+            return f"d'un rayon environ {self.article_utils.format_number_as_french_string(radius_re, 1)} fois celui de la [[Terre]]"
         elif radius_re > 0:
-            return f"d'un rayon environ {self.article_utils.format_numeric_value(1 / radius_re, 1)} fois plus petit que celui de la [[Terre]]"
+            return f"d'un rayon environ {self.article_utils.format_number_as_french_string(1 / radius_re, 1)} fois plus petit que celui de la [[Terre]]"
 
         return ""
 
-    def get_mass_comparison(self, exoplanet: Exoplanet) -> str:
+    def describe_mass_vs_known_planets(self, exoplanet: Exoplanet) -> str:
         """
         Génère une comparaison de masse avec Jupiter ou la Terre.
         La masse de l'exoplanète est supposée être en masses joviennes.
@@ -70,41 +71,41 @@ class ExoplanetComparisonUtils:
         if not exoplanet.pl_mass or exoplanet.pl_mass.value is None:
             return ""
 
-        mass_mj = exoplanet.pl_mass.value
+        mass_mj: float = exoplanet.pl_mass.value
 
         # Seuils pour Jupiter
-        JUPITER_SIMILARITY_LOWER_MJ = 1.0 - self.SIMILARITY_MARGIN
-        JUPITER_SIMILARITY_UPPER_MJ = 1.0 + self.SIMILARITY_MARGIN
+        JUPITER_SIMILARITY_LOWER_MJ: float = 1.0 - self.SIMILARITY_MARGIN
+        JUPITER_SIMILARITY_UPPER_MJ: float = 1.0 + self.SIMILARITY_MARGIN
 
         # Comparaison avec la Terre
-        mass_me = mass_mj * self.M_JUPITER_IN_EARTH_MASSES
-        EARTH_SIMILARITY_LOWER_ME = 1.0 - self.SIMILARITY_MARGIN
-        EARTH_SIMILARITY_UPPER_ME = 1.0 + self.SIMILARITY_MARGIN
+        mass_me: float = mass_mj * self._M_JUPITER_IN_ME
+        EARTH_SIMILARITY_LOWER_ME: float = 1.0 - self.SIMILARITY_MARGIN
+        EARTH_SIMILARITY_UPPER_ME: float = 1.0 + self.SIMILARITY_MARGIN
 
         # Comparaison avec Jupiter
         if mass_mj >= JUPITER_SIMILARITY_LOWER_MJ:
             if mass_mj <= JUPITER_SIMILARITY_UPPER_MJ:
                 return "environ la même masse que [[Jupiter (planète)|Jupiter]]"
             else:
-                return f"environ {self.article_utils.format_numeric_value(mass_mj, 1)} fois plus massif que [[Jupiter (planète)|Jupiter]]"
+                return f"environ {self.article_utils.format_number_as_french_string(mass_mj, 1)} fois plus massif que [[Jupiter (planète)|Jupiter]]"
         elif (
             mass_me >= EARTH_SIMILARITY_LOWER_ME
             and mass_me <= EARTH_SIMILARITY_UPPER_ME
         ):
             return "environ la même masse que la [[Terre]]"
         elif mass_me > EARTH_SIMILARITY_UPPER_ME:
-            return f"environ {self.article_utils.format_numeric_value(mass_me, 1)} fois plus massif que la [[Terre]]"
+            return f"environ {self.article_utils.format_number_as_french_string(mass_me, 1)} fois plus massif que la [[Terre]]"
         elif mass_me > 0:
-            return f"environ {self.article_utils.format_numeric_value(1 / mass_me, 1)} fois moins massif que la [[Terre]]"
+            return f"environ {self.article_utils.format_number_as_french_string(1 / mass_me, 1)} fois moins massif que la [[Terre]]"
 
         return ""
 
-    def get_orbital_comparison(self, exoplanet: Exoplanet) -> str:
+    def describe_orbit_vs_solar_system(self, exoplanet: Exoplanet) -> str:
         """
         Génère une comparaison de l'orbite de l'exoplanète avec les planètes du système solaire.
         La distance est supposée être en Unités Astronomiques (UA).
         """
-        sma = exoplanet.pl_semi_major_axis
+        sma: ValueWithUncertainty | None = exoplanet.pl_semi_major_axis
         if hasattr(sma, "value"):
             sma = sma.value
         try:
@@ -113,7 +114,7 @@ class ExoplanetComparisonUtils:
             return ""  # ou une valeur par défaut
 
         # Maintenant, sma est bien un float pour la comparaison
-        margin = self.SIMILARITY_MARGIN
+        margin: float = self.SIMILARITY_MARGIN
 
         if sma < self.mercury_orbit_au * (1 - margin):
             return "Son orbite est significativement plus proche de son étoile que la distance orbitale de [[Mercure (planète)|Mercure]] dans notre [[système solaire]]."

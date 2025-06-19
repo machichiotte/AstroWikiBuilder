@@ -1,20 +1,5 @@
-[build-system]
-requires = ["setuptools>=61.0"]
-build-backend = "setuptools.build_meta"
-
-[project]
-name = "astro_wiki_builder"
-version = "0.1.0"
-authors = [
-    { name = "Elias", email = "machichiotte@gmail.com" },
-]
-description = "Un outil pour générer des articles Wikipedia sur les exoplanètes"
-requires-python = ">=3.8"
-classifiers = [
-    "Programming Language :: Python :: 3",
-    "License :: OSI Approved :: MIT License",
-    "Operating System :: OS Independent",
-]
-
-[tool.setuptools]
-packages = ["src"] 
+[tool.mypy]
+strict = true
+disallow_untyped_defs = true
+ignore_missing_imports = true
+warn_unused_ignores = true

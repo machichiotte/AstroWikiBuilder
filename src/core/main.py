@@ -1,7 +1,7 @@
 import os
 from datetime import datetime
 import argparse
-from typing import Tuple, Dict, Any
+from typing import List, Tuple, Dict, Any
 import json
 
 from src.models.entities.exoplanet import Exoplanet
@@ -30,14 +30,19 @@ from src.services.external.wikipedia_service import WikipediaService
 from src.services.external.export_service import ExportService
 
 from src.utils.wikipedia.draft_utils import (
-    generate_exoplanet_draft,
-    generate_star_draft,
-    save_drafts,
+    build_exoplanet_article_draft,
+    build_star_article_draft,
+    persist_drafts_by_entity_type,
 )
 from src.models.entities.star import Star
 
 
-def _setup_arguments() -> argparse.Namespace:
+# ============================================================================
+# CONFIGURATION ET ARGUMENTS DE LIGNE DE COMMANDE
+# ============================================================================
+
+
+def parse_cli_arguments() -> argparse.Namespace:
     """Configure et parse les arguments de la ligne de commande."""
     parser = argparse.ArgumentParser(
         description="Générateur d'articles Wikipedia pour les exoplanètes"
@@ -88,7 +93,12 @@ def _setup_arguments() -> argparse.Namespace:
     return args
 
 
-def _initialize_services() -> Tuple[
+# ============================================================================
+# INITIALISATION DES SERVICES ET COLLECTEURS
+# ============================================================================
+
+
+def initialize_services() -> Tuple[
     ExoplanetRepository,
     StarRepository,
     StatisticsService,
@@ -136,7 +146,7 @@ def _initialize_collectors(args: argparse.Namespace) -> Dict[str, Any]:
             cache_path = CACHE_PATHS[source]["mock" if use_mock else "real"]
             collector = _get_collector_instance(source, use_mock, cache_path)
             collectors[source] = collector
-            _log_message(source, use_mock, cache_path)
+            log_collector_initialization(source, use_mock, cache_path)
 
     logger.info(f"Collecteurs initialisés pour : {list(collectors.keys())}")
     return collectors
@@ -154,7 +164,7 @@ def _get_collector_instance(source: str, use_mock: bool, cache_path: str) -> Any
         raise ValueError(f"Source inconnue : {source}")
 
 
-def _log_message(source: str, use_mock: bool, cache_path: str) -> None:
+def log_collector_initialization(source: str, use_mock: bool, cache_path: str) -> None:
     """Enregistre un message dans le journal pour chaque collecteur initialisé."""
     if use_mock:
         logger.info(
@@ -166,13 +176,20 @@ def _log_message(source: str, use_mock: bool, cache_path: str) -> None:
         )
 
 
-def _fetch_and_process_data(collectors: Dict[str, Any], processor: DataProcessor):
+# ============================================================================
+# COLLECTE ET TRAITEMENT DES DONNÉES
+# ============================================================================
+
+
+def fetch_and_ingest_collected_data(
+    collectors: Dict[str, Any], processor: DataProcessor
+):
     """Récupère les données des collecteurs et les traite."""
     for source_name, collector in collectors.items():
         logger.info(f"Collecte des données depuis {source_name}...")
 
         try:
-            exoplanets, stars = collector.fetch_data()
+            exoplanets, stars = collector.collect_exoplanets_and_stars_from_source()
 
             if not isinstance(exoplanets, list):
                 raise TypeError(
@@ -189,14 +206,19 @@ def _fetch_and_process_data(collectors: Dict[str, Any], processor: DataProcessor
             continue
 
         if exoplanets:
-            processor.add_exoplanets_from_source(exoplanets, source_name)
+            processor.ingest_exoplanets_from_source(exoplanets, source_name)
         else:
             logger.info(f"Aucune exoplanète récupérée depuis {source_name}.")
 
         if stars:
-            processor.add_stars_from_source(stars, source_name)
+            processor.ingest_stars_from_source(stars, source_name)
         else:
             logger.info(f"Aucune étoile récupérée depuis {source_name}.")
+
+
+# ============================================================================
+# GESTION DES RÉPERTOIRES ET EXPORT
+# ============================================================================
 
 
 def _create_output_directories(
@@ -208,20 +230,25 @@ def _create_output_directories(
     logger.info(f"Répertoires de sortie créés : {output_dir}, {drafts_dir}")
 
 
-def _export_consolidated_data(
+def export_consolidated_exoplanet_data(
     processor: DataProcessor, output_dir: str, timestamp: str
 ):
     """Exporte les données consolidées."""
     logger.info("Export des données consolidées...")
     try:
-        processor.export_exoplanet_data(
+        processor.export_all_exoplanets(
             "csv", f"{output_dir}/exoplanets_consolidated_{timestamp}.csv"
         )
     except Exception as e:
         logger.error(f"Erreur lors de l'export des données consolidées : {e}")
 
 
-def _log_statistics(stats: Dict[str, Any]):
+# ============================================================================
+# ANALYSE ET STATISTIQUES
+# ============================================================================
+
+
+def log_collected_statistics(stats: Dict[str, Any]):
     """Affiche les statistiques collectées."""
     # Statistiques des exoplanètes
     logger.info("Statistiques des exoplanètes collectées :")
@@ -263,7 +290,7 @@ def _log_statistics(stats: Dict[str, Any]):
         logger.info(f"    - {source} : {count}")
 
 
-def save_statistics(stats: Dict[str, Any], output_dir: str, timestamp: str):
+def export_statistics_to_json(stats: Dict[str, Any], output_dir: str, timestamp: str):
     """Sauvegarde les statistiques dans un fichier JSON."""
     # Créer le répertoire des statistiques s'il n'existe pas
     stats_dir = os.path.join(output_dir, "statistics")
@@ -276,64 +303,76 @@ def save_statistics(stats: Dict[str, Any], output_dir: str, timestamp: str):
     logger.info(f"Statistiques sauvegardées dans {stats_path}")
 
 
-def check_and_export_wikipedia_status(
+def generate_and_log_statistics(
+    stat_service: StatisticsService,
+    processor: DataProcessor,
+):
+    stats = {
+        "exoplanet": stat_service.generate_statistics_exoplanet(
+            processor.collect_all_exoplanets()
+        ),
+        "star": stat_service.generate_statistics_star(processor.collect_all_stars()),
+    }
+
+    # Affichage et sauvegarde des statistiques
+    log_collected_statistics(stats)
+
+
+# ============================================================================
+# GESTION DES ARTICLES WIKIPEDIA
+# ============================================================================
+
+
+def resolve_and_export_wikipedia_article_status(
     processor: DataProcessor, output_dir: str
 ) -> Tuple[
     Dict[str, Dict[str, WikiArticleInfo]], Dict[str, Dict[str, WikiArticleInfo]]
 ]:
     """Vérifie et exporte le statut des articles Wikipedia."""
     logger.info("Vérification du statut des articles Wikipedia...")
-    existing_map, missing_map = (
-        processor.get_and_separate_wikipedia_articles_by_status()
-    )
+    existing_map, missing_map = processor.resolve_wikipedia_status_for_exoplanets()
 
     # Export des résultats
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     existing_path = f"{output_dir}/existing_articles_{timestamp}.json"
     missing_path = f"{output_dir}/missing_articles_{timestamp}.json"
 
-    processor.export_wikipedia_links_data(existing_path, existing_map, "existing")
-    processor.export_wikipedia_links_data(missing_path, missing_map, "missing")
+    processor.export_exoplanet_wikipedia_links_by_status(
+        existing_path, existing_map, "existing"
+    )
+    processor.export_exoplanet_wikipedia_links_by_status(
+        missing_path, missing_map, "missing"
+    )
 
     return existing_map, missing_map
 
 
-def _generate_stats(
-    stat_service: StatisticsService,
-    processor: DataProcessor,
-):
-    stats = {
-        "exoplanet": stat_service.generate_statistics_exoplanet(
-            processor.get_all_exoplanets()
-        ),
-        "star": stat_service.generate_statistics_star(processor.get_all_stars()),
-    }
-
-    # Affichage et sauvegarde des statistiques
-    _log_statistics(stats)
+# ============================================================================
+# GÉNÉRATION DES BROUILLONS D'ARTICLES
+# ============================================================================
 
 
-def _generate_and_save_star_drafts(
+def generate_and_persist_star_drafts(
     processor: DataProcessor,
     drafts_dir: str,
 ) -> None:
     """
     Génère et sauvegarde les brouillons d'étoiles en filtrant les objets valides.
     """
-    stars = processor.get_all_stars()
+    stars: List[Star] = processor.collect_all_stars()
 
     logger.info(f"Nombre total d'objets retournés par get_all_stars: {len(stars)}")
     star_drafts = {}
 
     for star in stars:
-        star_name = getattr(star, "st_name", "UNKNOWN")
+        star_name: str = getattr(star, "st_name", "UNKNOWN")
         if isinstance(star, Star):
             logger.info(f"Génération draft étoile: {star_name} (type: {type(star)})")
-            star_drafts[star_name] = generate_star_draft(star)
+            star_drafts[star_name] = build_star_article_draft(star)
         else:
             logger.warning(f"Objet ignoré (type: {type(star)}) pour {star_name}")
 
-    save_drafts(
+    persist_drafts_by_entity_type(
         star_drafts,
         {},
         drafts_dir,
@@ -341,30 +380,29 @@ def _generate_and_save_star_drafts(
     )
 
 
-def _generate_and_save_exoplanet_drafts(
+def generate_and_persist_exoplanet_drafts(
     processor: DataProcessor,
     drafts_dir: str,
 ) -> None:
     """
     Génère et sauvegarde les brouillons d'exoplanetes en filtrant les objets valides.
     """
-    exoplanets = processor.get_all_exoplanets()
-    logger.info(
-        f"Nombre total d'objets retournés par get_all_exoplanets: {len(exoplanets)}"
-    )
+    exoplanets: List[Exoplanet] = processor.collect_all_exoplanets()
+    total = len(exoplanets)
+    logger.info(f"Nombre total d'objets retournés par get_all_exoplanets: {total}")
     exoplanet_drafts = {}
-    for exoplanet in exoplanets:
+    for idx, exoplanet in enumerate(exoplanets, 1):
         exoplanet_name: str = exoplanet.pl_name
         if isinstance(exoplanet, Exoplanet):
-            logger.info(
-                f"Génération draft exoplanet: {exoplanet_name} (type: {type(exoplanet)})"
-            )
-            exoplanet_drafts[exoplanet_name] = generate_exoplanet_draft(exoplanet)
+            if idx % 100 == 0 or idx == total:
+                logger.info(f"Progression: {idx}/{total} exoplanètes traitées...")
+            exoplanet_drafts[exoplanet_name] = build_exoplanet_article_draft(exoplanet)
         else:
             logger.warning(
                 f"Objet ignoré (type: {type(exoplanet)}) pour {exoplanet_name}"
             )
-    save_drafts(
+    logger.info(f"Nombre total de brouillons générés: {len(exoplanet_drafts)}")
+    persist_drafts_by_entity_type(
         exoplanet_drafts,
         {},
         drafts_dir,
@@ -372,9 +410,14 @@ def _generate_and_save_exoplanet_drafts(
     )
 
 
+# ============================================================================
+# POINT D'ENTRÉE PRINCIPAL
+# ============================================================================
+
+
 def main():
     """Point d'entrée principal du programme."""
-    args = _setup_arguments()
+    args: argparse.Namespace = parse_cli_arguments()
 
     _create_output_directories(args.output_dir, args.drafts_dir)
 
@@ -385,10 +428,10 @@ def main():
         stat_service,
         wiki_service,
         export_service,
-    ) = _initialize_services()
+    ) = initialize_services()
 
     # Initialisation des collecteurs
-    collectors = _initialize_collectors(args)
+    collectors: Dict[str, Any] = _initialize_collectors(args)
 
     # Initialisation du processeur de données
     processor = DataProcessor(
@@ -400,13 +443,13 @@ def main():
     )
 
     # Collecte et traitement des données
-    _fetch_and_process_data(collectors, processor)
+    fetch_and_ingest_collected_data(collectors, processor)
 
     # Export des données consolidées
     timestamp: str = datetime.now().strftime("%Y%m%d_%H%M%S")
-    _export_consolidated_data(processor, args.output_dir, timestamp)
+    export_consolidated_exoplanet_data(processor, args.output_dir, timestamp)
 
-    _generate_stats(stat_service, processor)
+    generate_and_log_statistics(stat_service, processor)
 
     # Vérification des articles Wikipedia et génération des drafts
     # if not args.skip_wikipedia_check:
@@ -417,8 +460,8 @@ def main():
     #    existing_map = {}
     #    missing_map = {}
 
-    _generate_and_save_exoplanet_drafts(processor, args.drafts_dir)
-    _generate_and_save_star_drafts(processor, args.drafts_dir)
+    generate_and_persist_exoplanet_drafts(processor, args.drafts_dir)
+    generate_and_persist_star_drafts(processor, args.drafts_dir)
 
     logger.info("Traitement terminé avec succès.")
 

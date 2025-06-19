@@ -51,8 +51,6 @@ def _format_error_number(value: ValueWithUncertainty) -> str:
             error_part = f"{{{{±||{neg_error}}}}}"
         else:
             error_part = ""
-        print("+formatted_value", formatted_value)
-        print("+error_part", error_part)
         return formatted_value + error_part
 
     except (ValueError, TypeError) as e:
@@ -64,10 +62,10 @@ class FieldFormatter:
     """Formatters pour différents types de champs"""
 
     @staticmethod
-    def _format_discovery_facility(value: Any) -> str:
+    def _format_discovery_facility(value: str) -> str:
         """Formate le lieu de découverte"""
         try:
-            mapped = DISCOVERY_FACILITY_MAPPING.get(value)
+            mapped: str | None = DISCOVERY_FACILITY_MAPPING.get(value)
             return f"[[{mapped}]]" if mapped else str(value)
         except Exception as e:
             logger.error(
@@ -76,11 +74,11 @@ class FieldFormatter:
             return str(value)
 
     @staticmethod
-    def _format_discovery_method(value: Any) -> str:
+    def _format_discovery_method(value: str) -> str:
         """Formate la méthode de découverte"""
         try:
-            method_key = str(value).strip().lower()
-            mapped = METHOD_NAME_MAPPING.get(method_key)
+            method_key: str = str(value).strip().lower()
+            mapped: str | None = METHOD_NAME_MAPPING.get(method_key)
             return (
                 f"[[{mapped['article']}|{mapped['display']}]]" if mapped else str(value)
             )
@@ -89,7 +87,7 @@ class FieldFormatter:
             return str(value)
 
     @staticmethod
-    def _format_designations(value: Any) -> str:
+    def _format_designations(value: str) -> str:
         """Formate les désignations en liste avec les modèles Wikipédia appropriés."""
         try:
 
@@ -125,7 +123,7 @@ class FieldFormatter:
                 formatted_designations = []
                 for v in value:
                     if v and str(v).strip():
-                        formatted = format_single_designation(str(v))
+                        formatted: str = format_single_designation(str(v))
                         if formatted:
                             formatted_designations.append(formatted)
                 return (
@@ -136,16 +134,14 @@ class FieldFormatter:
             logger.error(f"Erreur lors du formatage des désignations {value}: {str(e)}")
             return str(value)
 
-    def _format_field_value(self, value: Any, field_name: str) -> str:
+    def _format_field_value(
+        self, value: str | ValueWithUncertainty | None, field_name: str
+    ) -> str:
         """Formate la valeur principale du champ."""
-        print("_format_field_value field_name", field_name)
-        print("_format_field_value value", value)
         try:
             # Si c'est une ValueWithUncertainty, on la formate d'abord
             if isinstance(value, ValueWithUncertainty):
-                print("nucertain")
                 formatted_value = _format_error_number(value)
-                print("form form form", formatted_value)
                 return formatted_value
 
             # Pour les autres types, on applique le formatter normalement
@@ -159,16 +155,16 @@ class FieldFormatter:
 
     def process_field(
         self,
-        value: Any,
+        value: str | list | ValueWithUncertainty,
         mapping: FieldMapping,
         notes_fields: list[str],
-        entity_reference: Reference = None,
+        wiki_reference: str = None,
     ) -> str:
         """Traite un champ complet avec sa valeur, unité et notes."""
         if not value:
             return ""
 
-        reference = entity_reference.to_wiki_ref() if entity_reference else None
+        reference: str | None = wiki_reference if wiki_reference else None
 
         try:
             # Extraction des valeurs brutes
@@ -192,10 +188,12 @@ class FieldFormatter:
             return ""
 
         # Formatage de la valeur principale
-        formatted_value = self._format_field_value(raw_value, mapping.infobox_field)
+        formatted_value: str = self._format_field_value(
+            raw_value, mapping.infobox_field
+        )
 
         # Construction du champ complet
-        field = f" | {mapping.infobox_field} = {formatted_value}"
+        field: str = f" | {mapping.infobox_field} = {formatted_value}"
 
         # Ajout des notes si nécessaire
         if reference and infobox_validators.is_valid_infobox_note(

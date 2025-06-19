@@ -6,10 +6,15 @@ import unicodedata
 import re
 import logging
 
-# Configuration du logger
-logger = logging.getLogger(__name__)
+# =============================
+# Logger / Configuration
+# =============================
+logger: logging.Logger = logging.getLogger(__name__)
 
 
+# =============================
+# Dataclasses
+# =============================
 @dataclass
 class WikiArticleInfo:
     """Information sur un article Wikipedia"""
@@ -52,7 +57,7 @@ class WikipediaChecker:
         title = re.sub(r"[^a-z0-9\-]", "", title)
         return title
 
-    def check_multiple_articles(
+    def check_article_existence_batch(
         self,
         titles_to_check: List[str],
         exoplanet_context: Optional[Dict[str, Dict[str, Any]]] = None,
@@ -63,34 +68,46 @@ class WikipediaChecker:
         if len(titles_to_check) > 50:
             raise ValueError("L'API MediaWiki limite à 50 titres par requête.")
 
-        initial_results = self._initialize_results(titles_to_check)
+        initial_results: Dict[str, WikiArticleInfo] = (
+            self.build_empty_article_info_results(titles_to_check)
+        )
 
         try:
-            data = self._fetch_api_data(titles_to_check)
+            data: Dict[str, Any] = self.fetch_raw_article_query_from_mediawiki(
+                titles_to_check
+            )
         except requests.RequestException as e:
             logger.error(f"Erreur Wikipedia API: {e}")
             for title in titles_to_check:
                 initial_results[title].url = f"Erreur API: {e}"
             return initial_results
 
-        normalized_map, redirect_map, resolved_map = self._build_title_maps(
-            data, titles_to_check
+        normalized_map, redirect_map, resolved_map = (
+            self.build_title_normalization_and_redirect_maps(data, titles_to_check)
         )
 
-        self._process_api_pages(
-            data, resolved_map, redirect_map, normalized_map,
-            initial_results, exoplanet_context
+        self.resolve_article_existence_from_pages(
+            data,
+            resolved_map,
+            redirect_map,
+            normalized_map,
+            initial_results,
+            exoplanet_context,
         )
 
         return initial_results
 
-    def _initialize_results(self, titles: List[str]) -> Dict[str, WikiArticleInfo]:
+    def build_empty_article_info_results(
+        self, titles: List[str]
+    ) -> Dict[str, WikiArticleInfo]:
         return {
             title: WikiArticleInfo(exists=False, title=title, queried_title=title)
             for title in titles
         }
 
-    def _fetch_api_data(self, titles: List[str]) -> Dict[str, Any]:
+    def fetch_raw_article_query_from_mediawiki(
+        self, titles: List[str]
+    ) -> Dict[str, Any]:
         params = {
             "action": "query",
             "titles": "|".join(titles),
@@ -100,17 +117,21 @@ class WikipediaChecker:
             "redirects": 1,
             "utf8": 1,
         }
-        response = self.session.get(self.BASE_URL, params=params, timeout=10)
+        response: requests.Response = self.session.get(
+            self.BASE_URL, params=params, timeout=10
+        )
         response.raise_for_status()
         return response.json().get("query", {})
 
-    def _build_title_maps(
-        self,
-        data: Dict[str, Any],
-        queried_titles: List[str]
+    def build_title_normalization_and_redirect_maps(
+        self, data: Dict[str, Any], queried_titles: List[str]
     ) -> tuple[Dict[str, str], Dict[str, str], Dict[str, str]]:
-        normalized_map = {i["from"]: i["to"] for i in data.get("normalized", [])}
-        redirect_map = {i["from"]: i["to"] for i in data.get("redirects", [])}
+        normalized_map: Dict[Any, Any] = {
+            i["from"]: i["to"] for i in data.get("normalized", [])
+        }
+        redirect_map: Dict[Any, Any] = {
+            i["from"]: i["to"] for i in data.get("redirects", [])
+        }
         resolved_to_queried = {}
 
         for title in queried_titles:
@@ -121,7 +142,7 @@ class WikipediaChecker:
 
         return normalized_map, redirect_map, resolved_to_queried
 
-    def _process_api_pages(
+    def resolve_article_existence_from_pages(
         self,
         data: Dict[str, Any],
         resolved_to_queried: Dict[str, str],
@@ -132,7 +153,7 @@ class WikipediaChecker:
     ) -> None:
         for page_id, page in data.get("pages", {}).items():
             api_title = page.get("title")
-            original = resolved_to_queried.get(api_title)
+            original: str | None = resolved_to_queried.get(api_title)
 
             if not original:
                 for r_from, r_to in redirect_map.items():
@@ -152,14 +173,19 @@ class WikipediaChecker:
                 )
                 continue
 
-            is_redirect = original in redirect_map
-            redirect_target = redirect_map.get(original) if is_redirect else None
-            host_star = (
-                exoplanet_context.get(original, {}).get("host_star_name")
-                if exoplanet_context else None
+            is_redirect: bool = original in redirect_map
+            redirect_target: str | None = (
+                redirect_map.get(original) if is_redirect else None
+            )
+            host_star: Any | None = (
+                exoplanet_context.get(original, {}).get("st_name")
+                if exoplanet_context
+                else None
             )
 
-            if host_star and self._normalize_title(api_title) == self._normalize_title(host_star):
+            if host_star and self._normalize_title(api_title) == self._normalize_title(
+                host_star
+            ):
                 results[original] = WikiArticleInfo(
                     exists=False,
                     title=api_title,
@@ -167,7 +193,7 @@ class WikipediaChecker:
                     is_redirect=is_redirect,
                     redirect_target=redirect_target,
                     url=page.get("fullurl"),
-                    host_star=host_star
+                    host_star=host_star,
                 )
                 continue
 
@@ -178,5 +204,5 @@ class WikipediaChecker:
                 is_redirect=is_redirect,
                 redirect_target=redirect_target,
                 url=page.get("fullurl"),
-                host_star=host_star
+                host_star=host_star,
             )

@@ -7,7 +7,7 @@ from src.collectors.base_collector import BaseCollector
 from src.models.references.reference import Reference, SourceType
 from src.models.entities.exoplanet import Exoplanet, ValueWithUncertainty
 
-logger = logging.getLogger(__name__)
+logger: logging.Logger = logging.getLogger(__name__)
 
 
 class OpenExoplanetCollector(BaseCollector):
@@ -57,7 +57,7 @@ class OpenExoplanetCollector(BaseCollector):
                 ("argument_of_periastron", "longitudeofperiastron"),
                 ("periastron_time", "periastrontime"),
             ]:
-                value = self._safe_float_conversion(row.get(csv_field))
+                value: float | None = self._safe_float_conversion(row.get(csv_field))
                 if value is not None:
                     setattr(exoplanet, field, ValueWithUncertainty(value=value))
 

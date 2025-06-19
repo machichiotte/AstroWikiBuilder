@@ -17,7 +17,12 @@ from src.generators.star.article_star_generator import (
 logger = logging.getLogger(__name__)
 
 
-def clean_filename(filename: str) -> str:
+# ============================================================================
+# UTILITAIRES DE NOMENCLATURE DES FICHIERS
+# ============================================================================
+
+
+def sanitize_draft_filename(filename: str) -> str:
     """
     Nettoie un nom de fichier en supprimant les caractères invalides
     et en simplifiant les underscores.
@@ -37,30 +42,35 @@ def clean_filename(filename: str) -> str:
     return filename
 
 
-def generate_exoplanet_draft(exoplanet: Exoplanet) -> str:
+# ============================================================================
+# GÉNÉRATION DE CONTENU D'ARTICLES
+# ============================================================================
+
+
+def build_exoplanet_article_draft(exoplanet: Exoplanet) -> str:
     """
     Génère le contenu d'un brouillon d'article pour une exoplanète.
     """
     generator = ArticleExoplanetGenerator()
-    print(f"Génération du brouillon pour l'exoplanète {exoplanet.pl_name}...")
-    content = generator.generate_article_content(exoplanet)
-    print(f"Brouillon pour l'exoplanète {exoplanet.pl_name} généré.")
+    content = generator.compose_exoplanet_article(exoplanet)
     return content
 
 
-def generate_star_draft(star: Star) -> str:
+def build_star_article_draft(star: Star) -> str:
     """
     Génère le contenu d'un brouillon d'article pour une étoile.
     """
     generator = ArticleStarGenerator()
-    star_name = star.st_name
-    print(f"Génération du brouillon pour l'étoile {star_name}...")
-    content = generator.generate_article_content(star)
-    print(f"Brouillon pour l'étoile {star_name} généré.")
+    content: str = generator.compose_article_content(star)
     return content
 
 
-def save_exoplanet_drafts(
+# ============================================================================
+# SAUVEGARDE DES BROUILLONS PAR TYPE D'ENTITÉ
+# ============================================================================
+
+
+def write_separated_exoplanet_drafts(
     missing_drafts: List[Tuple[str, str]],
     existing_drafts: List[Tuple[str, str]],
     drafts_dir: str = "drafts/exoplanet",
@@ -73,8 +83,8 @@ def save_exoplanet_drafts(
         existing_drafts: Une liste de tuples (nom, contenu) pour les brouillons existants.
         drafts_dir: Le répertoire de base pour sauvegarder les brouillons d'exoplanètes.
     """
-    missing_dir = os.path.join(drafts_dir, "missing")
-    existing_dir = os.path.join(drafts_dir, "existing")
+    missing_dir: str = os.path.join(drafts_dir, "missing")
+    existing_dir: str = os.path.join(drafts_dir, "existing")
     os.makedirs(missing_dir, exist_ok=True)
     os.makedirs(existing_dir, exist_ok=True)
 
@@ -82,8 +92,8 @@ def save_exoplanet_drafts(
         f"Sauvegarde de {len(missing_drafts)} brouillons d'exoplanètes manquants dans {missing_dir}"
     )
     for name, content in missing_drafts:
-        safe_filename = clean_filename(name)
-        filename = os.path.join(missing_dir, f"{safe_filename}.wiki")
+        safe_filename: str = sanitize_draft_filename(name)
+        filename: str = os.path.join(missing_dir, f"{safe_filename}.wiki")
         try:
             with open(filename, "w", encoding="utf-8") as f:
                 f.write(content)
@@ -96,7 +106,7 @@ def save_exoplanet_drafts(
         f"Sauvegarde de {len(existing_drafts)} brouillons d'exoplanètes existants dans {existing_dir}"
     )
     for name, content in existing_drafts:
-        safe_filename = clean_filename(name)
+        safe_filename = sanitize_draft_filename(name)
         filename = os.path.join(existing_dir, f"{safe_filename}.wiki")
         try:
             with open(filename, "w", encoding="utf-8") as f:
@@ -107,7 +117,7 @@ def save_exoplanet_drafts(
             logger.error(f"Erreur inattendue lors de la sauvegarde de {filename}: {e}")
 
 
-def save_star_drafts(
+def write_separated_star_drafts(
     missing_drafts: List[Tuple[str, str]],
     existing_drafts: List[Tuple[str, str]],
     drafts_dir: str = "drafts/star",
@@ -120,8 +130,8 @@ def save_star_drafts(
         existing_drafts: Une liste de tuples (nom, contenu) pour les brouillons existants.
         drafts_dir: Le répertoire de base pour sauvegarder les brouillons d'étoiles.
     """
-    missing_dir = os.path.join(drafts_dir, "missing")
-    existing_dir = os.path.join(drafts_dir, "existing")
+    missing_dir: str = os.path.join(drafts_dir, "missing")
+    existing_dir: str = os.path.join(drafts_dir, "existing")
     os.makedirs(missing_dir, exist_ok=True)
     os.makedirs(existing_dir, exist_ok=True)
 
@@ -129,8 +139,8 @@ def save_star_drafts(
         f"Sauvegarde de {len(missing_drafts)} brouillons d'étoiles manquants dans {missing_dir}"
     )
     for name, content in missing_drafts:
-        safe_filename = clean_filename(name)
-        filename = os.path.join(missing_dir, f"{safe_filename}.wiki")
+        safe_filename: str = sanitize_draft_filename(name)
+        filename: str = os.path.join(missing_dir, f"{safe_filename}.wiki")
         try:
             with open(filename, "w", encoding="utf-8") as f:
                 f.write(content)
@@ -143,7 +153,7 @@ def save_star_drafts(
         f"Sauvegarde de {len(existing_drafts)} brouillons d'étoiles existants dans {existing_dir}"
     )
     for name, content in existing_drafts:
-        safe_filename = clean_filename(name)
+        safe_filename = sanitize_draft_filename(name)
         filename = os.path.join(existing_dir, f"{safe_filename}.wiki")
         try:
             with open(filename, "w", encoding="utf-8") as f:
@@ -154,7 +164,12 @@ def save_star_drafts(
             logger.error(f"Erreur inattendue lors de la sauvegarde de {filename}: {e}")
 
 
-def save_drafts(
+# ============================================================================
+# SAUVEGARDE GÉNÉRIQUE DES BROUILLONS
+# ============================================================================
+
+
+def persist_drafts_by_entity_type(
     missing_drafts: Dict[str, str],
     existing_drafts: Dict[str, str],
     drafts_dir: str,
@@ -171,27 +186,27 @@ def save_drafts(
     """
     try:
         # Créer les répertoires s'ils n'existent pas
-        missing_dir = os.path.join(drafts_dir, "missing")
-        existing_dir = os.path.join(drafts_dir, "existing")
+        missing_dir: str = os.path.join(drafts_dir, "missing")
+        existing_dir: str = os.path.join(drafts_dir, "existing")
 
         # Créer les sous-répertoires pour le type d'entité
-        missing_entity_dir = os.path.join(missing_dir, entity_type)
-        existing_entity_dir = os.path.join(existing_dir, entity_type)
+        missing_entity_dir: str = os.path.join(missing_dir, entity_type)
+        existing_entity_dir: str = os.path.join(existing_dir, entity_type)
 
         os.makedirs(missing_entity_dir, exist_ok=True)
         os.makedirs(existing_entity_dir, exist_ok=True)
 
         # Sauvegarder les brouillons manquants
         for name, content in missing_drafts.items():
-            filename = clean_filename(name) + ".wiki"
-            filepath = os.path.join(missing_entity_dir, filename)
+            filename: str = sanitize_draft_filename(name) + ".wiki"
+            filepath: str = os.path.join(missing_entity_dir, filename)
             with open(filepath, "w", encoding="utf-8") as f:
                 f.write(content)
             logger.info(f"Brouillon manquant sauvegardé : {filepath}")
 
         # Sauvegarder les brouillons existants
         for name, content in existing_drafts.items():
-            filename = clean_filename(name) + ".wiki"
+            filename = sanitize_draft_filename(name) + ".wiki"
             filepath = os.path.join(existing_entity_dir, filename)
             with open(filepath, "w", encoding="utf-8") as f:
                 f.write(content)

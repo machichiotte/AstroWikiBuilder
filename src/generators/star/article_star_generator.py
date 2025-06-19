@@ -19,7 +19,7 @@ class ArticleStarGenerator(BaseArticleGenerator):
         reference_manager = ReferenceManager()
         category_generator = StarCategoryGenerator()
         stub_type = "étoile"
-        portals = ["astronomie", "étoiles"]
+        portals: list[str] = ["astronomie", "étoiles"]
 
         super().__init__(reference_manager, category_generator, stub_type, portals)
 
@@ -31,39 +31,38 @@ class ArticleStarGenerator(BaseArticleGenerator):
         except locale.Error:
             pass  # Optionnel : gérer fallback si besoin
 
-    def generate_article_content(self, star: Star) -> str:
+    def compose_article_content(self, star: Star) -> str:
         """
         Génère l'ensemble du contenu de l'article Wikipédia pour une étoile.
         """
-        self.reference_manager.reset_references()
         parts = []
 
         # 1. Templates de base (stub + source)
-        parts.append(self.generate_stub_and_source())
+        parts.append(self.compose_stub_and_source())
 
         # 2. Infobox
         parts.append(self.infobox_generator.generate(star))
 
         # 3. Introduction
-        parts.append(self._generate_introduction_section(star))
+        parts.append(self.build_introduction_section(star))
 
         # 4. Contenu principal
-        parts.append(self.content_generator.generate_all_content(star))
+        parts.append(self.content_generator.compose_full_article(star))
 
         # 5. Références et portails
-        parts.append(self.generate_references_section())
+        parts.append(self.build_references_section())
 
         # 6. Catégories
-        parts.append(self.generate_category_section(star))
+        parts.append(self.build_category_section(star))
 
         return "\n\n".join(filter(None, parts))
 
-    def _generate_introduction_section(self, star: Star) -> str:
+    def build_introduction_section(self, star: Star) -> str:
         """
         Génère l'introduction de l'article.
         """
-        star_name = star.st_name if star.st_name else "Cette étoile"
-        intro = f"'''{star_name}''' est une étoile"
+        star_name: str = star.st_name if star.st_name else "Cette étoile"
+        intro: str = f"'''{star_name}''' est une étoile"
 
         if star.st_spectral_type:
             intro += f" de type spectral {star.st_spectral_type}"
@@ -78,9 +77,7 @@ class ArticleStarGenerator(BaseArticleGenerator):
         if star.st_distance and star.st_distance.value is not None:
             try:
                 dist_val = float(star.st_distance.value)
-                formatted = self.article_utils.format_numeric_value(
-                    dist_val, precision=2
-                )
+                formatted = f"{dist_val:.2f}"
                 intro += f" Elle est située à environ {formatted} [[parsec|parsecs]] de la [[Terre]]."
 
             except ValueError:
@@ -88,7 +85,7 @@ class ArticleStarGenerator(BaseArticleGenerator):
 
         return intro
 
-    def _generate_placeholder_section(self, title: str, placeholder_text: str) -> str:
+    def build_placeholder_section(self, title: str, placeholder_text: str) -> str:
         """
         Génère une section vide avec un titre donné et un placeholder explicite.
         """

@@ -24,13 +24,13 @@ def is_valid_infobox_value(value: Any) -> bool:
         return False
 
     # Normalise les caractères (ex: 'é' -> 'e') et supprime les espaces
-    normalized_s_value = unicodedata.normalize('NFKD', s_representation)
-    s_value_stripped = normalized_s_value.strip()
+    normalized_s_value: str = unicodedata.normalize("NFKD", s_representation)
+    s_value_stripped: str = normalized_s_value.strip()
 
     if not s_value_stripped:
         return False
 
-    s_value_lower = s_value_stripped.lower()
+    s_value_lower: str = s_value_stripped.lower()
 
     # Vérifie les cas spécifiques comme 'nan' ou les templates 'nan{{...}}'
     if s_value_lower == "nan" or s_value_lower.startswith("nan{{"):
