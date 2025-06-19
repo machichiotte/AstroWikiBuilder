@@ -53,8 +53,10 @@ class NasaExoplanetArchiveMapper:
                 nea_field in nea_data
                 and attribute != "st_name"
                 and attribute != "pl_name"
+                and attribute != "reference"
             ):
                 raw_value = nea_data[nea_field]
+
                 if is_invalid_raw_value(raw_value):
                     print(
                         f"Ignored {nea_field} ({attribute}) due to invalid value: {raw_value}"
@@ -111,6 +113,12 @@ class NasaExoplanetArchiveMapper:
             ):
                 raw_value = nea_data[nea_field]
 
+                if is_invalid_raw_value(raw_value):
+                    print(
+                        f"Ignored {nea_field} ({attribute}) due to invalid value: {raw_value}"
+                    )
+                    continue
+
                 if (
                     attribute != "st_declination"
                     or attribute != "st_right_ascension"
@@ -128,7 +136,23 @@ class NasaExoplanetArchiveMapper:
 
                         else:
                             try:
-                                numeric_value = float(raw_value)
+                                if int(raw_value):
+                                    numeric_value = int(raw_value)
+                                    print(
+                                        "map_exoplanet_from_nea_record int",
+                                        attribute,
+                                        numeric_value,
+                                    )
+
+                                elif float(raw_value):
+                                    numeric_value = float(raw_value)
+
+                                    print(
+                                        "map_exoplanet_from_nea_record float",
+                                        attribute,
+                                        numeric_value,
+                                    )
+
                                 error_positive = nea_data.get(f"{nea_field}_err1")
                                 error_negative = nea_data.get(f"{nea_field}_err2")
 

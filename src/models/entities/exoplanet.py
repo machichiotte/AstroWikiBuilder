@@ -10,9 +10,9 @@ from ..references.reference import Reference
 class ValueWithUncertainty:
     """Classe pour représenter une valeur avec ses incertitudes et son signe"""
 
-    value: Optional[float] = None
-    error_positive: Optional[float] = None
-    error_negative: Optional[float] = None
+    value: Optional[int | float] = None
+    error_positive: Optional[int | float] = None
+    error_negative: Optional[int | float] = None
     sign: Optional[str] = None  # Ex "<", ">", "±", etc.
 
     def __hash__(self) -> int:

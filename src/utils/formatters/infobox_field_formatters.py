@@ -1,13 +1,11 @@
 # src/utils/formatters/infobox_field_formatters.py
 from enum import Enum
 import logging
-from typing import Any
 
 from src.constants.field_mappings import DISCOVERY_FACILITY_MAPPING, METHOD_NAME_MAPPING
 from src.models.entities.exoplanet import ValueWithUncertainty
 from src.utils.validators import infobox_validators
 from src.models.infobox_fields import FieldMapping
-from src.models.references.reference import Reference
 
 logger = logging.getLogger(__name__)
 

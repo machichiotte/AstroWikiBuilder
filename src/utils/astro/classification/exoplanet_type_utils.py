@@ -111,11 +111,7 @@ class ExoplanetTypeUtils:
     def classify_giant_planet_by_temperature_or_insolation(
         self, m: float, p: Exoplanet, insolation: Optional[float]
     ) -> str:
-        t: float | None = (
-            float(p.pl_temperature.value)
-            if p.pl_temperature and p.pl_temperature.value
-            else None
-        )
+        t: float | None = float(p.pl_temperature.value) if p.pl_temperature else None
         a: float | None = (
             float(p.pl_semi_major_axis.value)
             if p.pl_semi_major_axis and p.pl_semi_major_axis.value

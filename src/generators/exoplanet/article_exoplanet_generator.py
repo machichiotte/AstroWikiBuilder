@@ -111,6 +111,8 @@ class ArticleExoplanetGenerator(BaseArticleGenerator):
                 )
 
         if exoplanet.pl_eccentricity:
+            print("ici pl_name", exoplanet.pl_name)
+            print("ici pl_eccentricity", exoplanet.pl_eccentricity)
             eccentricity_str: str = (
                 self.article_utils.format_uncertain_value_for_article(
                     exoplanet.pl_eccentricity
