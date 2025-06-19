@@ -24,7 +24,6 @@ class InfoboxBaseGenerator(ABC):
 
         lines = [self.get_infobox_header()]
 
-        # TODO ici on prepare la reference, pour la passer au process_field
         wiki_reference: str | None = (
             obj.reference.to_wiki_ref() if obj.reference else None
         )

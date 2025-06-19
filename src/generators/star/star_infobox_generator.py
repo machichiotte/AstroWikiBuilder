@@ -13,7 +13,7 @@ class StarInfoboxGenerator(InfoboxBaseGenerator):
         return InfoboxMapper.convert_star_to_infobox()
 
     def get_infobox_header(self) -> str:
-        return "{{Infobox Étoile}}"
+        return "{{Infobox Étoile"
 
     def get_notes_fields(self) -> list[str]:
         return NOTES_FIELDS_STAR
