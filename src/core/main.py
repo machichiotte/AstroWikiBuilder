@@ -1,3 +1,4 @@
+# src/core/main.py
 import os
 from datetime import datetime
 import argparse
@@ -155,7 +156,10 @@ def _initialize_collectors(args: argparse.Namespace) -> Dict[str, Any]:
 def _get_collector_instance(source: str, use_mock: bool, cache_path: str) -> Any:
     """Retourne une instance du collecteur approprié basée sur la source."""
     if source == "nasa_exoplanet_archive":
-        return NASAExoplanetArchiveCollector(use_mock_data=use_mock)
+        return NASAExoplanetArchiveCollector(
+            use_mock_data=use_mock,
+            custom_cache_filename=cache_path,
+        )
     # elif source == "exoplanet_eu":
     #     return ExoplanetEUCollector(cache_path=cache_path, use_mock_data=use_mock)
     # elif source == "open_exoplanet":
@@ -385,17 +389,14 @@ def generate_and_persist_star_drafts(
             # Récupérer les exoplanètes de cette étoile
             star_exoplanets = exoplanets_by_star_name.get(star_name, [])
             if star_exoplanets:
-                logger.info(
-                    f"Génération draft étoile: {star_name} avec {len(star_exoplanets)} exoplanètes"
+                star_drafts[star_name] = build_star_article_draft(
+                    star, exoplanets=star_exoplanets
                 )
             else:
                 logger.info(
                     f"Génération draft étoile: {star_name} (aucune exoplanète connue)"
                 )
 
-            star_drafts[star_name] = build_star_article_draft(
-                star, exoplanets=star_exoplanets
-            )
         else:
             logger.warning(f"Objet ignoré (type: {type(star)}) pour {star_name}")
 

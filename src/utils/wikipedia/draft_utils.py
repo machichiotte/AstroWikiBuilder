@@ -203,7 +203,7 @@ def persist_drafts_by_entity_type(
             filepath: str = os.path.join(missing_entity_dir, filename)
             with open(filepath, "w", encoding="utf-8") as f:
                 f.write(content)
-            logger.info(f"Brouillon manquant sauvegardé : {filepath}")
+            # logger.info(f"Brouillon manquant sauvegardé : {filepath}")
 
         # Sauvegarder les brouillons existants
         for name, content in existing_drafts.items():
@@ -211,7 +211,12 @@ def persist_drafts_by_entity_type(
             filepath = os.path.join(existing_entity_dir, filename)
             with open(filepath, "w", encoding="utf-8") as f:
                 f.write(content)
-            logger.info(f"Brouillon existant sauvegardé : {filepath}")
+            # logger.info(f"Brouillon existant sauvegardé : {filepath}")
+
+        total = len(missing_drafts) + len(existing_drafts)
+        logger.info(
+            f"Total de {total} brouillons sauvegardés dans : {missing_entity_dir} et {existing_entity_dir}"
+        )
 
     except Exception as e:
         logger.error(f"Erreur lors de la sauvegarde des brouillons : {str(e)}")

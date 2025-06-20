@@ -22,7 +22,7 @@ class ArticleStarGenerator(BaseArticleGenerator):
         reference_manager = ReferenceManager()
         category_generator = StarCategoryGenerator()
         stub_type = "étoile"
-        portals: list[str] = ["astronomie", "étoiles"]
+        portals: list[str] = ["astronomie", "étoiles", "exoplanètes"]
 
         super().__init__(reference_manager, category_generator, stub_type, portals)
 

@@ -51,6 +51,7 @@ class StarCategoryGenerator(BaseCategoryGenerator):
 
     def list_category_rules(self) -> List[Callable]:
         return [
+            self.add_custom_category,
             self.resolve_catalog_category,
             self.map_spectral_type_to_category,
             self.convert_spectral_subtype_to_roman_category,
@@ -64,9 +65,8 @@ class StarCategoryGenerator(BaseCategoryGenerator):
     # ============================================================================
     def resolve_catalog_category(self, star: Star) -> Optional[str]:
         """
-        Génère une catégorie basée sur le catalogue d'origine de l'étoile
-        (Kepler, K2, KOI, etc.) en se basant sur le nom principal ou les noms alternatifs.
-        Retourne toutes les catégories de catalogue trouvées.
+        Génère les catégories de catalogue basées sur les préfixes des noms,
+        au format [[Catégorie:XYZ|clef]].
         """
         catalog_mappings = (
             self.generator.rules.get("star", {})
@@ -74,25 +74,36 @@ class StarCategoryGenerator(BaseCategoryGenerator):
             .get("prefix_catalog", {})
         )
 
-        categories = set()  # Utiliser un set pour éviter les doublons
+        categories = set()
 
-        # Check the primary name
+        def extract_key(name: str, prefix: str) -> str:
+            return name[len(prefix) :].strip()
+
+        def process_name(raw_name: str):
+            if not raw_name:
+                return
+
+            name = raw_name.strip().upper()
+            for prefix, category in catalog_mappings.items():
+                if name.startswith(prefix):
+                    key = extract_key(name, prefix)
+                    formatted = (
+                        f"{category}|{key}]]"  # Catégorie déjà incluse dans YAML
+                    )
+                    formatted = formatted.replace(
+                        "]]", ""
+                    )  # nettoyer pour éviter ]] de trop
+                    categories.add(f"{formatted}]]")
+
+        # Nom principal
         if star.st_name:
-            st_name: str = star.st_name.strip().upper()
-            for prefix, category_name in catalog_mappings.items():
-                if st_name.startswith(prefix):
-                    categories.add(category_name)
+            process_name(star.st_name)
 
-        # Check the alternative names
+        # Noms alternatifs
         if star.st_altname:
             for alt_name in star.st_altname:
-                if alt_name:  # Check that the name is not None or empty
-                    alt_name: str = alt_name.strip().upper()
-                    for prefix, category_name in catalog_mappings.items():
-                        if alt_name.startswith(prefix):
-                            categories.add(category_name)
+                process_name(alt_name)
 
-        # Retourner toutes les catégories trouvées, séparées par des retours à la ligne
         return "\n".join(sorted(categories)) if categories else None
 
     def map_spectral_type_to_category(self, star: Star) -> Optional[str]:
@@ -203,3 +214,19 @@ class StarCategoryGenerator(BaseCategoryGenerator):
         Règle personnalisée pour déterminer la catégorie de type d'étoile variable.
         """
         return None
+
+    def add_custom_category(self, star: Star) -> Optional[str]:
+        """
+        Ajoute une catégorie personnalisée pour le système planétaire.
+        """
+        return "\n[[Catégorie:Système planétaire]]"
+
+    def add_catalogs_category(self, star: Star) -> Optional[str]:
+        """
+        #ici dans star.st_name on a le prefix qui nous donne le catalogue mais il faut le numero
+        car
+
+
+        idem dans star.alt_names qui contient plusieurs string
+        """
+        return "\n[[Catégorie:Système planétaire]]"

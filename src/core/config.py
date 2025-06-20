@@ -1,3 +1,4 @@
+# src/core/config.py
 import logging
 
 # Configuration du logging
@@ -7,8 +8,8 @@ logging.basicConfig(
 logger: logging.Logger = logging.getLogger(__name__)
 
 # Configuration des chemins
-DEFAULT_OUTPUT_DIR = "output"
-DEFAULT_DRAFTS_DIR = "drafts"
+DEFAULT_OUTPUT_DIR = "data/generated"
+DEFAULT_DRAFTS_DIR = "data/drafts"
 DEFAULT_CACHE_DIR = "data/cache"
 
 # Configuration des User-Agents
@@ -26,15 +27,15 @@ AVAILABLE_SOURCES: list[str] = [
 # Chemins de cache pour les différentes sources
 CACHE_PATHS: dict[str, dict[str, str]] = {
     "nasa_exoplanet_archive": {
-        "mock": "data/cache/nasa_exoplanet_archive_mock_complete.csv",
-        "real": "data/cache/nasa_exoplanet_archive_downloaded.csv",
+        "mock": "generated/random_exoplanets_120.csv",
+        "real": "cache/nasa_exoplanet_archive/nea_mock_complete.csv",
     },
     "exoplanet_eu": {
-        "mock": "data/cache/exoplanet_eu_mock.csv",
-        "real": "data/cache/exoplanet_eu_downloaded.csv",
+        "mock": "generated/exoplanet_eu_mock.csv",
+        "real": "cache/exoplanet_eu_downloaded.csv",
     },
     "open_exoplanet": {
-        "mock": "data/cache/open_exoplanet_mock.csv",
-        "real": "data/cache/open_exoplanet_downloaded.txt",
+        "mock": "generated/open_exoplanet_mock.csv",
+        "real": "cache/open_exoplanet_downloaded.txt",
     },
 }

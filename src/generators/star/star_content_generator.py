@@ -113,8 +113,13 @@ class StarContentGenerator:
         if star.st_right_ascension and star.st_declination:
             ra: str = star.st_right_ascension
             dec: str = star.st_declination
+
+            ra_parts = ra.split("/")
+            ra_str = f"{{{{ascension droite|{ra_parts[0]}|{ra_parts[1]}|{ra_parts[2].replace('.', ',')}}}}}"
+            dec_parts = dec.split("/")
+            dec_str = f"{{{{déclinaison|{dec_parts[0]}|{dec_parts[1]}|{dec_parts[2].replace('.', ',')}}}}}"
             content.append(
-                f"Ses coordonnées célestes sont : ascension droite {ra}, déclinaison {dec}."
+                f"Ses [[coordonnées célestes]] sont : [[ascension droite]] {ra_str}, [[déclinaison]] {dec_str}."
             )
 
         return "\n".join(content)

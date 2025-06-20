@@ -2,6 +2,7 @@
 import pandas as pd
 from typing import List, Optional, Dict, Any
 import logging
+from src.core.config import CACHE_PATHS
 from src.models.entities.star import Star
 from src.mappers.nasa_exoplanet_archive_mapper import NasaExoplanetArchiveMapper
 from src.collectors.base_collector import BaseCollector
@@ -16,16 +17,20 @@ logger = logging.getLogger(__name__)
 class NASAExoplanetArchiveCollector(BaseCollector):
     def __init__(
         self,
-        cache_dir: str = "data/cache/nasa_exoplanet_archive",
+        cache_dir: str = "data",
         use_mock_data: bool = False,
+        custom_cache_filename: Optional[str] = None,
     ):
+        self._custom_cache_filename = custom_cache_filename
+
         super().__init__(cache_dir, use_mock_data)
         self.mapper = NasaExoplanetArchiveMapper()
 
     def _get_default_cache_filename(self) -> str:
-        # return "nea_mock_data_complete.csv"
-
-        return "nea_mock_data.csv"
+        if self._custom_cache_filename:
+            return self._custom_cache_filename
+        mode = "mock" if self.use_mock_data else "real"
+        return CACHE_PATHS["nasa_exoplanet_archive"][mode]
 
     def _get_download_url(self) -> str:
         return "https://exoplanetarchive.ipac.caltech.edu/TAP/sync?query=select+*+from+PSCompPars&format=csv"

@@ -31,15 +31,6 @@ class FieldFormatter:
     """Formatters pour différents types de champs"""
 
     @staticmethod
-    def format_luminosity_log10(value):
-        if value is None or value.value is None:
-            return ""
-        try:
-            return f"{10 ** float(value.value):.3g}"
-        except Exception:
-            return str(value.value)
-
-    @staticmethod
     def _format_error_number(value: ValueWithUncertainty) -> str:
         """Formate une valeur avec incertitude pour l'infobox"""
         if not value or value.value is None:
@@ -76,7 +67,6 @@ class FieldFormatter:
     @staticmethod
     def _format_discovery_facility(value: str) -> str:
         """Formate le lieu de découverte"""
-        print("_format_discovery_facility")
         try:
             mapped: str | None = DISCOVERY_FACILITY_MAPPING.get(value)
             return f"[[{mapped}]]" if mapped else str(value)
@@ -163,13 +153,10 @@ class FieldFormatter:
         try:
             # Determine the appropriate formatter based on the field name and value type
             if field_name in _FORMATTERS:
-                print("in formatter", field_name)
                 formatter = _FORMATTERS[field_name]
             elif isinstance(value, ValueWithUncertainty):
-                print("elif", field_name)
                 formatter = _FORMATTERS.get("err_number")
             else:
-                print("else", field_name)
                 formatter = _FORMATTERS.get("normal")
 
             # Format the value using the selected formatter
@@ -240,7 +227,6 @@ _FORMATTERS = {
     InfoboxField.DESIGNATIONS: FieldFormatter._format_designations,
     InfoboxField.UAI_MAP: lambda v: v,
     InfoboxField.CONSTELLATION: lambda v: f"[[{v} (constellation)|{v}]]",
-    InfoboxField.LUMINOSITY: FieldFormatter.format_luminosity_log10,
     InfoboxField.ERROR_NUMBER: FieldFormatter._format_error_number,
     InfoboxField.NORMAL: lambda v: v,
 }

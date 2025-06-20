@@ -32,8 +32,9 @@ class BaseArticleGenerator:
     def build_references_section(self) -> str:
         section = "== Références ==\n"
         section += "{{références}}\n"
-        for portal in self.portals:
-            section += f"{{{{Portail|{portal}}}}}\n"
+        section += "{{Portail|"
+        section += "|".join(self.portals)
+        section += "}}\n"
         return section
 
     def build_category_section(self, obj) -> str:

@@ -118,11 +118,20 @@ class BaseCollector(ABC):
     def _load_data(self) -> Optional[pd.DataFrame]:
         if self.use_mock_data:
             logger.info("Chargement depuis les données mockées.")
-            return (
-                self._read_csv_from_path(self.cache_path)
-                if os.path.exists(self.cache_path)
-                else None
-            )
+            if os.path.exists(self.cache_path):
+                df = self._read_csv_from_path(self.cache_path)
+                if df is not None:
+                    logger.info(
+                        f"Fichier mock chargé: {self.cache_path} ({len(df)} lignes)"
+                    )
+                else:
+                    logger.warning(
+                        f"Fichier mock vide ou non lisible: {self.cache_path}"
+                    )
+                return df
+            else:
+                logger.error(f"Fichier mock introuvable: {self.cache_path}")
+                return None
 
         if os.path.exists(self.cache_path):
             df: Optional[pd.DataFrame] = self._read_csv_from_path(self.cache_path)

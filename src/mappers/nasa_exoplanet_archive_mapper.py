@@ -69,13 +69,58 @@ class NasaExoplanetArchiveMapper:
                         "st_right_ascension",
                         "st_spectral_type",
                     ):
-                        value_with_uncertainty: ValueWithUncertainty | None = (
-                            self.convert_to_value_with_uncertainty(value=raw_value)
-                        )
-                        if value_with_uncertainty:
-                            setattr(star, attribute, value_with_uncertainty)
-                    else:
-                        setattr(star, attribute, raw_value)
+                        if raw_value:
+                            if isinstance(
+                                raw_value, str
+                            ) and self.is_composite_formatted_string(raw_value):
+                                parsed_vwu = self.parse_composite_formatted_value(
+                                    raw_value
+                                )
+                                if parsed_vwu:
+                                    setattr(star, attribute, parsed_vwu)
+
+                            else:
+                                try:
+                                    if attribute == "st_luminosity":
+                                        numeric_value = float(10**raw_value)
+                                    elif int(raw_value):
+                                        numeric_value = int(raw_value)
+                                    elif float(raw_value):
+                                        numeric_value = float(raw_value)
+
+                                    error_positive = nea_data.get(f"{nea_field}_err1")
+                                    error_negative = nea_data.get(f"{nea_field}_err2")
+
+                                    err1_clean = (
+                                        float(
+                                            str(error_positive)
+                                            .replace("+", "")
+                                            .replace("-", "")
+                                        )
+                                        if error_positive
+                                        else None
+                                    )
+                                    err2_clean = (
+                                        float(
+                                            str(error_negative)
+                                            .replace("+", "")
+                                            .replace("-", "")
+                                        )
+                                        if error_negative
+                                        else None
+                                    )
+
+                                    value_with_uncertainty = ValueWithUncertainty(
+                                        value=numeric_value,
+                                        error_positive=err1_clean,
+                                        error_negative=err2_clean,
+                                        sign="±" if err1_clean or err2_clean else None,
+                                    )
+                                    setattr(star, attribute, value_with_uncertainty)
+
+                                except (ValueError, TypeError):
+                                    # C'est un string "pur" (ex: identifiant, classe spectrale, etc.)
+                                    setattr(star, attribute, raw_value)
 
         # Traitement spécial pour les désignations
         st_altnames = self.extract_star_alternative_names(nea_data)
@@ -136,22 +181,12 @@ class NasaExoplanetArchiveMapper:
 
                         else:
                             try:
-                                if int(raw_value):
+                                if attribute == "st_luminosity":
+                                    numeric_value = float(10**raw_value)
+                                elif int(raw_value):
                                     numeric_value = int(raw_value)
-                                    print(
-                                        "map_exoplanet_from_nea_record int",
-                                        attribute,
-                                        numeric_value,
-                                    )
-
                                 elif float(raw_value):
                                     numeric_value = float(raw_value)
-
-                                    print(
-                                        "map_exoplanet_from_nea_record float",
-                                        attribute,
-                                        numeric_value,
-                                    )
 
                                 error_positive = nea_data.get(f"{nea_field}_err1")
                                 error_negative = nea_data.get(f"{nea_field}_err2")
