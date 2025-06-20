@@ -56,12 +56,13 @@ def build_exoplanet_article_draft(exoplanet: Exoplanet) -> str:
     return content
 
 
-def build_star_article_draft(star: Star) -> str:
+def build_star_article_draft(star: Star, exoplanets: List[Exoplanet] = None) -> str:
     """
     Génère le contenu d'un brouillon d'article pour une étoile.
+    Si une liste d'exoplanètes est fournie, elle sera intégrée dans le contenu.
     """
     generator = ArticleStarGenerator()
-    content: str = generator.compose_article_content(star)
+    content: str = generator.compose_article_content(star, exoplanets=exoplanets)
     return content
 
 

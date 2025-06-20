@@ -1,6 +1,8 @@
 # src/generators/wikipedia_star_generator.py
 import locale
+from typing import List
 from src.models.entities.star import Star
+from src.models.entities.exoplanet import Exoplanet
 from src.generators.star.star_infobox_generator import StarInfoboxGenerator
 from src.utils.formatters.article_formatters import ArticleUtils
 from src.services.processors.reference_manager import ReferenceManager
@@ -31,9 +33,12 @@ class ArticleStarGenerator(BaseArticleGenerator):
         except locale.Error:
             pass  # Optionnel : gérer fallback si besoin
 
-    def compose_article_content(self, star: Star) -> str:
+    def compose_article_content(
+        self, star: Star, exoplanets: List[Exoplanet] = None
+    ) -> str:
         """
         Génère l'ensemble du contenu de l'article Wikipédia pour une étoile.
+        Si des exoplanètes sont fournies, elles seront intégrées dans le contenu.
         """
         parts = []
 
@@ -49,10 +54,14 @@ class ArticleStarGenerator(BaseArticleGenerator):
         # 4. Contenu principal
         parts.append(self.content_generator.compose_full_article(star))
 
-        # 5. Références et portails
+        # 5. Section des exoplanètes (si disponibles)
+        if exoplanets:
+            parts.append(self.build_exoplanets_section(star, exoplanets))
+
+        # 6. Références et portails
         parts.append(self.build_references_section())
 
-        # 6. Catégories
+        # 7. Catégories
         parts.append(self.build_category_section(star))
 
         return "\n\n".join(filter(None, parts))
@@ -90,3 +99,56 @@ class ArticleStarGenerator(BaseArticleGenerator):
         Génère une section vide avec un titre donné et un placeholder explicite.
         """
         return f"== {title} ==\n{placeholder_text}"
+
+    def build_exoplanets_section(self, star: Star, exoplanets: List[Exoplanet]) -> str:
+        """
+        Génère une section listant les exoplanètes de l'étoile.
+        """
+        if not exoplanets:
+            return ""
+
+        star_name = star.st_name if star.st_name else "Cette étoile"
+        section = "== Système planétaire ==\n"
+
+        if len(exoplanets) == 1:
+            section += f"{star_name} possède une exoplanète confirmée :\n\n"
+        else:
+            section += (
+                f"{star_name} possède {len(exoplanets)} exoplanètes confirmées :\n\n"
+            )
+
+        # Liste des exoplanètes
+        for i, exoplanet in enumerate(exoplanets, 1):
+            section += f"* '''[[{exoplanet.pl_name}]]'''"
+
+            # Ajouter des informations de base sur l'exoplanète
+            if (
+                hasattr(exoplanet, "pl_mass")
+                and exoplanet.pl_mass
+                and exoplanet.pl_mass.value
+            ):
+                try:
+                    mass = float(exoplanet.pl_mass.value)
+                    if mass < 0.1:
+                        section += " (planète terrestre)"
+                    elif mass < 10:
+                        section += " (planète géante)"
+                    else:
+                        section += " (planète massive)"
+                except (ValueError, TypeError):
+                    pass
+
+            if (
+                hasattr(exoplanet, "pl_orbper")
+                and exoplanet.pl_orbper
+                and exoplanet.pl_orbper.value
+            ):
+                try:
+                    period = float(exoplanet.pl_orbper.value)
+                    section += f", période orbitale de {period:.1f} jours"
+                except (ValueError, TypeError):
+                    pass
+
+            section += "\n"
+
+        return section

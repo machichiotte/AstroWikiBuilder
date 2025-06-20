@@ -26,7 +26,7 @@ AVAILABLE_SOURCES: list[str] = [
 # Chemins de cache pour les différentes sources
 CACHE_PATHS: dict[str, dict[str, str]] = {
     "nasa_exoplanet_archive": {
-        "mock": "data/cache/nasa_exoplanet_archive_mock.csv",
+        "mock": "data/cache/nasa_exoplanet_archive_mock_complete.csv",
         "real": "data/cache/nasa_exoplanet_archive_downloaded.csv",
     },
     "exoplanet_eu": {

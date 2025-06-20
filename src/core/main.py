@@ -355,20 +355,47 @@ def resolve_and_export_wikipedia_article_status(
 def generate_and_persist_star_drafts(
     processor: DataProcessor,
     drafts_dir: str,
+    exoplanets: List[Exoplanet] = None,
 ) -> None:
     """
     Génère et sauvegarde les brouillons d'étoiles en filtrant les objets valides.
+    Si des exoplanètes sont fournies, elles seront utilisées pour enrichir le contenu des étoiles.
     """
     stars: List[Star] = processor.collect_all_stars()
 
-    logger.info(f"Nombre total d'objets retournés par get_all_stars: {len(stars)}")
-    star_drafts = {}
+    # Créer un index des exoplanètes par nom d'étoile hôte
+    exoplanets_by_star_name: Dict[str, List[Exoplanet]] = {}
+    if exoplanets:
+        for exoplanet in exoplanets:
+            if hasattr(exoplanet, "st_name") and exoplanet.st_name:
+                star_name = str(exoplanet.st_name)
+                if star_name not in exoplanets_by_star_name:
+                    exoplanets_by_star_name[star_name] = []
+                exoplanets_by_star_name[star_name].append(exoplanet)
 
+    logger.info(f"Nombre total d'objets retournés par get_all_stars: {len(stars)}")
+    logger.info(
+        f"Index créé pour {len(exoplanets_by_star_name)} étoiles avec exoplanètes"
+    )
+
+    star_drafts = {}
     for star in stars:
         star_name: str = getattr(star, "st_name", "UNKNOWN")
         if isinstance(star, Star):
-            logger.info(f"Génération draft étoile: {star_name} (type: {type(star)})")
-            star_drafts[star_name] = build_star_article_draft(star)
+            # Récupérer les exoplanètes de cette étoile
+            star_exoplanets = exoplanets_by_star_name.get(star_name, [])
+            if star_exoplanets:
+                logger.info(
+                    f"Génération draft étoile: {star_name} avec {len(star_exoplanets)} exoplanètes"
+                )
+            else:
+                logger.info(
+                    f"Génération draft étoile: {star_name} (aucune exoplanète connue)"
+                )
+
+            star_drafts[star_name] = build_star_article_draft(
+                star, exoplanets=star_exoplanets
+            )
         else:
             logger.warning(f"Objet ignoré (type: {type(star)}) pour {star_name}")
 
@@ -461,7 +488,9 @@ def main():
     #    missing_map = {}
 
     generate_and_persist_exoplanet_drafts(processor, args.drafts_dir)
-    generate_and_persist_star_drafts(processor, args.drafts_dir)
+    generate_and_persist_star_drafts(
+        processor, args.drafts_dir, processor.collect_all_exoplanets()
+    )
 
     logger.info("Traitement terminé avec succès.")
 
