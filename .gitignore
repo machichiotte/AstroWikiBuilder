@@ -178,6 +178,6 @@ drafts/
 drafts copy/
 data/*.json
 data/cache/nasa_exoplanet_archive/
-data/cache/nea_mock_data_complete.json
+data/generated
 
 tools/lire_excel
