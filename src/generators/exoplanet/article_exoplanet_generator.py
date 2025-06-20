@@ -1,6 +1,7 @@
 # src/generators/article_exoplanet_generator.py
 import locale
 import math
+import re
 
 from src.models.entities.exoplanet import Exoplanet
 
@@ -84,8 +85,34 @@ class ArticleExoplanetGenerator(BaseArticleGenerator):
         # 9. Catégories
         parts.append(self.build_category_section(exoplanet))
 
-        # On assemble le tout en filtrant les chaînes vides
-        return "\n\n".join(filter(None, parts))
+        # Assembler le contenu
+        article_content = "\n\n".join(filter(None, parts))
+
+        # Post-traitement : remplacer la première occurrence de chaque référence simple par la version complète
+        return self._process_references(article_content, exoplanet)
+
+    def _process_references(self, content: str, exoplanet: Exoplanet) -> str:
+        """
+        Post-traitement : remplace la première occurrence de chaque référence simple
+        par la version complète, laisse les suivantes en version simple.
+        """
+        if not exoplanet.reference:
+            return content
+
+        # Créer la référence complète
+        full_ref = exoplanet.reference.to_wiki_ref(short=False)
+        short_ref = exoplanet.reference.to_wiki_ref(short=True)
+
+        # Extraire le nom de la référence (ex: "NEA")
+        ref_name = exoplanet.reference.source.value
+
+        # Pattern pour trouver les références simples
+        short_ref_pattern = rf'<ref name="{ref_name}"\s*/>'
+
+        # Remplacer seulement la première occurrence
+        content, count = re.subn(short_ref_pattern, full_ref, content, count=1)
+
+        return content
 
     def build_orbit_section(self, exoplanet: Exoplanet) -> str:
         """Génère la section sur l'orbite de l'exoplanète."""
@@ -111,8 +138,6 @@ class ArticleExoplanetGenerator(BaseArticleGenerator):
                 )
 
         if exoplanet.pl_eccentricity:
-            print("ici pl_name", exoplanet.pl_name)
-            print("ici pl_eccentricity", exoplanet.pl_eccentricity)
             eccentricity_str: str = (
                 self.article_utils.format_uncertain_value_for_article(
                     exoplanet.pl_eccentricity

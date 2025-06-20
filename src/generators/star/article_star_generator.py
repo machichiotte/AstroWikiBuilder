@@ -1,6 +1,7 @@
-# src/generators/wikipedia_star_generator.py
+# src/generators/article_star_generator.py
 import locale
-from typing import List
+import re
+from typing import List, Optional
 from src.models.entities.star import Star
 from src.models.entities.exoplanet import Exoplanet
 from src.generators.star.star_infobox_generator import StarInfoboxGenerator
@@ -64,7 +65,34 @@ class ArticleStarGenerator(BaseArticleGenerator):
         # 7. Catégories
         parts.append(self.build_category_section(star))
 
-        return "\n\n".join(filter(None, parts))
+        # Assembler le contenu
+        article_content = "\n\n".join(filter(None, parts))
+
+        # Post-traitement : remplacer la première occurrence de chaque référence simple par la version complète
+        return self._process_references(article_content, star)
+
+    def _process_references(self, content: str, star: Star) -> str:
+        """
+        Post-traitement : remplace la première occurrence de chaque référence simple
+        par la version complète, laisse les suivantes en version simple.
+        """
+        if not star.reference:
+            return content
+
+        # Créer la référence complète
+        full_ref = star.reference.to_wiki_ref(short=False)
+        short_ref = star.reference.to_wiki_ref(short=True)
+
+        # Extraire le nom de la référence (ex: "NEA")
+        ref_name = star.reference.source.value
+
+        # Pattern pour trouver les références simples
+        short_ref_pattern = rf'<ref name="{ref_name}"\s*/>'
+
+        # Remplacer seulement la première occurrence
+        content, count = re.subn(short_ref_pattern, full_ref, content, count=1)
+
+        return content
 
     def build_introduction_section(self, star: Star) -> str:
         """
@@ -87,7 +115,7 @@ class ArticleStarGenerator(BaseArticleGenerator):
             try:
                 dist_val = float(star.st_distance.value)
                 formatted = f"{dist_val:.2f}"
-                intro += f" Elle est située à environ {formatted} [[parsec|parsecs]] de la [[Terre]]."
+                intro += f" Elle est située à environ {{{{unité|{formatted}|[[parsec]]s}}}} de la [[Terre]]."
 
             except ValueError:
                 formatted = "unknown"
@@ -100,9 +128,30 @@ class ArticleStarGenerator(BaseArticleGenerator):
         """
         return f"== {title} ==\n{placeholder_text}"
 
+    def _format_uncertainty(
+        self,
+        value: float,
+        error_positive: Optional[float],
+        error_negative: Optional[float],
+    ) -> str:
+        """
+        Formate une valeur avec ses incertitudes selon les cas possibles.
+        """
+        if error_positive is not None and error_negative is not None:
+            if error_positive == error_negative:
+                return f"{value:.2f} ± {error_positive:.2f}"
+            else:
+                return f"{value:.2f} +{error_positive:.2f} -{error_negative:.2f}"
+        elif error_positive is not None:
+            return f"{value:.2f} +{error_positive:.2f}"
+        elif error_negative is not None:
+            return f"{value:.2f} -{error_negative:.2f}"
+        else:
+            return f"{value:.2f}"
+
     def build_exoplanets_section(self, star: Star, exoplanets: List[Exoplanet]) -> str:
         """
-        Génère une section listant les exoplanètes de l'étoile.
+        Génère une section listant les exoplanètes de l'étoile avec le template Wikipedia.
         """
         if not exoplanets:
             return ""
@@ -110,45 +159,115 @@ class ArticleStarGenerator(BaseArticleGenerator):
         star_name = star.st_name if star.st_name else "Cette étoile"
         section = "== Système planétaire ==\n"
 
-        if len(exoplanets) == 1:
-            section += f"{star_name} possède une exoplanète confirmée :\n\n"
-        else:
-            section += (
-                f"{star_name} possède {len(exoplanets)} exoplanètes confirmées :\n\n"
-            )
+        # Template de début
+        section += "{{Système planétaire début\n"
+        section += f"| nom = {star_name}\n"
+        section += "}}\n"
 
-        # Liste des exoplanètes
-        for i, exoplanet in enumerate(exoplanets, 1):
-            section += f"* '''[[{exoplanet.pl_name}]]'''"
+        # Templates pour chaque exoplanète
+        # Trier les exoplanètes par nom alphabétique avant de les ajouter à la section
+        exoplanets.sort(key=lambda exoplanet: exoplanet.pl_name)
 
-            # Ajouter des informations de base sur l'exoplanète
-            if (
-                hasattr(exoplanet, "pl_mass")
-                and exoplanet.pl_mass
-                and exoplanet.pl_mass.value
-            ):
+        for exoplanet in exoplanets:
+            pl_name: str = exoplanet.pl_name
+            section += "{{Système planétaire\n"
+            section += f"| exoplanète = [[{pl_name}]]\n"
+
+            # Masse
+            if exoplanet.pl_mass and exoplanet.pl_mass.value is not None:
                 try:
                     mass = float(exoplanet.pl_mass.value)
-                    if mass < 0.1:
-                        section += " (planète terrestre)"
-                    elif mass < 10:
-                        section += " (planète géante)"
-                    else:
-                        section += " (planète massive)"
+                    formatted_mass = self._format_uncertainty(
+                        mass,
+                        exoplanet.pl_mass.error_positive,
+                        exoplanet.pl_mass.error_negative,
+                    )
+                    section += f"| masse = {formatted_mass}\n"
                 except (ValueError, TypeError):
-                    pass
+                    section += "| masse = \n"
+            else:
+                section += "| masse = \n"
 
+            # Rayon
+            if exoplanet.pl_radius and exoplanet.pl_radius.value is not None:
+                try:
+                    radius = float(exoplanet.pl_radius.value)
+                    formatted_radius = self._format_uncertainty(
+                        radius,
+                        exoplanet.pl_radius.error_positive,
+                        exoplanet.pl_radius.error_negative,
+                    )
+                    section += f"| rayon = {formatted_radius}\n"
+                except (ValueError, TypeError):
+                    section += "| rayon = \n"
+            else:
+                section += "| rayon = \n"
+
+            # Demi-grand axe
             if (
-                hasattr(exoplanet, "pl_orbper")
-                and exoplanet.pl_orbper
-                and exoplanet.pl_orbper.value
+                exoplanet.pl_semi_major_axis
+                and exoplanet.pl_semi_major_axis.value is not None
             ):
                 try:
-                    period = float(exoplanet.pl_orbper.value)
-                    section += f", période orbitale de {period:.1f} jours"
+                    axis = float(exoplanet.pl_semi_major_axis.value)
+                    formatted_axis = self._format_uncertainty(
+                        axis,
+                        exoplanet.pl_semi_major_axis.error_positive,
+                        exoplanet.pl_semi_major_axis.error_negative,
+                    )
+                    section += f"| demi grand axe = {formatted_axis}\n"
                 except (ValueError, TypeError):
-                    pass
+                    section += "| demi grand axe = \n"
+            else:
+                section += "| demi grand axe = \n"
 
-            section += "\n"
+            # Période
+            if (
+                exoplanet.pl_orbital_period
+                and exoplanet.pl_orbital_period.value is not None
+            ):
+                try:
+                    period = float(exoplanet.pl_orbital_period.value)
+                    if period.is_integer():
+                        section += f"| période = {int(period)}\n"
+                    else:
+                        section += f"| période = {period:.2f}\n"
+                except (ValueError, TypeError):
+                    section += "| période = \n"
+            else:
+                section += "| période = \n"
+
+            # Excentricité
+            if (
+                exoplanet.pl_eccentricity
+                and exoplanet.pl_eccentricity.value is not None
+            ):
+                try:
+                    ecc = float(exoplanet.pl_eccentricity.value)
+                    section += f"| excentricité = {ecc:.3f}\n"
+                except (ValueError, TypeError):
+                    section += "| excentricité = \n"
+            else:
+                section += "| excentricité = \n"
+
+            # Inclinaison
+            if exoplanet.pl_inclination and exoplanet.pl_inclination.value is not None:
+                try:
+                    incl = float(exoplanet.pl_inclination.value)
+                    formatted_incl = self._format_uncertainty(
+                        incl,
+                        exoplanet.pl_inclination.error_positive,
+                        exoplanet.pl_inclination.error_negative,
+                    )
+                    section += f"| inclinaison = {formatted_incl}\n"
+                except (ValueError, TypeError):
+                    section += "| inclinaison = \n"
+            else:
+                section += "| inclinaison = \n"
+
+            section += "}}\n"
+
+        # Template de fin
+        section += "{{Système planétaire fin}}\n"
 
         return section

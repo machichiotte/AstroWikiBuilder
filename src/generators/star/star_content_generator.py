@@ -138,7 +138,7 @@ class StarContentGenerator:
             dist_val = float(star.st_distance.value)
             formatted = f"{dist_val:.2f}"
             content.append(
-                f"Elle est située à environ {formatted} [[parsec|parsecs]] de la [[Terre]]."
+                f"Elle est située à environ {{{{unité|{formatted}|[[parsec]]s}}}} de la [[Terre]]."
             )
 
         return "\n".join(content)

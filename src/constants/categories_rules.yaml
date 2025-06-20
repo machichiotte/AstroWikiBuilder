@@ -88,26 +88,130 @@ exoplanet:
       'Objet libre de masse planétaire': '[[Catégorie:Objet libre de masse planétaire]]'
 
     disc_facility:
+      # Télescopes spatiaux
       'Kepler': '[[Catégorie:Exoplanète découverte grâce à Kepler]]'
       'Transiting Exoplanet Survey Satellite': '[[Catégorie:Exoplanète découverte grâce au Transiting Exoplanet Survey Satellite]]'
       'TESS': '[[Catégorie:Exoplanète découverte grâce au Transiting Exoplanet Survey Satellite]]'
       'CoRoT': '[[Catégorie:Exoplanète découverte grâce au télescope spatial CoRoT]]'
-      'Very Large Telescope': '[[Catégorie:Exoplanète découverte grâce au Very Large Telescope (VLT)]]'
-      'Paranal Observatory': '[[Catégorie:Exoplanète découverte grâce au Very Large Telescope (VLT)]]'
-      'VLT': '[[Catégorie:Exoplanète découverte grâce au Very Large Telescope (VLT)]]'
       'Hubble Space Telescope': '[[Catégorie:Exoplanète découverte grâce au télescope spatial Hubble]]'
       'HST': '[[Catégorie:Exoplanète découverte grâce au télescope spatial Hubble]]'
-      'HARPS': '[[Catégorie:Exoplanète découverte grâce à HARPS]]'
-      'La Silla Observatory': '[[Catégorie:Exoplanète découverte grâce à HARPS]]'
       'James Webb Space Telescope': '[[Catégorie:Exoplanète découverte grâce au télescope spatial James Webb]]'
       'JWST': '[[Catégorie:Exoplanète découverte grâce au télescope spatial James Webb]]'
       'Spitzer Space Telescope': '[[Catégorie:Exoplanète découverte grâce au télescope spatial Spitzer]]'
       'Spitzer': '[[Catégorie:Exoplanète découverte grâce au télescope spatial Spitzer]]'
       'Gaia': '[[Catégorie:Exoplanète découverte grâce au télescope spatial Gaia]]'
+      'CHEOPS': '[[Catégorie:Exoplanète découverte grâce au télescope spatial CHEOPS]]'
+      'PLATO': '[[Catégorie:Exoplanète découverte grâce au télescope spatial PLATO]]'
+      'Ariel': '[[Catégorie:Exoplanète découverte grâce au télescope spatial Ariel]]'
+      
+      # Observatoires terrestres majeurs
+      'Very Large Telescope': '[[Catégorie:Exoplanète découverte grâce au Very Large Telescope (VLT)]]'
+      'Paranal Observatory': '[[Catégorie:Exoplanète découverte grâce au Very Large Telescope (VLT)]]'
+      'VLT': '[[Catégorie:Exoplanète découverte grâce au Very Large Telescope (VLT)]]'
       'W. M. Keck Observatory': '[[Catégorie:Exoplanète découverte grâce au W. M. Keck Observatory]]'
       'Keck': '[[Catégorie:Exoplanète découverte grâce au W. M. Keck Observatory]]'
       'Gemini Observatory': '[[Catégorie:Exoplanète découverte grâce au Gemini Observatory]]'
-      'CHEOPS': '[[Catégorie:Exoplanète découverte grâce au télescope spatial CHEOPS]]'
+      'Subaru Telescope': '[[Catégorie:Exoplanète découverte grâce au télescope Subaru]]'
+      'Canada-France-Hawaii Telescope': '[[Catégorie:Exoplanète découverte grâce au Canada-France-Hawaii Telescope]]'
+      'CFHT': '[[Catégorie:Exoplanète découverte grâce au Canada-France-Hawaii Telescope]]'
+      
+      # Observatoires européens
+      'La Silla Observatory': '[[Catégorie:Exoplanète découverte grâce à HARPS]]'
+      'ESO La Silla': '[[Catégorie:Exoplanète découverte grâce à HARPS]]'
+      'HARPS': '[[Catégorie:Exoplanète découverte grâce à HARPS]]'
+      'HARPS-N': '[[Catégorie:Exoplanète découverte grâce à HARPS-N]]'
+      'ESPRESSO': '[[Catégorie:Exoplanète découverte grâce à ESPRESSO]]'
+      'CARMENES': '[[Catégorie:Exoplanète découverte grâce à CARMENES]]'
+      'SOPHIE': '[[Catégorie:Exoplanète découverte grâce à SOPHIE]]'
+      'ELODIE': '[[Catégorie:Exoplanète découverte grâce à ELODIE]]'
+      'CORALIE': '[[Catégorie:Exoplanète découverte grâce à CORALIE]]'
+      
+      # Observatoires américains
+      'Palomar Observatory': '[[Catégorie:Exoplanète découverte grâce à l''observatoire Palomar]]'
+      'Lick Observatory': '[[Catégorie:Exoplanète découverte grâce à l''observatoire Lick]]'
+      'McDonald Observatory': '[[Catégorie:Exoplanète découverte grâce à l''observatoire McDonald]]'
+      'Kitt Peak National Observatory': '[[Catégorie:Exoplanète découverte grâce à l''observatoire Kitt Peak]]'
+      'Apache Point Observatory': '[[Catégorie:Exoplanète découverte grâce à l''observatoire Apache Point]]'
+      'Lowell Observatory': '[[Catégorie:Exoplanète découverte grâce à l''observatoire Lowell]]'
+      
+      # Observatoires asiatiques
+      'Okayama Astrophysical Observatory': '[[Catégorie:Exoplanète découverte grâce à l''observatoire astrophysique d''Okayama]]'
+      'Subaru Telescope': '[[Catégorie:Exoplanète découverte grâce au télescope Subaru]]'
+      'Korea Astronomy and Space Science Institute': '[[Catégorie:Exoplanète découverte grâce au Korea Astronomy and Space Science Institute]]'
+      'KASI': '[[Catégorie:Exoplanète découverte grâce au Korea Astronomy and Space Science Institute]]'
+      
+      # Observatoires australiens
+      'Anglo-Australian Observatory': '[[Catégorie:Exoplanète découverte grâce à l''Anglo-Australian Observatory]]'
+      'AAO': '[[Catégorie:Exoplanète découverte grâce à l''Anglo-Australian Observatory]]'
+      'Australian Astronomical Observatory': '[[Catégorie:Exoplanète découverte grâce à l''Australian Astronomical Observatory]]'
+      
+      # Observatoires sud-américains
+      'Las Campanas Observatory': '[[Catégorie:Exoplanète découverte grâce à l''observatoire Las Campanas]]'
+      'Cerro Tololo Inter-American Observatory': '[[Catégorie:Exoplanète découverte grâce au Cerro Tololo Inter-American Observatory]]'
+      'CTIO': '[[Catégorie:Exoplanète découverte grâce au Cerro Tololo Inter-American Observatory]]'
+      
+      # Observatoires africains
+      'South African Astronomical Observatory': '[[Catégorie:Exoplanète découverte grâce au South African Astronomical Observatory]]'
+      'SAAO': '[[Catégorie:Exoplanète découverte grâce au South African Astronomical Observatory]]'
+      
+      # Réseaux de télescopes
+      'SuperWASP': '[[Catégorie:Exoplanète découverte grâce à SuperWASP]]'
+      'WASP': '[[Catégorie:Exoplanète découverte grâce à SuperWASP]]'
+      'HATNet': '[[Catégorie:Exoplanète découverte grâce à HATNet]]'
+      'HAT': '[[Catégorie:Exoplanète découverte grâce à HATNet]]'
+      'KELT': '[[Catégorie:Exoplanète découverte grâce à KELT]]'
+      'OGLE': '[[Catégorie:Exoplanète découverte grâce à OGLE]]'
+      'MOA': '[[Catégorie:Exoplanète découverte grâce à MOA]]'
+      'TRAPPIST': '[[Catégorie:Exoplanète découverte grâce à TRAPPIST]]'
+      'MEarth': '[[Catégorie:Exoplanète découverte grâce à MEarth]]'
+      'APACHE': '[[Catégorie:Exoplanète découverte grâce à APACHE]]'
+      'QES': '[[Catégorie:Exoplanète découverte grâce à QES]]'
+      'K2': '[[Catégorie:Exoplanète découverte grâce à K2]]'
+      
+      # Instruments spécifiques
+      'HIRES': '[[Catégorie:Exoplanète découverte grâce à HIRES]]'
+      'NIRSPEC': '[[Catégorie:Exoplanète découverte grâce à NIRSPEC]]'
+      'DEIMOS': '[[Catégorie:Exoplanète découverte grâce à DEIMOS]]'
+      'LRIS': '[[Catégorie:Exoplanète découverte grâce à LRIS]]'
+      'OSIRIS': '[[Catégorie:Exoplanète découverte grâce à OSIRIS]]'
+      'GMOS': '[[Catégorie:Exoplanète découverte grâce à GMOS]]'
+      'FORS': '[[Catégorie:Exoplanète découverte grâce à FORS]]'
+      'UVES': '[[Catégorie:Exoplanète découverte grâce à UVES]]'
+      'FLAMES': '[[Catégorie:Exoplanète découverte grâce à FLAMES]]'
+      'GIRAFFE': '[[Catégorie:Exoplanète découverte grâce à GIRAFFE]]'
+      'FIES': '[[Catégorie:Exoplanète découverte grâce à FIES]]'
+      'FEROS': '[[Catégorie:Exoplanète découverte grâce à FEROS]]'
+      'CHIRON': '[[Catégorie:Exoplanète découverte grâce à CHIRON]]'
+      'PFS': '[[Catégorie:Exoplanète découverte grâce à PFS]]'
+      'APF': '[[Catégorie:Exoplanète découverte grâce à APF]]'
+      'Levy': '[[Catégorie:Exoplanète découverte grâce au spectrographe Levy]]'
+      'Hamilton': '[[Catégorie:Exoplanète découverte grâce au spectrographe Hamilton]]'
+      'Vogt': '[[Catégorie:Exoplanète découverte grâce au spectrographe Vogt]]'
+      'Marcy': '[[Catégorie:Exoplanète découverte grâce au spectrographe Marcy]]'
+      'Butler': '[[Catégorie:Exoplanète découverte grâce au spectrographe Butler]]'
+      'Cochran': '[[Catégorie:Exoplanète découverte grâce au spectrographe Cochran]]'
+      'Hatzes': '[[Catégorie:Exoplanète découverte grâce au spectrographe Hatzes]]'
+      'Endl': '[[Catégorie:Exoplanète découverte grâce au spectrographe Endl]]'
+      'Wittenmyer': '[[Catégorie:Exoplanète découverte grâce au spectrographe Wittenmyer]]'
+      'Jones': '[[Catégorie:Exoplanète découverte grâce au spectrographe Jones]]'
+      'Jenkins': '[[Catégorie:Exoplanète découverte grâce au spectrographe Jenkins]]'
+      'Pepe': '[[Catégorie:Exoplanète découverte grâce au spectrographe Pepe]]'
+      'Mayor': '[[Catégorie:Exoplanète découverte grâce au spectrographe Mayor]]'
+      'Queloz': '[[Catégorie:Exoplanète découverte grâce au spectrographe Queloz]]'
+      'Udry': '[[Catégorie:Exoplanète découverte grâce au spectrographe Udry]]'
+      'Santos': '[[Catégorie:Exoplanète découverte grâce au spectrographe Santos]]'
+      'Setiawan': '[[Catégorie:Exoplanète découverte grâce au spectrographe Setiawan]]'
+      'Hatzes': '[[Catégorie:Exoplanète découverte grâce au spectrographe Hatzes]]'
+      'Endl': '[[Catégorie:Exoplanète découverte grâce au spectrographe Endl]]'
+      'Wittenmyer': '[[Catégorie:Exoplanète découverte grâce au spectrographe Wittenmyer]]'
+      'Jones': '[[Catégorie:Exoplanète découverte grâce au spectrographe Jones]]'
+      'Jenkins': '[[Catégorie:Exoplanète découverte grâce au spectrographe Jenkins]]'
+      'Pepe': '[[Catégorie:Exoplanète découverte grâce au spectrographe Pepe]]'
+      'Mayor': '[[Catégorie:Exoplanète découverte grâce au spectrographe Mayor]]'
+      'Queloz': '[[Catégorie:Exoplanète découverte grâce au spectrographe Queloz]]'
+      'Udry': '[[Catégorie:Exoplanète découverte grâce au spectrographe Udry]]'
+      'Santos': '[[Catégorie:Exoplanète découverte grâce au spectrographe Santos]]'
+      'Setiawan': '[[Catégorie:Exoplanète découverte grâce au spectrographe Setiawan]]'
 
   generated:
     disc_year:
@@ -121,15 +225,200 @@ star:
   base: "[[Catégorie:Étoile]]"
   mapped:
     prefix_catalog:
-        'KEPLER-': '[[Catégorie:Catalogue Kepler]]'
-        'K2-': '[[Catégorie:Catalogue K2]]'
-        'KOI-': '[[Catégorie:Catalogue KOI]]'
-        'HD ': '[[Catégorie:Catalogue Henry Draper]]'
-        'HIP ': '[[Catégorie:Catalogue Hipparcos]]'
-        'GJ ': '[[Catégorie:Catalogue Gliese-Jahreiss]]'
-        'GLIESE ': '[[Catégorie:Catalogue Gliese]]'
-        'WASP-': '[[Catégorie:Catalogue SuperWASP]]'
-        'TRAPPIST-': '[[Catégorie:Catalogue TRAPPIST]]'
+      # Catalogues majeurs d'étoiles
+      'HD ': '[[Catégorie:Objet du catalogue Henry Draper]]'
+      'HIP ': '[[Catégorie:Objet du catalogue Hipparcos]]'
+      'HR ': '[[Catégorie:Objet du catalogue HR]]'
+      'GJ ': '[[Catégorie:Objet du catalogue Gliese-Jahreiss]]'
+      'GLIESE ': '[[Catégorie:Objet du catalogue Gliese-Jahreiss]]'
+      'SAO ': '[[Catégorie:Objet du catalogue SAO]]'
+      'BD+': '[[Catégorie:Objet du Bonner Durchmusterung]]'
+      'BD-': '[[Catégorie:Objet du Bonner Durchmusterung]]'
+      'CD+': '[[Catégorie:Objet du Córdoba Durchmusterung]]'
+      'CD-': '[[Catégorie:Objet du Córdoba Durchmusterung]]'
+      'CPD+': '[[Catégorie:Objet du Cape Photographic Durchmusterung]]'
+      'CPD-': '[[Catégorie:Objet du Cape Photographic Durchmusterung]]'
+      
+      # Catalogues de parallaxes et mouvements propres
+      'LFT ': '[[Catégorie:Objet du catalogue LFT]]'
+      'LHS ': '[[Catégorie:Objet du catalogue LHS]]'
+      'LTT ': '[[Catégorie:Objet du catalogue LTT]]'
+      'NLTT ': '[[Catégorie:Objet du catalogue NLTT]]'
+      'PPM ': '[[Catégorie:Objet du catalogue PPM]]'
+      'PPMX ': '[[Catégorie:Objet du catalogue PPMX]]'
+      'UCAC2 ': '[[Catégorie:Objet du catalogue UCAC2]]'
+      'UCAC4 ': '[[Catégorie:Objet du catalogue UCAC4]]'
+      'USNO ': '[[Catégorie:Objet du catalogue USNO]]'
+      
+      # Catalogues de naines rouges et étoiles proches
+      'Ross ': '[[Catégorie:Objet du catalogue Ross]]'
+      'Giclas ': '[[Catégorie:Objet du catalogue Giclas]]'
+      'Kapteyn ': '[[Catégorie:Objet du catalogue Kapteyn]]'
+      
+      # Catalogues de Bayer et Flamsteed (déjà gérés par d'autres mécanismes)
+      'Alpha ': '[[Catégorie:Objet de Bayer]]'
+      'Beta ': '[[Catégorie:Objet de Bayer]]'
+      'Gamma ': '[[Catégorie:Objet de Bayer]]'
+      'Delta ': '[[Catégorie:Objet de Bayer]]'
+      'Epsilon ': '[[Catégorie:Objet de Bayer]]'
+      'Zeta ': '[[Catégorie:Objet de Bayer]]'
+      'Eta ': '[[Catégorie:Objet de Bayer]]'
+      'Theta ': '[[Catégorie:Objet de Bayer]]'
+      'Iota ': '[[Catégorie:Objet de Bayer]]'
+      'Kappa ': '[[Catégorie:Objet de Bayer]]'
+      'Lambda ': '[[Catégorie:Objet de Bayer]]'
+      'Mu ': '[[Catégorie:Objet de Bayer]]'
+      'Nu ': '[[Catégorie:Objet de Bayer]]'
+      'Xi ': '[[Catégorie:Objet de Bayer]]'
+      'Omicron ': '[[Catégorie:Objet de Bayer]]'
+      'Pi ': '[[Catégorie:Objet de Bayer]]'
+      'Rho ': '[[Catégorie:Objet de Bayer]]'
+      'Sigma ': '[[Catégorie:Objet de Bayer]]'
+      'Tau ': '[[Catégorie:Objet de Bayer]]'
+      'Upsilon ': '[[Catégorie:Objet de Bayer]]'
+      'Phi ': '[[Catégorie:Objet de Bayer]]'
+      'Chi ': '[[Catégorie:Objet de Bayer]]'
+      'Psi ': '[[Catégorie:Objet de Bayer]]'
+      'Omega ': '[[Catégorie:Objet de Bayer]]'
+      
+      # Catalogues de télescopes spatiaux
+      'KEPLER-': '[[Catégorie:Objet du catalogue Kepler]]'
+      'K2-': '[[Catégorie:Objet du catalogue K2]]'
+      'KOI-': '[[Catégorie:Objet du Kepler Input Catalog]]'
+      'TIC ': '[[Catégorie:Objet du TESS Input Catalog]]'
+      'TOI-': '[[Catégorie:Objet du TESS Input Catalog]]'
+      'CoRoT-': '[[Catégorie:Objet du catalogue CoRoT]]'
+      'Gaia ': '[[Catégorie:Objet du catalogue Gaia]]'
+      
+      # Catalogues de recherche d'exoplanètes
+      'WASP-': '[[Catégorie:Objet du catalogue WASP]]'
+      'HAT-': '[[Catégorie:Objet du catalogue HAT]]'
+      'HATS-': '[[Catégorie:Objet du catalogue HAT]]'
+      'TrES-': '[[Catégorie:Objet du catalogue TrES]]'
+      'XO-': '[[Catégorie:Objet du catalogue XO]]'
+      'QATAR-': '[[Catégorie:Objet du catalogue Qatar]]'
+      'KELT-': '[[Catégorie:Objet du catalogue KELT]]'
+      'OGLE-': '[[Catégorie:Objet du catalogue OGLE]]'
+      'MOA-': '[[Catégorie:Objet du catalogue MOA]]'
+      'TRAPPIST-': '[[Catégorie:Objet du catalogue TRAPPIST]]'
+      
+      # Catalogues infrarouges
+      '2MASS ': '[[Catégorie:Objet du catalogue 2MASS]]'
+      'IRAS ': '[[Catégorie:Objet du catalogue IRAS]]'
+      'WISE ': '[[Catégorie:Objet du catalogue WISE]]'
+      'DENIS ': '[[Catégorie:Objet du catalogue DENIS]]'
+      'UKIDSS ': '[[Catégorie:Objet du UKIDSS Large Area Survey]]'
+      
+      # Catalogues de galaxies et objets extragalactiques
+      'NGC ': '[[Catégorie:Objet du New General Catalogue]]'
+      'IC ': '[[Catégorie:Objet de l''Index Catalogue]]'
+      'PGC ': '[[Catégorie:Objet du catalogue PGC]]'
+      'UGC ': '[[Catégorie:Objet du catalogue UGC]]'
+      'Arp ': '[[Catégorie:Objet de l''atlas Arp]]'
+      'AM ': '[[Catégorie:Objet du catalogue Arp-Madore]]'
+      'Caldwell ': '[[Catégorie:Objet du catalogue Caldwell]]'
+      'Messier ': '[[Catégorie:Objet de Messier]]'
+      'Abell ': '[[Catégorie:Objet du catalogue Abell]]'
+      
+      # Catalogues de nébuleuses et régions HII
+      'Sharpless ': '[[Catégorie:Objet du catalogue Sharpless]]'
+      'Gum ': '[[Catégorie:Objet du catalogue de Gum]]'
+      'RCW ': '[[Catégorie:Objet du catalogue RCW]]'
+      
+      # Catalogues de pulsars et objets compacts
+      'PSR ': '[[Catégorie:Pulsar]]'
+      'Crab ': '[[Catégorie:Pulsar]]'
+      'Vela ': '[[Catégorie:Pulsar]]'
+      
+      # Catalogues de variables
+      'RR ': '[[Catégorie:Variable de type RR Lyrae]]'
+      'R ': '[[Catégorie:Étoile variable]]'
+      'S ': '[[Catégorie:Étoile variable]]'
+      'T ': '[[Catégorie:Étoile variable]]'
+      'U ': '[[Catégorie:Étoile variable]]'
+      'V ': '[[Catégorie:Étoile variable]]'
+      'W ': '[[Catégorie:Étoile variable]]'
+      'X ': '[[Catégorie:Étoile variable]]'
+      'Y ': '[[Catégorie:Étoile variable]]'
+      'Z ': '[[Catégorie:Étoile variable]]'
+      
+      # Catalogues de binaires
+      'ADS ': '[[Catégorie:Objet du catalogue d''étoiles doubles Aitken]]'
+      'WDS ': '[[Catégorie:Objet du catalogue des composantes d''étoiles doubles et multiples]]'
+      
+      # Catalogues de mouvements propres
+      'Boss ': '[[Catégorie:Objet du Boss General Catalogue]]'
+      'FK5 ': '[[Catégorie:Objet du Fundamental Katalog]]'
+      'FK6 ': '[[Catégorie:Objet du Fundamental Katalog]]'
+      
+      # Catalogues de magnitudes et photométrie
+      'GSC ': '[[Catégorie:Objet du Guide Star Catalog]]'
+      'SDSS ': '[[Catégorie:Objet du Sloan Digital Sky Survey]]'
+      
+      # Catalogues de rayons X
+      'ROSAT ': '[[Catégorie:Objet Rosat]]'
+      'XMM ': '[[Catégorie:Objet du catalogue XMM-Newton]]'
+      'Chandra ': '[[Catégorie:Objet du catalogue Chandra]]'
+      
+      # Catalogues de radio
+      '3C ': '[[Catégorie:Objet du catalogue 3C]]'
+      '4C ': '[[Catégorie:Objet du catalogue 4C]]'
+      '1C ': '[[Catégorie:Objet du catalogue 1C]]'
+      
+      # Catalogues de naines blanches
+      'WD ': '[[Catégorie:Naine blanche]]'
+      'PG ': '[[Catégorie:Naine blanche]]'
+      
+      # Catalogues de naines brunes
+      'DENIS-P ': '[[Catégorie:Naine brune]]'
+      '2MASS ': '[[Catégorie:Objet du catalogue 2MASS]]'
+      
+      # Catalogues de planètes naines et astéroïdes
+      'Ceres ': '[[Catégorie:Planète naine]]'
+      'Pluto ': '[[Catégorie:Planète naine]]'
+      'Eris ': '[[Catégorie:Planète naine]]'
+      'Haumea ': '[[Catégorie:Planète naine]]'
+      'Makemake ': '[[Catégorie:Planète naine]]'
+      
+      # Catalogues de comètes
+      'C/': '[[Catégorie:Comète]]'
+      'P/': '[[Catégorie:Comète]]'
+      'D/': '[[Catégorie:Comète]]'
+      'X/': '[[Catégorie:Comète]]'
+      
+      # Catalogues d'amas et d'étoiles
+      'M ': '[[Catégorie:Objet de Messier]]'
+      'NGC ': '[[Catégorie:Objet du New General Catalogue]]'
+      'IC ': '[[Catégorie:Objet de l''Index Catalogue]]'
+      'Collinder ': '[[Catégorie:Objet du catalogue Collinder]]'
+      'Melotte ': '[[Catégorie:Objet du catalogue Melotte]]'
+      'Stock ': '[[Catégorie:Objet du catalogue Stock]]'
+      'Trumpler ': '[[Catégorie:Objet du catalogue Trumpler]]'
+      'Berkeley ': '[[Catégorie:Objet du catalogue Berkeley]]'
+      'King ': '[[Catégorie:Objet du catalogue King]]'
+      'Palomar ': '[[Catégorie:Objet du catalogue Palomar]]'
+      
+      # Catalogues de novae et supernovae
+      'Nova ': '[[Catégorie:Nova]]'
+      'SN ': '[[Catégorie:Supernova]]'
+      'PSN ': '[[Catégorie:Supernova]]'
+      
+      # Catalogues de quasars et AGN
+      'QSO ': '[[Catégorie:Quasar]]'
+      '3C ': '[[Catégorie:Objet du catalogue 3C]]'
+      '4C ': '[[Catégorie:Objet du catalogue 4C]]'
+      'PKS ': '[[Catégorie:Quasar]]'
+      'B2 ': '[[Catégorie:Quasar]]'
+      'B3 ': '[[Catégorie:Quasar]]'
+      
+      # Catalogues de sursauts gamma
+      'GRB ': '[[Catégorie:Sursaut gamma]]'
+      'SGR ': '[[Catégorie:Sursauteur gamma mou]]'
+      
+      # Catalogues de lentilles gravitationnelles
+      'QSO ': '[[Catégorie:Lentille gravitationnelle]]'
+      'Einstein ': '[[Catégorie:Lentille gravitationnelle]]'
+      
     st_spectral_type:
       'O': "[[Catégorie:Étoile de type spectral O]]"
       'B': "[[Catégorie:Étoile de type spectral B]]"
