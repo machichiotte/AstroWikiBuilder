@@ -19,49 +19,64 @@ class InfoboxField(str, Enum):
     DESIGNATIONS = "désignations"
     UAI_MAP = "carte UAI"
     CONSTELLATION = "constellation"
-    EPOCH = "test_epoch"
 
+    DISTANCE = "distance"
+    LUMINOSITY = "luminosité"
 
-def _format_error_number(value: ValueWithUncertainty) -> str:
-    """Formate une valeur avec incertitude pour l'infobox"""
-    if not value or value.value is None:
-        return ""
-
-    try:
-        formatted_value = f"{float(value.value):.2f}"
-
-        pos_error = (
-            f"{float(value.error_positive):.2f}"
-            if value.error_positive is not None
-            else ""
-        )
-        neg_error = (
-            f"{float(value.error_negative):.2f}"
-            if value.error_negative is not None
-            else ""
-        )
-
-        if pos_error and neg_error:
-            error_part = f"{{{{±|{pos_error}|{neg_error}}}}}"
-        elif pos_error:
-            error_part = f"{{{{±|{pos_error}|}}}}"
-        elif neg_error:
-            error_part = f"{{{{±||{neg_error}}}}}"
-        else:
-            error_part = ""
-        return formatted_value + error_part
-
-    except (ValueError, TypeError) as e:
-        logger.error(f"Erreur lors du formatage de la valeur {value}: {str(e)}")
-        return str(value)
+    ERROR_NUMBER = "err_number"
+    NORMAL = "normal"
 
 
 class FieldFormatter:
     """Formatters pour différents types de champs"""
 
     @staticmethod
+    def format_luminosity_log10(value):
+        if value is None or value.value is None:
+            return ""
+        try:
+            return f"{10 ** float(value.value):.3g}"
+        except Exception:
+            return str(value.value)
+
+    @staticmethod
+    def _format_error_number(value: ValueWithUncertainty) -> str:
+        """Formate une valeur avec incertitude pour l'infobox"""
+        if not value or value.value is None:
+            return ""
+
+        try:
+            formatted_value = f"{float(value.value):.2f}"
+
+            pos_error = (
+                f"{float(value.error_positive):.2f}"
+                if value.error_positive is not None
+                else ""
+            )
+            neg_error = (
+                f"{float(value.error_negative):.2f}"
+                if value.error_negative is not None
+                else ""
+            )
+
+            if pos_error and neg_error:
+                error_part = f"{{{{±|{pos_error}|{neg_error}}}}}"
+            elif pos_error:
+                error_part = f"{{{{±|{pos_error}|}}}}"
+            elif neg_error:
+                error_part = f"{{{{±||{neg_error}}}}}"
+            else:
+                error_part = ""
+            return formatted_value + error_part
+
+        except (ValueError, TypeError) as e:
+            logger.error(f"Erreur lors du formatage de la valeur {value}: {str(e)}")
+            return str(value)
+
+    @staticmethod
     def _format_discovery_facility(value: str) -> str:
         """Formate le lieu de découverte"""
+        print("_format_discovery_facility")
         try:
             mapped: str | None = DISCOVERY_FACILITY_MAPPING.get(value)
             return f"[[{mapped}]]" if mapped else str(value)
@@ -132,24 +147,39 @@ class FieldFormatter:
             logger.error(f"Erreur lors du formatage des désignations {value}: {str(e)}")
             return str(value)
 
+    @staticmethod
+    def format_age(v):
+        if v is None or getattr(v, "value", None) is None:
+            return ""
+        try:
+            return f"{float(v.value):.3g}×10<sup>9</sup>"
+        except Exception:
+            return str(v.value)
+
     def _format_field_value(
         self, value: str | ValueWithUncertainty | None, field_name: str
     ) -> str:
         """Formate la valeur principale du champ."""
         try:
-            # Si c'est une ValueWithUncertainty, on la formate d'abord
-            if isinstance(value, ValueWithUncertainty):
-                formatted_value = _format_error_number(value)
-                return formatted_value
+            # Determine the appropriate formatter based on the field name and value type
+            if field_name in _FORMATTERS:
+                print("in formatter", field_name)
+                formatter = _FORMATTERS[field_name]
+            elif isinstance(value, ValueWithUncertainty):
+                print("elif", field_name)
+                formatter = _FORMATTERS.get("err_number")
+            else:
+                print("else", field_name)
+                formatter = _FORMATTERS.get("normal")
 
-            # Pour les autres types, on applique le formatter normalement
-            formatter = _FORMATTERS.get(field_name)
-            return formatter(value) if formatter else value
+            # Format the value using the selected formatter
+            formatted_value = formatter(value) if formatter else value
+            return formatted_value
         except Exception as e:
             logger.error(
                 f"Erreur lors du formatage de la valeur {value} pour le champ {field_name}: {str(e)}"
             )
-            return str(value)
+            return value
 
     def process_field(
         self,
@@ -206,8 +236,11 @@ class FieldFormatter:
 _FORMATTERS = {
     InfoboxField.LOCATION: FieldFormatter._format_discovery_facility,
     InfoboxField.METHOD: FieldFormatter._format_discovery_method,
-    InfoboxField.AGE: lambda v: f"{v}×10<sup>9</sup>",
+    InfoboxField.AGE: FieldFormatter.format_age,
     InfoboxField.DESIGNATIONS: FieldFormatter._format_designations,
     InfoboxField.UAI_MAP: lambda v: v,
     InfoboxField.CONSTELLATION: lambda v: f"[[{v} (constellation)|{v}]]",
+    InfoboxField.LUMINOSITY: FieldFormatter.format_luminosity_log10,
+    InfoboxField.ERROR_NUMBER: FieldFormatter._format_error_number,
+    InfoboxField.NORMAL: lambda v: v,
 }

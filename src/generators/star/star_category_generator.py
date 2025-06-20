@@ -133,7 +133,7 @@ class StarCategoryGenerator(BaseCategoryGenerator):
         if spectral_component.spectral_class and spectral_component.subtype:
             roman: str | None = convert_integer_to_roman(spectral_component.subtype)
             if roman:
-                #  TODO Ajouter si besoin de categorie combinée (return f"[[Catégorie:Étoile de type spectral {letter}{roman}]]")
+                #  Ajouter si besoin de categorie combinée (return f"[[Catégorie:Étoile de type spectral {letter}{roman}]]")
                 return None
         return None
 

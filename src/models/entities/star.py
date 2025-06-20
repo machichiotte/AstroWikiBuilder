@@ -23,9 +23,9 @@ class Star:
     apparent_magnitude: Optional[ValueWithUncertainty] = None
     st_epoch: Optional[ValueWithUncertainty] = None
     st_right_ascension: Optional[str] = None
-    st_right_ascension_2: Optional[ValueWithUncertainty] = None
+    st_right_ascension_2: Optional[str] = None
     st_declination: Optional[str] = None
-    st_declination_2: Optional[ValueWithUncertainty] = None
+    st_declination_2: Optional[str] = None
     st_radial_velocity: Optional[ValueWithUncertainty] = None
     st_radial_velocity_2: Optional[ValueWithUncertainty] = None
     st_proper_motion_ra: Optional[ValueWithUncertainty] = None
