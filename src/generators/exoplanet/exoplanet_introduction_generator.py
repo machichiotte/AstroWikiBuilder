@@ -147,6 +147,8 @@ class ExoplanetIntroductionGenerator:
 
         planet_name_str = exoplanet.pl_name or "Nom inconnu"
 
+        planet_type = planet_type[0].lower() + planet_type[1:]
+
         base_intro = (
             f"'''{planet_name_str}''' est une exoplanète de type [[{planet_type}]]"
         )
