@@ -5,11 +5,16 @@
 from dataclasses import dataclass
 from re import Match, search
 from typing import Optional, Tuple, List
+import re
 
+from src.constants.field_mappings import STELLAR_EVOLUTION_MAP
 from src.models.entities.star import Star
 from src.models.entities.exoplanet import Exoplanet
 
 
+# ============================================================================
+# DATACLASS POUR LES COMPOSANTS SPECTRAUX
+# ============================================================================
 @dataclass
 class SpectralComponents:
     spectral_class: Optional[str]
@@ -18,7 +23,7 @@ class SpectralComponents:
 
 
 # ============================================================================
-# DÉCLARATION DE LA CLASSE StarTypeUtils
+# CLASSE PRINCIPALE StarTypeUtils
 # ============================================================================
 class StarTypeUtils:
     """
@@ -26,7 +31,7 @@ class StarTypeUtils:
     """
 
     # ============================================================================
-    # MÉTHODES DE PARSING ET UTILITAIRES DE BASE
+    # 1. PARSING ET EXTRACTION DE COMPOSANTS
     # ============================================================================
     @staticmethod
     def extract_spectral_components_from_string(
@@ -36,36 +41,72 @@ class StarTypeUtils:
         Extrait les composants spectroscopiques d'une chaîne brute, en tolérant les formats hybrides.
         """
 
-        # Nettoyage rapide : virer les annotations connues parasites
-        cleaned = spectral_type.strip().replace(":", "")
-        cleaned = cleaned.replace("var", "").replace("Ve", "")
-        cleaned = cleaned.replace("e", "").replace("P", "")
-        cleaned = cleaned.replace("(+ G)", "").replace("+ G", "")
-        cleaned = cleaned.split()[
-            0
-        ]  # Se concentrer sur le premier bloc (éviter les `/`, etc.)
+        cleaned = spectral_type.strip()
+        for noise in ["var", "Ve", "e", "P", "(+ G)", "+ G", "CH+0.4", "CN+1", "Fe-1"]:
+            cleaned = cleaned.replace(noise, "")
+        cleaned = cleaned.replace(":", "")
 
-        # Exemple : "G2 IV/V" -> "G2", "IV/V"
-        regex = r"""(?ix)  # ignore case, verbose
-            (?P<class>[OBAFGKMLTYWDsdDCQ]+)      # Spectral class
-            [\s\-:/]*
-            (?P<subtype>[0-9.\-+/]+)?           # Subtype (optionnel)
-            [\s\-:/]*                           # séparateur
-            (?P<luminosity>I{1,3}[ab]?(?:/?[IV]+)?)?  # Classe de luminosité : III, IIIb, IV, V, IV-V etc.
-        """
+        # Nouvelle regex plus simple et robuste
+        regex = re.compile(
+            r"""
+            ^\s*
+            (?P<class>[OBAFGKMLTYWDsdDCQ]{1,3})   # classe spectrale obligatoire
+            \s*
+            (?P<subtype>\d+(\.\d+)?(?:\+/-\d+(\.\d+)?)?)?  # sous-type avec tolérance
+            \s*
+            (?P<luminosity>I{1,3}[ab]?|IV-?V?|VI|V)?       # classe de luminosité
+            """,
+            re.IGNORECASE | re.VERBOSE,
+        )
 
-        match: Optional[Match] = search(regex, cleaned)
-
+        match = regex.match(cleaned)
         if match:
-            spectral_class = match.group("class")
-            subtype = match.group("subtype") or None
-            luminosity = match.group("luminosity") or None
+            return SpectralComponents(
+                spectral_class=match.group("class"),
+                subtype=match.group("subtype") or None,
+                luminosity_class=match.group("luminosity") or None,
+            )
 
-            return SpectralComponents(spectral_class, subtype, luminosity)
-
-        # Fallback
         return SpectralComponents(None, None, None)
 
+    # ============================================================================
+    # 2. MÉTHODES D'ACCÈS RAPIDE
+    # ============================================================================
+    @staticmethod
+    def extract_luminosity_class_from_star(star: Star) -> Optional[str]:
+        """
+        Détermine la classe de luminosité de l'étoile.
+        Retourne la classe de luminosité (ex: "V", "III", etc.)
+        """
+        if not star.st_spectral_type:
+            return None
+        spectral_type: str = star.st_spectral_type
+        if not spectral_type:
+            return None
+        spectral_components: SpectralComponents = (
+            StarTypeUtils.extract_spectral_components_from_string(spectral_type)
+        )
+        return spectral_components.luminosity_class
+
+    @staticmethod
+    def extract_spectral_class_from_star(star: Star) -> Optional[str]:
+        """
+        Détermine la classe spectrale de l'étoile.
+        Retourne la classe spectrale (ex: "K", "G", etc.)
+        """
+        if not star.st_spectral_type:
+            return None
+        spectral_type: str = star.st_spectral_type
+        if not spectral_type:
+            return None
+        spectral_component: SpectralComponents = (
+            StarTypeUtils.extract_spectral_components_from_string(spectral_type)
+        )
+        return spectral_component.spectral_class
+
+    # ============================================================================
+    # 3. UTILITAIRES
+    # ============================================================================
     @staticmethod
     def get_temperature_range_for_spectral_class(letter: str) -> Tuple[float, float]:
         """
@@ -82,184 +123,151 @@ class StarTypeUtils:
         }
         return ranges.get(letter, (0, 0))
 
-    @staticmethod
-    def infer_evolutionary_stage_from_spectral_data(
-        spectral_class: str, luminosity: Optional[str]
-    ) -> Optional[str]:
-        """
-        Détermine le stade évolutif de l'étoile basé sur ses caractéristiques.
-        """
-        if not luminosity:
-            return None
-
-        # Naines
-        if luminosity == "V":
-            if spectral_class in ["K", "M"]:
-                return "Naine rouge"
-            elif spectral_class == "G":
-                return "Naine jaune"
-            elif spectral_class in ["O", "B"]:
-                return "Naine bleue"
-            return "Naine"
-
-        # Géantes
-        if luminosity == "III":
-            if spectral_class in ["K", "M"]:
-                return "Géante rouge"
-            elif spectral_class in ["O", "B"]:
-                return "Géante bleue"
-            elif spectral_class in ["F", "G"]:
-                return "Géante jaune"
-            return "Géante"
-
-        # Supergéantes
-        if luminosity == "I":
-            if spectral_class in ["K", "M"]:
-                return "Supergéante rouge"
-            elif spectral_class in ["O", "B"]:
-                return "Supergéante bleue"
-            return "Supergéante"
-
-        return None
-
     # ============================================================================
-    # MÉTHODE PRINCIPALE DE DÉTERMINATION DE TYPE
+    # 4. DÉTERMINATION DE TYPE (MÉTHODE PRINCIPALE ET HELPERS)
     # ============================================================================
     @staticmethod
     def determine_star_types_from_properties(obj: Star | Exoplanet) -> List[str]:
         """
         Détermine le type d'étoile basé sur ses caractéristiques.
-        Retourne une liste de types d'étoiles (ex: ["Étoile de type spectral KIII", "Géante rouge"])
+        Retourne une liste de types d'étoiles (ex: ["Étoile de type spectral KIII", "Géante rouge"]).
         """
         types = []
-
         if not obj.st_spectral_type:
             return types
-
-        spectral_type: str = obj.st_spectral_type
-        if not spectral_type:
-            return types
-
-        spectral_components: SpectralComponents = (
-            StarTypeUtils.extract_spectral_components_from_string(spectral_type)
+        spectral_components = StarTypeUtils.extract_spectral_components_from_string(
+            obj.st_spectral_type
         )
-
         spectral_class = spectral_components.spectral_class
         subtype = spectral_components.subtype
         luminosity = spectral_components.luminosity_class
+
         if not spectral_class:
             return types
+        types += StarTypeUtils._get_neutron_star_type(obj)
+        types += StarTypeUtils._get_evolutionary_stages(spectral_class, luminosity)
+        types += StarTypeUtils._get_variability_type(obj)
+        types += StarTypeUtils._get_metallicity_type(obj)
+        types += StarTypeUtils._get_raw_spectral_type(
+            spectral_class, subtype, luminosity
+        )
+        return types
 
-        # Types spéciaux
-        if "D" in spectral_type:
-            types.append("Naine blanche")
-            return types
-        if any(t in spectral_type for t in ["L", "T", "Y"]):
-            types.append("Naine brune")
-            return types
-        if "W" in spectral_type:
-            types.append("Étoile Wolf-Rayet")
-            return types
-        if "S" in spectral_type:
-            types.append("Étoile de type spectral S")
-            return types
-        if "C" in spectral_type:
-            types.append("Étoile de type spectral C")
-            return types
-
-        # Étoile à neutrons (basé sur des caractéristiques physiques)
+    @staticmethod
+    def _get_neutron_star_type(obj: Star | Exoplanet) -> List[str]:
         if obj.st_mass and obj.st_radius:
             try:
                 mass = float(obj.st_mass.value)
                 radius = float(obj.st_radius.value)
-                # Une étoile à neutrons typique a une masse > 1.4 M☉ et un rayon très petit
                 if mass > 1.4 and radius < 0.01:
-                    types.append("Étoile à neutrons")
-                    return types
+                    return ["Étoile à neutrons"]
             except (ValueError, TypeError):
                 pass
+        return []
 
-        # Étoile variable (nécessiterait un attribut spécifique)
-        # if hasattr(star, 'is_variable') and star.is_variable:
-        #     return "Étoile variable"
-
-        # Étoile chimiquement particulière (nécessiterait des attributs spécifiques)
-        # if hasattr(star, 'peculiar_type'):
-        #     return f"Étoile {star.peculiar_type}"
-
-        # Stade évolutif
-        evolutionary_stage: str | None = (
-            StarTypeUtils.infer_evolutionary_stage_from_spectral_data(
-                spectral_class, luminosity
-            )
+    @staticmethod
+    def _get_evolutionary_stages(
+        spectral_class: str, luminosity: Optional[str]
+    ) -> List[str]:
+        stages = []
+        stage1 = StarTypeUtils.infer_evolutionary_stage_from_spectral_data(
+            spectral_class, luminosity
         )
-        if evolutionary_stage:
-            types.append(evolutionary_stage)
+        if stage1:
+            stages.append(stage1)
+        stage2 = StarTypeUtils.infer_evolutionary_stage_from_spectral_class(
+            spectral_class
+        )
+        if stage2:
+            stages.append(stage2)
+        return stages
 
-        # Étoile variable
+    @staticmethod
+    def _get_variability_type(obj: Star | Exoplanet) -> List[str]:
         if obj.st_variability and obj.st_variability.value:
-            types.append(f"Étoile variable de type {obj.st_variability.value}")
+            return [f"Étoile variable de type {obj.st_variability.value}"]
+        return []
 
-        # Étoile chimiquement particulière
+    @staticmethod
+    def _get_metallicity_type(obj: Star | Exoplanet) -> List[str]:
         if obj.st_metallicity:
             try:
                 metallicity = float(obj.st_metallicity.value)
                 if metallicity < -1.0:
-                    types.append("Étoile pauvre en métaux")
+                    return ["Étoile pauvre en métaux"]
                 elif metallicity > 0.5:
-                    types.append("Étoile riche en métaux")
+                    return ["Étoile riche en métaux"]
             except (ValueError, TypeError):
                 pass
+        return []
 
-        # Type spectral standard
-        type_parts: List[str] = [f"Étoile de type spectral {spectral_class}"]
-
-        # Ajouter le sous-type si présent
+    @staticmethod
+    def _get_raw_spectral_type(
+        spectral_class: str, subtype: Optional[str], luminosity: Optional[str]
+    ) -> List[str]:
+        parts = [f"Étoile de type spectral {spectral_class}"]
         if subtype:
-            type_parts.append(subtype)
-
-        # Ajouter la classe de luminosité si présente
+            parts.append(subtype)
         if luminosity:
-            type_parts.append(luminosity)
-
-        types.append("".join(type_parts))
-        return types
+            parts.append(luminosity)
+        return ["".join(parts)]
 
     # ============================================================================
-    # MÉTHODES D'ACCÈS RAPIDE
+    # 5. STADE ÉVOLUTIF
     # ============================================================================
     @staticmethod
-    def extract_luminosity_class_from_star(star: Star) -> Optional[str]:
+    def infer_evolutionary_stage_from_spectral_data(
+        spectral_class: Optional[str], luminosity: Optional[str]
+    ) -> Optional[str]:
         """
-        Détermine la classe de luminosité de l'étoile.
-        Retourne la classe de luminosité (ex: "V", "III", etc.)
+        Déduit le stade évolutif d'une étoile à partir de sa classe spectrale et de luminosité.
         """
-        if not star.st_spectral_type:
+        if not spectral_class or not luminosity:
             return None
-
-        spectral_type: str = star.st_spectral_type
-        if not spectral_type:
-            return None
-
-        spectral_components: SpectralComponents = (
-            StarTypeUtils.extract_spectral_components_from_string(spectral_type)
+        class_letter = spectral_class.strip().upper()
+        lum_key = (
+            luminosity.strip()
+            .upper()
+            .replace("IAB", "I")
+            .replace("IB", "I")
+            .replace("IAB-IB", "I")
+            .replace("IIIb", "III")
+            .replace("IV-V", "V")
+            .replace("IV/V", "V")
+            .replace("III-IV", "III")
+            .replace("IV", "IV")
         )
-        return spectral_components.luminosity_class
+        # Cas des naines blanches
+        if class_letter in ["DC", "DQ", "DA", "DB", "WD", "DO", "DZ"]:
+            return STELLAR_EVOLUTION_MAP.get("VII", {}).get(
+                class_letter, "Naine blanche"
+            )
+        # Recherche progressive
+        for lum_class, class_map in STELLAR_EVOLUTION_MAP.items():
+            if lum_key.startswith(lum_class):
+                match = class_map.get(class_letter)
+                if match:
+                    return match
+        # Pas trouvé
+        return None
 
     @staticmethod
-    def extract_spectral_class_from_star(star: Star) -> Optional[str]:
+    def infer_evolutionary_stage_from_spectral_class(
+        spectral_class: Optional[str],
+    ) -> Optional[str]:
         """
-        Détermine la classe spectrale de l'étoile.
-        Retourne la classe spectrale (ex: "K", "G", etc.)
+        Déduit le stade évolutif d'une étoile à partir de sa classe spectrale et de luminosité.
         """
-        if not star.st_spectral_type:
-            return None
-
-        spectral_type: str = star.st_spectral_type
-        if not spectral_type:
-            return None
-
-        spectral_component: SpectralComponents = (
-            StarTypeUtils.extract_spectral_components_from_string(spectral_type)
-        )
-        return spectral_component.spectral_class
+        # Types spéciaux
+        if "D" in spectral_class:
+            return "Naine blanche"
+        if any(t in spectral_class for t in ["L", "T", "Y"]):
+            return "Naine brune"
+        if "W" in spectral_class:
+            return "Étoile Wolf-Rayet"
+        if "S" in spectral_class:
+            return "Étoile de type spectral S"
+        if "C" in spectral_class:
+            return "Étoile de type spectral C"
+        # Pas trouvé
+        return None

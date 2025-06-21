@@ -422,16 +422,52 @@ CONSTELLATION_GENDER: dict[str, str] = {
     "Petit Renard": "m",
 }
 
-# Descriptions des types spectraux selon Morgan-Keenan
-SPECTRAL_TYPE_DESCRIPTIONS: dict[str, str] = {
-    "O": "étoile bleue de type O",
-    "B": "étoile bleue de type B",
-    "A": "étoile blanche de type A",
-    "F": "étoile jaune-blanc de la séquence principale",
-    "G": "naine jaune",
-    "K": "naine orange",
-    "M": "naine rouge",
-    "L": "naine brune de type L",
-    "T": "naine brune de type T",
-    "Y": "naine brune de type Y",
+STELLAR_EVOLUTION_MAP = {
+    "V": {
+        "K": "Naine orange",
+        "M": "Naine rouge",
+        "G": "Naine jaune",
+        "F": "Naine blanche",
+        "A": "Naine blanche",
+        "B": "Naine bleue",
+        "O": "Naine bleue",
+    },
+    "IV": {
+        "G": "Sous-géante jaune",
+        "K": "Sous-géante orange",
+        "F": "Sous-géante blanche",
+        "M": "Sous-géante rouge",
+    },
+    "III": {
+        "M": "Géante rouge",
+        "K": "Géante orange",
+        "G": "Géante jaune",
+        "F": "Géante blanche",
+        "O": "Géante bleue",
+        "B": "Géante bleue",
+    },
+    "II": {
+        "K": "Géante lumineuse",
+        "M": "Géante lumineuse",
+    },
+    "I": {
+        "O": "Supergéante bleue",
+        "B": "Supergéante bleue",
+        "A": "Supergéante blanche",
+        "F": "Supergéante jaune",
+        "G": "Supergéante jaune",
+        "K": "Supergéante orange",
+        "M": "Supergéante rouge",
+    },
+    "VI": {
+        "G": "Sous-naine jaune",
+        "K": "Sous-naine orange",
+        "M": "Sous-naine rouge",
+    },
+    "VII": {
+        "DA": "Naine blanche (DA)",
+        "DC": "Naine blanche (DC)",
+        "DQ": "Naine blanche (DQ)",
+        "WD": "Naine blanche",
+    },
 }
