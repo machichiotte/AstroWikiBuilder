@@ -3,7 +3,7 @@
 # IMPORTS
 # ============================================================================
 from dataclasses import dataclass
-from re import Match
+from re import Match, search
 from typing import Optional, Tuple, List
 
 from src.models.entities.star import Star
@@ -32,21 +32,38 @@ class StarTypeUtils:
     def extract_spectral_components_from_string(
         spectral_type: str,
     ) -> SpectralComponents:
-        import re
+        """
+        Extrait les composants spectroscopiques d'une chaîne brute, en tolérant les formats hybrides.
+        """
 
-        # TODO absolument regarder le fichier C:\Users\elias\Dev\machi-workspace\AstroWikiBuilder\data\generated\column_extracted\st_spectype_values.json
-        # On va avoir plus de cas de figures que prevu
+        # Nettoyage rapide : virer les annotations connues parasites
+        cleaned = spectral_type.strip().replace(":", "")
+        cleaned = cleaned.replace("var", "").replace("Ve", "")
+        cleaned = cleaned.replace("e", "").replace("P", "")
+        cleaned = cleaned.replace("(+ G)", "").replace("+ G", "")
+        cleaned = cleaned.split()[
+            0
+        ]  # Se concentrer sur le premier bloc (éviter les `/`, etc.)
 
-        match: Match[str] | None = re.match(
-            r"([OBAFGKMLTY])\s*([0-9.]*)\s*([IV]+)?", spectral_type
-        )
+        # Exemple : "G2 IV/V" -> "G2", "IV/V"
+        regex = r"""(?ix)  # ignore case, verbose
+            (?P<class>[OBAFGKMLTYWDsdDCQ]+)      # Spectral class
+            [\s\-:/]*
+            (?P<subtype>[0-9.\-+/]+)?           # Subtype (optionnel)
+            [\s\-:/]*                           # séparateur
+            (?P<luminosity>I{1,3}[ab]?(?:/?[IV]+)?)?  # Classe de luminosité : III, IIIb, IV, V, IV-V etc.
+        """
+
+        match: Optional[Match] = search(regex, cleaned)
 
         if match:
-            spectral_class = match.group(1)
-            subtype = match.group(2) or None
-            luminosity = match.group(3) or None
+            spectral_class = match.group("class")
+            subtype = match.group("subtype") or None
+            luminosity = match.group("luminosity") or None
+
             return SpectralComponents(spectral_class, subtype, luminosity)
 
+        # Fallback
         return SpectralComponents(None, None, None)
 
     @staticmethod
