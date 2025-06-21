@@ -1,6 +1,10 @@
 # src/generators/base_article_generator.py
 import datetime
+from typing import Optional
 import pytz
+
+from src.constants.field_mappings import CONSTELLATION_GENDER
+from src.models.entities.star import Star
 
 
 class BaseArticleGenerator:
@@ -32,10 +36,16 @@ class BaseArticleGenerator:
     def build_references_section(self) -> str:
         section = "== Références ==\n"
         section += "{{références}}\n"
-        section += "{{Portail|"
+        return section
+
+    def build_portails_section(self) -> str:
+        section = "{{Portail|"
         section += "|".join(self.portals)
         section += "}}\n"
         return section
+
+    def build_palettes_section(self, obj) -> Optional[str]:
+        return None
 
     def build_category_section(self, obj) -> str:
         categories = self.category_generator.generate_categories(obj)

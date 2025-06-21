@@ -273,6 +273,7 @@ exoplanet:
       Udry: "[[Catégorie:Exoplanète découverte grâce au spectrographe Udry]]"
       Santos: "[[Catégorie:Exoplanète découverte grâce au spectrographe Santos]]"
       Setiawan: "[[Catégorie:Exoplanète découverte grâce au spectrographe Setiawan]]"
+
   generated:
     disc_year:
       template: "[[Catégorie:Exoplanète découverte en {value}]]"

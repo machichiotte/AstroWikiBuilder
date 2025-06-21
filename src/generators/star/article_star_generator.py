@@ -2,6 +2,7 @@
 import locale
 import re
 from typing import List, Optional
+from src.constants.field_mappings import CONSTELLATION_GENDER
 from src.models.entities.star import Star
 from src.models.entities.exoplanet import Exoplanet
 from src.generators.star.star_infobox_generator import StarInfoboxGenerator
@@ -61,6 +62,8 @@ class ArticleStarGenerator(BaseArticleGenerator):
 
         # 6. Références et portails
         parts.append(self.build_references_section())
+        parts.append(self.build_palettes_section(star))
+        parts.append(self.build_portails_section())
 
         # 7. Catégories
         parts.append(self.build_category_section(star))
@@ -127,6 +130,37 @@ class ArticleStarGenerator(BaseArticleGenerator):
         Génère une section vide avec un titre donné et un placeholder explicite.
         """
         return f"== {title} ==\n{placeholder_text}"
+
+    def build_palettes_section(self, object: Star) -> Optional[str]:
+        """
+        Construit une section de palette Wiki correctement accordée,
+        ex. : {{Palette|Étoiles du Dragon}}, {{Palette|Étoiles de la Lyre}}, {{Palette|Étoiles de l'Éridan}}
+        """
+
+        if not object.sy_constellation:
+            return None
+
+        constellation = object.sy_constellation.strip()
+        gender = CONSTELLATION_GENDER.get(constellation)
+
+        if not gender:
+            # Par défaut si genre inconnu
+            return f"{{{{Palette|Étoiles de {constellation}}}}}\n"
+
+        first_letter = constellation[0].lower()
+        starts_with_vowel = first_letter in "aeiouéèêàâîïùü"
+
+        if starts_with_vowel:
+            # Accord élidé pour voyelle : de l’Éridan
+            article = "de l’"
+        elif gender == "f":
+            article = "de la "
+        elif gender == "m":
+            article = "du "
+        else:
+            article = "de "
+
+        return f"{{{{Palette|Étoiles {article}{constellation}}}}}\n"
 
     def _format_uncertainty(
         self,

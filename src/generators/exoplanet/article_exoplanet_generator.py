@@ -81,6 +81,8 @@ class ArticleExoplanetGenerator(BaseArticleGenerator):
 
         # 8. Références et portails
         parts.append(self.build_references_section())
+        parts.append(self.build_palettes_section(exoplanet))
+        parts.append(self.build_portails_section())
 
         # 9. Catégories
         parts.append(self.build_category_section(exoplanet))
