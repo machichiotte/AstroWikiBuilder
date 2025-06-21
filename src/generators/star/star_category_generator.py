@@ -78,7 +78,22 @@ class StarCategoryGenerator(BaseCategoryGenerator):
         categories = set()
 
         def extract_key(name: str, prefix: str) -> str:
-            return name[len(prefix) :].strip()
+            key = name[len(prefix) :].strip()
+
+            # Formatage spécial pour les objets Kepler : toujours 4 chiffres
+            if prefix == "KEPLER-":
+                try:
+                    # Extraire le numéro après "KEPLER-"
+                    number_part = key
+                    # Essayer de convertir en entier pour vérifier que c'est un nombre
+                    number = int(number_part)
+                    # Formater avec 4 chiffres avec des zéros en tête
+                    return f"{number:04d}"
+                except (ValueError, TypeError):
+                    # Si ce n'est pas un nombre, retourner tel quel
+                    return key
+
+            return key
 
         def process_name(raw_name: str):
             if not raw_name:
