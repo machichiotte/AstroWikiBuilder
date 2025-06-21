@@ -135,7 +135,7 @@ class StarContentGenerator:
 
         content: list[str] = ["== Environnement stellaire ==\n"]
         if star.sy_constellation:
-            str_constellation = phrase_dans_constellation(star.sy_constellation)
+            str_constellation = phrase_dans_constellation(star.sy_constellation, True)
             content.append(f"L'étoile se trouve {str_constellation}.")
 
         if star.st_distance:

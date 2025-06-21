@@ -121,7 +121,7 @@ class ArticleStarGenerator(BaseArticleGenerator):
             if not star_types:
                 return None
 
-            description = star_types[0]
+            description = star_types[0].lower()
 
             if description:
                 intro += f" une [[{description}]]"

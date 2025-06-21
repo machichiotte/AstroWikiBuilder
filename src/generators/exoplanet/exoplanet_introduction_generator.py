@@ -100,7 +100,7 @@ class ExoplanetIntroductionGenerator:
         constellation_name_fr = exoplanet.sy_constellation
 
         if constellation_name_fr:
-            return phrase_dans_constellation(constellation_name_fr)
+            return phrase_dans_constellation(constellation_name_fr, True)
 
         return None
 
