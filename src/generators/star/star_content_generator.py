@@ -31,7 +31,7 @@ class StarContentGenerator:
             self.build_physical_section(star),
             self.build_observation_section(star),
             self.build_environment_section(star),
-            self.write_history_paragraph(star),
+            # self.write_history_paragraph(star),
         ]
 
         # Filtrer les sections vides et les combiner
@@ -129,14 +129,14 @@ class StarContentGenerator:
         """
         Génère la section sur l'environnement stellaire.
         """
-        if not any([star.st_constellation, star.st_distance]):
+        if not any([star.sy_constellation, star.st_distance]):
             return ""
 
         content: list[str] = ["== Environnement stellaire ==\n"]
 
-        if star.st_constellation:
+        if star.sy_constellation:
             content.append(
-                f"L'étoile se trouve dans la constellation [[{star.st_constellation}]]."
+                f"L'étoile se trouve dans la constellation [[{star.sy_constellation}]]."
             )
 
         if star.st_distance:

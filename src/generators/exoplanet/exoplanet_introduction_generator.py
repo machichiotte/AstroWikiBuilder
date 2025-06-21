@@ -115,10 +115,10 @@ class ExoplanetIntroductionGenerator:
 
     def compose_constellation_phrase(self, exoplanet: Exoplanet) -> Optional[str]:
         """Construit le segment de phrase concernant la constellation."""
-        if not exoplanet.st_constellation:
+        if not exoplanet.sy_constellation:
             return None
 
-        constellation_name_fr = exoplanet.st_constellation
+        constellation_name_fr = exoplanet.sy_constellation
         if constellation_name_fr:
             return self.format_constellation_locative_phrase(constellation_name_fr)
         return None

@@ -10,6 +10,8 @@ from .exoplanet import ValueWithUncertainty
 class Star:
     """Classe représentant une étoile hôte"""
 
+    sy_constellation: Optional[str] = None
+
     # Identifiants
     st_name: str = None
     st_altname: Optional[List[str]] = field(default_factory=list)
@@ -19,7 +21,6 @@ class Star:
     st_coord_title: Optional[str] = None
 
     # Données d'observation
-    st_constellation: Optional[str] = None
     apparent_magnitude: Optional[ValueWithUncertainty] = None
     st_epoch: Optional[ValueWithUncertainty] = None
     st_right_ascension: Optional[str] = None

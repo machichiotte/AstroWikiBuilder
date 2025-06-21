@@ -40,6 +40,7 @@ class Exoplanet:
     pl_altname: Optional[List[str]] = field(default_factory=list)
     image: Optional[str] = None
     caption: Optional[str] = None
+    sy_constellation: Optional[str] = None
 
     # Étoile hôte
     st_name: str = None
@@ -47,7 +48,6 @@ class Exoplanet:
     st_right_ascension: Optional[float] = None
     st_declination: Optional[float] = None
     st_distance: Optional[ValueWithUncertainty] = None  # Distance avec incertitude
-    st_constellation: Optional[str] = None
     st_spectral_type: Optional[str] = None
     st_apparent_magnitude: Optional[float] = None
     st_luminosity: Optional[ValueWithUncertainty] = None

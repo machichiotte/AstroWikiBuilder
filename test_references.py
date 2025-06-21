@@ -33,7 +33,7 @@ def create_test_star() -> Star:
     star = Star(
         st_name="HD 209458",
         st_spectral_type="G0V",
-        st_constellation="Pégase",
+        sy_constellation="Pégase",
         st_distance=ValueWithUncertainty(
             value=47.1, error_positive=0.5, error_negative=0.5
         ),

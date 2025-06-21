@@ -11,93 +11,18 @@ class ExoplanetCategoryGenerator(BaseCategoryGenerator):
     Utilise un générateur de règles centralisé.
     """
 
-    DISCOVERY_FACILITY_CATEGORY_MAPPING: dict[str, str] = {
-        "Kepler": "[[Catégorie:Exoplanète découverte grâce à Kepler]]",
-        "Transiting Exoplanet Survey Satellite (TESS)": "[[Catégorie:Exoplanète découverte grâce au Transiting Exoplanet Survey Satellite]]",
-        "TESS": "[[Catégorie:Exoplanète découverte grâce au Transiting Exoplanet Survey Satellite]]",
-        "CoRoT": "[[Catégorie:Exoplanète découverte grâce au télescope spatial CoRoT]]",
-        "Very Large Telescope": "[[Catégorie:Exoplanète découverte grâce au Very Large Telescope (VLT)]]",
-        "Paranal Observatory": "[[Catégorie:Exoplanète découverte grâce au Very Large Telescope (VLT)]]",
-        "VLT": "[[Catégorie:Exoplanète découverte grâce au Very Large Telescope (VLT)]]",
-        "Hubble Space Telescope": "[[Catégorie:Exoplanète découverte grâce au télescope spatial Hubble]]",
-        "HST": "[[Catégorie:Exoplanète découverte grâce au télescope spatial Hubble]]",
-        "HARPS": "[[Catégorie:Exoplanète découverte grâce à HARPS]]",
-        "La Silla Observatory": "[[Catégorie:Exoplanète découverte grâce à HARPS]]",
-        "James Webb Space Telescope (JWST)": "[[Catégorie:Exoplanète découverte grâce au télescope spatial James Webb]]",
-        "James Webb Space Telescope": "[[Catégorie:Exoplanète découverte grâce au télescope spatial James Webb]]",
-        "JWST": "[[Catégorie:Exoplanète découverte grâce au télescope spatial James Webb]]",
-        "Spitzer Space Telescope": "[[Catégorie:Exoplanète découverte grâce au télescope spatial Spitzer]]",
-        "Spitzer": "[[Catégorie:Exoplanète découverte grâce au télescope spatial Spitzer]]",
-        "Gaia": "[[Catégorie:Exoplanète découverte grâce au télescope spatial Gaia]]",
-        "European Space Agency (ESA) Gaia Satellite": "[[Catégorie:Exoplanète découverte grâce au télescope spatial Gaia]]",
-        "W. M. Keck Observatory": "[[Catégorie:Exoplanète découverte grâce au W. M. Keck Observatory]]",
-        "Keck": "[[Catégorie:Exoplanète découverte grâce au W. M. Keck Observatory]]",
-        "Gemini Observatory": "[[Catégorie:Exoplanète découverte grâce au Gemini Observatory]]",
-        "CHEOPS": "[[Catégorie:Exoplanète découverte grâce au télescope spatial CHEOPS]]",
-        "CHaracterising ExOPlanets Satellite (CHEOPS)": "[[Catégorie:Exoplanète découverte grâce au télescope spatial CHEOPS]]",
-        # Les autres facilités n'ont pas de catégorie dédiée sur Wikipédia FR à ce jour,
-        # mais sont conservées pour une éventuelle création future de catégorie :
-        "OGLE": "",
-        "HATNet": "",
-        "Haute-Provence Observatory": "",
-        "Okayama Astrophysical Observatory": "",
-        "K2": "",
-        "Bohyunsan Optical Astronomical Observatory": "",
-        "Multiple Observatories": "",
-        "Multiple Facilities": "",
-        "Calar Alto Observatory": "",
-        "Qatar": "",
-        "SuperWASP-South": "",
-        "SuperWASP": "",
-        "Thueringer Landessternwarte Tautenburg": "",
-        "Lick Observatory": "",
-        "KMTNet": "",
-        "Leoncito Astronomical Complex": "",
-        "HATSouth": "",
-        "Roque de los Muchachos Observatory": "",
-        "MOA": "",
-        "McDonald Observatory": "",
-        "Anglo-Australian Telescope": "",
-        "University of Canterbury Mt John Observatory": "",
-        "United Kingdom Infrared Telescope": "",
-        "European Southern Observatory": "",
-        "Next-Generation Transit Survey (NGTS)": "",
-        "Las Campanas Observatory": "",
-        "NASA Infrared Telescope Facility (IRTF)": "",
-        "KELT-North": "",
-        "SPECULOOS Southern Observatory": "",
-        "Lowell Observatory": "",
-        "Fred Lawrence Whipple Observatory": "",
-        "MEarth Project": "",
-        "Large Binocular Telescope Observatory": "",
-        "KELT-South": "",
-        "XO": "",
-        "WASP-South": "",
-        "KELT": "",
-        "Cerro Tololo Inter-American Observatory": "",
-        "SuperWASP-North": "",
-        "Subaru Telescope": "",
-        "Mauna Kea Observatory": "",
-        "South African Radio Astronomy Observatory (SARAO)": "",
-        "TrES": "",
-        "Winer Observatory": "",
-        "Very Long Baseline Array": "",
-        "Arecibo Observatory": "",
-        "Apache Point Observatory": "",
-        "KOINet": "",
-        "Yunnan Astronomical Observatory": "",
-        "Atacama Large Millimeter Array (ALMA)": "",
-        "Palomar Observatory": "",
-        "Acton Sky Portal Observatory": "",
-        "Haleakala Observatory": "",
-        "Zwicky Transient Facility": "",
-        "Xinglong Station": "",
-        "Kitt Peak National Observatory": "",
-        "Parkes Observatory": "",
-        "Infrared Survey Facility": "",
-        "Teide Observatory": "",
-        "Wide-field Infrared Survey Explorer (WISE) Satellite Mission": "",
-    }
+    def resolve_discovery_facility(self) -> Optional[str]:
+        """
+        Génère les catégories de catalogue basées sur les préfixes des noms,
+        au format [[Catégorie:XYZ|clef]].
+        """
+        catalog_mappings = (
+            self.generator.rules.get("exoplanet", {})
+            .get("mapped", {})
+            .get("disc_facility", {})
+        )
+
+        return catalog_mappings
 
     def __init__(self, rules_filepath: str = "src/constants/categories_rules.yaml"):
         super().__init__(rules_filepath)
@@ -109,7 +34,7 @@ class ExoplanetCategoryGenerator(BaseCategoryGenerator):
     def list_category_rules(self) -> List[Callable]:
         return [
             self._get_planet_type_category,
-            self._get_constellation_category,
+            self.resolve_constellation_category,
         ]
 
     def _get_planet_type_category(self, exoplanet: Exoplanet) -> Optional[str]:
@@ -132,18 +57,20 @@ class ExoplanetCategoryGenerator(BaseCategoryGenerator):
             pass
         return None
 
-    def _get_constellation_category(self, exoplanet: Exoplanet) -> Optional[str]:
+    def resolve_constellation_category(self, exoplanet: Exoplanet) -> Optional[str]:
         """
         Règle personnalisée pour déterminer la catégorie de constellation.
         """
-        if exoplanet.st_constellation:
-            constellation: str = exoplanet.st_constellation
+        if exoplanet.sy_constellation:
+            constellation: str = exoplanet.sy_constellation
+
             mapping = (
-                self.generator.rules.get("exoplanet", {})
+                self.generator.rules.get("common", {})
                 .get("mapped", {})
-                .get("constellation", {})
+                .get("sy_constellation", {})
             )
-            if constellation in mapping:
+
+            if constellation in mapping.keys():
                 return mapping[constellation]
         return None
 
@@ -155,12 +82,15 @@ class ExoplanetCategoryGenerator(BaseCategoryGenerator):
         discovered_by_program: str | None = (
             exoplanet.disc_program.value if exoplanet.disc_program else None
         )
+
+        disc_facility_list = self.resolve_discovery_facility()
+
         if discovered_by_program:
             # Check for exact matches first
-            if discovered_by_program in self.DISCOVERY_FACILITY_CATEGORY_MAPPING:
-                return self.DISCOVERY_FACILITY_CATEGORY_MAPPING[discovered_by_program]
+            if discovered_by_program in disc_facility_list:
+                return disc_facility_list[discovered_by_program]
             # If no exact match, check for partial matches (case-insensitive for robustness)
-            for key, cat in self.DISCOVERY_FACILITY_CATEGORY_MAPPING.items():
+            for key, cat in disc_facility_list.items():
                 if key.lower() in discovered_by_program.lower():
                     return cat
         return None  # Returns None if no match is found, or if disc_program is None.
@@ -173,7 +103,7 @@ class ExoplanetCategoryGenerator(BaseCategoryGenerator):
         custom_rules = [
             self._get_planet_type_category,
             self._get_discovered_by_category,
-            self._get_constellation_category,
+            self.resolve_constellation_category,
         ]
 
         # The CategoryGenerator.generate method should be responsible for filtering out

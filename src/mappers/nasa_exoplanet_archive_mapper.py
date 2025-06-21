@@ -285,7 +285,7 @@ class NasaExoplanetArchiveMapper:
                 obj.st_right_ascension, obj.st_declination
             )
             if constellation:
-                obj.st_constellation = constellation
+                obj.sy_constellation = constellation
 
     def extract_star_alternative_names(self, nea_data: NEA_ENTITY) -> Optional[list]:
         """Extrait les différentes désignations d'une étoile, en filtrant les valeurs invalides.

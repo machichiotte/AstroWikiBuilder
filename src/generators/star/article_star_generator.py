@@ -106,9 +106,9 @@ class ArticleStarGenerator(BaseArticleGenerator):
 
         intro += "."
 
-        if star.st_constellation:
+        if star.sy_constellation:
             intro += (
-                f" Elle se trouve dans la constellation [[{star.st_constellation}]]."
+                f" Elle se trouve dans la constellation [[{star.sy_constellation}]]."
             )
 
         if star.st_distance and star.st_distance.value is not None:

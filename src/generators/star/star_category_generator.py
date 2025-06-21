@@ -58,6 +58,7 @@ class StarCategoryGenerator(BaseCategoryGenerator):
             self.map_luminosity_class_to_category,
             self.resolve_star_type_category,
             self.resolve_variable_star_category,
+            self.resolve_constellation_category,
         ]
 
     # ============================================================================
@@ -221,12 +222,17 @@ class StarCategoryGenerator(BaseCategoryGenerator):
         """
         return "\n[[Catégorie:Système planétaire]]"
 
-    def add_catalogs_category(self, star: Star) -> Optional[str]:
+    def resolve_constellation_category(self, star: Star) -> Optional[str]:
         """
-        #ici dans star.st_name on a le prefix qui nous donne le catalogue mais il faut le numero
-        car
-
-
-        idem dans star.alt_names qui contient plusieurs string
+        Règle personnalisée pour déterminer la catégorie de constellation.
         """
-        return "\n[[Catégorie:Système planétaire]]"
+        if star.sy_constellation:
+            constellation: str = star.sy_constellation
+            mapping = (
+                self.generator.rules.get("common", {})
+                .get("mapped", {})
+                .get("sy_constellation", {})
+            )
+            if constellation in mapping.keys():
+                return mapping[constellation]
+        return None
