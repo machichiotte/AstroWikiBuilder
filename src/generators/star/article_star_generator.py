@@ -2,7 +2,10 @@
 import locale
 import re
 from typing import List, Optional
-from src.constants.field_mappings import CONSTELLATION_GENDER
+from src.constants.field_mappings import (
+    CONSTELLATION_GENDER,
+    SPECTRAL_TYPE_DESCRIPTIONS,
+)
 from src.models.entities.star import Star
 from src.models.entities.exoplanet import Exoplanet
 from src.generators.star.star_infobox_generator import StarInfoboxGenerator
@@ -99,29 +102,40 @@ class ArticleStarGenerator(BaseArticleGenerator):
 
     def build_introduction_section(self, star: Star) -> str:
         """
-        Génère l'introduction de l'article.
+        Génère une introduction encyclopédique enrichie de l'article de l'étoile.
         """
         star_name: str = star.st_name if star.st_name else "Cette étoile"
-        intro: str = f"'''{star_name}''' est une étoile"
+        intro = f"'''{star_name}''' est"
 
+        # Bloc : type spectral
         if star.st_spectral_type:
-            intro += f" de type spectral {star.st_spectral_type}"
+            spectral_class = star.st_spectral_type[0].upper()
+            description = SPECTRAL_TYPE_DESCRIPTIONS.get(spectral_class)
+            if description:
+                intro += f" une [[{description}]]"
+            else:
+                intro += f" une étoile de type spectral {star.st_spectral_type}"
+        else:
+            intro += " une étoile"
 
-        intro += "."
-
+        # Bloc : constellation
         if star.sy_constellation:
-            intro += (
-                f" Elle se trouve dans la constellation [[{star.sy_constellation}]]."
-            )
+            intro += f" située dans la constellation [[{star.sy_constellation}]]"
+        else:
+            intro += ""
 
+        # Bloc : distance
         if star.st_distance and star.st_distance.value is not None:
             try:
                 dist_val = float(star.st_distance.value)
                 formatted = f"{dist_val:.2f}"
-                intro += f" Elle est située à environ {{{{unité|{formatted}|[[parsec]]s}}}} de la [[Terre]]."
-
+                intro += (
+                    f", à environ {{{{unité|{formatted}|[[parsec]]s}}}} de la [[Terre]]"
+                )
             except ValueError:
-                formatted = "unknown"
+                pass
+
+        intro += "."
 
         return intro
 

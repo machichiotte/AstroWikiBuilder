@@ -30,7 +30,7 @@ class StarContentGenerator:
         sections: list[str] = [
             self.build_physical_section(star),
             self.build_observation_section(star),
-            self.build_environment_section(star),
+            # self.build_environment_section(star),
             # self.write_history_paragraph(star),
         ]
 

@@ -1,6 +1,8 @@
 import pandas as pd
 import json
 import math
+import os
+
 
 def convert_csv_to_json(csv_path: str, json_path: str):
     """
@@ -8,25 +10,31 @@ def convert_csv_to_json(csv_path: str, json_path: str):
     """
     print(f"Lecture du fichier CSV : {csv_path}")
     df = pd.read_csv(csv_path)
-    
+
     # Fonction pour supprimer les clés avec valeur None ou NaN
     def drop_none_and_nan(d):
-        return {k: v for k, v in d.items() if v is not None and not (isinstance(v, float) and math.isnan(v))}
+        return {
+            k: v
+            for k, v in d.items()
+            if v is not None and not (isinstance(v, float) and math.isnan(v))
+        }
 
     print(f"Conversion en JSON...")
-    json_data = [drop_none_and_nan(record) for record in df.to_dict(orient='records')]
+    json_data = [drop_none_and_nan(record) for record in df.to_dict(orient="records")]
 
     print(f"Écriture du fichier JSON : {json_path}")
-    with open(json_path, 'w', encoding='utf-8') as f:
+    with open(json_path, "w", encoding="utf-8") as f:
         json.dump(json_data, f, indent=2, ensure_ascii=False)
-    
+
     print("Conversion terminée !")
+
 
 def convert_csv_column_to_json(csv_path: str, json_path: str, column: str):
     """
     Convertit une seule colonne d'un fichier CSV en JSON (liste des valeurs non nulles/non NaN).
     """
     import math
+
     print(f"Lecture du fichier CSV : {csv_path}")
     df = pd.read_csv(csv_path)
 
@@ -36,7 +44,8 @@ def convert_csv_column_to_json(csv_path: str, json_path: str, column: str):
 
     # Récupère la colonne, enlève les NaN/None/vides, convertit en liste
     values = [
-        v for v in df[column]
+        v
+        for v in df[column]
         if v is not None
         and not (isinstance(v, float) and math.isnan(v))
         and not (isinstance(v, str) and v.strip() == "")
@@ -45,14 +54,22 @@ def convert_csv_column_to_json(csv_path: str, json_path: str, column: str):
     # Supprime les doublons en préservant l'ordre
     values = list(dict.fromkeys(values))
 
+    # Si le chemin de sortie n'est pas absolu, sauvegarde dans data/generated/column_extracted
+    if not os.path.isabs(json_path):
+        output_dir = "data/generated/column_extracted"
+        os.makedirs(output_dir, exist_ok=True)
+        json_path = os.path.join(output_dir, json_path)
+
     print(f"Écriture du fichier JSON : {json_path}")
-    with open(json_path, 'w', encoding='utf-8') as f:
+    with open(json_path, "w", encoding="utf-8") as f:
         json.dump(values, f, indent=2, ensure_ascii=False)
 
     print("Conversion terminée (colonne unique) !")
 
+
 if __name__ == "__main__":
     import sys
+
     if len(sys.argv) == 3:
         csv_path = sys.argv[1]
         json_path = sys.argv[2]
@@ -66,4 +83,7 @@ if __name__ == "__main__":
         print("Usage:")
         print("  python csv_to_json.py <input_csv> <output_json>")
         print("  python csv_to_json.py <input_csv> <output_json> <column_name>")
+        print(
+            "\nNote: Si le chemin de sortie n'est pas absolu, le fichier sera sauvegardé dans data/generated/column_extracted/"
+        )
         sys.exit(1)

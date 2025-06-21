@@ -366,6 +366,7 @@ def generate_and_persist_star_drafts(
     Si des exoplanètes sont fournies, elles seront utilisées pour enrichir le contenu des étoiles.
     """
     stars: List[Star] = processor.collect_all_stars()
+    total = len(stars)
 
     # Créer un index des exoplanètes par nom d'étoile hôte
     exoplanets_by_star_name: Dict[str, List[Exoplanet]] = {}
@@ -373,33 +374,29 @@ def generate_and_persist_star_drafts(
         for exoplanet in exoplanets:
             if hasattr(exoplanet, "st_name") and exoplanet.st_name:
                 star_name = str(exoplanet.st_name)
-                if star_name not in exoplanets_by_star_name:
-                    exoplanets_by_star_name[star_name] = []
-                exoplanets_by_star_name[star_name].append(exoplanet)
+                exoplanets_by_star_name.setdefault(star_name, []).append(exoplanet)
 
-    logger.info(f"Nombre total d'objets retournés par get_all_stars: {len(stars)}")
+    logger.info(f"Nombre total d'objets retournés par get_all_stars: {total}")
     logger.info(
         f"Index créé pour {len(exoplanets_by_star_name)} étoiles avec exoplanètes"
     )
 
     star_drafts = {}
-    for star in stars:
+    for idx, star in enumerate(stars, 1):
         star_name: str = getattr(star, "st_name", "UNKNOWN")
-        if isinstance(star, Star):
-            # Récupérer les exoplanètes de cette étoile
-            star_exoplanets = exoplanets_by_star_name.get(star_name, [])
-            if star_exoplanets:
-                star_drafts[star_name] = build_star_article_draft(
-                    star, exoplanets=star_exoplanets
-                )
-            else:
-                logger.info(
-                    f"Génération draft étoile: {star_name} (aucune exoplanète connue)"
-                )
 
+        if isinstance(star, Star):
+            if idx % 100 == 0 or idx == total:
+                logger.info(f"Progression: {idx}/{total} étoiles traitées...")
+
+            star_exoplanets = exoplanets_by_star_name.get(star_name, [])
+            star_drafts[star_name] = build_star_article_draft(
+                star, exoplanets=star_exoplanets
+            )
         else:
             logger.warning(f"Objet ignoré (type: {type(star)}) pour {star_name}")
 
+    logger.info(f"Nombre total de brouillons générés: {len(star_drafts)}")
     persist_drafts_by_entity_type(
         star_drafts,
         {},
