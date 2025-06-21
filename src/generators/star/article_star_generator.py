@@ -14,9 +14,10 @@ from src.generators.star.star_category_generator import StarCategoryGenerator
 from src.generators.base_article_generator import BaseArticleGenerator
 from src.generators.star.star_content_generator import StarContentGenerator
 from src.utils.astro.classification.star_type_utils import StarTypeUtils
-from src.utils.lang.phrase.constellation import (
-    phrase_de_la_constellation,
-    phrase_situee_dans_constellation,
+from src.utils.lang.phrase.constellation import phrase_de_la_constellation
+
+from src.generators.star.star_introduction_generator import (
+    StarIntroductionGenerator,
 )
 
 
@@ -35,6 +36,7 @@ class ArticleStarGenerator(BaseArticleGenerator):
 
         super().__init__(reference_manager, category_generator, stub_type, portals)
 
+        self.introduction_generator = StarIntroductionGenerator()
         self.infobox_generator = StarInfoboxGenerator(self.reference_manager)
         self.article_utils = ArticleUtils()
         self.star_type_utils = StarTypeUtils()
@@ -60,8 +62,7 @@ class ArticleStarGenerator(BaseArticleGenerator):
         parts.append(self.infobox_generator.generate(star))
 
         # 3. Introduction
-        parts.append(self.build_introduction_section(star))
-
+        parts.append(self.introduction_generator.compose_star_introduction(star))
         # 4. Contenu principal
         parts.append(self.content_generator.compose_full_article(star))
 
@@ -105,54 +106,6 @@ class ArticleStarGenerator(BaseArticleGenerator):
         content, count = re.subn(short_ref_pattern, full_ref, content, count=1)
 
         return content
-
-    def build_introduction_section(self, star: Star) -> str:
-        """
-        Génère une introduction encyclopédique enrichie de l'article de l'étoile.
-        """
-        star_name: str = star.st_name if star.st_name else "Cette étoile"
-        intro = f"'''{star_name}''' est"
-
-        # Bloc : type spectral
-        if star.st_spectral_type:
-            star_types: List[str] = (
-                self.star_type_utils.determine_star_types_from_properties(star)
-            )
-            if not star_types:
-                return None
-
-            description = star_types[0].lower()
-
-            if description:
-                intro += f" une [[{description}]]"
-            else:
-                intro += f" une étoile de type spectral {star.st_spectral_type}"
-        else:
-            intro += " une étoile"
-
-        # Bloc : constellation
-        if star.sy_constellation:
-            const = star.sy_constellation.strip()
-
-        if const:
-            intro += f" {phrase_situee_dans_constellation(const)}"
-        else:
-            intro += ""
-
-        # Bloc : distance
-        if star.st_distance and star.st_distance.value is not None:
-            try:
-                dist_val = float(star.st_distance.value)
-                formatted = f"{dist_val:.2f}"
-                intro += (
-                    f", à environ {{{{unité|{formatted}|[[parsec]]s}}}} de la [[Terre]]"
-                )
-            except ValueError:
-                pass
-
-        intro += "."
-
-        return intro
 
     def build_placeholder_section(self, title: str, placeholder_text: str) -> str:
         """

@@ -12,6 +12,7 @@ from src.utils.astro.classification.exoplanet_type_utils import ExoplanetTypeUti
 
 from src.utils.lang.french_articles import get_french_article_noun
 from src.utils.lang.phrase.constellation import phrase_dans_constellation
+from src.utils.lang.french_articles import guess_grammatical_gender
 
 
 class ExoplanetIntroductionGenerator:
@@ -47,7 +48,7 @@ class ExoplanetIntroductionGenerator:
         if star_type_descriptions:
             desc = star_type_descriptions[0].strip()
             desc_clean = desc[0].lower() + desc[1:]
-            genre = self.guess_grammatical_gender(desc_clean)
+            genre = guess_grammatical_gender(desc_clean)
             article = get_french_article_noun(
                 desc_clean, gender=genre, preposition="de", with_brackets=True
             )
@@ -55,22 +56,6 @@ class ExoplanetIntroductionGenerator:
             return f" en orbite autour {article} [[{st_name}]]"
         else:
             return f" en orbite autour de son étoile hôte [[{st_name}]]"
-
-    @staticmethod
-    def guess_grammatical_gender(type_description: str) -> str:
-        """
-        Essaie de deviner le genre grammatical d’un type d’étoile.
-        """
-        feminine_keywords = ["naine", "étoile", "géante", "brune"]
-        masculine_keywords = ["nain", "géant", "sous-nain", "subdwarf"]
-
-        for f in feminine_keywords:
-            if f in type_description:
-                return "f"
-        for m in masculine_keywords:
-            if m in type_description:
-                return "m"
-        return "?"  # inconnu
 
     def compose_distance_phrase(self, exoplanet: Exoplanet) -> Optional[str]:
         """Construit le segment de phrase concernant la distance."""

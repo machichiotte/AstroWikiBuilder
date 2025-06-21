@@ -77,7 +77,7 @@ class ArticleExoplanetGenerator(BaseArticleGenerator):
         parts.append(self.build_discovery_section(exoplanet))
 
         # 7. Habitabilité
-        parts.append(self.build_habitability_section(exoplanet))
+        # parts.append(self.build_habitability_section(exoplanet))
 
         # 8. Références et portails
         parts.append(self.build_references_section())
