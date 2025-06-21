@@ -102,8 +102,8 @@ class ArticleExoplanetGenerator(BaseArticleGenerator):
             return content
 
         # Créer la référence complète
-        full_ref = exoplanet.reference.to_wiki_ref(short=False)
-        short_ref = exoplanet.reference.to_wiki_ref(short=True)
+        full_ref = exoplanet.reference.to_wiki_ref(is_short=False)
+        # short_ref = exoplanet.reference.to_wiki_ref(is_short=True)
 
         # Extraire le nom de la référence (ex: "NEA")
         ref_name = exoplanet.reference.source.value

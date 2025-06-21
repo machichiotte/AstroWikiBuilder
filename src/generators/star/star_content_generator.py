@@ -3,6 +3,7 @@
 # ============================================================================
 from src.models.entities.star import Star
 from src.utils.formatters.article_formatters import ArticleUtils
+from src.utils.lang.phrase.constellation import phrase_dans_constellation
 
 
 # ============================================================================
@@ -133,11 +134,9 @@ class StarContentGenerator:
             return ""
 
         content: list[str] = ["== Environnement stellaire ==\n"]
-
         if star.sy_constellation:
-            content.append(
-                f"L'étoile se trouve dans la constellation [[{star.sy_constellation}]]."
-            )
+            str_constellation = phrase_dans_constellation(star.sy_constellation)
+            content.append(f"L'étoile se trouve {str_constellation}.")
 
         if star.st_distance:
             dist_val = float(star.st_distance.value)

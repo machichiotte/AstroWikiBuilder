@@ -75,7 +75,7 @@ class Reference:
             raise ValueError("Identifier is required for generating the URL")
         return details["url_pattern"].format(planet_id=planet_id)
 
-    def to_wiki_ref(self, short: bool = True) -> str:
+    def to_wiki_ref(self, is_short: bool = True) -> str:
         """Convertit la référence en format wiki, avec option pour version courte"""
         details: dict[str, str] | None = SOURCE_DETAILS.get(self.source)
         if not details:
@@ -90,7 +90,7 @@ class Reference:
         url: str = self.to_url()
         title: str = f"{details['display_title']}{' - ' + name_str if name_str else ''}"
 
-        if short:
+        if is_short:
             return f'<ref name="{self.source.value}" />'
 
         tpl: str = details["template"].format(

@@ -1,9 +1,5 @@
 # src/generators/exoplanet/exoplanet_introduction_generator.py
 from typing import List, Optional
-
-from src.constants.field_mappings import (
-    CONSTELLATION_GENDER,
-)
 from src.models.entities.exoplanet import Exoplanet
 from src.utils.astro.constellation_utils import ConstellationUtils
 from src.utils.formatters.article_formatters import ArticleUtils
@@ -13,6 +9,9 @@ from src.utils.astro.classification.exoplanet_comparison_utils import (
     ExoplanetComparisonUtils,
 )
 from src.utils.astro.classification.exoplanet_type_utils import ExoplanetTypeUtils
+
+from src.utils.lang.french_articles import get_french_article_noun
+from src.utils.lang.phrase.constellation import phrase_dans_constellation
 
 
 class ExoplanetIntroductionGenerator:
@@ -47,22 +46,13 @@ class ExoplanetIntroductionGenerator:
 
         if star_type_descriptions:
             desc = star_type_descriptions[0].strip()
-            desc_lower = desc.lower()
+            desc_clean = desc[0].lower() + desc[1:]
+            genre = self.guess_grammatical_gender(desc_clean)
+            article = get_french_article_noun(
+                desc_clean, gender=genre, preposition="de", with_brackets=True
+            )
 
-            # Déterminer l'article correct
-            first_letter = desc_lower[0]
-            voyelles = {"a", "e", "é", "i", "o", "u", "y", "h"}  # inclut h muet
-            genre = self.guess_grammatical_gender(desc_lower)  # <- fonction à créer
-
-            if genre == "f":
-                article = "de l'" if first_letter in voyelles else "de la "
-            elif genre == "m":
-                article = "de l'" if first_letter in voyelles else "du "
-            else:
-                article = "de "
-            desc = desc[0].lower() + desc[1:]
-
-            return f" en orbite autour {article}[[{desc}]] [[{st_name}]]"
+            return f" en orbite autour {article} [[{st_name}]]"
         else:
             return f" en orbite autour de son étoile hôte [[{st_name}]]"
 
@@ -102,35 +92,16 @@ class ExoplanetIntroductionGenerator:
             return None
         return None
 
-    def format_constellation_locative_phrase(
-        self, constellation_french_name: str
-    ) -> str:
-        """Formate la partie de phrase "dans la constellation de/du/de l' X"."""
-        genre = CONSTELLATION_GENDER.get(
-            constellation_french_name, "m"
-        )  # défaut masculin
-        preposition = "de la" if genre == "f" else "du"
-
-        if (
-            genre == "m"
-            and constellation_french_name
-            and constellation_french_name[0].lower() in "aeiouéèêëàâäîïôöùûü"
-        ):
-            preposition = "de l'"
-
-        if preposition.endswith("'"):
-            return f"dans la constellation {preposition}{constellation_french_name}"
-        else:
-            return f"dans la constellation {preposition} {constellation_french_name}"
-
     def compose_constellation_phrase(self, exoplanet: Exoplanet) -> Optional[str]:
         """Construit le segment de phrase concernant la constellation."""
         if not exoplanet.sy_constellation:
             return None
 
         constellation_name_fr = exoplanet.sy_constellation
+
         if constellation_name_fr:
-            return self.format_constellation_locative_phrase(constellation_name_fr)
+            return phrase_dans_constellation(constellation_name_fr)
+
         return None
 
     # ============================================================================
@@ -165,8 +136,6 @@ class ExoplanetIntroductionGenerator:
 
         constellation_segment = self.compose_constellation_phrase(exoplanet)
         if constellation_segment:
-            parts.append(
-                f" {constellation_segment}"
-            )  # Espace initial comme dans la concaténation originale
+            parts.append(f" {constellation_segment}")
 
         return "".join(parts) + "."

@@ -7,6 +7,7 @@ import json
 
 from src.models.entities.exoplanet import Exoplanet
 from src.core.config import (
+    DEFAULT_CONSOLIDATED_DIR,
     logger,
     DEFAULT_OUTPUT_DIR,
     DEFAULT_DRAFTS_DIR,
@@ -76,6 +77,13 @@ def parse_cli_arguments() -> argparse.Namespace:
         type=str,
         default=DEFAULT_OUTPUT_DIR,
         help=f'Directory for storing output files. Default: "{DEFAULT_OUTPUT_DIR}"',
+    )
+
+    parser.add_argument(
+        "--consolidated-dir",
+        type=str,
+        default=DEFAULT_CONSOLIDATED_DIR,
+        help=f'Directory for storing consolidated files. Default: "{DEFAULT_CONSOLIDATED_DIR}"',
     )
 
     parser.add_argument(
@@ -226,12 +234,17 @@ def fetch_and_ingest_collected_data(
 
 
 def _create_output_directories(
-    output_dir: str = DEFAULT_OUTPUT_DIR, drafts_dir: str = DEFAULT_DRAFTS_DIR
+    consolidated_dir: str = DEFAULT_CONSOLIDATED_DIR,
+    output_dir: str = DEFAULT_OUTPUT_DIR,
+    drafts_dir: str = DEFAULT_DRAFTS_DIR,
 ):
     """Crée les répertoires de sortie nécessaires."""
     os.makedirs(output_dir, exist_ok=True)
     os.makedirs(drafts_dir, exist_ok=True)
-    logger.info(f"Répertoires de sortie créés : {output_dir}, {drafts_dir}")
+    os.makedirs(consolidated_dir, exist_ok=True)
+    logger.info(
+        f"Répertoires de sortie créés : {output_dir}, {drafts_dir}, {consolidated_dir}"
+    )
 
 
 def export_consolidated_exoplanet_data(
@@ -241,7 +254,7 @@ def export_consolidated_exoplanet_data(
     logger.info("Export des données consolidées...")
     try:
         processor.export_all_exoplanets(
-            "csv", f"{output_dir}/exoplanets_consolidated_{timestamp}.csv"
+            "csv", f"{output_dir}/consolidated/exoplanets_consolidated_{timestamp}.csv"
         )
     except Exception as e:
         logger.error(f"Erreur lors de l'export des données consolidées : {e}")

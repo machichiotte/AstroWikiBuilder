@@ -9,6 +9,7 @@ logger: logging.Logger = logging.getLogger(__name__)
 
 # Configuration des chemins
 DEFAULT_OUTPUT_DIR = "data/generated"
+DEFAULT_CONSOLIDATED_DIR = "data/generated/consolidated"
 DEFAULT_DRAFTS_DIR = "data/drafts"
 DEFAULT_CACHE_DIR = "data/cache"
 

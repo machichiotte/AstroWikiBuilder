@@ -14,6 +14,10 @@ from src.generators.star.star_category_generator import StarCategoryGenerator
 from src.generators.base_article_generator import BaseArticleGenerator
 from src.generators.star.star_content_generator import StarContentGenerator
 from src.utils.astro.classification.star_type_utils import StarTypeUtils
+from src.utils.lang.phrase.constellation import (
+    phrase_de_la_constellation,
+    phrase_situee_dans_constellation,
+)
 
 
 class ArticleStarGenerator(BaseArticleGenerator):
@@ -88,8 +92,8 @@ class ArticleStarGenerator(BaseArticleGenerator):
             return content
 
         # Créer la référence complète
-        full_ref = star.reference.to_wiki_ref(short=False)
-        short_ref = star.reference.to_wiki_ref(short=True)
+        full_ref = star.reference.to_wiki_ref(is_short=False)
+        # short_ref = star.reference.to_wiki_ref(is_short=True)
 
         # Extraire le nom de la référence (ex: "NEA")
         ref_name = star.reference.source.value
@@ -128,7 +132,10 @@ class ArticleStarGenerator(BaseArticleGenerator):
 
         # Bloc : constellation
         if star.sy_constellation:
-            intro += f" située dans la constellation [[{star.sy_constellation}]]"
+            const = star.sy_constellation.strip()
+
+        if const:
+            intro += f" {phrase_situee_dans_constellation(const)}"
         else:
             intro += ""
 
@@ -166,23 +173,11 @@ class ArticleStarGenerator(BaseArticleGenerator):
         gender = CONSTELLATION_GENDER.get(constellation)
 
         if not gender:
-            # Par défaut si genre inconnu
-            return f"{{{{Palette|Étoiles de {constellation}}}}}\n"
+            return None
 
-        first_letter = constellation[0].lower()
-        starts_with_vowel = first_letter in "aeiouéèêàâîïùü"
-
-        if starts_with_vowel:
-            # Accord élidé pour voyelle : de l’Éridan
-            article = "de l’"
-        elif gender == "f":
-            article = "de la "
-        elif gender == "m":
-            article = "du "
-        else:
-            article = "de "
-
-        return f"{{{{Palette|Étoiles {article}{constellation}}}}}\n"
+        # return f"{{{{Palette|Étoiles {article}{constellation}}}}}\n"
+        str_constellation = phrase_de_la_constellation(constellation)
+        return f"{{{{Palette|Étoiles {str_constellation}}}}}\n"
 
     def _format_uncertainty(
         self,
