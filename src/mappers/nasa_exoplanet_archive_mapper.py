@@ -35,202 +35,103 @@ class NasaExoplanetArchiveMapper:
     def __init__(self):
         self.constellation_utils = ConstellationUtils()
 
-    # ============================================================================
-    # MAPPING PRINCIPAL : STAR
-    # ============================================================================
     def map_star_from_nea_record(self, nea_data: NEA_ENTITY) -> Star:
-        """Convertit les données NEA en objet Star."""
-        reference = self.build_reference_from_nea(nea_data, False)
-
-        star = Star(
-            st_name=nea_data.get("hostname", ""),
-            reference=reference,
+        return self._map_from_nea_record(
+            nea_data,
+            model_class=Star,
+            mapping_dict=NEA_TO_STAR_MAPPING,
+            exclusions={"st_name", "pl_name", "reference"},
+            is_planet=False,
         )
 
-        # Mapper les champs selon le mapping défini
-        for nea_field, attribute in NEA_TO_STAR_MAPPING.items():
-            if (
-                nea_field in nea_data
-                and attribute != "st_name"
-                and attribute != "pl_name"
-                and attribute != "reference"
-            ):
-                raw_value = nea_data[nea_field]
-
-                if is_invalid_raw_value(raw_value):
-                    print(
-                        f"Ignored {nea_field} ({attribute}) due to invalid value: {raw_value}"
-                    )
-                    continue
-
-                if raw_value is not None:
-                    if attribute not in (
-                        "st_declination",
-                        "st_right_ascension",
-                        "st_spectral_type",
-                    ):
-                        if raw_value:
-                            if isinstance(
-                                raw_value, str
-                            ) and self.is_composite_formatted_string(raw_value):
-                                parsed_vwu = self.parse_composite_formatted_value(
-                                    raw_value
-                                )
-                                if parsed_vwu:
-                                    setattr(star, attribute, parsed_vwu)
-
-                            else:
-                                try:
-                                    if attribute == "st_luminosity":
-                                        numeric_value = float(10**raw_value)
-                                    elif int(raw_value):
-                                        numeric_value = int(raw_value)
-                                    elif float(raw_value):
-                                        numeric_value = float(raw_value)
-
-                                    error_positive = nea_data.get(f"{nea_field}_err1")
-                                    error_negative = nea_data.get(f"{nea_field}_err2")
-
-                                    err1_clean = (
-                                        float(
-                                            str(error_positive)
-                                            .replace("+", "")
-                                            .replace("-", "")
-                                        )
-                                        if error_positive
-                                        else None
-                                    )
-                                    err2_clean = (
-                                        float(
-                                            str(error_negative)
-                                            .replace("+", "")
-                                            .replace("-", "")
-                                        )
-                                        if error_negative
-                                        else None
-                                    )
-
-                                    value_with_uncertainty = ValueWithUncertainty(
-                                        value=numeric_value,
-                                        error_positive=err1_clean,
-                                        error_negative=err2_clean,
-                                        sign="±" if err1_clean or err2_clean else None,
-                                    )
-                                    setattr(star, attribute, value_with_uncertainty)
-
-                                except (ValueError, TypeError):
-                                    # C'est un string "pur" (ex: identifiant, classe spectrale, etc.)
-                                    setattr(star, attribute, raw_value)
-
-        # Traitement spécial pour les désignations
-        st_altnames = self.extract_star_alternative_names(nea_data)
-        if st_altnames:
-            star.st_altname = st_altnames
-
-        # Traitement des coordonnées
-        self.set_coordinates_and_constellation(star, nea_data, reference)
-
-        return star
-
-    # ============================================================================
-    # MAPPING PRINCIPAL : EXOPLANET
-    # ============================================================================
     def map_exoplanet_from_nea_record(self, nea_data: NEA_ENTITY) -> Exoplanet:
-        """Mappe les données NEA vers un objet Exoplanet."""
-        reference = self.build_reference_from_nea(nea_data, True)
-
-        exoplanet = Exoplanet(
-            pl_name=nea_data.get("pl_name"),
-            st_name=nea_data.get("hostname"),
-            reference=reference,
+        return self._map_from_nea_record(
+            nea_data,
+            model_class=Exoplanet,
+            mapping_dict=NEA_TO_EXOPLANET_MAPPING,
+            exclusions={"st_name", "pl_name", "reference"},
+            is_planet=True,
         )
 
-        # Traitement des coordonnées
-        self.set_coordinates_and_constellation(exoplanet, nea_data, reference)
+    def _map_from_nea_record(
+        self,
+        nea_data: NEA_ENTITY,
+        model_class: type,
+        mapping_dict: dict[str, str],
+        exclusions: set[str],
+        is_planet: bool,
+    ) -> Star | Exoplanet:
+        reference = self.build_reference_from_nea(nea_data, is_planet)
+        if is_planet:
+            obj = model_class(
+                pl_name=nea_data.get("pl_name"),
+                st_name=nea_data.get("hostname"),
+                reference=reference,
+            )
+        else:
+            obj = model_class(
+                st_name=nea_data.get("hostname"),
+                reference=reference,
+            )
 
-        # Traitement des autres champs avec ValueWithUncertainty
-        for nea_field, attribute in NEA_TO_EXOPLANET_MAPPING.items():
-            if (
-                nea_field in nea_data
-                and attribute != "pl_name"
-                and attribute != "st_name"
-                and attribute != "reference"
-            ):
-                raw_value = nea_data[nea_field]
+        for nea_field, attribute in mapping_dict.items():
+            if nea_field not in nea_data or attribute in exclusions:
+                continue
 
-                if is_invalid_raw_value(raw_value):
-                    print(
-                        f"Ignored {nea_field} ({attribute}) due to invalid value: {raw_value}"
-                    )
-                    continue
+            raw_value = nea_data[nea_field]
 
-                if (
-                    attribute != "st_declination"
-                    or attribute != "st_right_ascension"
-                    or attribute != "st_spectral_type"
-                    or attribute != "disc_method"
-                    or attribute != "disc_facility"
-                ):
-                    if raw_value:
-                        if isinstance(
-                            raw_value, str
-                        ) and self.is_composite_formatted_string(raw_value):
-                            parsed_vwu = self.parse_composite_formatted_value(raw_value)
-                            if parsed_vwu:
-                                setattr(exoplanet, attribute, parsed_vwu)
+            if is_invalid_raw_value(raw_value):
+                continue
 
-                        else:
-                            try:
-                                if attribute == "st_luminosity":
-                                    numeric_value = float(10**raw_value)
-                                elif int(raw_value):
-                                    numeric_value = int(raw_value)
-                                elif float(raw_value):
-                                    numeric_value = float(raw_value)
+            # Parsing intelligent de la valeur
+            parsed = self._parse_field(raw_value, nea_data, nea_field, attribute)
+            if parsed is not None:
+                setattr(obj, attribute, parsed)
 
-                                error_positive = nea_data.get(f"{nea_field}_err1")
-                                error_negative = nea_data.get(f"{nea_field}_err2")
+        # Post-traitements
+        if is_planet:
+            obj.pl_altname = self.extract_exoplanet_alternative_names(nea_data)
+        else:
+            obj.st_altname = self.extract_star_alternative_names(nea_data)
 
-                                err1_clean = (
-                                    float(
-                                        str(error_positive)
-                                        .replace("+", "")
-                                        .replace("-", "")
-                                    )
-                                    if error_positive
-                                    else None
-                                )
-                                err2_clean = (
-                                    float(
-                                        str(error_negative)
-                                        .replace("+", "")
-                                        .replace("-", "")
-                                    )
-                                    if error_negative
-                                    else None
-                                )
+        self.set_coordinates_and_constellation(obj, nea_data, reference)
+        return obj
 
-                                value_with_uncertainty = ValueWithUncertainty(
-                                    value=numeric_value,
-                                    error_positive=err1_clean,
-                                    error_negative=err2_clean,
-                                    sign="±" if err1_clean or err2_clean else None,
-                                )
-                                setattr(exoplanet, attribute, value_with_uncertainty)
+    def _parse_field(
+        self,
+        raw_value: Any,
+        nea_data: NEA_ENTITY,
+        nea_field: str,
+        attribute: str,
+    ) -> Optional[Any]:
+        if isinstance(raw_value, str) and self.is_composite_formatted_string(raw_value):
+            return self.parse_composite_formatted_value(raw_value)
 
-                            except (ValueError, TypeError):
-                                # C'est un string "pur" (ex: identifiant, classe spectrale, etc.)
-                                setattr(exoplanet, attribute, raw_value)
+        try:
+            # Cas spécial luminosité exprimée en log10
+            if attribute == "st_luminosity":
+                numeric_value = float(10 ** float(raw_value))
+            else:
+                numeric_value = float(raw_value)
 
-        # Traitement spécial pour les désignations
-        pl_altnames = self.extract_exoplanet_alternative_names(nea_data)
-        if pl_altnames:
-            exoplanet.pl_altname = pl_altnames
+            err_pos = self._parse_error_value(nea_data.get(f"{nea_field}_err1"))
+            err_neg = self._parse_error_value(nea_data.get(f"{nea_field}_err2"))
 
-        # Traitement des coordonnées
-        self.set_coordinates_and_constellation(exoplanet, nea_data, reference)
+            return ValueWithUncertainty(
+                value=numeric_value,
+                error_positive=err_pos,
+                error_negative=err_neg,
+                sign="±" if err_pos or err_neg else None,
+            )
 
-        return exoplanet
+        except (ValueError, TypeError):
+            return raw_value  # string "pur"
+
+    def _parse_error_value(self, val: Any) -> Optional[float]:
+        try:
+            return float(str(val).replace("+", "").replace("-", "")) if val else None
+        except Exception:
+            return None
 
     # ============================================================================
     # UTILITAIRES DE MAPPING ET DE FORMATAGE
