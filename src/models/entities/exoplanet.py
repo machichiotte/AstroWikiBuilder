@@ -103,3 +103,8 @@ class Exoplanet:
 
     # Références
     reference: Reference = None
+
+    st_mass: Optional[ValueWithUncertainty] = None
+    st_radius: Optional[ValueWithUncertainty] = None
+    st_variability: Optional[ValueWithUncertainty] = None
+    st_metallicity: Optional[ValueWithUncertainty] = None

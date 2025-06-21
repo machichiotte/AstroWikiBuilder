@@ -4,7 +4,6 @@ import re
 from typing import List, Optional
 from src.constants.field_mappings import (
     CONSTELLATION_GENDER,
-    SPECTRAL_TYPE_DESCRIPTIONS,
 )
 from src.models.entities.star import Star
 from src.models.entities.exoplanet import Exoplanet
@@ -14,6 +13,7 @@ from src.services.processors.reference_manager import ReferenceManager
 from src.generators.star.star_category_generator import StarCategoryGenerator
 from src.generators.base_article_generator import BaseArticleGenerator
 from src.generators.star.star_content_generator import StarContentGenerator
+from src.utils.astro.classification.star_type_utils import StarTypeUtils
 
 
 class ArticleStarGenerator(BaseArticleGenerator):
@@ -25,6 +25,7 @@ class ArticleStarGenerator(BaseArticleGenerator):
     def __init__(self):
         reference_manager = ReferenceManager()
         category_generator = StarCategoryGenerator()
+
         stub_type = "étoile"
         portals: list[str] = ["astronomie", "étoiles", "exoplanètes"]
 
@@ -32,6 +33,7 @@ class ArticleStarGenerator(BaseArticleGenerator):
 
         self.infobox_generator = StarInfoboxGenerator(self.reference_manager)
         self.article_utils = ArticleUtils()
+        self.star_type_utils = StarTypeUtils()
         self.content_generator = StarContentGenerator()
         try:
             locale.setlocale(locale.LC_ALL, "fr_FR.UTF-8")
@@ -109,8 +111,14 @@ class ArticleStarGenerator(BaseArticleGenerator):
 
         # Bloc : type spectral
         if star.st_spectral_type:
-            spectral_class = star.st_spectral_type[0].upper()
-            description = SPECTRAL_TYPE_DESCRIPTIONS.get(spectral_class)
+            star_types: List[str] = (
+                self.star_type_utils.determine_star_types_from_properties(star)
+            )
+            if not star_types:
+                return None
+
+            description = star_types[0]
+
             if description:
                 intro += f" une [[{description}]]"
             else:

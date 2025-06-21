@@ -7,6 +7,7 @@ from re import Match
 from typing import Optional, Tuple, List
 
 from src.models.entities.star import Star
+from src.models.entities.exoplanet import Exoplanet
 
 
 @dataclass
@@ -32,6 +33,9 @@ class StarTypeUtils:
         spectral_type: str,
     ) -> SpectralComponents:
         import re
+
+        # TODO absolument regarder le fichier C:\Users\elias\Dev\machi-workspace\AstroWikiBuilder\data\generated\column_extracted\st_spectype_values.json
+        # On va avoir plus de cas de figures que prevu
 
         match: Match[str] | None = re.match(
             r"([OBAFGKMLTY])\s*([0-9.]*)\s*([IV]+)?", spectral_type
@@ -105,17 +109,17 @@ class StarTypeUtils:
     # MÉTHODE PRINCIPALE DE DÉTERMINATION DE TYPE
     # ============================================================================
     @staticmethod
-    def determine_star_types_from_properties(star: Star) -> List[str]:
+    def determine_star_types_from_properties(obj: Star | Exoplanet) -> List[str]:
         """
         Détermine le type d'étoile basé sur ses caractéristiques.
         Retourne une liste de types d'étoiles (ex: ["Étoile de type spectral KIII", "Géante rouge"])
         """
         types = []
 
-        if not star.st_spectral_type:
+        if not obj.st_spectral_type:
             return types
 
-        spectral_type: str = star.st_spectral_type
+        spectral_type: str = obj.st_spectral_type
         if not spectral_type:
             return types
 
@@ -147,10 +151,10 @@ class StarTypeUtils:
             return types
 
         # Étoile à neutrons (basé sur des caractéristiques physiques)
-        if star.st_mass and star.st_radius:
+        if obj.st_mass and obj.st_radius:
             try:
-                mass = float(star.st_mass.value)
-                radius = float(star.st_radius.value)
+                mass = float(obj.st_mass.value)
+                radius = float(obj.st_radius.value)
                 # Une étoile à neutrons typique a une masse > 1.4 M☉ et un rayon très petit
                 if mass > 1.4 and radius < 0.01:
                     types.append("Étoile à neutrons")
@@ -166,6 +170,30 @@ class StarTypeUtils:
         # if hasattr(star, 'peculiar_type'):
         #     return f"Étoile {star.peculiar_type}"
 
+        # Stade évolutif
+        evolutionary_stage: str | None = (
+            StarTypeUtils.infer_evolutionary_stage_from_spectral_data(
+                spectral_class, luminosity
+            )
+        )
+        if evolutionary_stage:
+            types.append(evolutionary_stage)
+
+        # Étoile variable
+        if obj.st_variability and obj.st_variability.value:
+            types.append(f"Étoile variable de type {obj.st_variability.value}")
+
+        # Étoile chimiquement particulière
+        if obj.st_metallicity:
+            try:
+                metallicity = float(obj.st_metallicity.value)
+                if metallicity < -1.0:
+                    types.append("Étoile pauvre en métaux")
+                elif metallicity > 0.5:
+                    types.append("Étoile riche en métaux")
+            except (ValueError, TypeError):
+                pass
+
         # Type spectral standard
         type_parts: List[str] = [f"Étoile de type spectral {spectral_class}"]
 
@@ -178,31 +206,6 @@ class StarTypeUtils:
             type_parts.append(luminosity)
 
         types.append("".join(type_parts))
-
-        # Stade évolutif
-        evolutionary_stage: str | None = (
-            StarTypeUtils.infer_evolutionary_stage_from_spectral_data(
-                spectral_class, luminosity
-            )
-        )
-        if evolutionary_stage:
-            types.append(evolutionary_stage)
-
-        # Étoile variable
-        if star.st_variability and star.st_variability.value:
-            types.append(f"Étoile variable de type {star.st_variability.value}")
-
-        # Étoile chimiquement particulière
-        if star.st_metallicity:
-            try:
-                metallicity = float(star.st_metallicity.value)
-                if metallicity < -1.0:
-                    types.append("Étoile pauvre en métaux")
-                elif metallicity > 0.5:
-                    types.append("Étoile riche en métaux")
-            except (ValueError, TypeError):
-                pass
-
         return types
 
     # ============================================================================

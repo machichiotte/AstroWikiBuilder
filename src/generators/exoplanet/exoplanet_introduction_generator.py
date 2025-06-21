@@ -1,13 +1,13 @@
 # src/generators/exoplanet/exoplanet_introduction_generator.py
-from typing import Optional
+from typing import List, Optional
 
 from src.constants.field_mappings import (
     CONSTELLATION_GENDER,
-    SPECTRAL_TYPE_DESCRIPTIONS,
 )
 from src.models.entities.exoplanet import Exoplanet
 from src.utils.astro.constellation_utils import ConstellationUtils
 from src.utils.formatters.article_formatters import ArticleUtils
+from src.utils.astro.classification.star_type_utils import StarTypeUtils
 
 from src.utils.astro.classification.exoplanet_comparison_utils import (
     ExoplanetComparisonUtils,
@@ -30,25 +30,7 @@ class ExoplanetIntroductionGenerator:
         self.article_utils: ArticleUtils = article_utils
         self.planet_type_utils = ExoplanetTypeUtils()
         self.constellation_utils = ConstellationUtils()
-
-    # ============================================================================
-    # UTILITAIRES DE DESCRIPTION ET FORMATAGE
-    # ============================================================================
-    def resolve_spectral_type_description(self, spectral_type: Optional[str]) -> str:
-        """
-        Génère une description formatée de l'étoile avec le type spectral.
-        Retourne "[[description]]" ou "son étoile hôte" comme placeholder.
-        """
-        if not isinstance(spectral_type, str) or not spectral_type.strip():
-            return "son étoile hôte"  # Placeholder if no spectral type
-
-        spectral_class: str = spectral_type[0].upper()
-        description: str | None = SPECTRAL_TYPE_DESCRIPTIONS.get(spectral_class)
-
-        if description:
-            return f"[[{description}]]"
-        # Placeholder if spectral class not in map or description is None
-        return "son étoile hôte"
+        self.star_type_utils = StarTypeUtils()
 
     # ============================================================================
     # COMPOSITION DES SEGMENTS DE PHRASE
@@ -59,18 +41,46 @@ class ExoplanetIntroductionGenerator:
             return None
 
         st_name: str = exoplanet.st_name
-
-        star_type_description: str = self.resolve_spectral_type_description(
-            exoplanet.st_spectral_type if exoplanet.st_spectral_type else None
+        star_type_descriptions: List[str] = (
+            self.star_type_utils.determine_star_types_from_properties(exoplanet)
         )
 
-        if star_type_description != "son étoile hôte":
-            # Suppose que star_type_description (ex: "[[naine jaune]]") est grammaticalement féminin
-            # pour que "de la" soit correct, correspondant à l'hypothèse implicite du code original.
-            return f" en orbite autour de la {star_type_description} {st_name}"
+        if star_type_descriptions:
+            desc = star_type_descriptions[0].strip()
+            desc_lower = desc.lower()
+
+            # Déterminer l'article correct
+            first_letter = desc_lower[0]
+            voyelles = {"a", "e", "é", "i", "o", "u", "y", "h"}  # inclut h muet
+            genre = self.guess_grammatical_gender(desc_lower)  # <- fonction à créer
+
+            if genre == "f":
+                article = "de l'" if first_letter in voyelles else "de la "
+            elif genre == "m":
+                article = "de l'" if first_letter in voyelles else "du "
+            else:
+                article = "de "
+            desc = desc[0].lower() + desc[1:]
+
+            return f" en orbite autour {article}[[{desc}]] [[{st_name}]]"
         else:
-            # Gère correctement le placeholder "son étoile hôte".
-            return f" en orbite autour de {star_type_description} {st_name}"
+            return f" en orbite autour de son étoile hôte [[{st_name}]]"
+
+    @staticmethod
+    def guess_grammatical_gender(type_description: str) -> str:
+        """
+        Essaie de deviner le genre grammatical d’un type d’étoile.
+        """
+        feminine_keywords = ["naine", "étoile", "géante", "brune"]
+        masculine_keywords = ["nain", "géant", "sous-nain", "subdwarf"]
+
+        for f in feminine_keywords:
+            if f in type_description:
+                return "f"
+        for m in masculine_keywords:
+            if m in type_description:
+                return "m"
+        return "?"  # inconnu
 
     def compose_distance_phrase(self, exoplanet: Exoplanet) -> Optional[str]:
         """Construit le segment de phrase concernant la distance."""

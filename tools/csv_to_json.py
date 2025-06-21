@@ -54,6 +54,9 @@ def convert_csv_column_to_json(csv_path: str, json_path: str, column: str):
     # Supprime les doublons en préservant l'ordre
     values = list(dict.fromkeys(values))
 
+    # Trie les valeurs alphabétiquement
+    values.sort()
+
     # Si le chemin de sortie n'est pas absolu, sauvegarde dans data/generated/column_extracted
     if not os.path.isabs(json_path):
         output_dir = "data/generated/column_extracted"

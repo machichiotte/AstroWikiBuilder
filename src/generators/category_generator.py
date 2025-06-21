@@ -1,6 +1,7 @@
 import yaml
 from typing import Any, List, Dict, Optional, Set, Callable
 
+
 class CategoryGenerator:
     """
     Génère des catégories Wikipedia basées sur un ensemble de règles
@@ -43,19 +44,19 @@ class CategoryGenerator:
             value = self._get_value(data_object, attribute)
             if value is None:
                 continue
-            
+
             value_str = str(value)
             # Essayer une correspondance exacte
             if value_str in mapping:
                 categories.add(mapping[value_str])
                 continue
-            
+
             # Essayer une correspondance partielle (pour les types spectraux ou instruments)
             for key, cat in mapping.items():
                 if key in value_str:
                     categories.add(cat)
                     break
-        
+
         # 3. Règles de génération
         if "generated" in config:
             for attribute, rule in config["generated"].items():
@@ -63,9 +64,9 @@ class CategoryGenerator:
                 if value:
                     if rule.get("value_extractor") == "year" and hasattr(value, "year"):
                         value = value.year
-                    
-                    template = rule['template']
-                    categories.add(template.format(value=value))
+
+                    template = rule["template"]
+                    categories.add(template.format(value=int(value)))
 
         # 4. Règles personnalisées (pour la logique complexe)
         if custom_rules:
@@ -73,5 +74,5 @@ class CategoryGenerator:
                 category = rule_func(data_object)
                 if category:
                     categories.add(category)
-        
+
         return sorted(list(categories))
