@@ -1,4 +1,4 @@
-# src/generators/base_infobox_generator.py
+# src/generators/base/base_infobox_generator.py
 
 from abc import ABC, abstractmethod
 from typing import Any
@@ -13,28 +13,28 @@ from src.services.processors.reference_manager import ReferenceManager
 
 class InfoboxBaseGenerator(ABC):
     def __init__(self, reference_manager: ReferenceManager):
-        self.reference_manager = reference_manager
+        self.reference_manager: ReferenceManager = reference_manager
         self.field_formatter = FieldFormatter()
         self.article_utils = ArticleUtils()
         self.constellation_utils = ConstellationUtils()
 
-    def generate(self, obj: Exoplanet | Star) -> str:
-        if not self.is_valid_object(obj):
+    def build_infobox(self, obj: Exoplanet | Star) -> str:
+        if not self.is_supported_entity(obj):
             raise TypeError("Invalid data source object.")
 
-        lines = [self.get_infobox_header()]
+        lines: list[str] = [self.fetch_infobox_header()]
 
         wiki_reference: str | None = (
             obj.reference.to_wiki_ref() if obj.reference else None
         )
 
-        for mapping in self.retrieve_infobox_field_mappings():
+        for mapping in self.retrieve_field_mappings():
             value = getattr(obj, mapping.source_attribute, None)
 
-            field_block = self.field_formatter.process_field(
+            field_block: str = self.field_formatter.process_field(
                 value=value,
                 mapping=mapping,
-                notes_fields=self.get_notes_fields(),
+                notes_fields=self.retrieve_noted_fields(),
                 wiki_reference=wiki_reference,
             )
             if field_block:
@@ -46,23 +46,25 @@ class InfoboxBaseGenerator(ABC):
         lines.append("}}")
         return "\n".join(lines)
 
+    # --- Méthodes à spécialiser par les classes filles ---
+
     @abstractmethod
-    def retrieve_infobox_field_mappings(self) -> list[FieldMapping]:
+    def retrieve_field_mappings(self) -> list[FieldMapping]:
         pass
 
     @abstractmethod
-    def get_infobox_header(self) -> str:
+    def fetch_infobox_header(self) -> str:
         pass
 
     @abstractmethod
-    def get_notes_fields(self) -> list[str]:
+    def retrieve_noted_fields(self) -> list[str]:
         pass
 
     @abstractmethod
-    def is_valid_object(self, obj: Any) -> bool:
+    def is_supported_entity(self, obj: Any) -> bool:
         pass
 
     @property
     @abstractmethod
-    def default_mapping(self) -> dict:
+    def default_field_mapping(self) -> dict:
         pass

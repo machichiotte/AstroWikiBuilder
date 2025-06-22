@@ -2,7 +2,7 @@
 import locale
 import re
 from typing import List, Optional
-from constants.wikipedia_field_config import (
+from src.constants.wikipedia_field_config import (
     CONSTELLATION_GENDER_FR,
 )
 from src.models.entities.star import Star
@@ -10,6 +10,7 @@ from src.models.entities.exoplanet import Exoplanet
 from src.generators.articles.star.parts.star_infobox_generator import (
     StarInfoboxGenerator,
 )
+
 from src.utils.formatters.article_formatters import ArticleUtils
 from src.services.processors.reference_manager import ReferenceManager
 from src.generators.articles.star.parts.star_category_generator import (

@@ -3,11 +3,10 @@
 # IMPORTS
 # ============================================================================
 from dataclasses import dataclass
-from re import Match, search
 from typing import Optional, Tuple, List
 import re
 
-from src.constants.field_mappings import STELLAR_EVOLUTION_MAP
+from src.constants.wikipedia_field_config import STELLAR_EVOLUTION_MAP
 from src.models.entities.star import Star
 from src.models.entities.exoplanet import Exoplanet
 

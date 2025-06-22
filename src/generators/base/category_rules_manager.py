@@ -1,8 +1,9 @@
+# src/generators/base/category_rules_manager.py
 import yaml
 from typing import Any, List, Dict, Optional, Set, Callable
 
 
-class CategoryGenerator:
+class CategoryRulesManager:
     """
     Génère des catégories Wikipedia basées sur un ensemble de règles
     et les données d'un objet (exoplanète, étoile).
@@ -12,7 +13,9 @@ class CategoryGenerator:
         with open(rules_filepath, "r", encoding="utf-8") as f:
             self.rules: Dict = yaml.safe_load(f)
 
-    def _get_value(self, data_object: Any, attribute: str) -> Optional[Any]:
+    def _retrieve_attribute_value(
+        self, data_object: Any, attribute: str
+    ) -> Optional[Any]:
         """Récupère la valeur d'un attribut, même s'il est dans un objet .value"""
         if hasattr(data_object, attribute):
             attr = getattr(data_object, attribute)
@@ -21,7 +24,7 @@ class CategoryGenerator:
             return attr
         return None
 
-    def generate(
+    def generate_categories_for(
         self,
         data_object: Any,
         rule_key: str,
@@ -41,7 +44,7 @@ class CategoryGenerator:
         # 2. Règles de mapping (spécifiques et communes)
         all_mappings = {**common_config.get("mapped", {}), **config.get("mapped", {})}
         for attribute, mapping in all_mappings.items():
-            value = self._get_value(data_object, attribute)
+            value = self._retrieve_attribute_value(data_object, attribute)
             if value is None:
                 continue
 
@@ -60,7 +63,7 @@ class CategoryGenerator:
         # 3. Règles de génération
         if "generated" in config:
             for attribute, rule in config["generated"].items():
-                value = self._get_value(data_object, attribute)
+                value = self._retrieve_attribute_value(data_object, attribute)
                 if value:
                     if rule.get("value_extractor") == "year" and hasattr(value, "year"):
                         value = value.year

@@ -1,6 +1,6 @@
-# astro_wiki/src/constants/field_mappings.py
+# astro_wiki/src/constants/wikipedia_field_config.py
 
-NOTES_FIELDS_EXOPLANET = [
+IS_NOTES_FIELDS_EXOPLANET: list[str] = [
     "époque étoile",
     "ascension droite",
     "déclinaison",
@@ -40,7 +40,7 @@ NOTES_FIELDS_EXOPLANET = [
     "statut",
 ]
 
-NOTES_FIELDS_STAR = [
+IS_NOTES_FIELDS_STAR: list[str] = [
     "époque",
     "ascension droite",
     "déclinaison",
@@ -83,7 +83,7 @@ NOTES_FIELDS_STAR = [
     "statut",
 ]
 
-FIELD_DEFAULT_UNITS_STAR: dict[str, str] = {
+DEFAULT_WIKIPEDIA_UNITS_STAR: dict[str, str] = {
     "mass": "M☉",  # Masse solaire
     "radius": "R☉",  # Rayon solaire
     "luminosity": "L☉",  # Luminosité solaire
@@ -99,7 +99,7 @@ FIELD_DEFAULT_UNITS_STAR: dict[str, str] = {
     "absolute magnitude": "",  # Sans unité
 }
 
-FIELD_DEFAULT_UNITS_EXOPLANET: dict[str, str] = {
+DEFAULT_WIKIPEDIA_UNITS_EXOPLANET: dict[str, str] = {
     "mass": "MJ",  # Masse de Jupiter
     "minimum mass": "MJ",  # Masse de Jupiter
     "radius": "RJ",  # Rayon de Jupiter
@@ -118,9 +118,7 @@ FIELD_DEFAULT_UNITS_EXOPLANET: dict[str, str] = {
     "argument of periastron": "°",  # Degrés
 }
 
-# Dictionnaire pour traduire les méthodes de découverte et lier vers l'article FR
-# Les clés sont les valeurs attendues de la source de données (en anglais, normalisées en minuscules)
-METHOD_NAME_MAPPING: dict[str, str] = {
+WIKIPEDIA_DISC_METHOD_MAP: dict[str, str] = {
     "transit": {"display": "Transits", "article": "Méthode des transits"},
     "radial velocity": {
         "display": "Vitesses radiales",
@@ -162,7 +160,7 @@ METHOD_NAME_MAPPING: dict[str, str] = {
     # }
 }
 
-DISCOVERY_FACILITY_MAPPING = {
+WIKIPEDIA_DISC_FACILITY_MAP: dict[str, str] = {
     "OGLE": "OGLE",
     "HATNet": "HATNet",
     "Kepler": "Télescope spatial Kepler",
@@ -237,8 +235,7 @@ DISCOVERY_FACILITY_MAPPING = {
     "James Webb Space Telescope (JWST)": "Télescope spatial James Webb (JWST)",
 }
 
-
-CONSTELLATION_FR: dict[str, str] = {
+WIKIPEDIA_CONSTELLATION_ENG_TO_FR: dict[str, str] = {
     "Andromeda": "Andromède",
     "Antlia": "Machine pneumatique",
     "Apus": "Oiseau de paradis",
@@ -330,8 +327,7 @@ CONSTELLATION_FR: dict[str, str] = {
     "Vulpecula": "Petit Renard",
 }
 
-# Mapping des genres pour chaque constellation française
-CONSTELLATION_GENDER: dict[str, str] = {
+CONSTELLATION_GENDER_FR: dict[str, str] = {
     "Andromède": "f",
     "Machine pneumatique": "f",
     "Oiseau de paradis": "m",
@@ -422,7 +418,7 @@ CONSTELLATION_GENDER: dict[str, str] = {
     "Petit Renard": "m",
 }
 
-STELLAR_EVOLUTION_MAP = {
+STELLAR_EVOLUTION_MAP: dict[str, dict[str, str]] = {
     "V": {
         "K": "Naine orange",
         "M": "Naine rouge",

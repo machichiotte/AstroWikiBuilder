@@ -2,7 +2,10 @@
 from enum import Enum
 import logging
 
-from src.constants.field_mappings import DISCOVERY_FACILITY_MAPPING, METHOD_NAME_MAPPING
+from src.constants.wikipedia_field_config import (
+    WIKIPEDIA_DISC_FACILITY_MAP,
+    WIKIPEDIA_DISC_METHOD_MAP,
+)
 from src.models.entities.exoplanet import ValueWithUncertainty
 from src.utils.validators import infobox_validators
 from src.models.infobox_fields import FieldMapping
@@ -68,7 +71,7 @@ class FieldFormatter:
     def _format_discovery_facility(value: str) -> str:
         """Formate le lieu de découverte"""
         try:
-            mapped: str | None = DISCOVERY_FACILITY_MAPPING.get(value)
+            mapped: str | None = WIKIPEDIA_DISC_FACILITY_MAP.get(value)
             return f"[[{mapped}]]" if mapped else str(value)
         except Exception as e:
             logger.error(
@@ -81,7 +84,7 @@ class FieldFormatter:
         """Formate la méthode de découverte"""
         try:
             method_key: str = str(value).strip().lower()
-            mapped: str | None = METHOD_NAME_MAPPING.get(method_key)
+            mapped: str | None = WIKIPEDIA_DISC_METHOD_MAP.get(method_key)
             return (
                 f"[[{mapped['article']}|{mapped['display']}]]" if mapped else str(value)
             )

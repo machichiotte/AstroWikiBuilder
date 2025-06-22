@@ -1,5 +1,5 @@
 # src/utils/astro/constellation_utils.py
-from src.constants.field_mappings import CONSTELLATION_FR
+from src.constants.wikipedia_field_config import WIKIPEDIA_CONSTELLATION_ENG_TO_FR
 from src.utils.formatters.article_formatters import ArticleUtils
 
 from astropy.coordinates import SkyCoord
@@ -25,4 +25,4 @@ class ConstellationUtils:
         )
         constellation_en = coord.get_constellation()
 
-        return CONSTELLATION_FR.get(constellation_en, constellation_en)
+        return WIKIPEDIA_CONSTELLATION_ENG_TO_FR.get(constellation_en, constellation_en)

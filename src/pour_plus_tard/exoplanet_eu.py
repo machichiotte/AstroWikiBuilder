@@ -34,7 +34,7 @@ class ExoplanetEUCollector(BaseCollector):
     def _get_csv_reader_kwargs(self) -> Dict[str, Any]:
         return {"comment": "#"}
 
-    def _convert_row_to_exoplanet(
+    def _map_row_to_exoplanet(
         self, row: pd.Series, ref: Reference
     ) -> Optional[Exoplanet]:
         try:

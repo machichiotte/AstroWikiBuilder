@@ -14,9 +14,9 @@ from src.models.entities.star import Star
 from src.models.entities.exoplanet import Exoplanet
 from src.models.references.reference import Reference, SourceType
 from src.models.entities.nea_entity import ValueWithUncertainty
-from src.generators.star.article_star_generator import ArticleStarGenerator
-from src.generators.exoplanet.article_exoplanet_generator import (
-    ArticleExoplanetGenerator,
+from src.generators.star.star_article_generator import StarWikipediaArticleGenerator
+from src.generators.exoplanet.exoplanet_article_generator import (
+    ExoplanetWikipediaArticleGenerator,
 )
 
 
@@ -77,11 +77,11 @@ def test_star_references():
 
     try:
         star = create_test_star()
-        generator = ArticleStarGenerator()
+        generator = StarWikipediaArticleGenerator()
 
         # Générer l'article
         print("Génération de l'article...")
-        content = generator.compose_article_content(star)
+        content = generator.compose_wikipedia_article_content(star)
         print(f"Article généré, longueur: {len(content)} caractères")
 
         # Vérifier que la première référence est complète
@@ -116,11 +116,11 @@ def test_exoplanet_references():
 
     try:
         exoplanet = create_test_exoplanet()
-        generator = ArticleExoplanetGenerator()
+        generator = ExoplanetWikipediaArticleGenerator()
 
         # Générer l'article
         print("Génération de l'article...")
-        content = generator.compose_exoplanet_article(exoplanet)
+        content = generator.compose_wikipedia_article_content(exoplanet)
         print(f"Article généré, longueur: {len(content)} caractères")
 
         # Vérifier que la première référence est complète

@@ -1,4 +1,4 @@
-from src.constants.field_mappings import CONSTELLATION_GENDER
+from src.constants.wikipedia_field_config import CONSTELLATION_GENDER_FR
 from src.utils.lang.french_articles import get_french_article_noun
 
 
@@ -6,7 +6,7 @@ def get_constellation_article(name: str, with_bracket: bool = False) -> str:
     """
     Renvoie l'article défini précédé de 'de' : 'du ', 'de la ', 'de l''.
     """
-    gender = CONSTELLATION_GENDER.get(name, "m")
+    gender = CONSTELLATION_GENDER_FR.get(name, "m")
     return get_french_article_noun(
         name, gender=gender, preposition="de", with_brackets=with_bracket
     )

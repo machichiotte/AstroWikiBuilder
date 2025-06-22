@@ -6,11 +6,11 @@ from typing import List, Tuple, Dict
 # Project imports
 from src.models.entities.exoplanet import Exoplanet
 from src.models.entities.star import Star
-from src.generators.exoplanet.article_exoplanet_generator import (
-    ArticleExoplanetGenerator,
+from src.generators.articles.exoplanet.exoplanet_article_generator import (
+    ExoplanetWikipediaArticleGenerator,
 )
-from src.generators.star.article_star_generator import (
-    ArticleStarGenerator,
+from src.generators.articles.star.star_article_generator import (
+    StarWikipediaArticleGenerator,
 )
 
 # Configure un logger pour ce module spécifique
@@ -51,8 +51,8 @@ def build_exoplanet_article_draft(exoplanet: Exoplanet) -> str:
     """
     Génère le contenu d'un brouillon d'article pour une exoplanète.
     """
-    generator = ArticleExoplanetGenerator()
-    content = generator.compose_exoplanet_article(exoplanet)
+    generator = ExoplanetWikipediaArticleGenerator()
+    content: str = generator.compose_wikipedia_article_content(exoplanet)
     return content
 
 
@@ -61,8 +61,10 @@ def build_star_article_draft(star: Star, exoplanets: List[Exoplanet] = None) -> 
     Génère le contenu d'un brouillon d'article pour une étoile.
     Si une liste d'exoplanètes est fournie, elle sera intégrée dans le contenu.
     """
-    generator = ArticleStarGenerator()
-    content: str = generator.compose_article_content(star, exoplanets=exoplanets)
+    generator = StarWikipediaArticleGenerator()
+    content: str = generator.compose_wikipedia_article_content(
+        star, exoplanets=exoplanets
+    )
     return content
 
 

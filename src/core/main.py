@@ -17,7 +17,7 @@ from src.core.config import (
 )
 
 from src.collectors.implementations.nasa_exoplanet_archive_collector import (
-    NASAExoplanetArchiveCollector,
+    NasaExoplanetArchiveCollector,
 )
 # from src.collectors.implementations.exoplanet_eu import ExoplanetEUCollector
 # from src.collectors.implementations.open_exoplanet_collection import OpenExoplanetCollector
@@ -164,7 +164,7 @@ def _initialize_collectors(args: argparse.Namespace) -> Dict[str, Any]:
 def _get_collector_instance(source: str, use_mock: bool, cache_path: str) -> Any:
     """Retourne une instance du collecteur approprié basée sur la source."""
     if source == "nasa_exoplanet_archive":
-        return NASAExoplanetArchiveCollector(
+        return NasaExoplanetArchiveCollector(
             use_mock_data=use_mock,
             custom_cache_filename=cache_path,
         )

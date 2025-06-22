@@ -32,7 +32,7 @@ class OpenExoplanetCollector(BaseCollector):
 
     # _get_csv_reader_kwargs n'a pas besoin d'être surchargé si le CSV OEC n'a pas de commentaires spéciaux
 
-    def _convert_row_to_exoplanet(
+    def _map_row_to_exoplanet(
         self, row: pd.Series, ref: Reference
     ) -> Optional[Exoplanet]:
         try:

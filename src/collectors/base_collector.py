@@ -1,4 +1,4 @@
-# src/data_collectors/base_collector.py
+# src/collectors/base_collector.py
 import pandas as pd
 import requests
 import os
@@ -12,7 +12,7 @@ from src.models.entities.exoplanet import Exoplanet
 from src.models.references.reference import SourceType
 from src.services.processors.reference_manager import ReferenceManager
 
-logger = logging.getLogger(__name__)
+logger: logging.Logger = logging.getLogger(__name__)
 
 
 class BaseCollector(ABC):
@@ -52,12 +52,12 @@ class BaseCollector(ABC):
         return []  # Optionnel, retournera une liste vide si non surchargé
 
     @abstractmethod
-    def _convert_row_to_exoplanet(self, row: pd.Series) -> Optional[Exoplanet]:
+    def _map_row_to_exoplanet(self, row: pd.Series) -> Optional[Exoplanet]:
         """Convertit une ligne du DataFrame en objet Exoplanet."""
         pass
 
     @abstractmethod
-    def _convert_row_to_star(self, row: pd.Series) -> Optional[Star]:
+    def _map_row_to_star(self, row: pd.Series) -> Optional[Star]:
         """Convertit une ligne du DataFrame en objet Star."""
         pass
 
@@ -162,11 +162,11 @@ class BaseCollector(ABC):
 
         for idx, row in df.iterrows():
             try:
-                exo: Optional[Exoplanet] = self._convert_row_to_exoplanet(row)
+                exo: Optional[Exoplanet] = self._map_row_to_exoplanet(row)
                 if exo:
                     exoplanets.append(exo)
 
-                star: Optional[Star] = self._convert_row_to_star(row)
+                star: Optional[Star] = self._map_row_to_star(row)
                 if star:
                     stars.append(star)
             except Exception as e:

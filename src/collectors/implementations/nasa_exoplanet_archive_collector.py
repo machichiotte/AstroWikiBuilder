@@ -1,4 +1,4 @@
-# src/data_collectors/nasa_exoplanet_archive_collector.py
+# src/collectors/implementations/nasa_exoplanet_archive_collector.py
 import pandas as pd
 from typing import List, Optional, Dict, Any
 import logging
@@ -11,10 +11,15 @@ from src.models.entities.exoplanet import Exoplanet
 from src.models.references.reference import SourceType
 
 logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+logger: logging.Logger = logging.getLogger(__name__)
 
 
-class NASAExoplanetArchiveCollector(BaseCollector):
+class NasaExoplanetArchiveCollector(BaseCollector):
+    BASE_NEARCHIVE_URL = "https://exoplanetarchive.ipac.caltech.edu"
+    NEARCHIVE_CSV_ENDPOINT = (
+        f"{BASE_NEARCHIVE_URL}/TAP/sync?query=select+*+from+PSCompPars&format=csv"
+    )
+
     def __init__(
         self,
         cache_dir: str = "data",
@@ -33,7 +38,7 @@ class NASAExoplanetArchiveCollector(BaseCollector):
         return CACHE_PATHS["nasa_exoplanet_archive"][mode]
 
     def _get_download_url(self) -> str:
-        return "https://exoplanetarchive.ipac.caltech.edu/TAP/sync?query=select+*+from+PSCompPars&format=csv"
+        return self.NEARCHIVE_CSV_ENDPOINT
 
     def _get_source_type(self) -> SourceType:
         return SourceType.NEA
@@ -49,7 +54,7 @@ class NASAExoplanetArchiveCollector(BaseCollector):
         # Si le fichier que vous sauvegardez/mockez en a, ajustez ici.
         return {}
 
-    def _convert_row_to_exoplanet(self, row: pd.Series) -> Optional[Exoplanet]:
+    def _map_row_to_exoplanet(self, row: pd.Series) -> Optional[Exoplanet]:
         """
         Converts a pandas Series (row from a CSV/DataFrame) to an Exoplanet object,
         populating it with data based on predefined mappings.
@@ -70,12 +75,14 @@ class NASAExoplanetArchiveCollector(BaseCollector):
             return exoplanet
         except Exception as e:
             logger.error(
-                f"Unexpected error converting row to Exoplanet using mapper for {row.get('pl_name', 'Unknown')}: {e}",
+                "Erreur lors du mappage de la ligne vers Exoplanet (%s). Ligne complète : %s",
+                row.get("pl_name", "Unknown"),
+                row.to_dict(),
                 exc_info=True,
             )
             return None
 
-    def _convert_row_to_star(self, row: pd.Series) -> Optional[Star]:
+    def _map_row_to_star(self, row: pd.Series) -> Optional[Star]:
         """
         Converts a pandas Series (row from a CSV/DataFrame) to a Star object,
         populating it with data based on predefined mappings.
