@@ -93,6 +93,7 @@ class InfoboxMapper:
             FieldMapping("st_declination_2", "déclinaison 2"),
             FieldMapping("st_radial_velocity", "vitesse radiale"),
             FieldMapping("st_radial_velocity_2", "vitesse radiale 2"),
+            FieldMapping("st_proper_motion_ra", "mouvement propre ad"),
             FieldMapping("st_proper_motion_ra_2", "mouvement propre ad 2"),
             FieldMapping("st_proper_motion_dec", "mouvement propre déc"),
             FieldMapping("st_proper_motion_dec_2", "mouvement propre déc 2"),

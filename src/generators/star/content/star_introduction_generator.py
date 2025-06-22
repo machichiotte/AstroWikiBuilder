@@ -30,8 +30,9 @@ class StarIntroductionGenerator:
         if not star_types:
             return None
 
-        description = star_types[0].strip().lower()
-        return f"une [[{description}]]"
+        description = star_types[0].strip()
+        description2 = description[0].lower() + description[1:]
+        return f"une [[{description2}]]"
 
     def _compose_constellation_phrase(self, star: Star) -> Optional[str]:
         """
