@@ -31,30 +31,30 @@ class NasaExoplanetArchiveCollector(BaseCollector):
         super().__init__(cache_dir, use_mock_data)
         self.mapper = NasaExoplanetArchiveMapper()
 
-    def _get_default_cache_filename(self) -> str:
+    def get_default_cache_filename(self) -> str:
         if self._custom_cache_filename:
             return self._custom_cache_filename
         mode = "mock" if self.use_mock_data else "real"
         return CACHE_PATHS["nasa_exoplanet_archive"][mode]
 
-    def _get_download_url(self) -> str:
+    def get_data_download_url(self) -> str:
         return self.NEARCHIVE_CSV_ENDPOINT
 
-    def _get_source_type(self) -> SourceType:
+    def get_source_type(self) -> SourceType:
         return SourceType.NEA
 
-    def _get_source_reference_url(self) -> str:
+    def get_source_reference_url(self) -> str:
         return "https://exoplanetarchive.ipac.caltech.edu/"
 
-    def _get_required_columns(self) -> List[str]:
+    def get_required_csv_columns(self) -> List[str]:
         return ["pl_name", "hostname", "discoverymethod", "disc_year"]
 
-    def _get_csv_reader_kwargs(self) -> Dict[str, Any]:
+    def get_csv_reader_options(self) -> Dict[str, Any]:
         # Le fichier téléchargé de NEA n'a pas de lignes de commentaire typiques à ignorer avec '#' au début.
         # Si le fichier que vous sauvegardez/mockez en a, ajustez ici.
         return {}
 
-    def _map_row_to_exoplanet(self, row: pd.Series) -> Optional[Exoplanet]:
+    def transform_row_to_exoplanet(self, row: pd.Series) -> Optional[Exoplanet]:
         """
         Converts a pandas Series (row from a CSV/DataFrame) to an Exoplanet object,
         populating it with data based on predefined mappings.
@@ -80,7 +80,7 @@ class NasaExoplanetArchiveCollector(BaseCollector):
             )
             return None
 
-    def _map_row_to_star(self, row: pd.Series) -> Optional[Star]:
+    def transform_row_to_star(self, row: pd.Series) -> Optional[Star]:
         """
         Converts a pandas Series (row from a CSV/DataFrame) to a Star object,
         populating it with data based on predefined mappings.

@@ -14,25 +14,25 @@ class OpenExoplanetCollector(BaseCollector):
     def __init__(self, cache_dir: str = "data/cache/oec", use_mock_data: bool = False):
         super().__init__(cache_dir, use_mock_data)
 
-    def _get_default_cache_filename(self) -> str:
+    def get_default_cache_filename(self) -> str:
         return "open_exoplanet_catalogue.txt"
 
-    def _get_download_url(self) -> str:
+    def get_data_download_url(self) -> str:
         return "https://raw.githubusercontent.com/OpenExoplanetCatalogue/oec_tables/master/comma_separated/open_exoplanet_catalogue.txt"
 
-    def _get_source_type(self) -> SourceType:
+    def get_source_type(self) -> SourceType:
         return SourceType.OEC
 
-    def _get_source_reference_url(self) -> str:
+    def get_source_reference_url(self) -> str:
         return "https://github.com/OpenExoplanetCatalogue/oec_tables"
 
-    def _get_required_columns(self) -> List[str]:
+    def get_required_csv_columns(self) -> List[str]:
         # Définissez ici les colonnes que vous considérez comme critiques pour OEC, par exemple:
         return ["name", "star_name"]  # À adapter selon les besoins réels
 
     # _get_csv_reader_kwargs n'a pas besoin d'être surchargé si le CSV OEC n'a pas de commentaires spéciaux
 
-    def _map_row_to_exoplanet(
+    def transform_row_to_exoplanet(
         self, row: pd.Series, ref: Reference
     ) -> Optional[Exoplanet]:
         try:
@@ -57,7 +57,9 @@ class OpenExoplanetCollector(BaseCollector):
                 ("argument_of_periastron", "longitudeofperiastron"),
                 ("periastron_time", "periastrontime"),
             ]:
-                value: float | None = self._safe_float_conversion(row.get(csv_field))
+                value: float | None = self.convert_to_float_if_possible(
+                    row.get(csv_field)
+                )
                 if value is not None:
                     setattr(exoplanet, field, ValueWithUncertainty(value=value))
 
@@ -67,7 +69,7 @@ class OpenExoplanetCollector(BaseCollector):
                 ("radius", "radius"),
                 ("temperature", "temperature"),
             ]:
-                value = self._safe_float_conversion(row.get(csv_field))
+                value = self.convert_to_float_if_possible(row.get(csv_field))
                 if value is not None:
                     setattr(exoplanet, field, ValueWithUncertainty(value=value))
 
@@ -83,7 +85,7 @@ class OpenExoplanetCollector(BaseCollector):
                 value = row.get(csv_field)
                 if pd.notna(value):
                     processed_value = (
-                        self._safe_float_conversion(value)
+                        self.convert_to_float_if_possible(value)
                         if isinstance(value, (int, float, str))
                         and str(value).replace(".", "", 1).isdigit()
                         else str(value).strip()

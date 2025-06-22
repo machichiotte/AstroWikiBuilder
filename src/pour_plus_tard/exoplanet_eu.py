@@ -16,25 +16,25 @@ class ExoplanetEUCollector(BaseCollector):
     ):
         super().__init__(cache_dir, use_mock_data)
 
-    def _get_default_cache_filename(self) -> str:
+    def get_default_cache_filename(self) -> str:
         return "exoplanet.eu_catalog.csv"
 
-    def _get_download_url(self) -> str:
+    def get_data_download_url(self) -> str:
         return "http://exoplanet.eu/catalog/exoplanet.eu_catalog.csv"
 
-    def _get_source_type(self) -> SourceType:
+    def get_source_type(self) -> SourceType:
         return SourceType.EPE
 
-    def _get_source_reference_url(self) -> str:
+    def get_source_reference_url(self) -> str:
         return "https://exoplanet.eu/"
 
-    def _get_required_columns(self) -> List[str]:
+    def get_required_csv_columns(self) -> List[str]:
         return ["name", "star_name", "discovery_method", "discovery_year"]
 
-    def _get_csv_reader_kwargs(self) -> Dict[str, Any]:
+    def get_csv_reader_options(self) -> Dict[str, Any]:
         return {"comment": "#"}
 
-    def _map_row_to_exoplanet(
+    def transform_row_to_exoplanet(
         self, row: pd.Series, ref: Reference
     ) -> Optional[Exoplanet]:
         try:
@@ -59,7 +59,9 @@ class ExoplanetEUCollector(BaseCollector):
                 ("argument_of_periastron", "argument_of_periastron"),
                 ("periastron_time", "periastron_time"),
             ]:
-                value: float | None = self._safe_float_conversion(row.get(csv_field))
+                value: float | None = self.convert_to_float_if_possible(
+                    row.get(csv_field)
+                )
                 if value is not None:
                     setattr(exoplanet, field, ValueWithUncertainty(value=value))
 
@@ -69,7 +71,7 @@ class ExoplanetEUCollector(BaseCollector):
                 ("radius", "radius"),
                 ("temperature", "temperature"),
             ]:
-                value = self._safe_float_conversion(row.get(csv_field))
+                value = self.convert_to_float_if_possible(row.get(csv_field))
                 if value is not None:
                     setattr(exoplanet, field, ValueWithUncertainty(value=value))
 
@@ -85,7 +87,7 @@ class ExoplanetEUCollector(BaseCollector):
                 value = row.get(csv_field)
                 if pd.notna(value):
                     processed_value: float | None | str = (
-                        self._safe_float_conversion(value)
+                        self.convert_to_float_if_possible(value)
                         if isinstance(value, (int, float, str))
                         and str(value).replace(".", "", 1).isdigit()
                         else str(value).strip()
