@@ -75,9 +75,7 @@ class NasaExoplanetArchiveCollector(BaseCollector):
             return exoplanet
         except Exception as e:
             logger.error(
-                "Erreur lors du mappage de la ligne vers Exoplanet (%s). Ligne complète : %s",
-                row.get("pl_name", "Unknown"),
-                row.to_dict(),
+                f"Unexpected error converting row to Exoplanet using mapper for {row.get('pl_name', 'Unknown')}: {e}",
                 exc_info=True,
             )
             return None
