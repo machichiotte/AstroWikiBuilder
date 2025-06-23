@@ -201,7 +201,7 @@ def fetch_and_ingest_collected_data(
         logger.info(f"Collecte des données depuis {source_name}...")
 
         try:
-            exoplanets, stars = collector.collect_exoplanets_and_stars_from_source()
+            exoplanets, stars = collector.collect_entities_from_source()
 
             if not isinstance(exoplanets, list):
                 raise TypeError(
