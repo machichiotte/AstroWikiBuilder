@@ -33,7 +33,68 @@ class ValueWithUncertainty:
 
 @dataclass
 class Exoplanet:
-    """Classe de base pour les entités d'exoplanètes"""
+    """
+    Modèle de données pour une exoplanète.
+    
+    Cette classe représente toutes les données connues d'une exoplanète,
+    incluant ses caractéristiques physiques, orbitales, et les informations
+    sur sa découverte.
+    
+    Attributes:
+        pl_name (str): Nom principal de l'exoplanète (ex: "HD 209458 b").
+        pl_altname (List[str]): Noms alternatifs de l'exoplanète.
+        image (str): Chemin ou URL de l'image représentant l'exoplanète.
+        caption (str): Légende de l'image.
+        sy_constellation (str): Constellation dans laquelle se trouve le système.
+        
+        st_name (str): Nom de l'étoile hôte.
+        st_epoch (float): Époque de référence pour les coordonnées stellaires (JD).
+        st_right_ascension (float): Ascension droite de l'étoile (degrés).
+        st_declination (float): Déclinaison de l'étoile (degrés).
+        st_distance (ValueWithUncertainty): Distance à l'étoile (parsecs).
+        st_spectral_type (str): Type spectral de l'étoile (ex: "G0V").
+        st_apparent_magnitude (float): Magnitude apparente de l'étoile.
+        st_luminosity (ValueWithUncertainty): Luminosité de l'étoile (L☉).
+        st_mass (ValueWithUncertainty): Masse de l'étoile (M☉).
+        st_radius (ValueWithUncertainty): Rayon de l'étoile (R☉).
+        st_variability (ValueWithUncertainty): Variabilité de l'étoile.
+        st_metallicity (ValueWithUncertainty): Métallicité de l'étoile [Fe/H].
+        
+        pl_semi_major_axis (ValueWithUncertainty): Demi-grand axe orbital (UA).
+        pl_periastron (float): Distance au périastre (UA).
+        pl_apoastron (float): Distance à l'apoastre (UA).
+        pl_eccentricity (ValueWithUncertainty): Excentricité orbitale (sans unité).
+        pl_orbital_period (ValueWithUncertainty): Période orbitale (jours).
+        pl_angular_distance (float): Distance angulaire (secondes d'arc).
+        pl_periastron_time (float): Temps de passage au périastre (JD).
+        pl_inclination (ValueWithUncertainty): Inclinaison orbitale (degrés).
+        pl_argument_of_periastron (float): Argument du périastre (degrés).
+        pl_epoch (float): Époque de référence pour les éléments orbitaux (JD).
+        
+        pl_mass (ValueWithUncertainty): Masse de l'exoplanète (M_Jupiter).
+        pl_minimum_mass (ValueWithUncertainty): Masse minimale (M_Jupiter).
+        pl_radius (ValueWithUncertainty): Rayon de l'exoplanète (R_Jupiter).
+        pl_density (ValueWithUncertainty): Densité moyenne (g/cm³).
+        pl_gravity (float): Gravité de surface (log10(cm/s²)).
+        pl_rotation_period (float): Période de rotation (jours).
+        pl_temperature (ValueWithUncertainty): Température d'équilibre (K).
+        pl_albedo_bond (float): Albédo de Bond (sans unité).
+        
+        pl_pressure (float): Pression atmosphérique (bar).
+        pl_composition (str): Composition atmosphérique.
+        pl_wind_speed (float): Vitesse des vents (m/s).
+        
+        disc_by (str): Découvreur(s) de l'exoplanète.
+        disc_program (str): Programme de découverte.
+        disc_method (str): Méthode de découverte (Transit, Radial Velocity, etc.).
+        disc_year (int): Année de découverte.
+        disc_facility (str): Installation ayant permis la découverte.
+        pre_discovery (str): Informations sur une éventuelle pré-découverte.
+        detection_type (str): Type de détection.
+        status (str): Statut de confirmation de l'exoplanète.
+        
+        reference (Reference): Référence bibliographique de la source des données.
+    """
 
     # Identifiants
     pl_name: str = None
@@ -47,43 +108,31 @@ class Exoplanet:
     st_epoch: Optional[float] = None
     st_right_ascension: Optional[float] = None
     st_declination: Optional[float] = None
-    st_distance: Optional[ValueWithUncertainty] = None  # Distance avec incertitude
+    st_distance: Optional[ValueWithUncertainty] = None
     st_spectral_type: Optional[str] = None
     st_apparent_magnitude: Optional[float] = None
     st_luminosity: Optional[ValueWithUncertainty] = None
 
     # Caractéristiques orbitales
-    pl_semi_major_axis: Optional[ValueWithUncertainty] = (
-        None  # Axe semi-major avec incertitude
-    )
+    pl_semi_major_axis: Optional[ValueWithUncertainty] = None
     pl_periastron: Optional[float] = None
     pl_apoastron: Optional[float] = None
-    pl_eccentricity: Optional[ValueWithUncertainty] = (
-        None  # Excentricité avec incertitude
-    )
-    pl_orbital_period: Optional[ValueWithUncertainty] = (
-        None  # Période orbitale avec incertitude
-    )
+    pl_eccentricity: Optional[ValueWithUncertainty] = None
+    pl_orbital_period: Optional[ValueWithUncertainty] = None
     pl_angular_distance: Optional[float] = None
     pl_periastron_time: Optional[float] = None
-    pl_inclination: Optional[ValueWithUncertainty] = (
-        None  # Inclinaison avec incertitude
-    )
+    pl_inclination: Optional[ValueWithUncertainty] = None
     pl_argument_of_periastron: Optional[float] = None
     pl_epoch: Optional[float] = None
 
     # Caractéristiques physiques
-    pl_mass: Optional[ValueWithUncertainty] = None  # Masse avec incertitude
-    pl_minimum_mass: Optional[ValueWithUncertainty] = (
-        None  # Masse minimale avec incertitude
-    )
-    pl_radius: Optional[ValueWithUncertainty] = None  # Rayon avec incertitude
-    pl_density: Optional[ValueWithUncertainty] = None  # Densité avec incertitude
+    pl_mass: Optional[ValueWithUncertainty] = None
+    pl_minimum_mass: Optional[ValueWithUncertainty] = None
+    pl_radius: Optional[ValueWithUncertainty] = None
+    pl_density: Optional[ValueWithUncertainty] = None
     pl_gravity: Optional[float] = None
     pl_rotation_period: Optional[float] = None
-    pl_temperature: Optional[ValueWithUncertainty] = (
-        None  # Température avec incertitude
-    )
+    pl_temperature: Optional[ValueWithUncertainty] = None
     pl_albedo_bond: Optional[float] = None
 
     # Atmosphère
