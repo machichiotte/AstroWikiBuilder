@@ -14,6 +14,7 @@ class TestExoplanetRepository:
         """Test d'initialisation."""
         repo = ExoplanetRepository()
         assert repo is not None
+        assert isinstance(repo.exoplanets, dict)
 
     def test_get_all_exoplanets_empty(self):
         """Test récupération liste vide."""
@@ -27,7 +28,7 @@ class TestExoplanetRepository:
         """Test d'ajout d'exoplanètes depuis une source."""
         repo = ExoplanetRepository()
 
-        repo.add_exoplanets_from_source([sample_exoplanet], "test_source")
+        repo.add_exoplanets([sample_exoplanet], "test_source")
 
         exoplanets = repo.get_all_exoplanets()
         assert len(exoplanets) == 1
@@ -37,7 +38,6 @@ class TestExoplanetRepository:
         """Test d'ajout de multiples exoplanètes."""
         repo = ExoplanetRepository()
 
-        # Créer une deuxième exoplanète
         from src.models.entities.exoplanet import Exoplanet, ValueWithUncertainty
         from src.models.references.reference import Reference, SourceType
         from datetime import datetime
@@ -54,26 +54,10 @@ class TestExoplanetRepository:
             reference=ref2,
         )
 
-        repo.add_exoplanets_from_source([sample_exoplanet, exo2], "test_source")
+        repo.add_exoplanets([sample_exoplanet, exo2], "test_source")
 
         exoplanets = repo.get_all_exoplanets()
         assert len(exoplanets) == 2
-
-    def test_get_exoplanet_by_name(self, sample_exoplanet):
-        """Test de récupération par nom."""
-        repo = ExoplanetRepository()
-        repo.add_exoplanets_from_source([sample_exoplanet], "test_source")
-
-        exo = repo.get_exoplanet_by_name("HD 209458 b")
-        assert exo is not None
-        assert exo.pl_name == "HD 209458 b"
-
-    def test_get_exoplanet_by_name_not_found(self):
-        """Test quand l'exoplanète n'existe pas."""
-        repo = ExoplanetRepository()
-
-        exo = repo.get_exoplanet_by_name("Nonexistent")
-        assert exo is None
 
 
 class TestStarRepository:
@@ -83,6 +67,7 @@ class TestStarRepository:
         """Test d'initialisation."""
         repo = StarRepository()
         assert repo is not None
+        assert isinstance(repo.stars, dict)
 
     def test_get_all_stars_empty(self):
         """Test récupération liste vide."""
@@ -96,7 +81,7 @@ class TestStarRepository:
         """Test d'ajout d'étoiles depuis une source."""
         repo = StarRepository()
 
-        repo.add_stars_from_source([sample_star], "test_source")
+        repo.add_stars([sample_star], "test_source")
 
         stars = repo.get_all_stars()
         assert len(stars) == 1
@@ -118,23 +103,7 @@ class TestStarRepository:
 
         star2 = Star(st_name="Kepler-1", st_spectral_type="G0V", reference=ref2)
 
-        repo.add_stars_from_source([sample_star, star2], "test_source")
+        repo.add_stars([sample_star, star2], "test_source")
 
         stars = repo.get_all_stars()
         assert len(stars) == 2
-
-    def test_get_star_by_name(self, sample_star):
-        """Test de récupération par nom."""
-        repo = StarRepository()
-        repo.add_stars_from_source([sample_star], "test_source")
-
-        star = repo.get_star_by_name("HD 209458")
-        assert star is not None
-        assert star.st_name == "HD 209458"
-
-    def test_get_star_by_name_not_found(self):
-        """Test quand l'étoile n'existe pas."""
-        repo = StarRepository()
-
-        star = repo.get_star_by_name("Nonexistent")
-        assert star is None

@@ -14,9 +14,7 @@ from src.models.references.reference import Reference, SourceType
 
 @pytest.fixture
 def sample_exoplanet() -> Exoplanet:
-    """
-    Crée une exoplanète de test avec toutes les données nécessaires.
-    """
+    """Crée une exoplanète de test."""
     reference = Reference(
         source=SourceType.NEA,
         update_date=datetime(2025, 1, 1),
@@ -36,8 +34,6 @@ def sample_exoplanet() -> Exoplanet:
         pl_orbital_period=ValueWithUncertainty(
             value=3.5247, error_positive=0.0001, error_negative=0.0001
         ),
-        pl_discovery_method="Transit",
-        pl_discovery_year=1999,
         st_name="HD 209458",
         reference=reference,
     )
@@ -45,9 +41,7 @@ def sample_exoplanet() -> Exoplanet:
 
 @pytest.fixture
 def sample_star() -> Star:
-    """
-    Crée une étoile de test avec toutes les données nécessaires.
-    """
+    """Crée une étoile de test."""
     reference = Reference(
         source=SourceType.NEA,
         update_date=datetime(2025, 1, 1),
@@ -68,9 +62,7 @@ def sample_star() -> Star:
 
 @pytest.fixture
 def sample_dataframe() -> pd.DataFrame:
-    """
-    Crée un DataFrame de test simulant des données NASA.
-    """
+    """Crée un DataFrame de test."""
     data = {
         "pl_name": ["Kepler-1 b", "Kepler-2 b"],
         "pl_bmasse": [0.5, 1.2],
@@ -87,9 +79,7 @@ def sample_dataframe() -> pd.DataFrame:
 
 @pytest.fixture
 def mock_cache_dir(tmp_path) -> str:
-    """
-    Crée un répertoire de cache temporaire pour les tests.
-    """
+    """Crée un répertoire de cache temporaire."""
     cache_dir = tmp_path / "cache"
     cache_dir.mkdir()
     return str(cache_dir)
