@@ -184,9 +184,11 @@ class ExoplanetContentGenerator:
                 mass_f = None
             mass_value = self.article_utils.format_number_as_french_string(
                 mass,
-                precision=3
-                if mass_f is not None and mass_f < 0.1
-                else (2 if mass_f is not None and mass_f < 1 else 1),
+                precision=(
+                    3
+                    if mass_f is not None and mass_f < 0.1
+                    else (2 if mass_f is not None and mass_f < 1 else 1)
+                ),
             )
 
             if mass_f is not None:
@@ -207,9 +209,11 @@ class ExoplanetContentGenerator:
                 radius_f = None
             radius_value: str = self.article_utils.format_number_as_french_string(
                 radius,
-                precision=3
-                if radius_f is not None and radius_f < 0.1
-                else (2 if radius_f is not None and radius_f < 1 else 1),
+                precision=(
+                    3
+                    if radius_f is not None and radius_f < 0.1
+                    else (2 if radius_f is not None and radius_f < 1 else 1)
+                ),
             )
             if radius_f is not None:
                 if radius_f < 0.5:
@@ -218,7 +222,9 @@ class ExoplanetContentGenerator:
                     label: str = None
                 else:
                     label = "étendu"
-                desc: str = f"son rayon{' ' + label if label else ''} de {radius_value} [[Rayon_jovien|''R''{{{{ind|J}}}}]]"
+                desc: str = (
+                    f"son rayon{' ' + label if label else ''} de {radius_value} [[Rayon_jovien|''R''{{{{ind|J}}}}]]"
+                )
                 desc_parts.append(desc)
 
         if (
