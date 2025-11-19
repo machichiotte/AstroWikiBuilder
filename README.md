@@ -1,5 +1,7 @@
 # AstroWikiBuilder
 
+![Tests](https://github.com/machichiotte/AstroWikiBuilder/workflows/Tests/badge.svg)
+
 Un outil Python pour collecter, consolider et transformer des données astronomiques (exoplanètes, étoiles) issues de catalogues publics en projets d'articles Wikipédia en français, avec gestion avancée des références et génération de brouillons structurés.
 
 ## Installation
