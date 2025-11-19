@@ -42,7 +42,7 @@ class TestFullPipeline:
 
         # Repository
         repo = ExoplanetRepository()
-        repo.add_exoplanets_from_source([sample_exoplanet], "test")
+        repo.add_exoplanets([sample_exoplanet], "test")
 
         # Récupération
         exoplanets = repo.get_all_exoplanets()
