@@ -90,10 +90,10 @@ class ExoplanetCategoryGenerator(BaseCategoryGenerator):
         """
         if not exoplanet.sy_constellation:
             return None
-            
+
         # On nettoie le nom de la constellation si nécessaire
         constellation = exoplanet.sy_constellation.strip()
-        
+
         # Construction de la catégorie
         # Note: Ceci suppose que 'sy_constellation' est le nom français (ex: "Cygne")
         return f"Exoplanète de la constellation de {constellation}"

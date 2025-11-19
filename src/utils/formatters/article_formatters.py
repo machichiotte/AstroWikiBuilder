@@ -78,13 +78,13 @@ class ArticleUtils:
             or value_with_uncertainty.error_negative
         ):
             # CORRECTION ICI : Initialisation à une chaîne vide au lieu de None
-            error_str: str = "" 
-            
+            error_str: str = ""
+
             if value_with_uncertainty.error_positive:
                 error_str += f"+{self.format_number_as_french_string(value_with_uncertainty.error_positive)}"
             if value_with_uncertainty.error_negative:
                 error_str += f"-{self.format_number_as_french_string(value_with_uncertainty.error_negative)}"
-            
+
             # On n'ajoute l'espace que si error_str n'est pas vide
             if error_str:
                 value_str = f"{value_str} {error_str}"
