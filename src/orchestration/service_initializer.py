@@ -28,10 +28,10 @@ from src.utils.wikipedia.wikipedia_checker import WikipediaChecker
 from src.collectors.implementations.nasa_exoplanet_archive_collector import (
     NasaExoplanetArchiveCollector,
 )
-
-# TODO: Décommenter quand les autres collecteurs seront branchés
-# from src.collectors.implementations.exoplanet_eu import ExoplanetEUCollector
-# from src.collectors.implementations.open_exoplanet_collection import OpenExoplanetCollector
+from src.collectors.implementations.exoplanet_eu import ExoplanetEUCollector
+from src.collectors.implementations.open_exoplanet_collection import (
+    OpenExoplanetCollector,
+)
 
 
 def initialize_services() -> Tuple[
@@ -100,8 +100,7 @@ def initialize_collectors(args: argparse.Namespace) -> Dict[str, Any]:
     mock_sources = args.use_mock
 
     # Sources de données disponibles
-    # TODO: Ajouter exoplanet_eu et open_exoplanet quand ils seront prêts
-    data_sources = ["nasa_exoplanet_archive"]
+    data_sources = ["nasa_exoplanet_archive", "exoplanet_eu", "open_exoplanet"]
 
     for source in data_sources:
         if source in args.sources:
@@ -135,10 +134,10 @@ def _get_collector_instance(source: str, use_mock: bool, cache_path: str) -> Any
             use_mock_data=use_mock,
             custom_cache_filename=cache_path,
         )
-    # elif source == "exoplanet_eu":
-    #     return ExoplanetEUCollector(cache_path=cache_path, use_mock_data=use_mock)
-    # elif source == "open_exoplanet":
-    #     return OpenExoplanetCollector(cache_path=cache_path, use_mock_data=use_mock)
+    elif source == "exoplanet_eu":
+        return ExoplanetEUCollector(cache_dir=cache_path, use_mock_data=use_mock)
+    elif source == "open_exoplanet":
+        return OpenExoplanetCollector(cache_dir=cache_path, use_mock_data=use_mock)
     else:
         raise ValueError(f"Source inconnue : {source}")
 

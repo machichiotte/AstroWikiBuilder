@@ -1,11 +1,11 @@
-# src/data_collectors/exoplanet_eu.py
+# src/collectors/implementations/exoplanet_eu.py
 import pandas as pd
 from typing import List, Optional, Dict, Any
 import logging
 from src.collectors.base_collector import BaseCollector
-from src.models.references.reference import Reference, SourceType
-from src.models.entities.exoplanet import ValueWithUncertainty
-from src.models.entities.exoplanet import Exoplanet
+from src.models.references.reference import SourceType
+from src.models.entities.star import Star
+from src.models.entities.exoplanet import ValueWithUncertainty, Exoplanet
 
 logger: logging.Logger = logging.getLogger(__name__)
 
@@ -34,15 +34,20 @@ class ExoplanetEUCollector(BaseCollector):
     def get_csv_reader_options(self) -> Dict[str, Any]:
         return {"comment": "#"}
 
-    def transform_row_to_exoplanet(
-        self, row: pd.Series, ref: Reference
-    ) -> Optional[Exoplanet]:
+    def transform_row_to_exoplanet(self, row: pd.Series) -> Optional[Exoplanet]:
         try:
             if pd.isna(row["name"]) or pd.isna(row["star_name"]):
                 logger.warning(
                     f"Données de base manquantes pour l'exoplanète : {row.get('name', 'Unknown')} (Source: Exoplanet.eu)"
                 )
                 return None
+
+            # Créer la référence via le ReferenceManager
+            ref = self.reference_manager.create_reference(
+                source_type=self.get_source_type(),
+                star_id=str(row["star_name"]).strip(),
+                planet_id=str(row["name"]).strip(),
+            )
 
             exoplanet = Exoplanet(
                 pl_name=str(row["name"]).strip(),
@@ -117,3 +122,15 @@ class ExoplanetEUCollector(BaseCollector):
                 exc_info=True,
             )
             return None
+
+    def transform_row_to_star(self, row: pd.Series) -> Optional[Star]:
+        """
+        Convertit une ligne du DataFrame en objet Star.
+
+        Note: Exoplanet.eu ne fournit pas de données d'étoiles séparées.
+        Les informations d'étoile sont déjà intégrées dans les objets Exoplanet.
+
+        Returns:
+            None: Toujours None car les données d'étoiles ne sont pas séparées
+        """
+        return None
