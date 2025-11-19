@@ -3,7 +3,6 @@
 Tests pour le modèle Exoplanet.
 """
 
-import pytest
 from datetime import datetime
 
 from src.models.entities.exoplanet import Exoplanet, ValueWithUncertainty
@@ -66,11 +65,7 @@ class TestValueWithUncertainty:
 
     def test_create_value_with_uncertainty(self):
         """Test de création d'une valeur avec incertitudes."""
-        value = ValueWithUncertainty(
-            value=1.5,
-            error_positive=0.1,
-            error_negative=0.1
-        )
+        value = ValueWithUncertainty(value=1.5, error_positive=0.1, error_negative=0.1)
 
         assert value.value == 1.5
         assert value.error_positive == 0.1
@@ -86,11 +81,7 @@ class TestValueWithUncertainty:
 
     def test_asymmetric_errors(self):
         """Test d'erreurs asymétriques."""
-        value = ValueWithUncertainty(
-            value=3.0,
-            error_positive=0.5,
-            error_negative=0.3
-        )
+        value = ValueWithUncertainty(value=3.0, error_positive=0.5, error_negative=0.3)
 
         assert value.error_positive == 0.5
         assert value.error_negative == 0.3

@@ -10,7 +10,6 @@ Responsabilité :
 
 import argparse
 from datetime import datetime
-from typing import Dict, Any
 
 from src.core.config import logger, DEFAULT_CONSOLIDATED_DIR
 from src.services.processors.data_processor import DataProcessor
@@ -81,7 +80,9 @@ def execute_pipeline(args: argparse.Namespace) -> None:
         exoplanets = processor.collect_all_exoplanets()
         generate_and_persist_star_drafts(processor, args.drafts_dir, exoplanets)
     else:
-        logger.info("Génération de brouillons Wikipedia ignorée (--skip-wikipedia-check)")
+        logger.info(
+            "Génération de brouillons Wikipedia ignorée (--skip-wikipedia-check)"
+        )
 
     logger.info("Pipeline terminé avec succès !")
 
@@ -107,9 +108,13 @@ def _initialize_data_processor(services: tuple) -> DataProcessor:
     Returns:
         DataProcessor: Instance configurée du processeur
     """
-    exoplanet_repository, star_repository, stat_service, wiki_service, export_service = (
-        services
-    )
+    (
+        exoplanet_repository,
+        star_repository,
+        stat_service,
+        wiki_service,
+        export_service,
+    ) = services
 
     processor = DataProcessor(
         exoplanet_repository=exoplanet_repository,

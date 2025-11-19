@@ -40,9 +40,7 @@ class WikipediaChecker:
     ):
         self.session = requests.Session()
         self.session.headers.update(
-            {
-                "User-Agent": user_agent  # Utiliser le user_agent fourni
-            }
+            {"User-Agent": user_agent}  # Utiliser le user_agent fourni
         )
         logger.info(f"WikipediaChecker initialized with User-Agent: {user_agent}")
 

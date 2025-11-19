@@ -6,7 +6,6 @@ Configuration pytest et fixtures partagées.
 import pytest
 import pandas as pd
 from datetime import datetime
-from typing import Dict, Any
 
 from src.models.entities.exoplanet import Exoplanet, ValueWithUncertainty
 from src.models.entities.star import Star
@@ -28,9 +27,15 @@ def sample_exoplanet() -> Exoplanet:
 
     return Exoplanet(
         pl_name="HD 209458 b",
-        pl_mass=ValueWithUncertainty(value=0.69, error_positive=0.05, error_negative=0.05),
-        pl_radius=ValueWithUncertainty(value=1.35, error_positive=0.05, error_negative=0.05),
-        pl_orbital_period=ValueWithUncertainty(value=3.5247, error_positive=0.0001, error_negative=0.0001),
+        pl_mass=ValueWithUncertainty(
+            value=0.69, error_positive=0.05, error_negative=0.05
+        ),
+        pl_radius=ValueWithUncertainty(
+            value=1.35, error_positive=0.05, error_negative=0.05
+        ),
+        pl_orbital_period=ValueWithUncertainty(
+            value=3.5247, error_positive=0.0001, error_negative=0.0001
+        ),
         pl_discovery_method="Transit",
         pl_discovery_year=1999,
         st_name="HD 209458",
@@ -54,7 +59,9 @@ def sample_star() -> Star:
         st_name="HD 209458",
         st_spectral_type="G0V",
         sy_constellation="Pégase",
-        st_distance=ValueWithUncertainty(value=47.1, error_positive=0.5, error_negative=0.5),
+        st_distance=ValueWithUncertainty(
+            value=47.1, error_positive=0.5, error_negative=0.5
+        ),
         reference=reference,
     )
 

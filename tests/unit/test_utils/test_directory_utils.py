@@ -3,7 +3,6 @@
 Tests pour le module directory_utils.
 """
 
-import pytest
 import os
 
 from src.utils.directory_utils import create_output_directories

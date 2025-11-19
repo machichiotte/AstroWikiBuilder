@@ -19,7 +19,7 @@ def convert_csv_to_json(csv_path: str, json_path: str):
             if v is not None and not (isinstance(v, float) and math.isnan(v))
         }
 
-    print(f"Conversion en JSON...")
+    print("Conversion en JSON...")
     json_data = [drop_none_and_nan(record) for record in df.to_dict(orient="records")]
 
     print(f"Écriture du fichier JSON : {json_path}")

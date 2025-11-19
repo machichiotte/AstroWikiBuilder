@@ -12,16 +12,13 @@ Responsabilité :
 import os
 import json
 from typing import Dict, Any
-from datetime import datetime
 
 from src.core.config import logger
 from src.services.processors.data_processor import DataProcessor
 from src.services.processors.statistics_service import StatisticsService
 
 
-def fetch_and_ingest_data(
-    collectors: Dict[str, Any], processor: DataProcessor
-) -> None:
+def fetch_and_ingest_data(collectors: Dict[str, Any], processor: DataProcessor) -> None:
     """
     Récupère les données des collecteurs et les ingère dans le processeur.
 
@@ -78,7 +75,9 @@ def export_consolidated_data(
     """
     logger.info("Export des données consolidées...")
     try:
-        consolidated_path = f"{output_dir}/consolidated/exoplanets_consolidated_{timestamp}.csv"
+        consolidated_path = (
+            f"{output_dir}/consolidated/exoplanets_consolidated_{timestamp}.csv"
+        )
         processor.export_all_exoplanets("csv", consolidated_path)
     except Exception as e:
         logger.error(f"Erreur lors de l'export des données consolidées : {e}")

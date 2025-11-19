@@ -119,9 +119,9 @@ class WikipediaService:
                         "article_exists": info.exists,
                         "wikipedia_title": info.title if info.exists else None,
                         "is_redirect": info.is_redirect if info.exists else False,
-                        "redirect_target": info.redirect_target
-                        if info.exists
-                        else None,
+                        "redirect_target": (
+                            info.redirect_target if info.exists else None
+                        ),
                         "url": info.url if info.exists else None,
                         "host_star": exoplanet_obj.st_name,
                     }

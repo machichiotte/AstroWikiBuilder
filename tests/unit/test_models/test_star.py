@@ -3,11 +3,9 @@
 Tests pour le modèle Star.
 """
 
-import pytest
 from datetime import datetime
 
 from src.models.entities.star import Star
-from src.models.entities.exoplanet import ValueWithUncertainty
 from src.models.references.reference import Reference, SourceType
 
 

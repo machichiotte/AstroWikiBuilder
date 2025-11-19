@@ -3,7 +3,6 @@
 Tests pour le modèle Reference.
 """
 
-import pytest
 from datetime import datetime
 
 from src.models.references.reference import Reference, SourceType

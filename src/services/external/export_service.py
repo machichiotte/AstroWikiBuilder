@@ -18,9 +18,9 @@ class ExportService:
         """
         data = {
             "pl_name": exoplanet.pl_name,
-            "pl_altname": ", ".join(exoplanet.pl_altname)
-            if exoplanet.pl_altname
-            else None,
+            "pl_altname": (
+                ", ".join(exoplanet.pl_altname) if exoplanet.pl_altname else None
+            ),
             "st_name": exoplanet.st_name,
             "st_spectral_type": exoplanet.st_spectral_type,
             "st_distance": exoplanet.st_distance,
