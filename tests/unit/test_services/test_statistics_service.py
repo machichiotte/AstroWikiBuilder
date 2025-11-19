@@ -42,8 +42,8 @@ class TestStatisticsService:
             pl_name="Test 1 b",
             pl_mass=ValueWithUncertainty(value=0.5),
             pl_radius=ValueWithUncertainty(value=1.0),
-            pl_discovery_method="Transit",
-            pl_discovery_year=2020,
+            disc_method="Transit",
+            disc_year=2020,
             reference=ref,
         )
 
@@ -51,8 +51,8 @@ class TestStatisticsService:
             pl_name="Test 2 b",
             pl_mass=ValueWithUncertainty(value=1.5),
             pl_radius=ValueWithUncertainty(value=1.2),
-            pl_discovery_method="Radial Velocity",
-            pl_discovery_year=2020,
+            disc_method="Radial Velocity",
+            disc_year=2020,
             reference=ref,
         )
 
@@ -60,8 +60,8 @@ class TestStatisticsService:
             pl_name="Test 3 b",
             pl_mass=ValueWithUncertainty(value=0.3),
             pl_radius=ValueWithUncertainty(value=0.8),
-            pl_discovery_method="Transit",
-            pl_discovery_year=2021,
+            disc_method="Transit",
+            disc_year=2021,
             reference=ref,
         )
 

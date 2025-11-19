@@ -20,8 +20,8 @@ class TestExoplanet:
         assert exo.pl_mass.value == 0.69
         assert exo.pl_radius.value == 1.35
         assert exo.pl_orbital_period.value == 3.5247
-        assert exo.pl_discovery_method == "Transit"
-        assert exo.pl_discovery_year == 1999
+        assert exo.disc_method == "Transit"
+        assert exo.disc_year == 1999
         assert exo.st_name == "HD 209458"
         assert exo.reference.source == SourceType.NEA
 

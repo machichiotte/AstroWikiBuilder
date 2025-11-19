@@ -67,6 +67,8 @@ class TestNASAExoplanetArchiveCollector:
                 "hostname": ["Test"],
                 "pl_bmasse": [1.0],
                 "pl_rade": [1.0],
+                "discoverymethod": ["Transit"],
+                "disc_year": [2020],
             }
         )
 

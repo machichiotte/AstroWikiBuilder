@@ -45,8 +45,8 @@ class StatisticsService:
                 )
 
             # Années de découverte
-            if exoplanet.disc_year and exoplanet.disc_year.value:
-                year: int = int(exoplanet.disc_year.value)
+            if exoplanet.disc_year:
+                year: int = int(exoplanet.disc_year)
                 stats["discovery_years"][year] = (
                     stats["discovery_years"].get(year, 0) + 1
                 )

@@ -35,6 +35,8 @@ def sample_exoplanet() -> Exoplanet:
             value=3.5247, error_positive=0.0001, error_negative=0.0001
         ),
         st_name="HD 209458",
+        disc_method="Transit",
+        disc_year=1999,
         reference=reference,
     )
 

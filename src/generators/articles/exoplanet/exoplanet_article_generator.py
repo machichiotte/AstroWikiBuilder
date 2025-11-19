@@ -36,7 +36,10 @@ class ExoplanetWikipediaArticleGenerator(BaseWikipediaArticleGenerator):
     """
 
     def __init__(self):
-        locale.setlocale(locale.LC_ALL, "fr_FR.UTF-8")
+        try:
+            locale.setlocale(locale.LC_ALL, "fr_FR.UTF-8")
+        except locale.Error:
+            pass
 
         reference_manager = ReferenceManager()
         category_generator = ExoplanetCategoryGenerator()

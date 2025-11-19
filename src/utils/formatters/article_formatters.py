@@ -10,7 +10,11 @@ class ArticleUtils:
     """
 
     def __init__(self):
-        locale.setlocale(locale.LC_ALL, "fr_FR.UTF-8")
+        try:
+            locale.setlocale(locale.LC_ALL, "fr_FR.UTF-8")
+        except locale.Error:
+            # Fallback or pass if locale is not available
+            pass
 
     def format_number_as_french_string(
         self, value: Optional[float], precision: int = 2
@@ -73,12 +77,17 @@ class ArticleUtils:
             value_with_uncertainty.error_positive
             or value_with_uncertainty.error_negative
         ):
-            error_str: str = None
+            # CORRECTION ICI : Initialisation à une chaîne vide au lieu de None
+            error_str: str = "" 
+            
             if value_with_uncertainty.error_positive:
                 error_str += f"+{self.format_number_as_french_string(value_with_uncertainty.error_positive)}"
             if value_with_uncertainty.error_negative:
                 error_str += f"-{self.format_number_as_french_string(value_with_uncertainty.error_negative)}"
-            value_str = f"{value_str} {error_str}"
+            
+            # On n'ajoute l'espace que si error_str n'est pas vide
+            if error_str:
+                value_str = f"{value_str} {error_str}"
 
         # Ajouter le signe si présent
         if value_with_uncertainty.sign:

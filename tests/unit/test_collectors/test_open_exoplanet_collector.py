@@ -32,7 +32,7 @@ class TestOpenExoplanetCollector:
         collector = OpenExoplanetCollector(use_mock_data=True)
 
         url = collector.get_data_download_url()
-        assert "github.com" in url
+        assert "githubusercontent.com" in url
         assert "OpenExoplanetCatalogue" in url
 
     def test_get_source_reference_url(self):

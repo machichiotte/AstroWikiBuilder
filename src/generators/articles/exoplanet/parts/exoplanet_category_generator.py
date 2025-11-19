@@ -25,7 +25,7 @@ class ExoplanetCategoryGenerator(BaseCategoryGenerator):
         return [
             self.map_planet_type_to_category,
             self.map_discovery_program_to_category,
-            self.map_constellation_to_category,
+            self.map_constellation_to_category,  # Cette méthode doit exister !
         ]
 
     # --- Règles de catégorisation spécifiques aux exoplanètes ---
@@ -47,13 +47,11 @@ class ExoplanetCategoryGenerator(BaseCategoryGenerator):
                 if planet_type in mapping:
                     return mapping[planet_type]
         except (KeyError, AttributeError) as e:
-            # Erreur attendue si une clé n'existe pas dans le mapping.
             logging.warning(
                 f"Clé de mapping non trouvée pour l'exoplanète {exoplanet.pl_name}: {e}"
             )
             pass
         except Exception as e:
-            # Erreur inattendue, potentiellement un bug.
             logging.error(
                 f"Erreur inattendue dans _get_planet_type_category pour {exoplanet.pl_name}: {e}"
             )
@@ -83,4 +81,19 @@ class ExoplanetCategoryGenerator(BaseCategoryGenerator):
             for key, cat in disc_facility_list.items():
                 if key.lower() in discovered_by_program.lower():
                     return cat
-        return None  # Returns None if no match is found, or if disc_program is None.
+        return None
+
+    def map_constellation_to_category(self, exoplanet: Exoplanet) -> Optional[str]:
+        """
+        Règle personnalisée pour déterminer la catégorie liée à la constellation.
+        Génère une catégorie sous la forme "Exoplanète de la constellation de [Nom]".
+        """
+        if not exoplanet.sy_constellation:
+            return None
+            
+        # On nettoie le nom de la constellation si nécessaire
+        constellation = exoplanet.sy_constellation.strip()
+        
+        # Construction de la catégorie
+        # Note: Ceci suppose que 'sy_constellation' est le nom français (ex: "Cygne")
+        return f"Exoplanète de la constellation de {constellation}"
