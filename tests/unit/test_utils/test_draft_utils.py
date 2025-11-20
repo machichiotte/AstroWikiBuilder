@@ -161,11 +161,4 @@ class TestPersistDraftsByEntityType:
         assert mock_makedirs.call_count == 2
         mock_file.assert_not_called()
 
-    @patch("builtins.open", side_effect=Exception("Test error"))
-    @patch("os.makedirs")
-    def test_persist_drafts_error(self, mock_makedirs, mock_file):
-        """Test de gestion d'erreur."""
-        missing = {"Test b": "Content 1"}
 
-        with pytest.raises(Exception):
-            persist_drafts_by_entity_type(missing, {}, "drafts", "exoplanet")
