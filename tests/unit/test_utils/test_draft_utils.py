@@ -160,5 +160,3 @@ class TestPersistDraftsByEntityType:
 
         assert mock_makedirs.call_count == 2
         mock_file.assert_not_called()
-
-

@@ -1,9 +1,9 @@
-import json
-import random
-import math
 import argparse
 import csv
+import json
+import math
 import os
+import random
 
 
 def load_exoplanets(input_path):
@@ -13,7 +13,7 @@ def load_exoplanets(input_path):
             reader = csv.DictReader(f)
             exoplanets = list(reader)
     else:
-        with open(input_path, "r", encoding="utf-8") as f:
+        with open(input_path, encoding="utf-8") as f:
             exoplanets = json.load(f)
     return exoplanets
 
@@ -50,20 +50,14 @@ def get_random_exoplanets(
 
     # Filtrage optionnel
     if filter_method:
-        exoplanets = [
-            exo for exo in exoplanets if exo.get("disc_method") == filter_method
-        ]
+        exoplanets = [exo for exo in exoplanets if exo.get("disc_method") == filter_method]
     if min_mass is not None:
         exoplanets = [
-            exo
-            for exo in exoplanets
-            if exo.get("pl_mass") and float(exo["pl_mass"]) >= min_mass
+            exo for exo in exoplanets if exo.get("pl_mass") and float(exo["pl_mass"]) >= min_mass
         ]
     if max_mass is not None:
         exoplanets = [
-            exo
-            for exo in exoplanets
-            if exo.get("pl_mass") and float(exo["pl_mass"]) <= max_mass
+            exo for exo in exoplanets if exo.get("pl_mass") and float(exo["pl_mass"]) <= max_mass
         ]
 
     # Sélectionner n exoplanètes aléatoires
@@ -104,12 +98,8 @@ def main():
     parser.add_argument(
         "-i", "--input", type=str, required=True, help="Fichier source (CSV ou JSON)"
     )
-    parser.add_argument(
-        "-n", type=int, default=100, help="Nombre d'exoplanètes à sélectionner"
-    )
-    parser.add_argument(
-        "--outdir", type=str, default="data/generated", help="Répertoire de sortie"
-    )
+    parser.add_argument("-n", type=int, default=100, help="Nombre d'exoplanètes à sélectionner")
+    parser.add_argument("--outdir", type=str, default="data/generated", help="Répertoire de sortie")
     args = parser.parse_args()
 
     exoplanets = load_exoplanets(args.input)

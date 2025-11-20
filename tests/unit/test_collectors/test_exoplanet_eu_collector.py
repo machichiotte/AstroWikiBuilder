@@ -6,7 +6,6 @@ Tests pour ExoplanetEUCollector.
 from unittest.mock import patch
 
 import pandas as pd
-import pytest
 
 from src.collectors.implementations.exoplanet_eu import ExoplanetEUCollector
 from src.models.references.reference import SourceType
@@ -104,11 +103,11 @@ class TestExoplanetEUCollector:
     def test_transform_row_to_exoplanet_with_complete_data(self, mock_create_ref):
         """Test de transformation avec données complètes."""
         from unittest.mock import Mock
-        
+
         # Mock de la référence
         mock_ref = Mock()
         mock_create_ref.return_value = mock_ref
-        
+
         collector = ExoplanetEUCollector(use_mock_data=True)
 
         mock_row = pd.Series(
@@ -145,8 +144,9 @@ class TestExoplanetEUCollector:
     def test_transform_row_to_exoplanet_with_partial_data(self, mock_create_ref):
         """Test de transformation avec données partielles."""
         from unittest.mock import Mock
+
         mock_create_ref.return_value = Mock()
-        
+
         collector = ExoplanetEUCollector(use_mock_data=True)
 
         mock_row = pd.Series(
@@ -183,8 +183,9 @@ class TestExoplanetEUCollector:
     def test_transform_row_to_exoplanet_with_numeric_string_values(self, mock_create_ref):
         """Test de transformation avec valeurs numériques en string."""
         from unittest.mock import Mock
+
         mock_create_ref.return_value = Mock()
-        
+
         collector = ExoplanetEUCollector(use_mock_data=True)
 
         mock_row = pd.Series(
@@ -206,8 +207,9 @@ class TestExoplanetEUCollector:
     def test_transform_row_to_exoplanet_with_alt_names(self, mock_create_ref):
         """Test de transformation avec noms alternatifs."""
         from unittest.mock import Mock
+
         mock_create_ref.return_value = Mock()
-        
+
         collector = ExoplanetEUCollector(use_mock_data=True)
 
         mock_row = pd.Series(

@@ -179,7 +179,9 @@ class TestFieldFormatter:
     def test_process_field_with_reference_not_in_notes_fields(self, formatter):
         """Test de traitement d'un champ avec référence mais pas dans notes_fields."""
         mapping = FieldMapping(source_attribute="other", infobox_field="other_field")
-        result = formatter.process_field("value", mapping, ["mass"], wiki_reference="<ref>Test</ref>")
+        result = formatter.process_field(
+            "value", mapping, ["mass"], wiki_reference="<ref>Test</ref>"
+        )
         assert "other_field" in result
         assert "other_field notes" not in result
 

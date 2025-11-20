@@ -1,6 +1,6 @@
 """Tests pour WikipediaService."""
 
-from unittest.mock import Mock, patch
+from unittest.mock import Mock
 
 import pytest
 
@@ -26,9 +26,7 @@ class TestWikipediaService:
     def sample_exoplanet(self):
         """Fixture pour créer une exoplanète de test."""
         return Exoplanet(
-            pl_name="Kepler-22 b",
-            st_name="Kepler-22",
-            pl_altname=["KOI-87 b", "KOI-87.01"]
+            pl_name="Kepler-22 b", st_name="Kepler-22", pl_altname=["KOI-87 b", "KOI-87.01"]
         )
 
     def test_init(self, mock_checker):
@@ -36,7 +34,9 @@ class TestWikipediaService:
         service = WikipediaService(wikipedia_checker=mock_checker)
         assert service.wikipedia_checker == mock_checker
 
-    def test_fetch_articles_for_exoplanet_batch_single_exoplanet(self, service, mock_checker, sample_exoplanet):
+    def test_fetch_articles_for_exoplanet_batch_single_exoplanet(
+        self, service, mock_checker, sample_exoplanet
+    ):
         """Test de récupération d'articles pour une seule exoplanète."""
         # Mock du retour de check_article_existence_batch
         mock_checker.check_article_existence_batch.return_value = {
@@ -44,18 +44,12 @@ class TestWikipediaService:
                 exists=True,
                 title="Kepler-22 b",
                 queried_title="Kepler-22 b",
-                url="https://fr.wikipedia.org/wiki/Kepler-22_b"
+                url="https://fr.wikipedia.org/wiki/Kepler-22_b",
             ),
-            "KOI-87 b": WikiArticleInfo(
-                exists=False,
-                title="KOI-87 b",
-                queried_title="KOI-87 b"
-            ),
+            "KOI-87 b": WikiArticleInfo(exists=False, title="KOI-87 b", queried_title="KOI-87 b"),
             "KOI-87.01": WikiArticleInfo(
-                exists=False,
-                title="KOI-87.01",
-                queried_title="KOI-87.01"
-            )
+                exists=False, title="KOI-87.01", queried_title="KOI-87.01"
+            ),
         }
 
         result = service.fetch_articles_for_exoplanet_batch([sample_exoplanet])
@@ -70,13 +64,13 @@ class TestWikipediaService:
         """Test de récupération d'articles pour plusieurs exoplanètes."""
         exoplanets = [
             Exoplanet(pl_name="Planet A", st_name="Star A", pl_altname=[]),
-            Exoplanet(pl_name="Planet B", st_name="Star B", pl_altname=["Alt B"])
+            Exoplanet(pl_name="Planet B", st_name="Star B", pl_altname=["Alt B"]),
         ]
 
         mock_checker.check_article_existence_batch.return_value = {
             "Planet A": WikiArticleInfo(exists=True, title="Planet A", queried_title="Planet A"),
             "Planet B": WikiArticleInfo(exists=False, title="Planet B", queried_title="Planet B"),
-            "Alt B": WikiArticleInfo(exists=False, title="Alt B", queried_title="Alt B")
+            "Alt B": WikiArticleInfo(exists=False, title="Alt B", queried_title="Alt B"),
         }
 
         result = service.fetch_articles_for_exoplanet_batch(exoplanets)
@@ -91,9 +85,7 @@ class TestWikipediaService:
         # Créer 30 exoplanètes avec 2 noms alternatifs chacune = 90 titres
         exoplanets = [
             Exoplanet(
-                pl_name=f"Planet {i}",
-                st_name=f"Star {i}",
-                pl_altname=[f"Alt {i}-1", f"Alt {i}-2"]
+                pl_name=f"Planet {i}", st_name=f"Star {i}", pl_altname=[f"Alt {i}-1", f"Alt {i}-2"]
             )
             for i in range(30)
         ]
@@ -101,7 +93,7 @@ class TestWikipediaService:
         # Mock pour retourner des résultats vides
         mock_checker.check_article_existence_batch.return_value = {}
 
-        result = service.fetch_articles_for_exoplanet_batch(exoplanets)
+        service.fetch_articles_for_exoplanet_batch(exoplanets)
 
         # Devrait être appelé 2 fois (90 titres / 50 = 2 batches)
         assert mock_checker.check_article_existence_batch.call_count == 2
@@ -115,20 +107,15 @@ class TestWikipediaService:
                     title="Kepler-22 b",
                     queried_title="Kepler-22 b",
                     url="https://fr.wikipedia.org/wiki/Kepler-22_b",
-                    is_redirect=False
+                    is_redirect=False,
                 ),
                 "KOI-87 b": WikiArticleInfo(
-                    exists=False,
-                    title="KOI-87 b",
-                    queried_title="KOI-87 b"
-                )
+                    exists=False, title="KOI-87 b", queried_title="KOI-87 b"
+                ),
             }
         }
 
-        result = service.format_article_links_for_export(
-            [sample_exoplanet],
-            articles_info
-        )
+        result = service.format_article_links_for_export([sample_exoplanet], articles_info)
 
         assert len(result) == 2
         assert result[0]["exoplanet_primary_name"] == "Kepler-22 b"
@@ -143,15 +130,13 @@ class TestWikipediaService:
                     exists=True,
                     title="Kepler-22 b",
                     queried_title="Kepler-22 b",
-                    url="https://fr.wikipedia.org/wiki/Kepler-22_b"
+                    url="https://fr.wikipedia.org/wiki/Kepler-22_b",
                 )
             }
         }
 
         result = service.format_article_links_for_export(
-            [sample_exoplanet],
-            articles_info,
-            only_existing=True
+            [sample_exoplanet], articles_info, only_existing=True
         )
 
         assert len(result) == 1
@@ -160,21 +145,17 @@ class TestWikipediaService:
     def test_format_article_links_for_export_only_missing(self, service):
         """Test de formatage de liens pour export (seulement manquants)."""
         exoplanet = Exoplanet(pl_name="Missing Planet", st_name="Star X", pl_altname=[])
-        
+
         articles_info = {
             "Missing Planet": {
                 "Missing Planet": WikiArticleInfo(
-                    exists=False,
-                    title="Missing Planet",
-                    queried_title="Missing Planet"
+                    exists=False, title="Missing Planet", queried_title="Missing Planet"
                 )
             }
         }
 
         result = service.format_article_links_for_export(
-            [exoplanet],
-            articles_info,
-            only_missing=True
+            [exoplanet], articles_info, only_missing=True
         )
 
         assert len(result) == 1
@@ -185,16 +166,13 @@ class TestWikipediaService:
         articles_info = {
             "Unknown Planet": {
                 "Unknown Planet": WikiArticleInfo(
-                    exists=False,
-                    title="Unknown Planet",
-                    queried_title="Unknown Planet"
+                    exists=False, title="Unknown Planet", queried_title="Unknown Planet"
                 )
             }
         }
 
         result = service.format_article_links_for_export(
-            [],  # Liste vide d'exoplanètes
-            articles_info
+            [], articles_info  # Liste vide d'exoplanètes
         )
 
         assert len(result) == 0
@@ -206,8 +184,10 @@ class TestWikipediaService:
                 "Planet A": WikiArticleInfo(exists=True, title="Planet A", queried_title="Planet A")
             },
             "Planet B": {
-                "Planet B": WikiArticleInfo(exists=False, title="Planet B", queried_title="Planet B")
-            }
+                "Planet B": WikiArticleInfo(
+                    exists=False, title="Planet B", queried_title="Planet B"
+                )
+            },
         }
 
         existing, missing = service.split_by_article_existence(articles_info)
@@ -225,7 +205,7 @@ class TestWikipediaService:
             },
             "Planet B": {
                 "Planet B": WikiArticleInfo(exists=True, title="Planet B", queried_title="Planet B")
-            }
+            },
         }
 
         existing, missing = service.split_by_article_existence(articles_info)
@@ -237,11 +217,15 @@ class TestWikipediaService:
         """Test de séparation avec tous les articles manquants."""
         articles_info = {
             "Planet A": {
-                "Planet A": WikiArticleInfo(exists=False, title="Planet A", queried_title="Planet A")
+                "Planet A": WikiArticleInfo(
+                    exists=False, title="Planet A", queried_title="Planet A"
+                )
             },
             "Planet B": {
-                "Planet B": WikiArticleInfo(exists=False, title="Planet B", queried_title="Planet B")
-            }
+                "Planet B": WikiArticleInfo(
+                    exists=False, title="Planet B", queried_title="Planet B"
+                )
+            },
         }
 
         existing, missing = service.split_by_article_existence(articles_info)
@@ -253,8 +237,10 @@ class TestWikipediaService:
         """Test de séparation avec résultats mixtes (un article existe parmi plusieurs)."""
         articles_info = {
             "Planet A": {
-                "Planet A": WikiArticleInfo(exists=True, title="Planet A", queried_title="Planet A"),
-                "Alt A": WikiArticleInfo(exists=False, title="Alt A", queried_title="Alt A")
+                "Planet A": WikiArticleInfo(
+                    exists=True, title="Planet A", queried_title="Planet A"
+                ),
+                "Alt A": WikiArticleInfo(exists=False, title="Alt A", queried_title="Alt A"),
             }
         }
 

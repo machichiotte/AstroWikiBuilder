@@ -2,7 +2,7 @@
 
 import os
 from pathlib import Path
-from unittest.mock import MagicMock, Mock, mock_open, patch
+from unittest.mock import Mock, patch
 
 import pandas as pd
 import pytest
@@ -36,18 +36,15 @@ class ConcreteCollector(BaseCollector):
         name = row.get("name")
         if pd.isna(name):
             return None
-        
+
         # Créer un objet Exoplanet avec les champs minimaux requis
-        return Exoplanet(
-            pl_name=str(name),
-            st_name=str(row.get("hostname", "Unknown"))
-        )
+        return Exoplanet(pl_name=str(name), st_name=str(row.get("hostname", "Unknown")))
 
     def transform_row_to_star(self, row: pd.Series) -> Star | None:
         hostname = row.get("hostname")
         if pd.isna(hostname):
             return None
-        
+
         return Star(st_name=str(hostname))
 
 
@@ -70,7 +67,7 @@ class TestBaseCollector:
         """Test que l'initialisation crée le répertoire de cache."""
         cache_dir = str(tmp_path / "new_cache")
         collector = ConcreteCollector(cache_dir=cache_dir)
-        
+
         assert os.path.exists(cache_dir)
         assert collector.cache_dir == cache_dir
         assert collector.use_mock_data is False
@@ -116,9 +113,9 @@ class TestBaseCollector:
         csv_path = os.path.join(temp_cache_dir, "test.csv")
         df = pd.DataFrame({"name": ["test"], "mass": [1.0]})
         df.to_csv(csv_path, index=False)
-        
+
         result = collector.read_csv_file(csv_path)
-        
+
         assert result is not None
         assert len(result) == 1
         assert "name" in result.columns
@@ -132,7 +129,7 @@ class TestBaseCollector:
         """Test de lecture d'un fichier vide."""
         csv_path = os.path.join(temp_cache_dir, "empty.csv")
         Path(csv_path).touch()
-        
+
         result = collector.read_csv_file(csv_path)
         assert result is None
 
@@ -143,9 +140,9 @@ class TestBaseCollector:
         mock_response.text = "name,mass\ntest,1.0"
         mock_response.raise_for_status = Mock()
         mock_get.return_value = mock_response
-        
+
         result = collector.fetch_and_cache_csv_data()
-        
+
         assert result is not None
         assert len(result) == 1
         assert os.path.exists(collector.cache_path)
@@ -154,9 +151,9 @@ class TestBaseCollector:
     def test_fetch_and_cache_csv_data_http_error(self, mock_get, collector):
         """Test de gestion d'erreur HTTP."""
         mock_get.side_effect = requests.exceptions.RequestException("Network error")
-        
+
         result = collector.fetch_and_cache_csv_data()
-        
+
         assert result is None
 
     def test_load_source_dataframe_with_mock_data(self, collector, temp_cache_dir):
@@ -165,18 +162,18 @@ class TestBaseCollector:
         csv_path = collector.cache_path
         df = pd.DataFrame({"name": ["test"], "mass": [1.0]})
         df.to_csv(csv_path, index=False)
-        
+
         result = collector.load_source_dataframe()
-        
+
         assert result is not None
         assert len(result) == 1
 
     def test_load_source_dataframe_mock_file_not_found(self, collector):
         """Test de chargement avec mock_data mais fichier inexistant."""
         collector.use_mock_data = True
-        
+
         result = collector.load_source_dataframe()
-        
+
         assert result is None
 
     @patch("requests.get")
@@ -186,9 +183,9 @@ class TestBaseCollector:
         mock_response.text = "name,mass\ntest,1.0"
         mock_response.raise_for_status = Mock()
         mock_get.return_value = mock_response
-        
+
         result = collector.load_source_dataframe()
-        
+
         assert result is not None
         assert len(result) == 1
 
@@ -197,22 +194,20 @@ class TestBaseCollector:
         csv_path = collector.cache_path
         df = pd.DataFrame({"name": ["test"], "mass": [1.0]})
         df.to_csv(csv_path, index=False)
-        
+
         result = collector.load_source_dataframe()
-        
+
         assert result is not None
         assert len(result) == 1
 
     def test_extract_entities_from_dataframe_success(self, collector):
         """Test d'extraction d'entités réussie."""
-        df = pd.DataFrame({
-            "name": ["Planet1", "Planet2"],
-            "hostname": ["Star1", "Star2"],
-            "mass": [1.0, 2.0]
-        })
-        
+        df = pd.DataFrame(
+            {"name": ["Planet1", "Planet2"], "hostname": ["Star1", "Star2"], "mass": [1.0, 2.0]}
+        )
+
         exoplanets, stars = collector.extract_entities_from_dataframe(df)
-        
+
         assert len(exoplanets) == 2
         assert len(stars) == 2
         assert exoplanets[0].pl_name == "Planet1"
@@ -221,7 +216,6 @@ class TestBaseCollector:
     def test_collect_entities_from_source_no_data(self, collector):
         """Test de collecte sans données disponibles."""
         exoplanets, stars = collector.collect_entities_from_source()
-        
+
         assert exoplanets == []
         assert stars == []
-

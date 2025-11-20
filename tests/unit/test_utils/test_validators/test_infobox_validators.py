@@ -1,10 +1,9 @@
 """Tests pour les validateurs d'infobox."""
 
-import pytest
 from src.utils.validators.infobox_validators import (
+    is_needed_infobox_unit,
     is_valid_infobox_note,
     is_valid_infobox_value,
-    is_needed_infobox_unit,
 )
 
 
