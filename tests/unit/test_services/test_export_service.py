@@ -4,10 +4,8 @@ Tests unitaires pour ExportService.
 Ce module teste l'export de données vers CSV et JSON.
 """
 
-import json
 import os
-from pathlib import Path
-from unittest.mock import Mock, mock_open, patch
+from unittest.mock import mock_open, patch
 
 import pytest
 
@@ -206,7 +204,7 @@ class TestExportService:
         # Vérifier que le fichier n'a pas été créé
         assert not os.path.exists(filename)
 
-    @patch("builtins.open", side_effect=IOError("Permission denied"))
+    @patch("builtins.open", side_effect=OSError("Permission denied"))
     def test_export_exoplanets_to_csv_error(
         self, mock_file, export_service, sample_exoplanets, tmp_path
     ):
@@ -216,7 +214,7 @@ class TestExportService:
         # Ne doit pas lever d'exception, juste logger l'erreur
         export_service.export_exoplanets_to_csv(filename, sample_exoplanets)
 
-    @patch("builtins.open", side_effect=IOError("Permission denied"))
+    @patch("builtins.open", side_effect=OSError("Permission denied"))
     def test_export_exoplanets_to_json_error(
         self, mock_file, export_service, sample_exoplanets, tmp_path
     ):
