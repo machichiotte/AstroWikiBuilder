@@ -1,9 +1,8 @@
 # src/models/references/reference.py
+import re
 from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
-from typing import Optional
-import re
 
 
 def slugify(name: str) -> str:
@@ -49,8 +48,8 @@ class Reference:
     source: SourceType
     update_date: datetime
     consultation_date: datetime
-    star_id: Optional[str] = None
-    planet_id: Optional[str] = None
+    star_id: str | None = None
+    planet_id: str | None = None
 
     def to_url(self) -> str:
         details: dict[str, str] | None = SOURCE_DETAILS.get(self.source)
@@ -61,15 +60,11 @@ class Reference:
             star_id: str = slugify(self.star_id or "")
             planet_id: str = slugify(self.planet_id or "")
             if not star_id and not planet_id:
-                raise ValueError(
-                    "Both star name and planet identifier are required for NEA"
-                )
+                raise ValueError("Both star name and planet identifier are required for NEA")
             elif not planet_id:
                 return details["url_pattern_star"].format(star_id=star_id)
 
-            return details["url_pattern_exo"].format(
-                star_id=star_id, planet_id=planet_id
-            )
+            return details["url_pattern_exo"].format(star_id=star_id, planet_id=planet_id)
 
         if not planet_id:
             raise ValueError("Identifier is required for generating the URL")

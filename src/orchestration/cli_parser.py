@@ -7,11 +7,12 @@ Responsabilité :
 """
 
 import argparse
+
 from src.core.config import (
-    DEFAULT_CONSOLIDATED_DIR,
-    DEFAULT_OUTPUT_DIR,
-    DEFAULT_DRAFTS_DIR,
     AVAILABLE_SOURCES,
+    DEFAULT_CONSOLIDATED_DIR,
+    DEFAULT_DRAFTS_DIR,
+    DEFAULT_OUTPUT_DIR,
     logger,
 )
 

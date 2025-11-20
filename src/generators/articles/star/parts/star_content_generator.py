@@ -4,7 +4,7 @@
 # ============================================================================
 # IMPORTS
 # ============================================================================
-from typing import List, Optional
+
 from src.models.entities.exoplanet_model import Exoplanet
 from src.models.entities.star import Star
 from src.utils.formatters.article_formatters import ArticleUtils
@@ -64,34 +64,22 @@ class StarContentGenerator:
         content: list[str] = ["== Caractéristiques physiques ==\n"]
 
         if star.st_spectral_type and star.st_spectral_type:
-            content.append(
-                f"Cette étoile est de type spectral {star.st_spectral_type}."
-            )
+            content.append(f"Cette étoile est de type spectral {star.st_spectral_type}.")
 
         if star.st_temperature and star.st_temperature.value:
-            temp: str = self.article_utils.format_number_as_french_string(
-                star.st_temperature.value
-            )
-            content.append(
-                f"Sa température effective est d'environ {temp} [[kelvin|K]]."
-            )
+            temp: str = self.article_utils.format_number_as_french_string(star.st_temperature.value)
+            content.append(f"Sa température effective est d'environ {temp} [[kelvin|K]].")
 
         if star.st_mass and star.st_mass.value:
-            mass: str = self.article_utils.format_number_as_french_string(
-                star.st_mass.value
-            )
+            mass: str = self.article_utils.format_number_as_french_string(star.st_mass.value)
             content.append(f"Sa masse est estimée à {mass} fois celle du [[Soleil]].")
 
         if star.st_radius and star.st_radius.value:
-            radius: str = self.article_utils.format_number_as_french_string(
-                star.st_radius.value
-            )
+            radius: str = self.article_utils.format_number_as_french_string(star.st_radius.value)
             content.append(f"Son rayon est d'environ {radius} fois celui du Soleil.")
 
         if star.st_luminosity and star.st_luminosity.value:
-            lum: str = self.article_utils.format_number_as_french_string(
-                star.st_luminosity.value
-            )
+            lum: str = self.article_utils.format_number_as_french_string(star.st_luminosity.value)
             content.append(f"Sa luminosité est d'environ {lum} fois celle du Soleil.")
 
         return "\n".join(content)
@@ -101,17 +89,13 @@ class StarContentGenerator:
         """
         Génère la section sur l'observation de l'étoile.
         """
-        if not any(
-            [star.st_apparent_magnitude, star.st_right_ascension, star.st_declination]
-        ):
+        if not any([star.st_apparent_magnitude, star.st_right_ascension, star.st_declination]):
             return ""
 
         content: list[str] = ["== Observation ==\n"]
 
         if star.st_apparent_magnitude and star.st_apparent_magnitude.value:
-            mag: str = self.article_utils.format_number_as_french_string(
-                star.st_magnitude.value
-            )
+            mag: str = self.article_utils.format_number_as_french_string(star.st_magnitude.value)
             content.append(f"Sa magnitude apparente est de {mag}.")
 
         if star.st_right_ascension and star.st_declination:
@@ -166,7 +150,7 @@ class StarContentGenerator:
         return "\n".join(content)
 
     # --- SYSTEM PLANETAIRE ---
-    def build_exoplanets_section(self, star: Star, exoplanets: List[Exoplanet]) -> str:
+    def build_exoplanets_section(self, star: Star, exoplanets: list[Exoplanet]) -> str:
         """
         Génère une section listant les exoplanètes de l'étoile avec le template Wikipedia.
         """
@@ -221,10 +205,7 @@ class StarContentGenerator:
                 section += "| rayon = \n"
 
             # Demi-grand axe
-            if (
-                exoplanet.pl_semi_major_axis
-                and exoplanet.pl_semi_major_axis.value is not None
-            ):
+            if exoplanet.pl_semi_major_axis and exoplanet.pl_semi_major_axis.value is not None:
                 try:
                     axis = float(exoplanet.pl_semi_major_axis.value)
                     formatted_axis = self._format_uncertainty(
@@ -239,10 +220,7 @@ class StarContentGenerator:
                 section += "| demi grand axe = \n"
 
             # Période
-            if (
-                exoplanet.pl_orbital_period
-                and exoplanet.pl_orbital_period.value is not None
-            ):
+            if exoplanet.pl_orbital_period and exoplanet.pl_orbital_period.value is not None:
                 try:
                     period = float(exoplanet.pl_orbital_period.value)
                     if period.is_integer():
@@ -255,10 +233,7 @@ class StarContentGenerator:
                 section += "| période = \n"
 
             # Excentricité
-            if (
-                exoplanet.pl_eccentricity
-                and exoplanet.pl_eccentricity.value is not None
-            ):
+            if exoplanet.pl_eccentricity and exoplanet.pl_eccentricity.value is not None:
                 try:
                     ecc = float(exoplanet.pl_eccentricity.value)
                     section += f"| excentricité = {ecc:.3f}\n"
@@ -292,8 +267,8 @@ class StarContentGenerator:
     def _format_uncertainty(
         self,
         value: float,
-        error_positive: Optional[float],
-        error_negative: Optional[float],
+        error_positive: float | None,
+        error_negative: float | None,
     ) -> str:
         """
         Formate une valeur avec ses incertitudes selon les cas possibles.

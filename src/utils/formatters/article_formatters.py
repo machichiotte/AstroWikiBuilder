@@ -1,6 +1,6 @@
 # src/utils/formatters/article_formatters.py
 import locale
-from typing import Optional
+
 from src.models.entities.exoplanet_model import ValueWithUncertainty
 
 
@@ -16,9 +16,7 @@ class ArticleUtils:
             # Fallback or pass if locale is not available
             pass
 
-    def format_number_as_french_string(
-        self, value: Optional[float], precision: int = 2
-    ) -> str:
+    def format_number_as_french_string(self, value: float | None, precision: int = 2) -> str:
         """
         Formate une valeur numérique avec le format français, sans décimale inutile.
         """
@@ -34,13 +32,9 @@ class ArticleUtils:
         if fval.is_integer():
             return str(int(fval))
 
-        return (
-            locale.format_string(f"%.{precision}f", fval, grouping=True)
-            .rstrip("0")
-            .rstrip(".")
-        )
+        return locale.format_string(f"%.{precision}f", fval, grouping=True).rstrip("0").rstrip(".")
 
-    def format_year_without_decimals(self, value: Optional[float]) -> str:
+    def format_year_without_decimals(self, value: float | None) -> str:
         """
         Formate une valeur d'année (date) sans décimale.
         """
@@ -73,17 +67,18 @@ class ArticleUtils:
             value_str = str(value_with_uncertainty.value)
 
         # Ajouter les incertitudes si présentes
-        if (
-            value_with_uncertainty.error_positive
-            or value_with_uncertainty.error_negative
-        ):
+        if value_with_uncertainty.error_positive or value_with_uncertainty.error_negative:
             # CORRECTION ICI : Initialisation à une chaîne vide au lieu de None
             error_str: str = ""
 
             if value_with_uncertainty.error_positive:
-                error_str += f"+{self.format_number_as_french_string(value_with_uncertainty.error_positive)}"
+                error_str += (
+                    f"+{self.format_number_as_french_string(value_with_uncertainty.error_positive)}"
+                )
             if value_with_uncertainty.error_negative:
-                error_str += f"-{self.format_number_as_french_string(value_with_uncertainty.error_negative)}"
+                error_str += (
+                    f"-{self.format_number_as_french_string(value_with_uncertainty.error_negative)}"
+                )
 
             # On n'ajoute l'espace que si error_str n'est pas vide
             if error_str:

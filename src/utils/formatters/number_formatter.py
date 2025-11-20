@@ -1,10 +1,9 @@
 # src/utils/formatters/number_formatter.py
-from typing import List, Optional
 
 
-def convert_integer_to_roman(num: any) -> Optional[str]:
+def convert_integer_to_roman(num: any) -> str | None:
     # Limité à 0-9 pour les sous-types spectraux
-    roman_numerals: List[str] = [
+    roman_numerals: list[str] = [
         "0",
         "I",
         "II",

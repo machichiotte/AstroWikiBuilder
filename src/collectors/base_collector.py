@@ -1,14 +1,15 @@
 # src/collectors/base_collector.py
+import logging
+import os
+from abc import ABC, abstractmethod
+from datetime import datetime
+from typing import Any
+
 import pandas as pd
 import requests
-import os
-from typing import List, Optional, Dict, Any, Tuple
-from datetime import datetime
-import logging
-from abc import ABC, abstractmethod
 
-from src.models.entities.star import Star
 from src.models.entities.exoplanet_model import Exoplanet
+from src.models.entities.star import Star
 from src.models.references.reference import SourceType
 from src.services.processors.reference_manager import ReferenceManager
 
@@ -22,9 +23,7 @@ class BaseCollector(ABC):
         self.use_mock_data = use_mock_data
         self.reference_manager = ReferenceManager()
         self.last_update_date = datetime.now()
-        self.cache_path = os.path.join(
-            self.cache_dir, self.get_default_cache_filename()
-        )
+        self.cache_path = os.path.join(self.cache_dir, self.get_default_cache_filename())
 
     # ============================================================================
     # 🔶 Méthodes abstraites (contrat à implémenter dans les classes concrètes)
@@ -51,17 +50,17 @@ class BaseCollector(ABC):
         pass
 
     @abstractmethod
-    def get_required_csv_columns(self) -> List[str]:
+    def get_required_csv_columns(self) -> list[str]:
         """Liste des colonnes CSV requises pour cette source."""
         return []  # Optionnel, retournera une liste vide si non surchargé
 
     @abstractmethod
-    def transform_row_to_exoplanet(self, row: pd.Series) -> Optional[Exoplanet]:
+    def transform_row_to_exoplanet(self, row: pd.Series) -> Exoplanet | None:
         """Convertit une ligne du DataFrame en objet Exoplanet."""
         pass
 
     @abstractmethod
-    def transform_row_to_star(self, row: pd.Series) -> Optional[Star]:
+    def transform_row_to_star(self, row: pd.Series) -> Star | None:
         """Convertit une ligne du DataFrame en objet Star."""
         pass
 
@@ -69,11 +68,11 @@ class BaseCollector(ABC):
     # 🧰 Méthodes utilitaires réutilisables par tous les collecteurs
     # ============================================================================
 
-    def get_csv_reader_options(self) -> Dict[str, Any]:
+    def get_csv_reader_options(self) -> dict[str, Any]:
         """Arguments optionnels pour pd.read_csv (ex: comment char)."""
         return {}  # Par défaut, aucun argument spécial
 
-    def read_csv_file(self, file_path: str) -> Optional[pd.DataFrame]:
+    def read_csv_file(self, file_path: str) -> pd.DataFrame | None:
         try:
             return pd.read_csv(file_path, **self.get_csv_reader_options())
         except FileNotFoundError:
@@ -84,7 +83,7 @@ class BaseCollector(ABC):
             logger.error(f"Erreur lecture CSV {file_path}: {e}")
         return None
 
-    def fetch_and_cache_csv_data(self) -> Optional[pd.DataFrame]:
+    def fetch_and_cache_csv_data(self) -> pd.DataFrame | None:
         url = self.get_data_download_url()
         logger.info(f"Téléchargement depuis {url}")
 
@@ -102,7 +101,7 @@ class BaseCollector(ABC):
 
         return None
 
-    def convert_to_float_if_possible(self, value: any) -> Optional[float]:
+    def convert_to_float_if_possible(self, value: any) -> float | None:
         if pd.isna(value):
             return None
         try:
@@ -111,8 +110,8 @@ class BaseCollector(ABC):
             return None
 
     def validate_required_columns(self, df: pd.DataFrame) -> bool:
-        required: List[str] = self.get_required_csv_columns()
-        missing: List[str] = [col for col in required if col not in df.columns]
+        required: list[str] = self.get_required_csv_columns()
+        missing: list[str] = [col for col in required if col not in df.columns]
         if missing:
             logger.error(f"Colonnes manquantes : {missing} (dans {self.cache_path})")
             return False
@@ -122,26 +121,22 @@ class BaseCollector(ABC):
     # 🔁 Pipeline de chargement et parsing des entités
     # ============================================================================
 
-    def load_source_dataframe(self) -> Optional[pd.DataFrame]:
+    def load_source_dataframe(self) -> pd.DataFrame | None:
         if self.use_mock_data:
             logger.info("Chargement depuis les données mockées.")
             if os.path.exists(self.cache_path):
                 df = self.read_csv_file(self.cache_path)
                 if df is not None:
-                    logger.info(
-                        f"Fichier mock chargé: {self.cache_path} ({len(df)} lignes)"
-                    )
+                    logger.info(f"Fichier mock chargé: {self.cache_path} ({len(df)} lignes)")
                 else:
-                    logger.warning(
-                        f"Fichier mock vide ou non lisible: {self.cache_path}"
-                    )
+                    logger.warning(f"Fichier mock vide ou non lisible: {self.cache_path}")
                 return df
             else:
                 logger.error(f"Fichier mock introuvable: {self.cache_path}")
                 return None
 
         if os.path.exists(self.cache_path):
-            df: Optional[pd.DataFrame] = self.read_csv_file(self.cache_path)
+            df: pd.DataFrame | None = self.read_csv_file(self.cache_path)
             if df is not None:
                 return df
             logger.warning("Échec lecture cache, tentative de téléchargement.")
@@ -155,17 +150,17 @@ class BaseCollector(ABC):
 
     def extract_entities_from_dataframe(
         self, df: pd.DataFrame
-    ) -> Tuple[List[Exoplanet], List[Star]]:
-        exoplanets: List[Exoplanet] = []
-        stars: List[Star] = []
+    ) -> tuple[list[Exoplanet], list[Star]]:
+        exoplanets: list[Exoplanet] = []
+        stars: list[Star] = []
 
         for idx, row in df.iterrows():
             try:
-                exo: Optional[Exoplanet] = self.transform_row_to_exoplanet(row)
+                exo: Exoplanet | None = self.transform_row_to_exoplanet(row)
                 if exo:
                     exoplanets.append(exo)
 
-                star: Optional[Star] = self.transform_row_to_star(row)
+                star: Star | None = self.transform_row_to_star(row)
                 if star:
                     stars.append(star)
             except Exception as e:
@@ -178,8 +173,8 @@ class BaseCollector(ABC):
 
     def collect_entities_from_source(
         self,
-    ) -> Tuple[List[Exoplanet], List[Star]]:
-        df: Optional[pd.DataFrame] = self.load_source_dataframe()
+    ) -> tuple[list[Exoplanet], list[Star]]:
+        df: pd.DataFrame | None = self.load_source_dataframe()
         if df is None:
             logger.error("Chargement des données impossible.")
             return [], []

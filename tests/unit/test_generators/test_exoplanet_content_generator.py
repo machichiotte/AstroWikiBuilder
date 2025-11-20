@@ -3,6 +3,7 @@ Tests unitaires pour ExoplanetContentGenerator.
 """
 
 import pytest
+
 from src.generators.articles.exoplanet.parts.exoplanet_content_generator import (
     ExoplanetContentGenerator,
 )
@@ -88,9 +89,7 @@ class TestExoplanetContentGenerator:
         self, generator, exoplanet_with_physical_chars
     ):
         """Test de la section caractéristiques physiques complète."""
-        result = generator.build_physical_characteristics_section(
-            exoplanet_with_physical_chars
-        )
+        result = generator.build_physical_characteristics_section(exoplanet_with_physical_chars)
 
         assert result != ""
         assert "== Caractéristiques physiques ==" in result
@@ -125,39 +124,29 @@ class TestExoplanetContentGenerator:
     def test_build_physical_characteristics_radius_labels(self, generator):
         """Test des labels de rayon (compact, étendu)."""
         # Rayon compact
-        exo_compact = Exoplanet(
-            pl_name="Compact", pl_radius=ValueWithUncertainty(value=0.3)
-        )
+        exo_compact = Exoplanet(pl_name="Compact", pl_radius=ValueWithUncertainty(value=0.3))
         result_compact = generator.build_physical_characteristics_section(exo_compact)
         assert "compact" in result_compact
 
         # Rayon étendu
-        exo_extended = Exoplanet(
-            pl_name="Extended", pl_radius=ValueWithUncertainty(value=2.0)
-        )
+        exo_extended = Exoplanet(pl_name="Extended", pl_radius=ValueWithUncertainty(value=2.0))
         result_extended = generator.build_physical_characteristics_section(exo_extended)
         assert "étendu" in result_extended
 
     def test_build_physical_characteristics_temp_labels(self, generator):
         """Test des labels de température."""
         # Température élevée
-        exo_hot = Exoplanet(
-            pl_name="Hot", pl_temperature=ValueWithUncertainty(value=800)
-        )
+        exo_hot = Exoplanet(pl_name="Hot", pl_temperature=ValueWithUncertainty(value=800))
         result_hot = generator.build_physical_characteristics_section(exo_hot)
         assert "élevée" in result_hot
 
         # Température extrême
-        exo_extreme = Exoplanet(
-            pl_name="Extreme", pl_temperature=ValueWithUncertainty(value=1500)
-        )
+        exo_extreme = Exoplanet(pl_name="Extreme", pl_temperature=ValueWithUncertainty(value=1500))
         result_extreme = generator.build_physical_characteristics_section(exo_extreme)
         assert "extrême" in result_extreme
 
     # Tests pour build_discovery_section
-    def test_build_discovery_section_complete(
-        self, generator, exoplanet_with_discovery
-    ):
+    def test_build_discovery_section_complete(self, generator, exoplanet_with_discovery):
         """Test de la section découverte complète."""
         result = generator.build_discovery_section(exoplanet_with_discovery)
 

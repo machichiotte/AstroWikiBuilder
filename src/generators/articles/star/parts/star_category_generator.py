@@ -1,7 +1,8 @@
 # src/generators/articles/star/parts/star_category_generator.py
-from typing import List, Optional, Callable
-from src.models.entities.star import Star
+from collections.abc import Callable
+
 from src.generators.base.base_category_generator import BaseCategoryGenerator
+from src.models.entities.star import Star
 from src.utils.astro.classification.star_type_utils import StarTypeUtils
 
 
@@ -20,7 +21,7 @@ class StarCategoryGenerator(BaseCategoryGenerator):
     def retrieve_object_type(self) -> str:
         return "star"
 
-    def define_category_rules(self) -> List[Callable]:
+    def define_category_rules(self) -> list[Callable]:
         return [
             self.append_static_planetary_system_category,
             self.map_catalog_prefix_to_category,
@@ -32,7 +33,7 @@ class StarCategoryGenerator(BaseCategoryGenerator):
 
     # --- Règles de catégorisation spécifiques aux "étoiles" ---
 
-    def map_catalog_prefix_to_category(self, star: Star) -> Optional[str]:
+    def map_catalog_prefix_to_category(self, star: Star) -> str | None:
         """
         Génère les catégories de catalogue basées sur les préfixes des noms,
         au format [[Catégorie:XYZ|clef]].
@@ -71,12 +72,8 @@ class StarCategoryGenerator(BaseCategoryGenerator):
             for prefix, category in catalog_mappings.items():
                 if name.startswith(prefix):
                     key = extract_key(name, prefix)
-                    formatted = (
-                        f"{category}|{key}]]"  # Catégorie déjà incluse dans YAML
-                    )
-                    formatted = formatted.replace(
-                        "]]", ""
-                    )  # nettoyer pour éviter ]] de trop
+                    formatted = f"{category}|{key}]]"  # Catégorie déjà incluse dans YAML
+                    formatted = formatted.replace("]]", "")  # nettoyer pour éviter ]] de trop
                     categories.add(f"{formatted}]]")
 
         # Nom principal
@@ -90,13 +87,11 @@ class StarCategoryGenerator(BaseCategoryGenerator):
 
         return "\n".join(sorted(categories)) if categories else None
 
-    def map_spectral_type_to_category(self, star: Star) -> Optional[str]:
+    def map_spectral_type_to_category(self, star: Star) -> str | None:
         """
         Catégorie basée sur la lettre principale du type spectral.
         """
-        spectral_class: str | None = (
-            self.star_type_utils.extract_spectral_class_from_star(star)
-        )
+        spectral_class: str | None = self.star_type_utils.extract_spectral_class_from_star(star)
         if spectral_class:
             mapping = (
                 self._category_rules_manager.rules.get("star", {})
@@ -110,13 +105,11 @@ class StarCategoryGenerator(BaseCategoryGenerator):
                 return f"[[Catégorie:Étoile de type spectral {spectral_class}]]"
         return None
 
-    def map_luminosity_class_to_category(self, star: Star) -> Optional[str]:
+    def map_luminosity_class_to_category(self, star: Star) -> str | None:
         """
         Catégorie basée sur la classe de luminosité (V, IV, III, etc.)
         """
-        luminosity: str | None = (
-            self.star_type_utils.extract_luminosity_class_from_star(star)
-        )
+        luminosity: str | None = self.star_type_utils.extract_luminosity_class_from_star(star)
         if luminosity:
             mapping = (
                 self._category_rules_manager.rules.get("star", {})
@@ -129,13 +122,11 @@ class StarCategoryGenerator(BaseCategoryGenerator):
                 return f"[[Catégorie:Classe de luminosité {luminosity}]]"
         return None
 
-    def map_star_type_to_category(self, star: Star) -> Optional[str]:
+    def map_star_type_to_category(self, star: Star) -> str | None:
         """
         Règle personnalisée pour déterminer la catégorie de type d'étoile.
         """
-        star_types: List[str] = (
-            self.star_type_utils.determine_star_types_from_properties(star)
-        )
+        star_types: list[str] = self.star_type_utils.determine_star_types_from_properties(star)
         if not star_types:
             return None
 
@@ -168,7 +159,7 @@ class StarCategoryGenerator(BaseCategoryGenerator):
 
         return "\n".join(categories) if categories else None
 
-    def append_static_planetary_system_category(self, star: Star) -> Optional[str]:
+    def append_static_planetary_system_category(self, star: Star) -> str | None:
         """
         Ajoute une catégorie personnalisée pour le système planétaire.
         """

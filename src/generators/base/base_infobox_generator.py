@@ -2,13 +2,14 @@
 
 from abc import ABC, abstractmethod
 from typing import Any
+
 from src.models.entities.exoplanet_model import Exoplanet
 from src.models.entities.star import Star
 from src.models.infobox_fields import FieldMapping
-from src.utils.formatters.infobox_field_formatters import FieldFormatter
-from src.utils.formatters.article_formatters import ArticleUtils
-from src.utils.astro.constellation_utils import ConstellationUtils
 from src.services.processors.reference_manager import ReferenceManager
+from src.utils.astro.constellation_utils import ConstellationUtils
+from src.utils.formatters.article_formatters import ArticleUtils
+from src.utils.formatters.infobox_field_formatters import FieldFormatter
 
 
 class InfoboxBaseGenerator(ABC):
@@ -24,9 +25,7 @@ class InfoboxBaseGenerator(ABC):
 
         lines: list[str] = [self.fetch_infobox_header()]
 
-        wiki_reference: str | None = (
-            obj.reference.to_wiki_ref() if obj.reference else None
-        )
+        wiki_reference: str | None = obj.reference.to_wiki_ref() if obj.reference else None
 
         for mapping in self.retrieve_field_mappings():
             value = getattr(obj, mapping.source_attribute, None)

@@ -1,12 +1,12 @@
 # src/generators/articles/star/parts/star_infobox_generator.py
 
-from src.generators.base.base_infobox_generator import InfoboxBaseGenerator
-from src.models.entities.star import Star
-from src.models.infobox_fields import InfoboxMapper, FieldMapping
 from src.constants.wikipedia_field_config import (
     DEFAULT_WIKIPEDIA_UNITS_STAR,
     IS_NOTES_FIELDS_STAR,
 )
+from src.generators.base.base_infobox_generator import InfoboxBaseGenerator
+from src.models.entities.star import Star
+from src.models.infobox_fields import FieldMapping, InfoboxMapper
 
 
 class StarInfoboxGenerator(InfoboxBaseGenerator):

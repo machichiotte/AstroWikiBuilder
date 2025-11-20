@@ -1,14 +1,14 @@
 # src/utils/formatters/infobox_field_formatters.py
-from enum import Enum
 import logging
+from enum import Enum
 
 from src.constants.wikipedia_field_config import (
     WIKIPEDIA_DISC_FACILITY_MAP,
     WIKIPEDIA_DISC_METHOD_MAP,
 )
 from src.models.entities.exoplanet_model import ValueWithUncertainty
-from src.utils.validators import infobox_validators
 from src.models.infobox_fields import FieldMapping
+from src.utils.validators import infobox_validators
 
 logger = logging.getLogger(__name__)
 
@@ -43,14 +43,10 @@ class FieldFormatter:
             formatted_value = f"{float(value.value):.2f}"
 
             pos_error = (
-                f"{float(value.error_positive):.2f}"
-                if value.error_positive is not None
-                else ""
+                f"{float(value.error_positive):.2f}" if value.error_positive is not None else ""
             )
             neg_error = (
-                f"{float(value.error_negative):.2f}"
-                if value.error_negative is not None
-                else ""
+                f"{float(value.error_negative):.2f}" if value.error_negative is not None else ""
             )
 
             if pos_error and neg_error:
@@ -74,9 +70,7 @@ class FieldFormatter:
             mapped: str | None = WIKIPEDIA_DISC_FACILITY_MAP.get(value)
             return f"[[{mapped}]]" if mapped else str(value)
         except Exception as e:
-            logger.error(
-                f"Erreur lors du formatage du lieu de découverte {value}: {str(e)}"
-            )
+            logger.error(f"Erreur lors du formatage du lieu de découverte {value}: {str(e)}")
             return str(value)
 
     @staticmethod
@@ -85,9 +79,7 @@ class FieldFormatter:
         try:
             method_key: str = str(value).strip().lower()
             mapped: str | None = WIKIPEDIA_DISC_METHOD_MAP.get(method_key)
-            return (
-                f"[[{mapped['article']}|{mapped['display']}]]" if mapped else str(value)
-            )
+            return f"[[{mapped['article']}|{mapped['display']}]]" if mapped else str(value)
         except Exception as e:
             logger.error(f"Erreur lors du formatage de la méthode {value}: {str(e)}")
             return str(value)
@@ -120,9 +112,7 @@ class FieldFormatter:
                                         return f"{{{{Star2MASS|{parts[0]}|{sep}{parts[1]}}}}}"
                     return d
                 except Exception as e:
-                    logger.error(
-                        f"Erreur lors du formatage de la désignation {d}: {str(e)}"
-                    )
+                    logger.error(f"Erreur lors du formatage de la désignation {d}: {str(e)}")
                     return d
 
             if isinstance(value, list):
@@ -132,9 +122,7 @@ class FieldFormatter:
                         formatted: str = format_single_designation(str(v))
                         if formatted:
                             formatted_designations.append(formatted)
-                return (
-                    ", ".join(formatted_designations) if formatted_designations else ""
-                )
+                return ", ".join(formatted_designations) if formatted_designations else ""
             return format_single_designation(str(value).strip())
         except Exception as e:
             logger.error(f"Erreur lors du formatage des désignations {value}: {str(e)}")
@@ -149,9 +137,7 @@ class FieldFormatter:
         except Exception:
             return str(v.value)
 
-    def _format_field_value(
-        self, value: str | ValueWithUncertainty | None, field_name: str
-    ) -> str:
+    def _format_field_value(self, value: str | ValueWithUncertainty | None, field_name: str) -> str:
         """Formate la valeur principale du champ."""
         try:
             # Determine the appropriate formatter based on the field name and value type
@@ -196,9 +182,7 @@ class FieldFormatter:
                 raw_value = None
 
         except AttributeError as e:
-            logger.error(
-                f"Erreur lors de l'extraction des attributs de la valeur: {str(e)}"
-            )
+            logger.error(f"Erreur lors de l'extraction des attributs de la valeur: {str(e)}")
             return ""
 
         # Vérification de la validité de la valeur
@@ -206,9 +190,7 @@ class FieldFormatter:
             return ""
 
         # Formatage de la valeur principale
-        formatted_value: str = self._format_field_value(
-            raw_value, mapping.infobox_field
-        )
+        formatted_value: str = self._format_field_value(raw_value, mapping.infobox_field)
 
         # Construction du champ complet
         field: str = f" | {mapping.infobox_field} = {formatted_value}"

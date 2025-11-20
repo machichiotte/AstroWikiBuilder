@@ -2,10 +2,12 @@
 Tests unitaires pour ExoplanetTypeUtils.
 """
 
-import pytest
 import math
-from src.utils.astro.classification.exoplanet_type_utils import ExoplanetTypeUtils
+
+import pytest
+
 from src.models.entities.exoplanet_model import Exoplanet, ValueWithUncertainty
+from src.utils.astro.classification.exoplanet_type_utils import ExoplanetTypeUtils
 
 
 class TestExoplanetTypeUtils:

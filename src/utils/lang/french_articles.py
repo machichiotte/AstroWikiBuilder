@@ -1,7 +1,5 @@
 # src/utils/lang/french_articles.py
 
-from typing import Optional
-
 
 def starts_with_vowel_or_silent_h(word: str) -> bool:
     return word[0].lower() in "aeiouyhéèêàâîïùü"
@@ -26,8 +24,8 @@ def guess_grammatical_gender(type_description: str) -> str:
 def get_french_article(
     gender: str,
     definite: bool = True,
-    preposition: Optional[str] = "de",
-    noun: Optional[str] = None,
+    preposition: str | None = "de",
+    noun: str | None = None,
 ) -> str:
     """
     Retourne juste l'article correct (ex : "de la", "du", "de l'", etc.)
@@ -80,7 +78,7 @@ def get_french_article_noun(
     noun: str,
     gender: str,
     definite: bool = True,
-    preposition: Optional[str] = "de",
+    preposition: str | None = "de",
     with_brackets: bool = False,
 ) -> str:
     """

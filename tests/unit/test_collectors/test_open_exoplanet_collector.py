@@ -4,6 +4,7 @@ Tests pour OpenExoplanetCollector.
 """
 
 from unittest.mock import patch
+
 import pandas as pd
 
 from src.collectors.implementations.open_exoplanet_collection import (

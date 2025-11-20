@@ -4,6 +4,7 @@ Tests unitaires pour ExoplanetIntroductionGenerator.
 """
 
 import pytest
+
 from src.generators.articles.exoplanet.parts.exoplanet_introduction_generator import (
     ExoplanetIntroductionGenerator,
 )
@@ -119,9 +120,7 @@ class TestExoplanetIntroductionGenerator:
 
         assert result is None
 
-    def test_compose_exoplanet_introduction_complete(
-        self, generator, sample_exoplanet_complete
-    ):
+    def test_compose_exoplanet_introduction_complete(self, generator, sample_exoplanet_complete):
         """Test de la génération complète de l'introduction."""
         result = generator.compose_exoplanet_introduction(sample_exoplanet_complete)
 
@@ -132,9 +131,7 @@ class TestExoplanetIntroductionGenerator:
         assert "Pégase" in result
         assert result.endswith(".")
 
-    def test_compose_exoplanet_introduction_minimal(
-        self, generator, sample_exoplanet_minimal
-    ):
+    def test_compose_exoplanet_introduction_minimal(self, generator, sample_exoplanet_minimal):
         """Test de la génération de l'introduction avec données minimales."""
         result = generator.compose_exoplanet_introduction(sample_exoplanet_minimal)
 
@@ -151,9 +148,7 @@ class TestExoplanetIntroductionGenerator:
         assert result is not None
         assert "Nom inconnu" in result
 
-    def test_introduction_format_consistency(
-        self, generator, sample_exoplanet_complete
-    ):
+    def test_introduction_format_consistency(self, generator, sample_exoplanet_complete):
         """Test de la cohérence du format de l'introduction."""
         result = generator.compose_exoplanet_introduction(sample_exoplanet_complete)
 

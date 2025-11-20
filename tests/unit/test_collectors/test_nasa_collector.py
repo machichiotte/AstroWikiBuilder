@@ -4,6 +4,7 @@ Tests pour NASAExoplanetArchiveCollector.
 """
 
 from unittest.mock import patch
+
 import pandas as pd
 
 from src.collectors.implementations.nasa_exoplanet_archive_collector import (

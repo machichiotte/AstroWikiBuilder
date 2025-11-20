@@ -1,12 +1,12 @@
 # src/collectors/implementations/open_exoplanet_collection.py
-import pandas as pd
-from typing import List, Optional
 import logging
 
+import pandas as pd
+
 from src.collectors.base_collector import BaseCollector
-from src.models.references.reference import SourceType
-from src.models.entities.star import Star
 from src.models.entities.exoplanet_model import Exoplanet, ValueWithUncertainty
+from src.models.entities.star import Star
+from src.models.references.reference import SourceType
 
 logger: logging.Logger = logging.getLogger(__name__)
 
@@ -27,13 +27,13 @@ class OpenExoplanetCollector(BaseCollector):
     def get_source_reference_url(self) -> str:
         return "https://github.com/OpenExoplanetCatalogue/oec_tables"
 
-    def get_required_csv_columns(self) -> List[str]:
+    def get_required_csv_columns(self) -> list[str]:
         # Définissez ici les colonnes que vous considérez comme critiques pour OEC, par exemple:
         return ["name", "star_name"]  # À adapter selon les besoins réels
 
     # _get_csv_reader_kwargs n'a pas besoin d'être surchargé si le CSV OEC n'a pas de commentaires spéciaux
 
-    def transform_row_to_exoplanet(self, row: pd.Series) -> Optional[Exoplanet]:
+    def transform_row_to_exoplanet(self, row: pd.Series) -> Exoplanet | None:
         try:
             if pd.isna(row["name"]) or pd.isna(row["star_name"]):
                 logger.warning(
@@ -63,9 +63,7 @@ class OpenExoplanetCollector(BaseCollector):
                 ("argument_of_periastron", "longitudeofperiastron"),
                 ("periastron_time", "periastrontime"),
             ]:
-                value: float | None = self.convert_to_float_if_possible(
-                    row.get(csv_field)
-                )
+                value: float | None = self.convert_to_float_if_possible(row.get(csv_field))
                 if value is not None:
                     setattr(exoplanet, field, ValueWithUncertainty(value=value))
 
@@ -122,7 +120,7 @@ class OpenExoplanetCollector(BaseCollector):
             )
             return None
 
-    def transform_row_to_star(self, row: pd.Series) -> Optional[Star]:
+    def transform_row_to_star(self, row: pd.Series) -> Star | None:
         """
         Convertit une ligne du DataFrame en objet Star.
 

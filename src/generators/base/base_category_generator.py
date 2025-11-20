@@ -1,6 +1,8 @@
 # src/generators/base/base_category_generator.py
 from abc import ABC, abstractmethod
-from typing import List, Callable, Optional, Any
+from collections.abc import Callable
+from typing import Any
+
 from src.generators.base.category_rules_manager import CategoryRulesManager
 
 
@@ -24,7 +26,7 @@ class BaseCategoryGenerator(ABC):
         pass
 
     @abstractmethod
-    def define_category_rules(self) -> List[Callable]:
+    def define_category_rules(self) -> list[Callable]:
         """
         Retourne la liste des règles personnalisées pour le type d'objet.
         À implémenter par les classes filles.
@@ -33,7 +35,7 @@ class BaseCategoryGenerator(ABC):
 
     # --- Moteur de génération principal ---
 
-    def build_categories(self, obj) -> List[str]:
+    def build_categories(self, obj) -> list[str]:
         """
         Génère les catégories pour un objet en utilisant les règles standard
         et les règles personnalisées.
@@ -44,12 +46,12 @@ class BaseCategoryGenerator(ABC):
         Returns:
             Liste des catégories générées
         """
-        custom_rules: List[Callable] = self.define_category_rules()
+        custom_rules: list[Callable] = self.define_category_rules()
         return self._category_rules_manager.generate_categories_for(
             obj, self.retrieve_object_type(), custom_rules=custom_rules
         )
 
-    def map_constellation_to_category(self, obj: Any) -> Optional[str]:
+    def map_constellation_to_category(self, obj: Any) -> str | None:
         """
         Règle commune pour déterminer la catégorie de constellation.
         Fonctionne pour tout objet ayant un attribut 'sy_constellation'.

@@ -1,10 +1,11 @@
 # src/utils/wikipedia/wikipedia_checker.py
-import requests
-from typing import Dict, List, Optional, Any
-from dataclasses import dataclass
-import unicodedata
-import re
 import logging
+import re
+import unicodedata
+from dataclasses import dataclass
+from typing import Any
+
+import requests
 
 # =============================
 # Logger / Configuration
@@ -23,9 +24,9 @@ class WikiArticleInfo:
     title: str
     queried_title: str
     is_redirect: bool = False
-    redirect_target: Optional[str] = None
-    url: Optional[str] = None
-    host_star: Optional[str] = None
+    redirect_target: str | None = None
+    url: str | None = None
+    host_star: str | None = None
 
 
 class WikipediaChecker:
@@ -35,45 +36,35 @@ class WikipediaChecker:
 
     BASE_URL = "https://fr.wikipedia.org/w/api.php"
 
-    def __init__(
-        self, user_agent: str = "AstroWikiBuilder/1.0 (bot; machichiotte@gmail.com)"
-    ):
+    def __init__(self, user_agent: str = "AstroWikiBuilder/1.0 (bot; machichiotte@gmail.com)"):
         self.session = requests.Session()
-        self.session.headers.update(
-            {"User-Agent": user_agent}  # Utiliser le user_agent fourni
-        )
+        self.session.headers.update({"User-Agent": user_agent})  # Utiliser le user_agent fourni
         logger.info(f"WikipediaChecker initialized with User-Agent: {user_agent}")
 
     def _normalize_title(self, title: str) -> str:
         title = title.lower()
-        title = (
-            unicodedata.normalize("NFKD", title)
-            .encode("ASCII", "ignore")
-            .decode("ASCII")
-        )
+        title = unicodedata.normalize("NFKD", title).encode("ASCII", "ignore").decode("ASCII")
         title = re.sub(r"[\s_\-]+", "-", title)
         title = re.sub(r"[^a-z0-9\-]", "", title)
         return title
 
     def check_article_existence_batch(
         self,
-        titles_to_check: List[str],
-        exoplanet_context: Optional[Dict[str, Dict[str, Any]]] = None,
-    ) -> Dict[str, WikiArticleInfo]:
+        titles_to_check: list[str],
+        exoplanet_context: dict[str, dict[str, Any]] | None = None,
+    ) -> dict[str, WikiArticleInfo]:
         if not titles_to_check:
             return {}
 
         if len(titles_to_check) > 50:
             raise ValueError("L'API MediaWiki limite à 50 titres par requête.")
 
-        initial_results: Dict[str, WikiArticleInfo] = (
-            self.build_empty_article_info_results(titles_to_check)
+        initial_results: dict[str, WikiArticleInfo] = self.build_empty_article_info_results(
+            titles_to_check
         )
 
         try:
-            data: Dict[str, Any] = self.fetch_raw_article_query_from_mediawiki(
-                titles_to_check
-            )
+            data: dict[str, Any] = self.fetch_raw_article_query_from_mediawiki(titles_to_check)
         except requests.RequestException as e:
             logger.error(f"Erreur Wikipedia API: {e}")
             for title in titles_to_check:
@@ -95,17 +86,13 @@ class WikipediaChecker:
 
         return initial_results
 
-    def build_empty_article_info_results(
-        self, titles: List[str]
-    ) -> Dict[str, WikiArticleInfo]:
+    def build_empty_article_info_results(self, titles: list[str]) -> dict[str, WikiArticleInfo]:
         return {
             title: WikiArticleInfo(exists=False, title=title, queried_title=title)
             for title in titles
         }
 
-    def fetch_raw_article_query_from_mediawiki(
-        self, titles: List[str]
-    ) -> Dict[str, Any]:
+    def fetch_raw_article_query_from_mediawiki(self, titles: list[str]) -> dict[str, Any]:
         params = {
             "action": "query",
             "titles": "|".join(titles),
@@ -115,21 +102,15 @@ class WikipediaChecker:
             "redirects": 1,
             "utf8": 1,
         }
-        response: requests.Response = self.session.get(
-            self.BASE_URL, params=params, timeout=10
-        )
+        response: requests.Response = self.session.get(self.BASE_URL, params=params, timeout=10)
         response.raise_for_status()
         return response.json().get("query", {})
 
     def build_title_normalization_and_redirect_maps(
-        self, data: Dict[str, Any], queried_titles: List[str]
-    ) -> tuple[Dict[str, str], Dict[str, str], Dict[str, str]]:
-        normalized_map: Dict[Any, Any] = {
-            i["from"]: i["to"] for i in data.get("normalized", [])
-        }
-        redirect_map: Dict[Any, Any] = {
-            i["from"]: i["to"] for i in data.get("redirects", [])
-        }
+        self, data: dict[str, Any], queried_titles: list[str]
+    ) -> tuple[dict[str, str], dict[str, str], dict[str, str]]:
+        normalized_map: dict[Any, Any] = {i["from"]: i["to"] for i in data.get("normalized", [])}
+        redirect_map: dict[Any, Any] = {i["from"]: i["to"] for i in data.get("redirects", [])}
         resolved_to_queried = {}
 
         for title in queried_titles:
@@ -142,12 +123,12 @@ class WikipediaChecker:
 
     def resolve_article_existence_from_pages(
         self,
-        data: Dict[str, Any],
-        resolved_to_queried: Dict[str, str],
-        redirect_map: Dict[str, str],
-        normalized_map: Dict[str, str],
-        results: Dict[str, WikiArticleInfo],
-        exoplanet_context: Optional[Dict[str, Dict[str, Any]]],
+        data: dict[str, Any],
+        resolved_to_queried: dict[str, str],
+        redirect_map: dict[str, str],
+        normalized_map: dict[str, str],
+        results: dict[str, WikiArticleInfo],
+        exoplanet_context: dict[str, dict[str, Any]] | None,
     ) -> None:
         for page_id, page in data.get("pages", {}).items():
             api_title = page.get("title")
@@ -172,18 +153,12 @@ class WikipediaChecker:
                 continue
 
             is_redirect: bool = original in redirect_map
-            redirect_target: str | None = (
-                redirect_map.get(original) if is_redirect else None
-            )
+            redirect_target: str | None = redirect_map.get(original) if is_redirect else None
             host_star: Any | None = (
-                exoplanet_context.get(original, {}).get("st_name")
-                if exoplanet_context
-                else None
+                exoplanet_context.get(original, {}).get("st_name") if exoplanet_context else None
             )
 
-            if host_star and self._normalize_title(api_title) == self._normalize_title(
-                host_star
-            ):
+            if host_star and self._normalize_title(api_title) == self._normalize_title(host_star):
                 results[original] = WikiArticleInfo(
                     exists=False,
                     title=api_title,

@@ -3,6 +3,7 @@ Tests unitaires pour ExoplanetCategoryGenerator.
 """
 
 import pytest
+
 from src.generators.articles.exoplanet.parts.exoplanet_category_generator import (
     ExoplanetCategoryGenerator,
 )
@@ -65,9 +66,7 @@ class TestExoplanetCategoryGenerator:
         assert callable(rules[1])
         assert callable(rules[2])
 
-    def test_map_constellation_to_category_with_constellation(
-        self, generator, hot_jupiter
-    ):
+    def test_map_constellation_to_category_with_constellation(self, generator, hot_jupiter):
         """Test de la catégorisation par constellation."""
         result = generator.map_constellation_to_category(hot_jupiter)
 
@@ -109,9 +108,7 @@ class TestExoplanetCategoryGenerator:
 
         assert result is None or isinstance(result, str)
 
-    def test_map_discovery_program_to_category_with_program(
-        self, generator, kepler_planet
-    ):
+    def test_map_discovery_program_to_category_with_program(self, generator, kepler_planet):
         """Test de la catégorisation par programme de découverte."""
         result = generator.map_discovery_program_to_category(kepler_planet)
 

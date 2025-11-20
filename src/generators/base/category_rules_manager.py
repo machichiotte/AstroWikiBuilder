@@ -1,6 +1,8 @@
 # src/generators/base/category_rules_manager.py
+from collections.abc import Callable
+from typing import Any
+
 import yaml
-from typing import Any, List, Dict, Optional, Set, Callable
 
 
 class CategoryRulesManager:
@@ -10,12 +12,10 @@ class CategoryRulesManager:
     """
 
     def __init__(self, rules_filepath: str = "src/constants/categories_rules.yaml"):
-        with open(rules_filepath, "r", encoding="utf-8") as f:
-            self.rules: Dict = yaml.safe_load(f)
+        with open(rules_filepath, encoding="utf-8") as f:
+            self.rules: dict = yaml.safe_load(f)
 
-    def _retrieve_attribute_value(
-        self, data_object: Any, attribute: str
-    ) -> Optional[Any]:
+    def _retrieve_attribute_value(self, data_object: Any, attribute: str) -> Any | None:
         """Récupère la valeur d'un attribut, même s'il est dans un objet .value"""
         if hasattr(data_object, attribute):
             attr = getattr(data_object, attribute)
@@ -28,12 +28,12 @@ class CategoryRulesManager:
         self,
         data_object: Any,
         rule_key: str,
-        custom_rules: Optional[List[Callable[[Any], Optional[str]]]] = None,
-    ) -> List[str]:
+        custom_rules: list[Callable[[Any], str | None]] | None = None,
+    ) -> list[str]:
         """
         Génère une liste de catégories pour l'objet de données fourni.
         """
-        categories: Set[str] = set()
+        categories: set[str] = set()
         config = self.rules.get(rule_key, {})
         common_config = self.rules.get("common", {})
 
@@ -78,4 +78,4 @@ class CategoryRulesManager:
                 if category:
                     categories.add(category)
 
-        return sorted(list(categories))
+        return sorted(categories)

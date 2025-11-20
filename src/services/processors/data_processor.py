@@ -1,15 +1,16 @@
 # src/utils/data_processor.py
 import logging
-from typing import List, Dict, Tuple, Any
+from typing import Any
+
+from src.mappers.nasa_exoplanet_archive_mapper import NasaExoplanetArchiveMapper
 from src.models.entities.exoplanet_model import Exoplanet
 from src.models.entities.star import Star
-from src.utils.wikipedia.wikipedia_checker import WikiArticleInfo
-from src.services.repositories.star_repository import StarRepository
-from src.services.repositories.exoplanet_repository import ExoplanetRepository
-from src.services.processors.statistics_service import StatisticsService
 from src.services.external.export_service import ExportService
 from src.services.external.wikipedia_service import WikipediaService
-from src.mappers.nasa_exoplanet_archive_mapper import NasaExoplanetArchiveMapper
+from src.services.processors.statistics_service import StatisticsService
+from src.services.repositories.exoplanet_repository import ExoplanetRepository
+from src.services.repositories.star_repository import StarRepository
+from src.utils.wikipedia.wikipedia_checker import WikiArticleInfo
 
 # Setup basic logging
 logging.basicConfig(
@@ -44,13 +45,11 @@ class DataProcessor:
     # INGESTION DES DONNÉES DEPUIS LES SOURCES EXTERNES
     # ============================================================================
 
-    def ingest_exoplanets_from_source(
-        self, exoplanets: List[Exoplanet], source_name: str
-    ) -> None:
+    def ingest_exoplanets_from_source(self, exoplanets: list[Exoplanet], source_name: str) -> None:
         """Ajoute ou fusionne les exoplanètes dans le référentiel."""
         self.exoplanet_repository.add_exoplanets(exoplanets, source_name)
 
-    def ingest_stars_from_source(self, stars: List[Star], source_name: str) -> None:
+    def ingest_stars_from_source(self, stars: list[Star], source_name: str) -> None:
         """Ajoute ou fusionne les étoiles dans le référentiel."""
         self.star_repository.add_stars(stars, source_name)
 
@@ -58,11 +57,11 @@ class DataProcessor:
     # COLLECTE DES DONNÉES DEPUIS LE RÉFÉRENTIEL
     # ============================================================================
 
-    def collect_all_exoplanets(self) -> List[Exoplanet]:
+    def collect_all_exoplanets(self) -> list[Exoplanet]:
         """Récupère toutes les exoplanètes consolidées."""
         return self.exoplanet_repository.get_all_exoplanets()
 
-    def collect_all_stars(self) -> List[Star]:
+    def collect_all_stars(self) -> list[Star]:
         """Récupère toutes les étoiles consolidées."""
         return self.star_repository.get_all_stars()
 
@@ -70,20 +69,20 @@ class DataProcessor:
     # ANALYSE ET STATISTIQUES DES DONNÉES
     # ============================================================================
 
-    def generate_data_statistics(self) -> Dict[str, Any]:
+    def generate_data_statistics(self) -> dict[str, Any]:
         """Retourne des statistiques sur les données collectées."""
-        statistics_star: Dict[str, Any] = self.compute_star_statistics()
-        statistics_exoplanet: Dict[str, Any] = self.compute_exoplanet_statistics()
+        statistics_star: dict[str, Any] = self.compute_star_statistics()
+        statistics_exoplanet: dict[str, Any] = self.compute_exoplanet_statistics()
         return {"exoplanet": statistics_exoplanet, "star": statistics_star}
 
-    def compute_exoplanet_statistics(self) -> Dict[str, Any]:
+    def compute_exoplanet_statistics(self) -> dict[str, Any]:
         """Retourne des statistiques sur les données collectées."""
-        all_exoplanets: List[Exoplanet] = self.exoplanet_repository.get_all_exoplanets()
+        all_exoplanets: list[Exoplanet] = self.exoplanet_repository.get_all_exoplanets()
         return self.stat_service.generate_statistics_exoplanet(all_exoplanets)
 
-    def compute_star_statistics(self) -> Dict[str, Any]:
+    def compute_star_statistics(self) -> dict[str, Any]:
         """Retourne des statistiques sur les données collectées."""
-        all_stars: List[Star] = self.star_repository.get_all_stars()
+        all_stars: list[Star] = self.star_repository.get_all_stars()
         return self.stat_service.generate_statistics_star(all_stars)
 
     # ============================================================================
@@ -92,24 +91,20 @@ class DataProcessor:
 
     def resolve_wikipedia_status_for_exoplanets(
         self,
-    ) -> Tuple[
-        Dict[str, Dict[str, WikiArticleInfo]], Dict[str, Dict[str, WikiArticleInfo]]
-    ]:
+    ) -> tuple[dict[str, dict[str, WikiArticleInfo]], dict[str, dict[str, WikiArticleInfo]]]:
         """
         Récupère les informations des articles Wikipedia et les sépare en existants et manquants.
         """
-        logger.info(
-            "Starting process to get and separate Wikipedia articles by status."
-        )
-        all_articles_info: Dict[str, Dict[str, WikiArticleInfo]] = (
+        logger.info("Starting process to get and separate Wikipedia articles by status.")
+        all_articles_info: dict[str, dict[str, WikiArticleInfo]] = (
             self.fetch_wikipedia_articles_for_exoplanets()
         )
         if not all_articles_info:
             logger.warning("No Wikipedia article information was retrieved.")
             return {}, {}
 
-        existing_articles, missing_articles = (
-            self.wiki_service.split_by_article_existence(all_articles_info)
+        existing_articles, missing_articles = self.wiki_service.split_by_article_existence(
+            all_articles_info
         )
         logger.info(
             f"Separation complete: {len(existing_articles)} exoplanets with existing articles, "
@@ -119,15 +114,13 @@ class DataProcessor:
 
     def fetch_wikipedia_articles_for_exoplanets(
         self,
-    ) -> Dict[str, Dict[str, WikiArticleInfo]]:
+    ) -> dict[str, dict[str, WikiArticleInfo]]:
         """
         Récupère les informations des articles Wikipedia pour toutes les exoplanètes du référentiel.
         """
-        all_exoplanets: List[Exoplanet] = self.exoplanet_repository.get_all_exoplanets()
+        all_exoplanets: list[Exoplanet] = self.exoplanet_repository.get_all_exoplanets()
         if not all_exoplanets:
-            logger.warning(
-                "No exoplanets in exoplanet_repository to check Wikipedia for."
-            )
+            logger.warning("No exoplanets in exoplanet_repository to check Wikipedia for.")
             return {}
         return self.wiki_service.fetch_articles_for_exoplanet_batch(all_exoplanets)
 
@@ -137,7 +130,7 @@ class DataProcessor:
 
     def export_all_exoplanets(self, format_type: str, filename: str) -> None:
         """Exporte toutes les données d'exoplanètes."""
-        all_exoplanets: List[Exoplanet] = self.exoplanet_repository.get_all_exoplanets()
+        all_exoplanets: list[Exoplanet] = self.exoplanet_repository.get_all_exoplanets()
         if format_type.lower() == "csv":
             self.export_service.export_exoplanets_to_csv(filename, all_exoplanets)
         elif format_type.lower() == "json":
@@ -149,7 +142,7 @@ class DataProcessor:
     def export_exoplanet_wikipedia_links_by_status(
         self,
         filename_base: str,
-        wiki_data_map_to_export: Dict[str, Dict[str, WikiArticleInfo]],
+        wiki_data_map_to_export: dict[str, dict[str, WikiArticleInfo]],
         status_description_for_filename: str,
     ) -> None:
         """
@@ -160,7 +153,7 @@ class DataProcessor:
         logger.info(
             f"Preparing to export Wikipedia links data for status: {status_description_for_filename}"
         )
-        all_exoplanets_from_repo: List[Exoplanet] = (
+        all_exoplanets_from_repo: list[Exoplanet] = (
             self.exoplanet_repository.get_all_exoplanets()
         )  # Still needed for context in format_wiki_links_data_for_export
         if not all_exoplanets_from_repo:
@@ -170,17 +163,13 @@ class DataProcessor:
             return
 
         if not wiki_data_map_to_export:
-            logger.info(
-                f"No data to export for status '{status_description_for_filename}'."
-            )
+            logger.info(f"No data to export for status '{status_description_for_filename}'.")
             return
 
         # data_to_format is now directly wiki_data_map_to_export
-        formatted_list: List[Dict[str, Any]] = (
-            self.wiki_service.format_article_links_for_export(
-                all_exoplanets_from_repo,  # Pass all exoplanets for context
-                wiki_data_map_to_export,  # Pass the already filtered map
-            )
+        formatted_list: list[dict[str, Any]] = self.wiki_service.format_article_links_for_export(
+            all_exoplanets_from_repo,  # Pass all exoplanets for context
+            wiki_data_map_to_export,  # Pass the already filtered map
         )
 
         if not formatted_list:
@@ -189,15 +178,11 @@ class DataProcessor:
             )
             return
 
-        csv_filename: str = (
-            f"{filename_base}_{status_description_for_filename}_wiki_links.csv"
-        )
-        json_filename: str = (
-            f"{filename_base}_{status_description_for_filename}_wiki_links.json"
-        )
+        csv_filename: str = f"{filename_base}_{status_description_for_filename}_wiki_links.csv"
+        json_filename: str = f"{filename_base}_{status_description_for_filename}_wiki_links.json"
 
         # Define headers for CSV for consistent output
-        headers: List[str] = [
+        headers: list[str] = [
             "exoplanet_primary_name",
             "queried_name",
             "article_exists",
@@ -210,9 +195,7 @@ class DataProcessor:
         self.export_service.export_generic_list_of_dicts_to_csv(
             csv_filename, formatted_list, headers=headers
         )
-        self.export_service.export_generic_list_of_dicts_to_json(
-            json_filename, formatted_list
-        )
+        self.export_service.export_generic_list_of_dicts_to_json(json_filename, formatted_list)
         logger.info(
             f"Wikipedia links data for '{status_description_for_filename}' exported to {csv_filename} and {json_filename}"
         )

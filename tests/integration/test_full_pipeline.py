@@ -17,8 +17,8 @@ class TestFullPipeline:
         """Test du pipeline complet avec données mockées."""
         from src.orchestration.cli_parser import parse_cli_arguments
         from src.orchestration.service_initializer import (
-            initialize_services,
             initialize_collectors,
+            initialize_services,
         )
 
         # Parse arguments
@@ -35,10 +35,10 @@ class TestFullPipeline:
 
     def test_collector_to_generator_flow(self, sample_exoplanet):
         """Test du flux collector → processor → generator."""
-        from src.services.repositories.exoplanet_repository import ExoplanetRepository
         from src.generators.articles.exoplanet.exoplanet_article_generator import (
             ExoplanetWikipediaArticleGenerator,
         )
+        from src.services.repositories.exoplanet_repository import ExoplanetRepository
 
         # Repository
         repo = ExoplanetRepository()

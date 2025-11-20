@@ -4,6 +4,7 @@
 # IMPORTS
 # ============================================================================
 import math
+
 from src.models.entities.exoplanet_model import Exoplanet
 from src.utils.formatters.article_formatters import ArticleUtils
 
@@ -69,10 +70,8 @@ class ExoplanetContentGenerator:
                 )
 
         if exoplanet.pl_eccentricity:
-            eccentricity_str: str = (
-                self.article_utils.format_uncertain_value_for_article(
-                    exoplanet.pl_eccentricity
-                )
+            eccentricity_str: str = self.article_utils.format_uncertain_value_for_article(
+                exoplanet.pl_eccentricity
             )
             if eccentricity_str:
                 content.append(f"L'orbite a une excentricité de {eccentricity_str}.")
@@ -82,15 +81,11 @@ class ExoplanetContentGenerator:
                 exoplanet.pl_orbital_period
             )
             if period_str:
-                content.append(
-                    f"La période orbitale est de {period_str} [[jour|jours]]."
-                )
+                content.append(f"La période orbitale est de {period_str} [[jour|jours]].")
 
         if exoplanet.pl_inclination:
-            inclination_str: str = (
-                self.article_utils.format_uncertain_value_for_article(
-                    exoplanet.pl_inclination
-                )
+            inclination_str: str = self.article_utils.format_uncertain_value_for_article(
+                exoplanet.pl_inclination
             )
             if inclination_str:
                 content.append(
@@ -135,13 +130,9 @@ class ExoplanetContentGenerator:
             date_value = date_value.value
 
         if hasattr(date_value, "year"):
-            date_str: str = (
-                f"en {self.article_utils.format_year_without_decimals(date_value.year)}"
-            )
+            date_str: str = f"en {self.article_utils.format_year_without_decimals(date_value.year)}"
         else:
-            date_str: str = (
-                f"en {str(self.article_utils.format_year_without_decimals(date_value))}"
-            )
+            date_str: str = f"en {str(self.article_utils.format_year_without_decimals(date_value))}"
 
         if disc_method:
             section += f"L'exoplanète a été découverte par la méthode {disc_method} {date_str}.\n"
@@ -154,11 +145,7 @@ class ExoplanetContentGenerator:
         """Génère la section des caractéristiques physiques."""
 
         def get_value_or_none_if_nan(data_point):
-            if (
-                data_point
-                and hasattr(data_point, "value")
-                and data_point.value is not None
-            ):
+            if data_point and hasattr(data_point, "value") and data_point.value is not None:
                 value = data_point.value
                 if isinstance(value, str) and value.lower() == "nan":
                     return None

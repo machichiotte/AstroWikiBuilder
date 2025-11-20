@@ -1,19 +1,19 @@
 # ============================================================================
 # IMPORTS
 # ============================================================================
-from typing import Any, Optional
-from src.models.references.reference import Reference, SourceType
-from src.models.entities.exoplanet_model import ValueWithUncertainty
-from src.utils.astro.constellation_utils import ConstellationUtils
-from src.models.entities.exoplanet_model import Exoplanet
-from src.models.entities.star import Star
-from src.models.entities.nea_entity import (
-    NEA_TO_STAR_MAPPING,
-    NEA_TO_EXOPLANET_MAPPING,
-    NEA_ENTITY,
-)
-from datetime import datetime
 import math
+from datetime import datetime
+from typing import Any
+
+from src.models.entities.exoplanet_model import Exoplanet, ValueWithUncertainty
+from src.models.entities.nea_entity import (
+    NEA_ENTITY,
+    NEA_TO_EXOPLANET_MAPPING,
+    NEA_TO_STAR_MAPPING,
+)
+from src.models.entities.star import Star
+from src.models.references.reference import Reference, SourceType
+from src.utils.astro.constellation_utils import ConstellationUtils
 
 
 def is_invalid_raw_value(value: Any) -> bool:
@@ -103,7 +103,7 @@ class NasaExoplanetArchiveMapper:
         nea_data: NEA_ENTITY,
         nea_field: str,
         attribute: str,
-    ) -> Optional[Any]:
+    ) -> Any | None:
         if isinstance(raw_value, str) and self.is_composite_formatted_string(raw_value):
             return self.parse_composite_formatted_value(raw_value)
 
@@ -127,7 +127,7 @@ class NasaExoplanetArchiveMapper:
         except (ValueError, TypeError):
             return raw_value  # string "pur"
 
-    def _parse_error_value(self, val: Any) -> Optional[float]:
+    def _parse_error_value(self, val: Any) -> float | None:
         try:
             return float(str(val).replace("+", "").replace("-", "")) if val else None
         except Exception:
@@ -136,9 +136,7 @@ class NasaExoplanetArchiveMapper:
     # ============================================================================
     # UTILITAIRES DE MAPPING ET DE FORMATAGE
     # ============================================================================
-    def build_reference_from_nea(
-        self, nea_data: NEA_ENTITY, isPlanet: False
-    ) -> Reference:
+    def build_reference_from_nea(self, nea_data: NEA_ENTITY, isPlanet: False) -> Reference:
         """Crée une référence NEA pour les points de données."""
         return Reference(
             source=SourceType.NEA,
@@ -188,7 +186,7 @@ class NasaExoplanetArchiveMapper:
             if constellation:
                 obj.sy_constellation = constellation
 
-    def extract_star_alternative_names(self, nea_data: NEA_ENTITY) -> Optional[list]:
+    def extract_star_alternative_names(self, nea_data: NEA_ENTITY) -> list | None:
         """Extrait les différentes désignations d'une étoile, en filtrant les valeurs invalides.
         Ne rajoute pas hostname (nom principal) et évite les doublons avec hostname.
         """
@@ -212,9 +210,7 @@ class NasaExoplanetArchiveMapper:
 
         return alt_names if alt_names else None
 
-    def extract_exoplanet_alternative_names(
-        self, nea_data: NEA_ENTITY
-    ) -> Optional[list]:
+    def extract_exoplanet_alternative_names(self, nea_data: NEA_ENTITY) -> list | None:
         """Extrait les différentes désignations d'une étoile, en filtrant les valeurs invalides.
         Ne rajoute pas hostname (nom principal) et évite les doublons avec hostname.
         """
@@ -224,10 +220,10 @@ class NasaExoplanetArchiveMapper:
     def convert_to_value_with_uncertainty(
         self,
         value: str | float,
-        error_positive: Optional[float] = None,
-        error_negative: Optional[float] = None,
-        sign: Optional[str] = None,
-    ) -> Optional[ValueWithUncertainty]:
+        error_positive: float | None = None,
+        error_negative: float | None = None,
+        sign: str | None = None,
+    ) -> ValueWithUncertainty | None:
         """Crée une valeur avec incertitude."""
 
         if (
@@ -253,13 +249,11 @@ class NasaExoplanetArchiveMapper:
     def is_composite_formatted_string(self, raw_value: str) -> bool:
         """Heuristique pour détecter si une chaîne contient une valeur composite (HTML, entités HTML, etc.)"""
         raw_value = raw_value.strip()
-        return any(
-            sub in raw_value for sub in ("<span", "<div", "&plusmn", "&gt", "&lt")
-        )
+        return any(sub in raw_value for sub in ("<span", "<div", "&plusmn", "&gt", "&lt"))
 
     def parse_composite_formatted_value(
         raw_value: str,
-    ) -> Optional[ValueWithUncertainty]:
+    ) -> ValueWithUncertainty | None:
         """
         Parses the composite string (pl_tranmidstr) which can be in several formats:
         1. "2458950.09242&plusmn0.00076" -> [2458950.09242,0.00076, , ±]
@@ -271,10 +265,11 @@ class NasaExoplanetArchiveMapper:
 
         Returns the formatted string or None if parsing fails.
         """
+        import logging
+        import re
+
         import pandas as pd
         from bs4 import BeautifulSoup
-        import re
-        import logging
 
         logger = logging.getLogger(__name__)
 
@@ -307,12 +302,8 @@ class NasaExoplanetArchiveMapper:
                 neg = soup.find("span", class_="subscript")
 
                 value = float(val.get_text().strip()) if val else None
-                err_pos = (
-                    float(pos.get_text().strip().replace("+", "")) if pos else None
-                )
-                err_neg = (
-                    float(neg.get_text().strip().replace("-", "")) if neg else None
-                )
+                err_pos = float(pos.get_text().strip().replace("+", "")) if pos else None
+                err_neg = float(neg.get_text().strip().replace("-", "")) if neg else None
 
                 return ValueWithUncertainty(
                     value=value,
@@ -321,9 +312,7 @@ class NasaExoplanetArchiveMapper:
                     sign="±",
                 )
             except Exception as e:
-                logger.warning(
-                    f"Erreur de parsing HTML: {e} | contenu: {epoch_str_val}"
-                )
+                logger.warning(f"Erreur de parsing HTML: {e} | contenu: {epoch_str_val}")
                 return None
 
         # Cas 3 : &gt

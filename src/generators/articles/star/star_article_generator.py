@@ -2,29 +2,28 @@
 
 import locale
 import re
-from typing import List, Optional
 
 from src.constants.wikipedia_field_config import CONSTELLATION_GENDER_FR
-from src.models.entities.star import Star
-from src.models.entities.exoplanet_model import Exoplanet
-from src.services.processors.reference_manager import ReferenceManager
-from src.generators.base.base_wikipedia_article_generator import (
-    BaseWikipediaArticleGenerator,
-)
-from src.generators.articles.star.parts.star_infobox_generator import (
-    StarInfoboxGenerator,
-)
 from src.generators.articles.star.parts.star_category_generator import (
     StarCategoryGenerator,
 )
 from src.generators.articles.star.parts.star_content_generator import (
     StarContentGenerator,
 )
+from src.generators.articles.star.parts.star_infobox_generator import (
+    StarInfoboxGenerator,
+)
 from src.generators.articles.star.parts.star_introduction_generator import (
     StarIntroductionGenerator,
 )
-from src.utils.formatters.article_formatters import ArticleUtils
+from src.generators.base.base_wikipedia_article_generator import (
+    BaseWikipediaArticleGenerator,
+)
+from src.models.entities.exoplanet_model import Exoplanet
+from src.models.entities.star import Star
+from src.services.processors.reference_manager import ReferenceManager
 from src.utils.astro.classification.star_type_utils import StarTypeUtils
+from src.utils.formatters.article_formatters import ArticleUtils
 from src.utils.lang.phrase.constellation import phrase_de_la_constellation
 
 
@@ -57,7 +56,7 @@ class StarWikipediaArticleGenerator(BaseWikipediaArticleGenerator):
         self.star_type_utils = StarTypeUtils()
 
     def compose_wikipedia_article_content(
-        self, star: Star, exoplanets: Optional[List[Exoplanet]] = None
+        self, star: Star, exoplanets: list[Exoplanet] | None = None
     ) -> str:
         """
         Construit l'article Wikipédia pour une étoile, incluant éventuellement ses exoplanètes.
@@ -88,7 +87,7 @@ class StarWikipediaArticleGenerator(BaseWikipediaArticleGenerator):
         short_ref_pattern = rf'<ref name="{ref_name}"\s*/>'
         return re.sub(short_ref_pattern, full_ref, content, count=1)
 
-    def build_palettes_section(self, star: Star) -> Optional[str]:
+    def build_palettes_section(self, star: Star) -> str | None:
         """
         Construit une section {{Palette|Étoiles de la Constellation}} si possible.
         """
@@ -99,7 +98,5 @@ class StarWikipediaArticleGenerator(BaseWikipediaArticleGenerator):
         if not gender:
             return None
 
-        formatted_constellation = phrase_de_la_constellation(
-            star.sy_constellation.strip()
-        )
+        formatted_constellation = phrase_de_la_constellation(star.sy_constellation.strip())
         return f"{{{{Palette|Étoiles {formatted_constellation}}}}}\n"

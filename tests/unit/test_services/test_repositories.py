@@ -38,9 +38,10 @@ class TestExoplanetRepository:
         """Test d'ajout de multiples exoplanètes."""
         repo = ExoplanetRepository()
 
+        from datetime import datetime
+
         from src.models.entities.exoplanet_model import Exoplanet, ValueWithUncertainty
         from src.models.references.reference import Reference, SourceType
-        from datetime import datetime
 
         ref2 = Reference(
             source=SourceType.NEA,
@@ -91,9 +92,10 @@ class TestStarRepository:
         """Test d'ajout de multiples étoiles."""
         repo = StarRepository()
 
+        from datetime import datetime
+
         from src.models.entities.star import Star
         from src.models.references.reference import Reference, SourceType
-        from datetime import datetime
 
         ref2 = Reference(
             source=SourceType.NEA,

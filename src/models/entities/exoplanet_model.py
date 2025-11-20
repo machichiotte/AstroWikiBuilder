@@ -1,7 +1,6 @@
 # src/models/entities/exoplanet.py
 
 from dataclasses import dataclass, field
-from typing import Optional, List
 
 from ..references.reference import Reference
 
@@ -10,10 +9,10 @@ from ..references.reference import Reference
 class ValueWithUncertainty:
     """Classe pour représenter une valeur avec ses incertitudes et son signe"""
 
-    value: Optional[int | float] = None
-    error_positive: Optional[int | float] = None
-    error_negative: Optional[int | float] = None
-    sign: Optional[str] = None  # Ex "<", ">", "±", etc.
+    value: int | float | None = None
+    error_positive: int | float | None = None
+    error_negative: int | float | None = None
+    sign: str | None = None  # Ex "<", ">", "±", etc.
 
     def __hash__(self) -> int:
         """Permet d'utiliser la classe comme clé dans un dictionnaire"""
@@ -98,62 +97,62 @@ class Exoplanet:
 
     # Identifiants
     pl_name: str = None
-    pl_altname: Optional[List[str]] = field(default_factory=list)
-    image: Optional[str] = None
-    caption: Optional[str] = None
-    sy_constellation: Optional[str] = None
+    pl_altname: list[str] | None = field(default_factory=list)
+    image: str | None = None
+    caption: str | None = None
+    sy_constellation: str | None = None
 
     # Étoile hôte
     st_name: str = None
-    st_epoch: Optional[float] = None
-    st_right_ascension: Optional[float] = None
-    st_declination: Optional[float] = None
-    st_distance: Optional[ValueWithUncertainty] = None
-    st_spectral_type: Optional[str] = None
-    st_apparent_magnitude: Optional[float] = None
-    st_luminosity: Optional[ValueWithUncertainty] = None
+    st_epoch: float | None = None
+    st_right_ascension: float | None = None
+    st_declination: float | None = None
+    st_distance: ValueWithUncertainty | None = None
+    st_spectral_type: str | None = None
+    st_apparent_magnitude: float | None = None
+    st_luminosity: ValueWithUncertainty | None = None
 
     # Caractéristiques orbitales
-    pl_semi_major_axis: Optional[ValueWithUncertainty] = None
-    pl_periastron: Optional[float] = None
-    pl_apoastron: Optional[float] = None
-    pl_eccentricity: Optional[ValueWithUncertainty] = None
-    pl_orbital_period: Optional[ValueWithUncertainty] = None
-    pl_angular_distance: Optional[float] = None
-    pl_periastron_time: Optional[float] = None
-    pl_inclination: Optional[ValueWithUncertainty] = None
-    pl_argument_of_periastron: Optional[float] = None
-    pl_epoch: Optional[float] = None
+    pl_semi_major_axis: ValueWithUncertainty | None = None
+    pl_periastron: float | None = None
+    pl_apoastron: float | None = None
+    pl_eccentricity: ValueWithUncertainty | None = None
+    pl_orbital_period: ValueWithUncertainty | None = None
+    pl_angular_distance: float | None = None
+    pl_periastron_time: float | None = None
+    pl_inclination: ValueWithUncertainty | None = None
+    pl_argument_of_periastron: float | None = None
+    pl_epoch: float | None = None
 
     # Caractéristiques physiques
-    pl_mass: Optional[ValueWithUncertainty] = None
-    pl_minimum_mass: Optional[ValueWithUncertainty] = None
-    pl_radius: Optional[ValueWithUncertainty] = None
-    pl_density: Optional[ValueWithUncertainty] = None
-    pl_gravity: Optional[float] = None
-    pl_rotation_period: Optional[float] = None
-    pl_temperature: Optional[ValueWithUncertainty] = None
-    pl_albedo_bond: Optional[float] = None
+    pl_mass: ValueWithUncertainty | None = None
+    pl_minimum_mass: ValueWithUncertainty | None = None
+    pl_radius: ValueWithUncertainty | None = None
+    pl_density: ValueWithUncertainty | None = None
+    pl_gravity: float | None = None
+    pl_rotation_period: float | None = None
+    pl_temperature: ValueWithUncertainty | None = None
+    pl_albedo_bond: float | None = None
 
     # Atmosphère
-    pl_pressure: Optional[float] = None
-    pl_composition: Optional[str] = None
-    pl_wind_speed: Optional[float] = None
+    pl_pressure: float | None = None
+    pl_composition: str | None = None
+    pl_wind_speed: float | None = None
 
     # Découverte
-    disc_by: Optional[str] = None
-    disc_program: Optional[str] = None
-    disc_method: Optional[str] = None
-    disc_year: Optional[int] = None
-    disc_facility: Optional[str] = None
-    pre_discovery: Optional[str] = None
-    detection_type: Optional[str] = None
-    status: Optional[str] = None
+    disc_by: str | None = None
+    disc_program: str | None = None
+    disc_method: str | None = None
+    disc_year: int | None = None
+    disc_facility: str | None = None
+    pre_discovery: str | None = None
+    detection_type: str | None = None
+    status: str | None = None
 
     # Références
     reference: Reference = None
 
-    st_mass: Optional[ValueWithUncertainty] = None
-    st_radius: Optional[ValueWithUncertainty] = None
-    st_variability: Optional[ValueWithUncertainty] = None
-    st_metallicity: Optional[ValueWithUncertainty] = None
+    st_mass: ValueWithUncertainty | None = None
+    st_radius: ValueWithUncertainty | None = None
+    st_variability: ValueWithUncertainty | None = None
+    st_metallicity: ValueWithUncertainty | None = None

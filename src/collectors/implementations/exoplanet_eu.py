@@ -1,19 +1,19 @@
 # src/collectors/implementations/exoplanet_eu.py
-import pandas as pd
-from typing import List, Optional, Dict, Any
 import logging
+from typing import Any
+
+import pandas as pd
+
 from src.collectors.base_collector import BaseCollector
-from src.models.references.reference import SourceType
+from src.models.entities.exoplanet_model import Exoplanet, ValueWithUncertainty
 from src.models.entities.star import Star
-from src.models.entities.exoplanet_model import ValueWithUncertainty, Exoplanet
+from src.models.references.reference import SourceType
 
 logger: logging.Logger = logging.getLogger(__name__)
 
 
 class ExoplanetEUCollector(BaseCollector):
-    def __init__(
-        self, cache_dir: str = "data/cache/exoplanet_eu", use_mock_data: bool = False
-    ):
+    def __init__(self, cache_dir: str = "data/cache/exoplanet_eu", use_mock_data: bool = False):
         super().__init__(cache_dir, use_mock_data)
 
     def get_default_cache_filename(self) -> str:
@@ -28,13 +28,13 @@ class ExoplanetEUCollector(BaseCollector):
     def get_source_reference_url(self) -> str:
         return "https://exoplanet.eu/"
 
-    def get_required_csv_columns(self) -> List[str]:
+    def get_required_csv_columns(self) -> list[str]:
         return ["name", "star_name", "discovery_method", "discovery_year"]
 
-    def get_csv_reader_options(self) -> Dict[str, Any]:
+    def get_csv_reader_options(self) -> dict[str, Any]:
         return {"comment": "#"}
 
-    def transform_row_to_exoplanet(self, row: pd.Series) -> Optional[Exoplanet]:
+    def transform_row_to_exoplanet(self, row: pd.Series) -> Exoplanet | None:
         try:
             if pd.isna(row["name"]) or pd.isna(row["star_name"]):
                 logger.warning(
@@ -64,9 +64,7 @@ class ExoplanetEUCollector(BaseCollector):
                 ("argument_of_periastron", "argument_of_periastron"),
                 ("periastron_time", "periastron_time"),
             ]:
-                value: float | None = self.convert_to_float_if_possible(
-                    row.get(csv_field)
-                )
+                value: float | None = self.convert_to_float_if_possible(row.get(csv_field))
                 if value is not None:
                     setattr(exoplanet, field, ValueWithUncertainty(value=value))
 
@@ -108,7 +106,7 @@ class ExoplanetEUCollector(BaseCollector):
                             setattr(exoplanet, field, processed_value)
 
             if pd.notna(row.get("alt_names")):
-                names: List[str] = str(row["alt_names"]).split(",")
+                names: list[str] = str(row["alt_names"]).split(",")
                 for name in names:
                     name: str = name.strip()
                     if name and name != exoplanet.pl_name:
@@ -123,7 +121,7 @@ class ExoplanetEUCollector(BaseCollector):
             )
             return None
 
-    def transform_row_to_star(self, row: pd.Series) -> Optional[Star]:
+    def transform_row_to_star(self, row: pd.Series) -> Star | None:
         """
         Convertit une ligne du DataFrame en objet Star.
 

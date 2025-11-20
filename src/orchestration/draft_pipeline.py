@@ -8,7 +8,6 @@ Responsabilité :
 - Persister les brouillons sur le disque
 """
 
-from typing import List, Dict
 
 from src.core.config import logger
 from src.models.entities.exoplanet_model import Exoplanet
@@ -35,7 +34,7 @@ def generate_and_persist_exoplanet_drafts(
     Example:
         >>> generate_and_persist_exoplanet_drafts(processor, "data/drafts")
     """
-    exoplanets: List[Exoplanet] = processor.collect_all_exoplanets()
+    exoplanets: list[Exoplanet] = processor.collect_all_exoplanets()
     total = len(exoplanets)
     logger.info(f"Génération de {total} brouillons d'exoplanètes...")
 
@@ -48,9 +47,7 @@ def generate_and_persist_exoplanet_drafts(
                 logger.info(f"Progression: {idx}/{total} exoplanètes traitées...")
             exoplanet_drafts[exoplanet_name] = build_exoplanet_article_draft(exoplanet)
         else:
-            logger.warning(
-                f"Objet ignoré (type: {type(exoplanet)}) pour {exoplanet_name}"
-            )
+            logger.warning(f"Objet ignoré (type: {type(exoplanet)}) pour {exoplanet_name}")
 
     logger.info(f"Nombre total de brouillons générés: {len(exoplanet_drafts)}")
     persist_drafts_by_entity_type(
@@ -64,7 +61,7 @@ def generate_and_persist_exoplanet_drafts(
 def generate_and_persist_star_drafts(
     processor: DataProcessor,
     drafts_dir: str,
-    exoplanets: List[Exoplanet] = None,
+    exoplanets: list[Exoplanet] = None,
 ) -> None:
     """
     Génère et sauvegarde les brouillons d'articles pour les étoiles.
@@ -81,21 +78,19 @@ def generate_and_persist_star_drafts(
         >>> exos = processor.collect_all_exoplanets()
         >>> generate_and_persist_star_drafts(processor, "data/drafts", exos)
     """
-    stars: List[Star] = processor.collect_all_stars()
+    stars: list[Star] = processor.collect_all_stars()
     total = len(stars)
     logger.info(f"Génération de {total} brouillons d'étoiles...")
 
     # Créer un index des exoplanètes par nom d'étoile hôte
-    exoplanets_by_star_name: Dict[str, List[Exoplanet]] = {}
+    exoplanets_by_star_name: dict[str, list[Exoplanet]] = {}
     if exoplanets:
         for exoplanet in exoplanets:
             if hasattr(exoplanet, "st_name") and exoplanet.st_name:
                 star_name = str(exoplanet.st_name)
                 exoplanets_by_star_name.setdefault(star_name, []).append(exoplanet)
 
-        logger.info(
-            f"Index créé pour {len(exoplanets_by_star_name)} étoiles avec exoplanètes"
-        )
+        logger.info(f"Index créé pour {len(exoplanets_by_star_name)} étoiles avec exoplanètes")
 
     star_drafts = {}
     for idx, star in enumerate(stars, 1):
@@ -106,9 +101,7 @@ def generate_and_persist_star_drafts(
                 logger.info(f"Progression: {idx}/{total} étoiles traitées...")
 
             star_exoplanets = exoplanets_by_star_name.get(star_name, [])
-            star_drafts[star_name] = build_star_article_draft(
-                star, exoplanets=star_exoplanets
-            )
+            star_drafts[star_name] = build_star_article_draft(star, exoplanets=star_exoplanets)
         else:
             logger.warning(f"Objet ignoré (type: {type(star)}) pour {star_name}")
 

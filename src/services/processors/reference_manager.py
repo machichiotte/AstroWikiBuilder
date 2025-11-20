@@ -1,6 +1,6 @@
 # src/services/reference_manager.py
 from datetime import datetime
-from typing import Optional, Dict
+
 from src.models.references.reference import SOURCE_DETAILS, Reference, SourceType
 
 
@@ -12,8 +12,8 @@ class ReferenceManager:
     def __init__(self):
         # Pour gérer les références répétées
         self._reference_registry: set[str] = set()
-        self._ref_contents: Dict[str, str] = {}
-        self.template_refs: Dict[str, str] = {
+        self._ref_contents: dict[str, str] = {}
+        self.template_refs: dict[str, str] = {
             src.value: details["template"] for src, details in SOURCE_DETAILS.items()
         }
 
@@ -21,8 +21,8 @@ class ReferenceManager:
         self,
         source: SourceType,
         update_date: datetime,
-        planet_id: Optional[str] = None,
-        star_id: Optional[str] = None,
+        planet_id: str | None = None,
+        star_id: str | None = None,
     ) -> Reference:
         """
         Crée et renvoie une Reference avec date de consultation actuelle.
@@ -55,7 +55,7 @@ class ReferenceManager:
         self._reference_registry.clear()
 
     @property
-    def all_registered_references(self) -> Dict[str, str]:
+    def all_registered_references(self) -> dict[str, str]:
         """
         Expose le dictionnaire ref_name → contenu complet de chaque référence,
         tel que stocké dans _ref_contents.

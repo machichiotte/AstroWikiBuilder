@@ -1,6 +1,6 @@
 # src/services/repositories/exoplanet_repository.py
 import logging
-from typing import List, Dict
+
 from src.models.entities.exoplanet_model import Exoplanet
 
 logger: logging.Logger = logging.getLogger(__name__)
@@ -8,10 +8,10 @@ logger: logging.Logger = logging.getLogger(__name__)
 
 class ExoplanetRepository:
     def __init__(self):
-        self.exoplanets: Dict[str, Exoplanet] = {}
+        self.exoplanets: dict[str, Exoplanet] = {}
         logger.info("ExoplanetRepository initialized.")
 
-    def add_exoplanets(self, exoplanets: List[Exoplanet], source_system: str) -> None:
+    def add_exoplanets(self, exoplanets: list[Exoplanet], source_system: str) -> None:
         """
         Ajoute ou fusionne les exoplanètes dans le dictionnaire.
         Le paramètre 'source_system' indique le système ou le lot d'où proviennent ces données.
@@ -26,9 +26,7 @@ class ExoplanetRepository:
                 logger.warning("Skipping exoplanet with no name.")
                 continue
             if exoplanet.pl_name in self.exoplanets:
-                logger.debug(
-                    f"Merging data for existing exoplanet: {exoplanet.pl_name}"
-                )
+                logger.debug(f"Merging data for existing exoplanet: {exoplanet.pl_name}")
                 merged_count += 1
             else:
                 logger.debug(f"Adding new exoplanet: {exoplanet.pl_name}")
@@ -38,5 +36,5 @@ class ExoplanetRepository:
             f"Addition from {source_system} complete. Added: {added_count}, Merged: {merged_count}. Total exoplanets: {len(self.exoplanets)}"
         )
 
-    def get_all_exoplanets(self) -> List[Exoplanet]:
+    def get_all_exoplanets(self) -> list[Exoplanet]:
         return list(self.exoplanets.values())

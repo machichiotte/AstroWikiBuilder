@@ -3,11 +3,12 @@
 Tests pour StatisticsService.
 """
 
-from src.services.processors.statistics_service import StatisticsService
+from datetime import datetime
+
 from src.models.entities.exoplanet_model import Exoplanet, ValueWithUncertainty
 from src.models.entities.star import Star
 from src.models.references.reference import Reference, SourceType
-from datetime import datetime
+from src.services.processors.statistics_service import StatisticsService
 
 
 class TestStatisticsService:
@@ -133,9 +134,7 @@ class TestStatisticsService:
             reference=ref,
         )
 
-        stats = service.generate_statistics_exoplanet(
-            [exo_light, exo_medium, exo_heavy]
-        )
+        stats = service.generate_statistics_exoplanet([exo_light, exo_medium, exo_heavy])
 
         assert "mass_ranges" in stats
         assert stats["mass_ranges"]["0-1"] == 1

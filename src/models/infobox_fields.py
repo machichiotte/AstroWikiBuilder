@@ -1,5 +1,4 @@
 # src/utils/formatters/infobox_fields.py
-from typing import List
 from dataclasses import dataclass
 
 
@@ -15,7 +14,7 @@ class InfoboxMapper:
     """Configuration centralisée des mappings de sources de données -> Infobox"""
 
     @classmethod
-    def convert_exoplanet_to_infobox(cls) -> List[FieldMapping]:
+    def convert_exoplanet_to_infobox(cls) -> list[FieldMapping]:
         """Retourne la liste complète des mappings de champs pour les exoplanètes"""
         return [
             # Identifiants
@@ -72,7 +71,7 @@ class InfoboxMapper:
         ]
 
     @classmethod
-    def convert_star_to_infobox(cls) -> List[FieldMapping]:
+    def convert_star_to_infobox(cls) -> list[FieldMapping]:
         """Retourne la liste complète des mappings de champs pour les étoiles"""
         return [
             # Identifiants

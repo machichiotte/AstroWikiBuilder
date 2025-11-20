@@ -1,17 +1,17 @@
 # src/utils/draft_utils.py
-import os
 import logging
-from typing import List, Tuple, Dict
+import os
 
-# Project imports
-from src.models.entities.exoplanet_model import Exoplanet
-from src.models.entities.star import Star
 from src.generators.articles.exoplanet.exoplanet_article_generator import (
     ExoplanetWikipediaArticleGenerator,
 )
 from src.generators.articles.star.star_article_generator import (
     StarWikipediaArticleGenerator,
 )
+
+# Project imports
+from src.models.entities.exoplanet_model import Exoplanet
+from src.models.entities.star import Star
 
 # Configure un logger pour ce module spécifique
 logger = logging.getLogger(__name__)
@@ -56,15 +56,13 @@ def build_exoplanet_article_draft(exoplanet: Exoplanet) -> str:
     return content
 
 
-def build_star_article_draft(star: Star, exoplanets: List[Exoplanet] = None) -> str:
+def build_star_article_draft(star: Star, exoplanets: list[Exoplanet] = None) -> str:
     """
     Génère le contenu d'un brouillon d'article pour une étoile.
     Si une liste d'exoplanètes est fournie, elle sera intégrée dans le contenu.
     """
     generator = StarWikipediaArticleGenerator()
-    content: str = generator.compose_wikipedia_article_content(
-        star, exoplanets=exoplanets
-    )
+    content: str = generator.compose_wikipedia_article_content(star, exoplanets=exoplanets)
     return content
 
 
@@ -74,8 +72,8 @@ def build_star_article_draft(star: Star, exoplanets: List[Exoplanet] = None) -> 
 
 
 def write_separated_exoplanet_drafts(
-    missing_drafts: List[Tuple[str, str]],
-    existing_drafts: List[Tuple[str, str]],
+    missing_drafts: list[tuple[str, str]],
+    existing_drafts: list[tuple[str, str]],
     drafts_dir: str = "drafts/exoplanet",
 ) -> None:
     """
@@ -100,7 +98,7 @@ def write_separated_exoplanet_drafts(
         try:
             with open(filename, "w", encoding="utf-8") as f:
                 f.write(content)
-        except IOError as e:
+        except OSError as e:
             logger.error(f"Impossible de sauvegarder le brouillon {filename}: {e}")
         except Exception as e:
             logger.error(f"Erreur inattendue lors de la sauvegarde de {filename}: {e}")
@@ -114,15 +112,15 @@ def write_separated_exoplanet_drafts(
         try:
             with open(filename, "w", encoding="utf-8") as f:
                 f.write(content)
-        except IOError as e:
+        except OSError as e:
             logger.error(f"Impossible de sauvegarder le brouillon {filename}: {e}")
         except Exception as e:
             logger.error(f"Erreur inattendue lors de la sauvegarde de {filename}: {e}")
 
 
 def write_separated_star_drafts(
-    missing_drafts: List[Tuple[str, str]],
-    existing_drafts: List[Tuple[str, str]],
+    missing_drafts: list[tuple[str, str]],
+    existing_drafts: list[tuple[str, str]],
     drafts_dir: str = "drafts/star",
 ) -> None:
     """
@@ -147,7 +145,7 @@ def write_separated_star_drafts(
         try:
             with open(filename, "w", encoding="utf-8") as f:
                 f.write(content)
-        except IOError as e:
+        except OSError as e:
             logger.error(f"Impossible de sauvegarder le brouillon {filename}: {e}")
         except Exception as e:
             logger.error(f"Erreur inattendue lors de la sauvegarde de {filename}: {e}")
@@ -161,7 +159,7 @@ def write_separated_star_drafts(
         try:
             with open(filename, "w", encoding="utf-8") as f:
                 f.write(content)
-        except IOError as e:
+        except OSError as e:
             logger.error(f"Impossible de sauvegarder le brouillon {filename}: {e}")
         except Exception as e:
             logger.error(f"Erreur inattendue lors de la sauvegarde de {filename}: {e}")
@@ -173,8 +171,8 @@ def write_separated_star_drafts(
 
 
 def persist_drafts_by_entity_type(
-    missing_drafts: Dict[str, str],
-    existing_drafts: Dict[str, str],
+    missing_drafts: dict[str, str],
+    existing_drafts: dict[str, str],
     drafts_dir: str,
     entity_type: str,
 ) -> None:

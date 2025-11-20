@@ -1,9 +1,9 @@
 # src/services/external/wikipedia_service.py
 import logging
-from typing import List, Dict, Any
+from typing import Any
+
 from src.models.entities.exoplanet_model import Exoplanet
-from src.utils.wikipedia.wikipedia_checker import WikipediaChecker
-from src.utils.wikipedia.wikipedia_checker import WikiArticleInfo
+from src.utils.wikipedia.wikipedia_checker import WikiArticleInfo, WikipediaChecker
 
 logger: logging.Logger = logging.getLogger(__name__)
 
@@ -14,15 +14,13 @@ class WikipediaService:
         logger.info("WikipediaService initialized.")
 
     def fetch_articles_for_exoplanet_batch(
-        self, exoplanets: List[Exoplanet]
-    ) -> Dict[str, Dict[str, Any]]:
+        self, exoplanets: list[Exoplanet]
+    ) -> dict[str, dict[str, Any]]:
         """
         Vérifie l'existence des articles Wikipedia pour les exoplanètes.
         Returns a dictionary mapping Exoplanet name to a dictionary of its article infos (name/alias -> info dict).
         """
-        logger.info(
-            f"Starting Wikipedia article check for {len(exoplanets)} exoplanets."
-        )
+        logger.info(f"Starting Wikipedia article check for {len(exoplanets)} exoplanets.")
 
         all_results = {}
         titles_to_check = []
@@ -32,7 +30,7 @@ class WikipediaService:
         for exoplanet in exoplanets:
             all_results[exoplanet.pl_name] = {}  # Initialize results for this exoplanet
 
-            titles_for_this_exoplanet: List[str] = [exoplanet.pl_name]
+            titles_for_this_exoplanet: list[str] = [exoplanet.pl_name]
             if exoplanet.pl_altname:
                 titles_for_this_exoplanet.extend(exoplanet.pl_altname)
 
@@ -53,7 +51,7 @@ class WikipediaService:
             batch_titles = titles_to_check[i : i + batch_size]
             batch_context = {title: context_for_titles[title] for title in batch_titles}
 
-            batch_results: Dict[str, WikiArticleInfo] = (
+            batch_results: dict[str, WikiArticleInfo] = (
                 self.wikipedia_checker.check_article_existence_batch(
                     batch_titles, exoplanet_context=batch_context
                 )
@@ -61,9 +59,7 @@ class WikipediaService:
 
             # Now, map these flat results back to the per-exoplanet structure
             for queried_title, wiki_info in batch_results.items():
-                exoplanet_name_origin = context_for_titles[queried_title][
-                    "exoplanet_name"
-                ]
+                exoplanet_name_origin = context_for_titles[queried_title]["exoplanet_name"]
                 if exoplanet_name_origin in all_results:
                     all_results[exoplanet_name_origin][queried_title] = wiki_info
                 else:
@@ -75,11 +71,11 @@ class WikipediaService:
 
     def format_article_links_for_export(
         self,
-        exoplanets: List[Exoplanet],
-        exoplanet_articles_info: Dict[str, Dict[str, Any]],
+        exoplanets: list[Exoplanet],
+        exoplanet_articles_info: dict[str, dict[str, Any]],
         only_existing: bool = False,  # If true, only format for exoplanets with at least one existing article
         only_missing: bool = False,  # If true, only format for exoplanets with no existing articles
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """
         Formate les liens Wikipedia pour les exoplanètes.
         Retourne une liste de dictionnaires plats pour l'export CSV.
@@ -91,7 +87,7 @@ class WikipediaService:
         formatted_list = []
 
         # Create a quick lookup for exoplanets by name
-        exoplanet_map: Dict[str, Exoplanet] = {exo.pl_name: exo for exo in exoplanets}
+        exoplanet_map: dict[str, Exoplanet] = {exo.pl_name: exo for exo in exoplanets}
 
         for exoplanet_name, articles in exoplanet_articles_info.items():
             exoplanet_obj: Exoplanet | None = exoplanet_map.get(exoplanet_name)
@@ -101,9 +97,7 @@ class WikipediaService:
                 )
                 continue
 
-            has_any_existing_article: bool = any(
-                info.exists for info in articles.values()
-            )
+            has_any_existing_article: bool = any(info.exists for info in articles.values())
 
             if (only_existing and not has_any_existing_article) or (
                 only_missing and has_any_existing_article
@@ -119,9 +113,7 @@ class WikipediaService:
                         "article_exists": info.exists,
                         "wikipedia_title": info.title if info.exists else None,
                         "is_redirect": info.is_redirect if info.exists else False,
-                        "redirect_target": (
-                            info.redirect_target if info.exists else None
-                        ),
+                        "redirect_target": (info.redirect_target if info.exists else None),
                         "url": info.url if info.exists else None,
                         "host_star": exoplanet_obj.st_name,
                     }
@@ -129,7 +121,7 @@ class WikipediaService:
 
         return formatted_list
 
-    def split_by_article_existence(self, all_articles_info: Dict[str, Dict[str, Any]]):
+    def split_by_article_existence(self, all_articles_info: dict[str, dict[str, Any]]):
         """
         Sépare les exoplanètes en deux groupes :
         - Celles avec au moins un article Wikipédia existant

@@ -1,5 +1,5 @@
 # src/utils/astro/classification/exoplanet_type_utils.py
-from typing import Optional
+
 from src.models.entities.exoplanet_model import Exoplanet
 
 
@@ -60,9 +60,7 @@ class ExoplanetTypeUtils:
         insolation: float = self.compute_stellar_insolation(exoplanet)
 
         if m is not None and r is not None:
-            return self.classify_based_on_mass_radius_density(
-                m, r, d, exoplanet, insolation
-            )
+            return self.classify_based_on_mass_radius_density(m, r, d, exoplanet, insolation)
 
         if m is not None:
             return self.classify_planet_type_by_mass_only(m)
@@ -79,9 +77,9 @@ class ExoplanetTypeUtils:
         self,
         m: float,
         r: float,
-        d: Optional[float],
+        d: float | None,
         p: Exoplanet,
-        insolation: Optional[float],
+        insolation: float | None,
     ) -> str:
         # Petite masse et petit rayon → probablement terrestre
         if (
@@ -95,21 +93,17 @@ class ExoplanetTypeUtils:
             m >= self.CLASSIFICATION_LIMITS["mass"]["gas_giant_min"]
             or r >= self.CLASSIFICATION_LIMITS["radius"]["super_puff_min"]
         ):
-            return self.classify_giant_planet_by_temperature_or_insolation(
-                m, p, insolation
-            )
+            return self.classify_giant_planet_by_temperature_or_insolation(m, p, insolation)
 
         # Masse modérée mais faible densité → tendance gazeuse
         if d is not None and d < 2.0 and r > 1.5:
-            return self.classify_giant_planet_by_temperature_or_insolation(
-                m, p, insolation
-            )
+            return self.classify_giant_planet_by_temperature_or_insolation(m, p, insolation)
 
         # Masse modérée et densité moyenne ou élevée → tendance terrestre
         return self.classify_terrestrial_type_by_mass_and_radius(m, r)
 
     def classify_giant_planet_by_temperature_or_insolation(
-        self, m: float, p: Exoplanet, insolation: Optional[float]
+        self, m: float, p: Exoplanet, insolation: float | None
     ) -> str:
         t: float | None = float(p.pl_temperature.value) if p.pl_temperature else None
         a: float | None = (
@@ -119,10 +113,7 @@ class ExoplanetTypeUtils:
         )
 
         if m >= self.CLASSIFICATION_LIMITS["mass"]["jupiter"]:
-            if (
-                insolation
-                and insolation >= self.CLASSIFICATION_LIMITS["insolation"]["high"]
-            ):
+            if insolation and insolation >= self.CLASSIFICATION_LIMITS["insolation"]["high"]:
                 return "Jupiter ultra-chaud"
             if t:
                 if t >= self.CLASSIFICATION_LIMITS["temperature"]["ultra_hot"]:
@@ -185,7 +176,7 @@ class ExoplanetTypeUtils:
     # ============================================================================
     # MÉTHODES UTILITAIRES (conversion, calculs physiques)
     # ============================================================================
-    def convert_mass_to_earth_units(self, p: Exoplanet) -> Optional[float]:
+    def convert_mass_to_earth_units(self, p: Exoplanet) -> float | None:
         if not p.pl_mass or p.pl_mass.value is None:
             return None
         try:
@@ -195,7 +186,7 @@ class ExoplanetTypeUtils:
         except (TypeError, ValueError):
             return None
 
-    def convert_radius_to_earth_units(self, p: Exoplanet) -> Optional[float]:
+    def convert_radius_to_earth_units(self, p: Exoplanet) -> float | None:
         if not p.pl_radius or p.pl_radius.value is None:
             return None
         try:
@@ -205,7 +196,7 @@ class ExoplanetTypeUtils:
         except (TypeError, ValueError):
             return None
 
-    def calculate_density_from_mass_and_radius(self, p: Exoplanet) -> Optional[float]:
+    def calculate_density_from_mass_and_radius(self, p: Exoplanet) -> float | None:
         m: float | None = self.convert_mass_to_earth_units(p)
         r: float | None = self.convert_radius_to_earth_units(p)
         if m is None or r is None:

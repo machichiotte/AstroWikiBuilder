@@ -1,12 +1,12 @@
 # src/generators/articles/exoplanet/parts/exoplanet_infobox_generator.py
 
-from src.generators.base.base_infobox_generator import InfoboxBaseGenerator
-from src.models.entities.exoplanet_model import Exoplanet
-from src.models.infobox_fields import InfoboxMapper, FieldMapping
 from src.constants.wikipedia_field_config import (
     DEFAULT_WIKIPEDIA_UNITS_EXOPLANET,
     IS_NOTES_FIELDS_EXOPLANET,
 )
+from src.generators.base.base_infobox_generator import InfoboxBaseGenerator
+from src.models.entities.exoplanet_model import Exoplanet
+from src.models.infobox_fields import FieldMapping, InfoboxMapper
 
 
 class ExoplanetInfoboxGenerator(InfoboxBaseGenerator):

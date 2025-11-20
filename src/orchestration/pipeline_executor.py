@@ -11,23 +11,22 @@ Responsabilité :
 import argparse
 from datetime import datetime
 
-from src.core.config import logger, DEFAULT_CONSOLIDATED_DIR
-from src.services.processors.data_processor import DataProcessor
-from src.utils.directory_utils import create_output_directories
-
-from src.orchestration.service_initializer import (
-    initialize_services,
-    initialize_collectors,
-)
+from src.core.config import DEFAULT_CONSOLIDATED_DIR, logger
 from src.orchestration.data_pipeline import (
-    fetch_and_ingest_data,
     export_consolidated_data,
+    fetch_and_ingest_data,
     generate_and_export_statistics,
 )
 from src.orchestration.draft_pipeline import (
     generate_and_persist_exoplanet_drafts,
     generate_and_persist_star_drafts,
 )
+from src.orchestration.service_initializer import (
+    initialize_collectors,
+    initialize_services,
+)
+from src.services.processors.data_processor import DataProcessor
+from src.utils.directory_utils import create_output_directories
 
 
 def execute_pipeline(args: argparse.Namespace) -> None:
@@ -80,9 +79,7 @@ def execute_pipeline(args: argparse.Namespace) -> None:
         exoplanets = processor.collect_all_exoplanets()
         generate_and_persist_star_drafts(processor, args.drafts_dir, exoplanets)
     else:
-        logger.info(
-            "Génération de brouillons Wikipedia ignorée (--skip-wikipedia-check)"
-        )
+        logger.info("Génération de brouillons Wikipedia ignorée (--skip-wikipedia-check)")
 
     logger.info("Pipeline terminé avec succès !")
 

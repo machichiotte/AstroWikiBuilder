@@ -1,6 +1,5 @@
 # src/models/entities/star.py
 from dataclasses import dataclass, field
-from typing import Optional, List
 
 from ..references.reference import Reference
 from .exoplanet_model import ValueWithUncertainty
@@ -85,126 +84,126 @@ class Star:
         dans un système binaire.
     """
 
-    sy_constellation: Optional[str] = None
+    sy_constellation: str | None = None
 
     # Identifiants
     st_name: str = None
-    st_altname: Optional[List[str]] = field(default_factory=list)
-    st_image: Optional[str] = None
-    st_upright: Optional[str] = None
-    st_caption: Optional[str] = None
-    st_coord_title: Optional[str] = None
+    st_altname: list[str] | None = field(default_factory=list)
+    st_image: str | None = None
+    st_upright: str | None = None
+    st_caption: str | None = None
+    st_coord_title: str | None = None
 
     # Données d'observation
-    apparent_magnitude: Optional[ValueWithUncertainty] = None
-    st_epoch: Optional[ValueWithUncertainty] = None
-    st_right_ascension: Optional[str] = None
-    st_right_ascension_2: Optional[str] = None
-    st_declination: Optional[str] = None
-    st_declination_2: Optional[str] = None
-    st_radial_velocity: Optional[ValueWithUncertainty] = None
-    st_radial_velocity_2: Optional[ValueWithUncertainty] = None
-    st_proper_motion_ra: Optional[ValueWithUncertainty] = None
-    st_proper_motion_ra_2: Optional[ValueWithUncertainty] = None
-    st_proper_motion_dec: Optional[ValueWithUncertainty] = None
-    st_proper_motion_dec_2: Optional[ValueWithUncertainty] = None
-    st_parallax: Optional[ValueWithUncertainty] = None
-    st_parallax_2: Optional[ValueWithUncertainty] = None
-    st_distance_pc: Optional[ValueWithUncertainty] = None
-    st_distance_pc_2: Optional[ValueWithUncertainty] = None
-    st_distance_light_years: Optional[ValueWithUncertainty] = None
-    st_distance_light_years_2: Optional[ValueWithUncertainty] = None
-    st_distance: Optional[ValueWithUncertainty] = None
-    st_distance_2: Optional[ValueWithUncertainty] = None
+    apparent_magnitude: ValueWithUncertainty | None = None
+    st_epoch: ValueWithUncertainty | None = None
+    st_right_ascension: str | None = None
+    st_right_ascension_2: str | None = None
+    st_declination: str | None = None
+    st_declination_2: str | None = None
+    st_radial_velocity: ValueWithUncertainty | None = None
+    st_radial_velocity_2: ValueWithUncertainty | None = None
+    st_proper_motion_ra: ValueWithUncertainty | None = None
+    st_proper_motion_ra_2: ValueWithUncertainty | None = None
+    st_proper_motion_dec: ValueWithUncertainty | None = None
+    st_proper_motion_dec_2: ValueWithUncertainty | None = None
+    st_parallax: ValueWithUncertainty | None = None
+    st_parallax_2: ValueWithUncertainty | None = None
+    st_distance_pc: ValueWithUncertainty | None = None
+    st_distance_pc_2: ValueWithUncertainty | None = None
+    st_distance_light_years: ValueWithUncertainty | None = None
+    st_distance_light_years_2: ValueWithUncertainty | None = None
+    st_distance: ValueWithUncertainty | None = None
+    st_distance_2: ValueWithUncertainty | None = None
 
     # Caractéristiques spectroscopiques
-    st_spectral_type: Optional[str] = None
-    st_spectral_type_2: Optional[str] = None
+    st_spectral_type: str | None = None
+    st_spectral_type_2: str | None = None
 
     # Magnitudes
-    st_apparent_magnitude: Optional[ValueWithUncertainty] = None
-    st_apparent_magnitude_2: Optional[ValueWithUncertainty] = None
-    st_mag_u: Optional[ValueWithUncertainty] = None
-    st_mag_u_2: Optional[ValueWithUncertainty] = None
-    st_mag_b: Optional[ValueWithUncertainty] = None
-    st_mag_b_2: Optional[ValueWithUncertainty] = None
-    st_mag_v: Optional[ValueWithUncertainty] = None
-    st_mag_v_2: Optional[ValueWithUncertainty] = None
-    st_mag_g: Optional[ValueWithUncertainty] = None
-    st_mag_g_2: Optional[ValueWithUncertainty] = None
-    st_mag_r: Optional[ValueWithUncertainty] = None
-    st_mag_r_2: Optional[ValueWithUncertainty] = None
-    st_mag_i: Optional[ValueWithUncertainty] = None
-    st_mag_i_2: Optional[ValueWithUncertainty] = None
-    st_mag_j: Optional[ValueWithUncertainty] = None
-    st_mag_j_2: Optional[ValueWithUncertainty] = None
-    st_mag_h: Optional[ValueWithUncertainty] = None
-    st_mag_h_2: Optional[ValueWithUncertainty] = None
-    st_mag_k: Optional[ValueWithUncertainty] = None
-    st_mag_k_2: Optional[ValueWithUncertainty] = None
+    st_apparent_magnitude: ValueWithUncertainty | None = None
+    st_apparent_magnitude_2: ValueWithUncertainty | None = None
+    st_mag_u: ValueWithUncertainty | None = None
+    st_mag_u_2: ValueWithUncertainty | None = None
+    st_mag_b: ValueWithUncertainty | None = None
+    st_mag_b_2: ValueWithUncertainty | None = None
+    st_mag_v: ValueWithUncertainty | None = None
+    st_mag_v_2: ValueWithUncertainty | None = None
+    st_mag_g: ValueWithUncertainty | None = None
+    st_mag_g_2: ValueWithUncertainty | None = None
+    st_mag_r: ValueWithUncertainty | None = None
+    st_mag_r_2: ValueWithUncertainty | None = None
+    st_mag_i: ValueWithUncertainty | None = None
+    st_mag_i_2: ValueWithUncertainty | None = None
+    st_mag_j: ValueWithUncertainty | None = None
+    st_mag_j_2: ValueWithUncertainty | None = None
+    st_mag_h: ValueWithUncertainty | None = None
+    st_mag_h_2: ValueWithUncertainty | None = None
+    st_mag_k: ValueWithUncertainty | None = None
+    st_mag_k_2: ValueWithUncertainty | None = None
 
     # Indices de couleur
-    st_u_b_color: Optional[ValueWithUncertainty] = None
-    st_u_b_color_2: Optional[ValueWithUncertainty] = None
-    st_b_v_color: Optional[ValueWithUncertainty] = None
-    st_b_v_color_2: Optional[ValueWithUncertainty] = None
-    st_v_r_color: Optional[ValueWithUncertainty] = None
-    st_v_r_color_2: Optional[ValueWithUncertainty] = None
-    st_r_i_color: Optional[ValueWithUncertainty] = None
-    st_r_i_color_2: Optional[ValueWithUncertainty] = None
-    st_j_k_color: Optional[ValueWithUncertainty] = None
-    st_j_k_color_2: Optional[ValueWithUncertainty] = None
-    st_j_h_color: Optional[ValueWithUncertainty] = None
-    st_j_h_color_2: Optional[ValueWithUncertainty] = None
-    st_absolute_magnitude: Optional[ValueWithUncertainty] = None
-    st_absolute_magnitude_2: Optional[ValueWithUncertainty] = None
+    st_u_b_color: ValueWithUncertainty | None = None
+    st_u_b_color_2: ValueWithUncertainty | None = None
+    st_b_v_color: ValueWithUncertainty | None = None
+    st_b_v_color_2: ValueWithUncertainty | None = None
+    st_v_r_color: ValueWithUncertainty | None = None
+    st_v_r_color_2: ValueWithUncertainty | None = None
+    st_r_i_color: ValueWithUncertainty | None = None
+    st_r_i_color_2: ValueWithUncertainty | None = None
+    st_j_k_color: ValueWithUncertainty | None = None
+    st_j_k_color_2: ValueWithUncertainty | None = None
+    st_j_h_color: ValueWithUncertainty | None = None
+    st_j_h_color_2: ValueWithUncertainty | None = None
+    st_absolute_magnitude: ValueWithUncertainty | None = None
+    st_absolute_magnitude_2: ValueWithUncertainty | None = None
 
     # Caractéristiques physiques
-    mass: Optional[ValueWithUncertainty] = None
-    radius: Optional[ValueWithUncertainty] = None
-    density: Optional[ValueWithUncertainty] = None
-    luminosity: Optional[ValueWithUncertainty] = None
-    surface_gravity: Optional[ValueWithUncertainty] = None
-    temperature: Optional[ValueWithUncertainty] = None
-    metallicity: Optional[ValueWithUncertainty] = None
-    rotation: Optional[ValueWithUncertainty] = None
-    age: Optional[ValueWithUncertainty] = None
-    st_mass: Optional[ValueWithUncertainty] = None
-    st_mass_2: Optional[ValueWithUncertainty] = None
-    st_radius: Optional[ValueWithUncertainty] = None
-    st_radius_2: Optional[ValueWithUncertainty] = None
-    st_density: Optional[ValueWithUncertainty] = None
-    st_density_2: Optional[ValueWithUncertainty] = None
-    st_luminosity: Optional[ValueWithUncertainty] = None
-    st_luminosity_2: Optional[ValueWithUncertainty] = None
-    st_surface_gravity: Optional[ValueWithUncertainty] = None
-    st_surface_gravity_2: Optional[ValueWithUncertainty] = None
-    st_temperature: Optional[ValueWithUncertainty] = None
-    st_temperature_2: Optional[ValueWithUncertainty] = None
-    st_metallicity: Optional[ValueWithUncertainty] = None
-    st_metallicity_2: Optional[ValueWithUncertainty] = None
-    st_rotation: Optional[ValueWithUncertainty] = None
-    st_rotation_2: Optional[ValueWithUncertainty] = None
-    st_age: Optional[ValueWithUncertainty] = None
-    st_age_2: Optional[ValueWithUncertainty] = None
-    st_evolutionary_stage: Optional[str] = None
-    st_evolutionary_stage_2: Optional[str] = None
-    st_variability: Optional[str] = None
-    st_variability_2: Optional[str] = None
+    mass: ValueWithUncertainty | None = None
+    radius: ValueWithUncertainty | None = None
+    density: ValueWithUncertainty | None = None
+    luminosity: ValueWithUncertainty | None = None
+    surface_gravity: ValueWithUncertainty | None = None
+    temperature: ValueWithUncertainty | None = None
+    metallicity: ValueWithUncertainty | None = None
+    rotation: ValueWithUncertainty | None = None
+    age: ValueWithUncertainty | None = None
+    st_mass: ValueWithUncertainty | None = None
+    st_mass_2: ValueWithUncertainty | None = None
+    st_radius: ValueWithUncertainty | None = None
+    st_radius_2: ValueWithUncertainty | None = None
+    st_density: ValueWithUncertainty | None = None
+    st_density_2: ValueWithUncertainty | None = None
+    st_luminosity: ValueWithUncertainty | None = None
+    st_luminosity_2: ValueWithUncertainty | None = None
+    st_surface_gravity: ValueWithUncertainty | None = None
+    st_surface_gravity_2: ValueWithUncertainty | None = None
+    st_temperature: ValueWithUncertainty | None = None
+    st_temperature_2: ValueWithUncertainty | None = None
+    st_metallicity: ValueWithUncertainty | None = None
+    st_metallicity_2: ValueWithUncertainty | None = None
+    st_rotation: ValueWithUncertainty | None = None
+    st_rotation_2: ValueWithUncertainty | None = None
+    st_age: ValueWithUncertainty | None = None
+    st_age_2: ValueWithUncertainty | None = None
+    st_evolutionary_stage: str | None = None
+    st_evolutionary_stage_2: str | None = None
+    st_variability: str | None = None
+    st_variability_2: str | None = None
 
     # Système stellaire
-    st_stellar_components: Optional[List[str]] = None
-    st_companion: Optional[str] = None
-    st_planets: Optional[List[str]] = None
+    st_stellar_components: list[str] | None = None
+    st_companion: str | None = None
+    st_planets: list[str] | None = None
 
     # Éléments orbitaux binaires
-    st_semi_major_axis: Optional[ValueWithUncertainty] = None
-    st_eccentricity: Optional[ValueWithUncertainty] = None
-    st_period: Optional[ValueWithUncertainty] = None
-    st_inclination: Optional[ValueWithUncertainty] = None
-    st_argument_of_periapsis: Optional[ValueWithUncertainty] = None
-    st_epoch_binary: Optional[ValueWithUncertainty] = None
-    st_semi_amplitude: Optional[ValueWithUncertainty] = None
+    st_semi_major_axis: ValueWithUncertainty | None = None
+    st_eccentricity: ValueWithUncertainty | None = None
+    st_period: ValueWithUncertainty | None = None
+    st_inclination: ValueWithUncertainty | None = None
+    st_argument_of_periapsis: ValueWithUncertainty | None = None
+    st_epoch_binary: ValueWithUncertainty | None = None
+    st_semi_amplitude: ValueWithUncertainty | None = None
 
     # Référence unique
     reference: Reference = None

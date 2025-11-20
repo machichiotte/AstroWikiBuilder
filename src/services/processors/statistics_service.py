@@ -1,6 +1,7 @@
 # src/services/processors/statistics_service.py
 import logging
-from typing import List, Dict, Any
+from typing import Any
+
 from src.models.entities.exoplanet_model import Exoplanet
 from src.models.entities.star import Star
 
@@ -11,9 +12,7 @@ class StatisticsService:
     def __init__(self):
         logger.info("StatisticsService initialized.")
 
-    def generate_statistics_exoplanet(
-        self, exoplanets: List[Exoplanet]
-    ) -> Dict[str, Any]:
+    def generate_statistics_exoplanet(self, exoplanets: list[Exoplanet]) -> dict[str, Any]:
         """Génère les statistiques pour les exoplanètes"""
         logger.info(f"Generating statistics for {len(exoplanets)} exoplanets.")
         stats = {
@@ -40,16 +39,12 @@ class StatisticsService:
             # Méthodes de découverte
             if exoplanet.disc_method:
                 method: str = exoplanet.disc_method
-                stats["discovery_methods"][method] = (
-                    stats["discovery_methods"].get(method, 0) + 1
-                )
+                stats["discovery_methods"][method] = stats["discovery_methods"].get(method, 0) + 1
 
             # Années de découverte
             if exoplanet.disc_year:
                 year: int = int(exoplanet.disc_year)
-                stats["discovery_years"][year] = (
-                    stats["discovery_years"].get(year, 0) + 1
-                )
+                stats["discovery_years"][year] = stats["discovery_years"].get(year, 0) + 1
 
             # Plages de masse
             if exoplanet.pl_mass and exoplanet.pl_mass.value:
@@ -82,7 +77,7 @@ class StatisticsService:
         logger.info("Statistics generation for exoplanets complete.")
         return stats
 
-    def generate_statistics_star(self, stars: List[Star]) -> Dict[str, Any]:
+    def generate_statistics_star(self, stars: list[Star]) -> dict[str, Any]:
         """
         Retourne des statistiques sur les données collectées pour les étoiles.
         """
@@ -106,9 +101,7 @@ class StatisticsService:
             # Statistiques par type spectral
             if star.st_spectral_type:
                 spectral = str(star.st_spectral_type)
-                stats["spectral_types"][spectral] = (
-                    stats["spectral_types"].get(spectral, 0) + 1
-                )
+                stats["spectral_types"][spectral] = stats["spectral_types"].get(spectral, 0) + 1
 
             # Statistiques par année de découverte
             if hasattr(star, "disc_year") and star.disc_year and star.disc_year.value:

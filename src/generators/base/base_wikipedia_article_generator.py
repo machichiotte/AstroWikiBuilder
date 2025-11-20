@@ -1,7 +1,7 @@
 # src/generators/base/base_wikipedia_article_generator.py
 
 import datetime
-from typing import Optional
+
 import pytz
 
 
@@ -12,9 +12,7 @@ class BaseWikipediaArticleGenerator:
     Les sous-classes doivent se spécialiser pour un type d'objet (exoplanète, étoile, etc.).
     """
 
-    def __init__(
-        self, reference_manager, category_generator, stub_type: str, portals: list[str]
-    ):
+    def __init__(self, reference_manager, category_generator, stub_type: str, portals: list[str]):
         self.reference_manager = reference_manager
         self.category_generator = category_generator
         self.stub_type = stub_type
@@ -45,7 +43,7 @@ class BaseWikipediaArticleGenerator:
     def build_portails_section(self) -> str:
         return "{{Portail|" + "|".join(self.portals) + "}}\n"
 
-    def build_palettes_section(self, obj) -> Optional[str]:
+    def build_palettes_section(self, obj) -> str | None:
         return None
 
     def build_category_section(self, obj) -> str:

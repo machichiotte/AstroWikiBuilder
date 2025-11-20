@@ -1,9 +1,9 @@
 # src/generators/articles/star/parts/star_introduction_generator.py
-from typing import Optional
+
 from src.models.entities.star import Star
 from src.utils.astro.classification.star_type_utils import StarTypeUtils
-from src.utils.lang.phrase.constellation import phrase_situee_dans_constellation
 from src.utils.formatters.article_formatters import ArticleUtils
+from src.utils.lang.phrase.constellation import phrase_situee_dans_constellation
 
 
 class StarIntroductionGenerator:
@@ -18,7 +18,7 @@ class StarIntroductionGenerator:
     # ============================================================================
     # COMPOSITION DES SEGMENTS DE PHRASE
     # ============================================================================
-    def _compose_star_type_phrase(self, star: Star) -> Optional[str]:
+    def _compose_star_type_phrase(self, star: Star) -> str | None:
         """
         Renvoie une description textuelle du type spectral de l'étoile.
         """
@@ -33,7 +33,7 @@ class StarIntroductionGenerator:
         description2 = description[0].lower() + description[1:]
         return f"une [[{description2}]]"
 
-    def _compose_constellation_phrase(self, star: Star) -> Optional[str]:
+    def _compose_constellation_phrase(self, star: Star) -> str | None:
         """
         Renvoie une phrase indiquant la position dans la constellation.
         """
@@ -42,7 +42,7 @@ class StarIntroductionGenerator:
         constellation = star.sy_constellation.strip()
         return phrase_situee_dans_constellation(constellation, with_bracket=True)
 
-    def _compose_distance_phrase(self, star: Star) -> Optional[str]:
+    def _compose_distance_phrase(self, star: Star) -> str | None:
         """
         Renvoie une phrase exprimant la distance à la Terre en parsecs.
         """

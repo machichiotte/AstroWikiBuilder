@@ -1,8 +1,9 @@
 # src/services/external/export_service.py
-import logging
 import csv
 import json
-from typing import List, Dict, Any
+import logging
+from typing import Any
+
 from src.models.entities.exoplanet_model import Exoplanet
 
 logger: logging.Logger = logging.getLogger(__name__)
@@ -12,15 +13,13 @@ class ExportService:
     def __init__(self):
         logger.info("ExportService initialized.")
 
-    def _exoplanet_to_dict_flat(self, exoplanet: Exoplanet) -> Dict[str, Any]:
+    def _exoplanet_to_dict_flat(self, exoplanet: Exoplanet) -> dict[str, Any]:
         """
         Convertit un objet Exoplanet en dictionnaire avec des valeurs 'plates'.
         """
         data = {
             "pl_name": exoplanet.pl_name,
-            "pl_altname": (
-                ", ".join(exoplanet.pl_altname) if exoplanet.pl_altname else None
-            ),
+            "pl_altname": (", ".join(exoplanet.pl_altname) if exoplanet.pl_altname else None),
             "st_name": exoplanet.st_name,
             "st_spectral_type": exoplanet.st_spectral_type,
             "st_distance": exoplanet.st_distance,
@@ -43,9 +42,7 @@ class ExportService:
         }
         return data
 
-    def export_exoplanets_to_csv(
-        self, filename: str, exoplanets: List[Exoplanet]
-    ) -> None:
+    def export_exoplanets_to_csv(self, filename: str, exoplanets: list[Exoplanet]) -> None:
         """Exporte les exoplanètes vers un fichier CSV"""
         logger.info(f"Exporting {len(exoplanets)} exoplanets to CSV: {filename}")
         if not exoplanets:
@@ -65,9 +62,7 @@ class ExportService:
         except Exception as e:
             logger.error(f"Error exporting exoplanets to CSV {filename}: {e}")
 
-    def export_exoplanets_to_json(
-        self, filename: str, exoplanets: List[Exoplanet]
-    ) -> None:
+    def export_exoplanets_to_json(self, filename: str, exoplanets: list[Exoplanet]) -> None:
         """Exporte les exoplanètes vers un fichier JSON"""
         logger.info(f"Exporting {len(exoplanets)} exoplanets to JSON: {filename}")
         if not exoplanets:
@@ -77,10 +72,7 @@ class ExportService:
         try:
             with open(filename, "w", encoding="utf-8") as f:
                 json.dump(
-                    [
-                        self._exoplanet_to_dict_flat(exoplanet)
-                        for exoplanet in exoplanets
-                    ],
+                    [self._exoplanet_to_dict_flat(exoplanet) for exoplanet in exoplanets],
                     f,
                     indent=2,
                     ensure_ascii=False,

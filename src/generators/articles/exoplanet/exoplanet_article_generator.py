@@ -3,31 +3,29 @@
 import locale
 import re
 
+from src.generators.articles.exoplanet.parts.exoplanet_category_generator import (
+    ExoplanetCategoryGenerator,
+)
 from src.generators.articles.exoplanet.parts.exoplanet_content_generator import (
     ExoplanetContentGenerator,
 )
-from src.models.entities.exoplanet_model import Exoplanet
-
-from src.utils.formatters.article_formatters import ArticleUtils
-from src.utils.astro.constellation_utils import ConstellationUtils
-
-from src.utils.astro.classification.exoplanet_comparison_utils import (
-    ExoplanetComparisonUtils,
-)
-from src.utils.astro.classification.exoplanet_type_utils import ExoplanetTypeUtils
 from src.generators.articles.exoplanet.parts.exoplanet_infobox_generator import (
     ExoplanetInfoboxGenerator,
 )
 from src.generators.articles.exoplanet.parts.exoplanet_introduction_generator import (
     ExoplanetIntroductionGenerator,
 )
-from src.generators.articles.exoplanet.parts.exoplanet_category_generator import (
-    ExoplanetCategoryGenerator,
-)
-from src.services.processors.reference_manager import ReferenceManager
 from src.generators.base.base_wikipedia_article_generator import (
     BaseWikipediaArticleGenerator,
 )
+from src.models.entities.exoplanet_model import Exoplanet
+from src.services.processors.reference_manager import ReferenceManager
+from src.utils.astro.classification.exoplanet_comparison_utils import (
+    ExoplanetComparisonUtils,
+)
+from src.utils.astro.classification.exoplanet_type_utils import ExoplanetTypeUtils
+from src.utils.astro.constellation_utils import ConstellationUtils
+from src.utils.formatters.article_formatters import ArticleUtils
 
 
 class ExoplanetWikipediaArticleGenerator(BaseWikipediaArticleGenerator):
@@ -77,9 +75,7 @@ class ExoplanetWikipediaArticleGenerator(BaseWikipediaArticleGenerator):
         article = "\n\n".join(filter(None, parts))
         return self.replace_first_reference_with_full(article, exoplanet)
 
-    def replace_first_reference_with_full(
-        self, content: str, exoplanet: Exoplanet
-    ) -> str:
+    def replace_first_reference_with_full(self, content: str, exoplanet: Exoplanet) -> str:
         """
         Remplace uniquement la première référence courte par sa version complète.
         """

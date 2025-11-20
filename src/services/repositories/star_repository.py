@@ -1,6 +1,6 @@
 # src/services/repositories/star_repository.py
 import logging
-from typing import List, Dict
+
 from src.models.entities.star import Star
 
 logger: logging.Logger = logging.getLogger(__name__)
@@ -8,18 +8,16 @@ logger: logging.Logger = logging.getLogger(__name__)
 
 class StarRepository:
     def __init__(self):
-        self.stars: Dict[str, Star] = {}
+        self.stars: dict[str, Star] = {}
         logger.info("StarRepository initialized.")
 
-    def add_stars(self, stars: List[Star], source_system: str) -> None:
+    def add_stars(self, stars: list[Star], source_system: str) -> None:
         """
         Ajoute ou fusionne les exoplanètes dans le dictionnaire.
         Le paramètre 'source_system' indique le système ou le lot d'où proviennent ces données,
         pas nécessairement la 'SourceType' d'une donnée individuelle.
         """
-        logger.info(
-            f"Attempting to add {len(stars)} stars from source system: {source_system}..."
-        )
+        logger.info(f"Attempting to add {len(stars)} stars from source system: {source_system}...")
         added_count = 0
         merged_count = 0
         for star in stars:
@@ -37,5 +35,5 @@ class StarRepository:
             f"Addition from {source_system} complete. Added: {added_count}, Merged: {merged_count}. Total stars: {len(self.stars)}"
         )
 
-    def get_all_stars(self) -> List[Star]:
+    def get_all_stars(self) -> list[Star]:
         return list(self.stars.values())

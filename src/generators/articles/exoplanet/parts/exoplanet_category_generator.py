@@ -1,9 +1,10 @@
 # src/generators/articles/exoplanet/parts/exoplanet_category_generator.py
-from typing import List, Optional, Callable
+import logging
+from collections.abc import Callable
+
+from src.generators.base.base_category_generator import BaseCategoryGenerator
 from src.models.entities.exoplanet_model import Exoplanet
 from src.utils.astro.classification.exoplanet_type_utils import ExoplanetTypeUtils
-from src.generators.base.base_category_generator import BaseCategoryGenerator
-import logging
 
 
 class ExoplanetCategoryGenerator(BaseCategoryGenerator):
@@ -21,7 +22,7 @@ class ExoplanetCategoryGenerator(BaseCategoryGenerator):
     def retrieve_object_type(self) -> str:
         return "exoplanet"
 
-    def define_category_rules(self) -> List[Callable]:
+    def define_category_rules(self) -> list[Callable]:
         return [
             self.map_planet_type_to_category,
             self.map_discovery_program_to_category,
@@ -30,14 +31,12 @@ class ExoplanetCategoryGenerator(BaseCategoryGenerator):
 
     # --- Règles de catégorisation spécifiques aux exoplanètes ---
 
-    def map_planet_type_to_category(self, exoplanet: Exoplanet) -> Optional[str]:
+    def map_planet_type_to_category(self, exoplanet: Exoplanet) -> str | None:
         """
         Règle personnalisée pour déterminer la catégorie de type de planète.
         """
         try:
-            planet_type: str = (
-                self.planet_type_utils.determine_exoplanet_classification(exoplanet)
-            )
+            planet_type: str = self.planet_type_utils.determine_exoplanet_classification(exoplanet)
             if planet_type:
                 mapping = (
                     self._category_rules_manager.rules.get("exoplanet", {})
@@ -58,7 +57,7 @@ class ExoplanetCategoryGenerator(BaseCategoryGenerator):
             pass
         return None
 
-    def map_discovery_program_to_category(self, exoplanet: Exoplanet) -> Optional[str]:
+    def map_discovery_program_to_category(self, exoplanet: Exoplanet) -> str | None:
         """
         Règle personnalisée pour déterminer la catégorie 'découverte grâce à'
         en utilisant le champ 'discovery_program' de l'exoplanète et le mapping.
@@ -83,7 +82,7 @@ class ExoplanetCategoryGenerator(BaseCategoryGenerator):
                     return cat
         return None
 
-    def map_constellation_to_category(self, exoplanet: Exoplanet) -> Optional[str]:
+    def map_constellation_to_category(self, exoplanet: Exoplanet) -> str | None:
         """
         Règle personnalisée pour déterminer la catégorie liée à la constellation.
         Génère une catégorie sous la forme "Exoplanète de la constellation de [Nom]".

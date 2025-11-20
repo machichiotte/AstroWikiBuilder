@@ -5,8 +5,8 @@ Tests pour le module cli_parser.py
 
 from unittest.mock import patch
 
+from src.core.config import DEFAULT_DRAFTS_DIR, DEFAULT_OUTPUT_DIR
 from src.orchestration.cli_parser import parse_cli_arguments
-from src.core.config import DEFAULT_OUTPUT_DIR, DEFAULT_DRAFTS_DIR
 
 
 class TestCLIParser:
@@ -23,9 +23,7 @@ class TestCLIParser:
         assert args.output_dir == DEFAULT_OUTPUT_DIR
         assert args.drafts_dir == DEFAULT_DRAFTS_DIR
 
-    @patch(
-        "sys.argv", ["main.py", "--sources", "nasa_exoplanet_archive", "exoplanet_eu"]
-    )
+    @patch("sys.argv", ["main.py", "--sources", "nasa_exoplanet_archive", "exoplanet_eu"])
     def test_parse_multiple_sources(self):
         """Test avec plusieurs sources."""
         args = parse_cli_arguments()

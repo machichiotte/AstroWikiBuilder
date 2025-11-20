@@ -8,33 +8,31 @@ Responsabilité :
 - Factory pattern pour les collecteurs
 """
 
-import os
 import argparse
-from typing import Tuple, Dict, Any
+import os
+from typing import Any
 
-from src.core.config import (
-    DEFAULT_WIKI_USER_AGENT,
-    CACHE_PATHS,
-    logger,
-)
-
-from src.services.repositories.exoplanet_repository import ExoplanetRepository
-from src.services.repositories.star_repository import StarRepository
-from src.services.processors.statistics_service import StatisticsService
-from src.services.external.wikipedia_service import WikipediaService
-from src.services.external.export_service import ExportService
-from src.utils.wikipedia.wikipedia_checker import WikipediaChecker
-
+from src.collectors.implementations.exoplanet_eu import ExoplanetEUCollector
 from src.collectors.implementations.nasa_exoplanet_archive_collector import (
     NasaExoplanetArchiveCollector,
 )
-from src.collectors.implementations.exoplanet_eu import ExoplanetEUCollector
 from src.collectors.implementations.open_exoplanet_collection import (
     OpenExoplanetCollector,
 )
+from src.core.config import (
+    CACHE_PATHS,
+    DEFAULT_WIKI_USER_AGENT,
+    logger,
+)
+from src.services.external.export_service import ExportService
+from src.services.external.wikipedia_service import WikipediaService
+from src.services.processors.statistics_service import StatisticsService
+from src.services.repositories.exoplanet_repository import ExoplanetRepository
+from src.services.repositories.star_repository import StarRepository
+from src.utils.wikipedia.wikipedia_checker import WikipediaChecker
 
 
-def initialize_services() -> Tuple[
+def initialize_services() -> tuple[
     ExoplanetRepository,
     StarRepository,
     StatisticsService,
@@ -82,7 +80,7 @@ def initialize_services() -> Tuple[
     )
 
 
-def initialize_collectors(args: argparse.Namespace) -> Dict[str, Any]:
+def initialize_collectors(args: argparse.Namespace) -> dict[str, Any]:
     """
     Initialise les collecteurs de données basés sur les arguments CLI.
 

@@ -4,6 +4,7 @@ Tests pour ExoplanetEUCollector.
 """
 
 from unittest.mock import patch
+
 import pandas as pd
 
 from src.collectors.implementations.exoplanet_eu import ExoplanetEUCollector
