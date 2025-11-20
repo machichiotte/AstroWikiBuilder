@@ -1,7 +1,7 @@
 # src/generators/articles/exoplanet/parts/exoplanet_introduction_generator.py
 
 from typing import List, Optional
-from src.models.entities.exoplanet import Exoplanet
+from src.models.entities.exoplanet_model import Exoplanet
 from src.utils.astro.constellation_utils import ConstellationUtils
 from src.utils.formatters.article_formatters import ArticleUtils
 from src.utils.astro.classification.star_type_utils import StarTypeUtils

@@ -1,7 +1,7 @@
 # src/services/processors/statistics_service.py
 import logging
 from typing import List, Dict, Any
-from src.models.entities.exoplanet import Exoplanet
+from src.models.entities.exoplanet_model import Exoplanet
 from src.models.entities.star import Star
 
 logger: logging.Logger = logging.getLogger(__name__)

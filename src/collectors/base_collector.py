@@ -8,7 +8,7 @@ import logging
 from abc import ABC, abstractmethod
 
 from src.models.entities.star import Star
-from src.models.entities.exoplanet import Exoplanet
+from src.models.entities.exoplanet_model import Exoplanet
 from src.models.references.reference import SourceType
 from src.services.processors.reference_manager import ReferenceManager
 

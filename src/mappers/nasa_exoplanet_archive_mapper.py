@@ -3,9 +3,9 @@
 # ============================================================================
 from typing import Any, Optional
 from src.models.references.reference import Reference, SourceType
-from src.models.entities.exoplanet import ValueWithUncertainty
+from src.models.entities.exoplanet_model import ValueWithUncertainty
 from src.utils.astro.constellation_utils import ConstellationUtils
-from src.models.entities.exoplanet import Exoplanet
+from src.models.entities.exoplanet_model import Exoplanet
 from src.models.entities.star import Star
 from src.models.entities.nea_entity import (
     NEA_TO_STAR_MAPPING,

@@ -6,7 +6,7 @@ from src.core.config import CACHE_PATHS
 from src.models.entities.star import Star
 from src.mappers.nasa_exoplanet_archive_mapper import NasaExoplanetArchiveMapper
 from src.collectors.base_collector import BaseCollector
-from src.models.entities.exoplanet import Exoplanet
+from src.models.entities.exoplanet_model import Exoplanet
 
 from src.models.references.reference import SourceType
 

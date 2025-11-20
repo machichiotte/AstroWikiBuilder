@@ -5,7 +5,7 @@
 # IMPORTS
 # ============================================================================
 from typing import List, Optional
-from src.models.entities.exoplanet import Exoplanet
+from src.models.entities.exoplanet_model import Exoplanet
 from src.models.entities.star import Star
 from src.utils.formatters.article_formatters import ArticleUtils
 from src.utils.lang.phrase.constellation import phrase_dans_constellation

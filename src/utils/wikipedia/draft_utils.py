@@ -4,7 +4,7 @@ import logging
 from typing import List, Tuple, Dict
 
 # Project imports
-from src.models.entities.exoplanet import Exoplanet
+from src.models.entities.exoplanet_model import Exoplanet
 from src.models.entities.star import Star
 from src.generators.articles.exoplanet.exoplanet_article_generator import (
     ExoplanetWikipediaArticleGenerator,

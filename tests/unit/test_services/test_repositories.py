@@ -38,7 +38,7 @@ class TestExoplanetRepository:
         """Test d'ajout de multiples exoplanètes."""
         repo = ExoplanetRepository()
 
-        from src.models.entities.exoplanet import Exoplanet, ValueWithUncertainty
+        from src.models.entities.exoplanet_model import Exoplanet, ValueWithUncertainty
         from src.models.references.reference import Reference, SourceType
         from datetime import datetime
 

@@ -6,7 +6,7 @@ import re
 from src.generators.articles.exoplanet.parts.exoplanet_content_generator import (
     ExoplanetContentGenerator,
 )
-from src.models.entities.exoplanet import Exoplanet
+from src.models.entities.exoplanet_model import Exoplanet
 
 from src.utils.formatters.article_formatters import ArticleUtils
 from src.utils.astro.constellation_utils import ConstellationUtils

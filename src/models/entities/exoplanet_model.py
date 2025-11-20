@@ -35,18 +35,18 @@ class ValueWithUncertainty:
 class Exoplanet:
     """
     Modèle de données pour une exoplanète.
-    
+
     Cette classe représente toutes les données connues d'une exoplanète,
     incluant ses caractéristiques physiques, orbitales, et les informations
     sur sa découverte.
-    
+
     Attributes:
         pl_name (str): Nom principal de l'exoplanète (ex: "HD 209458 b").
         pl_altname (List[str]): Noms alternatifs de l'exoplanète.
         image (str): Chemin ou URL de l'image représentant l'exoplanète.
         caption (str): Légende de l'image.
         sy_constellation (str): Constellation dans laquelle se trouve le système.
-        
+
         st_name (str): Nom de l'étoile hôte.
         st_epoch (float): Époque de référence pour les coordonnées stellaires (JD).
         st_right_ascension (float): Ascension droite de l'étoile (degrés).
@@ -59,7 +59,7 @@ class Exoplanet:
         st_radius (ValueWithUncertainty): Rayon de l'étoile (R☉).
         st_variability (ValueWithUncertainty): Variabilité de l'étoile.
         st_metallicity (ValueWithUncertainty): Métallicité de l'étoile [Fe/H].
-        
+
         pl_semi_major_axis (ValueWithUncertainty): Demi-grand axe orbital (UA).
         pl_periastron (float): Distance au périastre (UA).
         pl_apoastron (float): Distance à l'apoastre (UA).
@@ -70,7 +70,7 @@ class Exoplanet:
         pl_inclination (ValueWithUncertainty): Inclinaison orbitale (degrés).
         pl_argument_of_periastron (float): Argument du périastre (degrés).
         pl_epoch (float): Époque de référence pour les éléments orbitaux (JD).
-        
+
         pl_mass (ValueWithUncertainty): Masse de l'exoplanète (M_Jupiter).
         pl_minimum_mass (ValueWithUncertainty): Masse minimale (M_Jupiter).
         pl_radius (ValueWithUncertainty): Rayon de l'exoplanète (R_Jupiter).
@@ -79,11 +79,11 @@ class Exoplanet:
         pl_rotation_period (float): Période de rotation (jours).
         pl_temperature (ValueWithUncertainty): Température d'équilibre (K).
         pl_albedo_bond (float): Albédo de Bond (sans unité).
-        
+
         pl_pressure (float): Pression atmosphérique (bar).
         pl_composition (str): Composition atmosphérique.
         pl_wind_speed (float): Vitesse des vents (m/s).
-        
+
         disc_by (str): Découvreur(s) de l'exoplanète.
         disc_program (str): Programme de découverte.
         disc_method (str): Méthode de découverte (Transit, Radial Velocity, etc.).
@@ -92,7 +92,7 @@ class Exoplanet:
         pre_discovery (str): Informations sur une éventuelle pré-découverte.
         detection_type (str): Type de détection.
         status (str): Statut de confirmation de l'exoplanète.
-        
+
         reference (Reference): Référence bibliographique de la source des données.
     """
 

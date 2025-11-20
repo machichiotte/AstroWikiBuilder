@@ -6,7 +6,7 @@ from typing import List, Optional
 
 from src.constants.wikipedia_field_config import CONSTELLATION_GENDER_FR
 from src.models.entities.star import Star
-from src.models.entities.exoplanet import Exoplanet
+from src.models.entities.exoplanet_model import Exoplanet
 from src.services.processors.reference_manager import ReferenceManager
 from src.generators.base.base_wikipedia_article_generator import (
     BaseWikipediaArticleGenerator,

@@ -1,7 +1,7 @@
 # src/utils/data_processor.py
 import logging
 from typing import List, Dict, Tuple, Any
-from src.models.entities.exoplanet import Exoplanet
+from src.models.entities.exoplanet_model import Exoplanet
 from src.models.entities.star import Star
 from src.utils.wikipedia.wikipedia_checker import WikiArticleInfo
 from src.services.repositories.star_repository import StarRepository

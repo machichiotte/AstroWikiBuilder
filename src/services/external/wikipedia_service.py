@@ -1,7 +1,7 @@
 # src/services/external/wikipedia_service.py
 import logging
 from typing import List, Dict, Any
-from src.models.entities.exoplanet import Exoplanet
+from src.models.entities.exoplanet_model import Exoplanet
 from src.utils.wikipedia.wikipedia_checker import WikipediaChecker
 from src.utils.wikipedia.wikipedia_checker import WikiArticleInfo
 

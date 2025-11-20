@@ -1,6 +1,6 @@
 # src/generators/articles/exoplanet/parts/exoplanet_category_generator.py
 from typing import List, Optional, Callable
-from src.models.entities.exoplanet import Exoplanet
+from src.models.entities.exoplanet_model import Exoplanet
 from src.utils.astro.classification.exoplanet_type_utils import ExoplanetTypeUtils
 from src.generators.base.base_category_generator import BaseCategoryGenerator
 import logging

@@ -169,7 +169,7 @@ def parse_cli_arguments() -> argparse.Namespace:
    import requests
 
    # Local
-   from src.models.entities.exoplanet import Exoplanet
+   from src.models.entities.exoplanet_model import Exoplanet
    ```
 
 ---

@@ -2,7 +2,7 @@
 
 from abc import ABC, abstractmethod
 from typing import Any
-from src.models.entities.exoplanet import Exoplanet
+from src.models.entities.exoplanet_model import Exoplanet
 from src.models.entities.star import Star
 from src.models.infobox_fields import FieldMapping
 from src.utils.formatters.infobox_field_formatters import FieldFormatter

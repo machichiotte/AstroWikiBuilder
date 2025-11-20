@@ -6,7 +6,7 @@ import logging
 from src.collectors.base_collector import BaseCollector
 from src.models.references.reference import SourceType
 from src.models.entities.star import Star
-from src.models.entities.exoplanet import Exoplanet, ValueWithUncertainty
+from src.models.entities.exoplanet_model import Exoplanet, ValueWithUncertainty
 
 logger: logging.Logger = logging.getLogger(__name__)
 

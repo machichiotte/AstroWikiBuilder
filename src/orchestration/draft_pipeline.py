@@ -11,7 +11,7 @@ Responsabilité :
 from typing import List, Dict
 
 from src.core.config import logger
-from src.models.entities.exoplanet import Exoplanet
+from src.models.entities.exoplanet_model import Exoplanet
 from src.models.entities.star import Star
 from src.services.processors.data_processor import DataProcessor
 from src.utils.wikipedia.draft_utils import (

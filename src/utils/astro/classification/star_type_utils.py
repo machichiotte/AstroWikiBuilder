@@ -8,7 +8,7 @@ import re
 
 from src.constants.wikipedia_field_config import STELLAR_EVOLUTION_MAP
 from src.models.entities.star import Star
-from src.models.entities.exoplanet import Exoplanet
+from src.models.entities.exoplanet_model import Exoplanet
 
 
 # ============================================================================

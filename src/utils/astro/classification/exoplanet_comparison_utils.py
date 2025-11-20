@@ -1,7 +1,7 @@
 # src/utils/astro/classification/exoplatnet_comparison_utils.py
 
-from src.models.entities.exoplanet import ValueWithUncertainty
-from src.models.entities.exoplanet import Exoplanet
+from src.models.entities.exoplanet_model import ValueWithUncertainty
+from src.models.entities.exoplanet_model import Exoplanet
 from src.utils.formatters.article_formatters import ArticleUtils
 
 

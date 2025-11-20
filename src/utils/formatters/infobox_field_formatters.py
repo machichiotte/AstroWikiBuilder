@@ -6,7 +6,7 @@ from src.constants.wikipedia_field_config import (
     WIKIPEDIA_DISC_FACILITY_MAP,
     WIKIPEDIA_DISC_METHOD_MAP,
 )
-from src.models.entities.exoplanet import ValueWithUncertainty
+from src.models.entities.exoplanet_model import ValueWithUncertainty
 from src.utils.validators import infobox_validators
 from src.models.infobox_fields import FieldMapping
 

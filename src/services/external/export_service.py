@@ -3,7 +3,7 @@ import logging
 import csv
 import json
 from typing import List, Dict, Any
-from src.models.entities.exoplanet import Exoplanet
+from src.models.entities.exoplanet_model import Exoplanet
 
 logger: logging.Logger = logging.getLogger(__name__)
 

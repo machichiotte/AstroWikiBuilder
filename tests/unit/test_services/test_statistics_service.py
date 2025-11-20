@@ -4,7 +4,7 @@ Tests pour StatisticsService.
 """
 
 from src.services.processors.statistics_service import StatisticsService
-from src.models.entities.exoplanet import Exoplanet, ValueWithUncertainty
+from src.models.entities.exoplanet_model import Exoplanet, ValueWithUncertainty
 from src.models.entities.star import Star
 from src.models.references.reference import Reference, SourceType
 from datetime import datetime

@@ -7,7 +7,7 @@ import pytest
 from src.generators.articles.exoplanet.parts.exoplanet_introduction_generator import (
     ExoplanetIntroductionGenerator,
 )
-from src.models.entities.exoplanet import Exoplanet, ValueWithUncertainty
+from src.models.entities.exoplanet_model import Exoplanet, ValueWithUncertainty
 from src.utils.astro.classification.exoplanet_comparison_utils import (
     ExoplanetComparisonUtils,
 )
@@ -50,7 +50,7 @@ class TestExoplanetIntroductionGenerator:
     ):
         """Test de la génération de la phrase d'étoile hôte avec type spectral."""
         result = generator.compose_host_star_phrase(sample_exoplanet_complete)
-        
+
         assert result is not None
         assert "HD 209458" in result
         assert "orbite autour" in result
@@ -60,7 +60,7 @@ class TestExoplanetIntroductionGenerator:
         """Test avec une exoplanète sans nom d'étoile."""
         exoplanet = Exoplanet(pl_name="Test b")
         result = generator.compose_host_star_phrase(exoplanet)
-        
+
         assert result is None
 
     def test_compose_host_star_phrase_without_spectral_type(self, generator):
@@ -70,7 +70,7 @@ class TestExoplanetIntroductionGenerator:
             st_name="Test Star",
         )
         result = generator.compose_host_star_phrase(exoplanet)
-        
+
         assert result is not None
         assert "Test Star" in result
         assert "étoile hôte" in result
@@ -80,7 +80,7 @@ class TestExoplanetIntroductionGenerator:
     ):
         """Test de la génération de la phrase de distance avec distance valide."""
         result = generator.compose_distance_phrase(sample_exoplanet_complete)
-        
+
         assert result is not None
         assert "située à environ" in result
         assert "année-lumière" in result
@@ -90,7 +90,7 @@ class TestExoplanetIntroductionGenerator:
         """Test avec une exoplanète sans distance."""
         exoplanet = Exoplanet(pl_name="Test b")
         result = generator.compose_distance_phrase(exoplanet)
-        
+
         assert result is None
 
     def test_compose_distance_phrase_with_invalid_distance(self, generator):
@@ -100,7 +100,7 @@ class TestExoplanetIntroductionGenerator:
             st_distance=ValueWithUncertainty(value=None),
         )
         result = generator.compose_distance_phrase(exoplanet)
-        
+
         assert result is None
 
     def test_compose_constellation_phrase_with_constellation(
@@ -108,7 +108,7 @@ class TestExoplanetIntroductionGenerator:
     ):
         """Test de la génération de la phrase de constellation."""
         result = generator.compose_constellation_phrase(sample_exoplanet_complete)
-        
+
         assert result is not None
         assert "Pégase" in result
 
@@ -116,7 +116,7 @@ class TestExoplanetIntroductionGenerator:
         """Test avec une exoplanète sans constellation."""
         exoplanet = Exoplanet(pl_name="Test b")
         result = generator.compose_constellation_phrase(exoplanet)
-        
+
         assert result is None
 
     def test_compose_exoplanet_introduction_complete(
@@ -124,7 +124,7 @@ class TestExoplanetIntroductionGenerator:
     ):
         """Test de la génération complète de l'introduction."""
         result = generator.compose_exoplanet_introduction(sample_exoplanet_complete)
-        
+
         assert result is not None
         assert "HD 209458 b" in result
         assert "exoplanète" in result
@@ -137,7 +137,7 @@ class TestExoplanetIntroductionGenerator:
     ):
         """Test de la génération de l'introduction avec données minimales."""
         result = generator.compose_exoplanet_introduction(sample_exoplanet_minimal)
-        
+
         assert result is not None
         assert "Test Planet b" in result
         assert "exoplanète" in result
@@ -147,14 +147,16 @@ class TestExoplanetIntroductionGenerator:
         """Test avec une exoplanète sans nom."""
         exoplanet = Exoplanet(pl_mass=ValueWithUncertainty(value=1.0))
         result = generator.compose_exoplanet_introduction(exoplanet)
-        
+
         assert result is not None
         assert "Nom inconnu" in result
 
-    def test_introduction_format_consistency(self, generator, sample_exoplanet_complete):
+    def test_introduction_format_consistency(
+        self, generator, sample_exoplanet_complete
+    ):
         """Test de la cohérence du format de l'introduction."""
         result = generator.compose_exoplanet_introduction(sample_exoplanet_complete)
-        
+
         # Vérifier le format Wikipedia
         assert result.startswith("'''")
         assert "'''" in result[3:]  # Deuxième occurrence pour fermer le gras

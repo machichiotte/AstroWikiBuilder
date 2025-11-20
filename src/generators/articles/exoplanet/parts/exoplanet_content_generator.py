@@ -4,7 +4,7 @@
 # IMPORTS
 # ============================================================================
 import math
-from src.models.entities.exoplanet import Exoplanet
+from src.models.entities.exoplanet_model import Exoplanet
 from src.utils.formatters.article_formatters import ArticleUtils
 
 
