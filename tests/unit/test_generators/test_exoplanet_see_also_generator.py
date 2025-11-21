@@ -22,11 +22,10 @@ class TestExoplanetSeeAlsoGenerator:
         assert "=== Articles connexes ===" in result
         assert "[[Liste des planètes découvertes grâce au télescope spatial Kepler" in result
         assert "=== Liens externes ===" in result
-        # NASA Archive
-        assert (
-            "http://exoplanetarchive.ipac.caltech.edu/cgi-bin/DisplayOverview/nph-DisplayOverview?objname=Kepler-99+b"
-            in result
-        )
+        # EPE
+        assert "{{EPE|id=kepler-99_b|nom=Kepler-99 b}}" in result
+        # NEA
+        assert "{{NEA|id=Kepler-99+b|nom=Kepler-99 b}}" in result
         # Simbad with KOI
         assert "{{Simbad|id=Kepler-99b|nom=KOI-305.01}}" in result
         # Kepler Mission (temporarily disabled)
@@ -43,11 +42,10 @@ class TestExoplanetSeeAlsoGenerator:
         assert "== Voir aussi ==" in result
         assert "=== Articles connexes ===" not in result
         assert "=== Liens externes ===" in result
-        # NASA Archive
-        assert (
-            "http://exoplanetarchive.ipac.caltech.edu/cgi-bin/DisplayOverview/nph-DisplayOverview?objname=WASP-12+b"
-            in result
-        )
+        # EPE
+        assert "{{EPE|id=wasp-12_b|nom=WASP-12 b}}" in result
+        # NEA
+        assert "{{NEA|id=WASP-12+b|nom=WASP-12 b}}" in result
         # Simbad without KOI
         assert "{{Simbad|id=WASP-12b|nom=WASP-12 b}}" in result
         # No Kepler Mission link

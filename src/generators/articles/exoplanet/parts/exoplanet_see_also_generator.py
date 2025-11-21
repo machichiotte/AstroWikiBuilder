@@ -38,6 +38,7 @@ class ExoplanetSeeAlsoGenerator:
 
         # Logique spécifique pour Kepler
         if exoplanet.pl_name and exoplanet.pl_name.startswith("Kepler-"):
+            links.append("[[Kepler (télescope spatial)|''Kepler'' (télescope spatial)]]")
             links.append(
                 "[[Liste des planètes découvertes grâce au télescope spatial Kepler|"
                 "Liste des planètes découvertes grâce au télescope spatial ''Kepler'']]"
@@ -59,17 +60,22 @@ class ExoplanetSeeAlsoGenerator:
         if not exoplanet.pl_name:
             return ""
 
-        # 1. NASA Exoplanet Archive
+        # 1. L'Encyclopédie des planètes extrasolaires (EPE)
+        epe_link = self._generate_epe_link(exoplanet.pl_name)
+        if epe_link:
+            links.append(epe_link)
+
+        # 2. NASA Exoplanet Archive (NEA)
         nasa_link = self._generate_nasa_link(exoplanet.pl_name)
         if nasa_link:
             links.append(nasa_link)
 
-        # 2. Simbad
+        # 3. Simbad
         simbad_link = self._generate_simbad_link(exoplanet)
         if simbad_link:
             links.append(simbad_link)
 
-        # 3. Kepler Mission (only if Kepler planet)
+        # 4. Kepler Mission (only if Kepler planet)
         # kepler_link = self._generate_kepler_link(exoplanet.pl_name)
         # if kepler_link:
         #     links.append(kepler_link)
@@ -82,15 +88,19 @@ class ExoplanetSeeAlsoGenerator:
             content += f"* {link}\n"
         return content
 
+    def _generate_epe_link(self, pl_name: str) -> str:
+        """Génère le lien vers L'Encyclopédie des planètes extrasolaires."""
+        # id: lowercase, spaces become underscores
+        # Example: Kepler-438 b -> kepler-438_b
+        epe_id = pl_name.lower().replace(" ", "_")
+        return f"{{{{EPE|id={epe_id}|nom={pl_name}}}}}"
+
     def _generate_nasa_link(self, pl_name: str) -> str:
         """Génère le lien vers NASA Exoplanet Archive."""
-        # URL encode the name, spaces become +
-        pl_name_encoded = urllib.parse.quote_plus(pl_name)
-        return (
-            f"{{{{en}}}} [http://exoplanetarchive.ipac.caltech.edu/cgi-bin/"
-            f"DisplayOverview/nph-DisplayOverview?objname={pl_name_encoded} "
-            f"{pl_name}] sur la base de données [[NASA Exoplanet Archive]]"
-        )
+        # id: spaces become +
+        # Example: Kepler-438 b -> Kepler-438+b
+        nea_id = pl_name.replace(" ", "+")
+        return f"{{{{NEA|id={nea_id}|nom={pl_name}}}}}"
 
     def _generate_simbad_link(self, exoplanet: Exoplanet) -> str:
         """Génère le lien vers Simbad."""
