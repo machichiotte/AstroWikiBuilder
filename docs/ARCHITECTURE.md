@@ -1,7 +1,7 @@
 # 🏗️ Architecture du projet AstroWikiBuilder
 
 **Version :** 1.1  
-**Date :** 2025-11-19  
+**Date :** 2025-11-21  
 **Auteur :** Documentation technique générée
 
 ---
@@ -23,6 +23,7 @@ Le projet sépare clairement :
 - **Persistance** (`repositories/`)
 - **Présentation** (`generators/`)
 - **Utilitaires** (`utils/`)
+- **Orchestration** (`orchestration/`)
 
 ### 2. Separation of Responsibilities (SOR)
 
@@ -34,6 +35,7 @@ Chaque module a une responsabilité unique :
 - `generators/` : **Génération** de contenu Wikipedia
 - `repositories/` : **Accès aux données** consolidées
 - `utils/` : **Fonctions utilitaires** réutilisables
+- `orchestration/` : **Coordination** du pipeline de traitement
 
 ### 3. Dependency Inversion Principle (DIP)
 
@@ -90,6 +92,7 @@ AstroWikiBuilder/
 │   │       │       ├── exoplanet_infobox_generator.py
 │   │       │       ├── exoplanet_introduction_generator.py
 │   │       │       ├── exoplanet_content_generator.py
+│   │       │       ├── exoplanet_see_also_generator.py
 │   │       │       └── exoplanet_category_generator.py
 │   │       └── star/
 │   │           ├── star_article_generator.py
@@ -124,7 +127,11 @@ AstroWikiBuilder/
 │   │   ├── categories_rules.yaml
 │   │   └── wikipedia_field_config.py
 │   │
-│   ├── core/                # 🚀 Point d'entrée et orchestration
+│   ├── orchestration/       # 🎼 Orchestration du pipeline
+│   │   ├── pipeline_executor.py
+│   │   └── draft_pipeline.py
+│   │
+│   ├── core/                # 🚀 Point d'entrée et configuration
 │   │   ├── main.py
 │   │   └── config.py
 │   │
@@ -137,8 +144,9 @@ AstroWikiBuilder/
 │   ├── generated/
 │   └── drafts/
 │
-└── tests/                   # ✅ Tests (en cours de développement)
-    └── test_references.py
+└── tests/                   # ✅ Tests
+    ├── unit/
+    └── integration/
 ```
 
 ---
@@ -174,6 +182,7 @@ graph LR
 sequenceDiagram
     participant User
     participant Main
+    participant PipelineExecutor
     participant Collector
     participant Mapper
     participant Processor
@@ -181,7 +190,8 @@ sequenceDiagram
     participant Export
 
     User->>Main: python -m src.core.main
-    Main->>Collector: collect_entities_from_source()
+    Main->>PipelineExecutor: execute_pipeline()
+    PipelineExecutor->>Collector: collect_entities_from_source()
     
     alt Données en cache
         Collector->>Collector: read_csv_file(cache_path)
@@ -194,19 +204,20 @@ sequenceDiagram
     Collector->>Mapper: transform_row_to_star(row)
     Mapper-->>Collector: Star object
     
-    Collector-->>Main: List[Exoplanet], List[Star]
+    Collector-->>PipelineExecutor: List[Exoplanet], List[Star]
     
-    Main->>Processor: ingest entities
+    PipelineExecutor->>Processor: ingest entities
     Processor->>Processor: consolidate & deduplicate
     
-    Main->>Generator: compose_wikipedia_article_content(exoplanet)
+    PipelineExecutor->>Generator: compose_wikipedia_article_content(exoplanet)
     Generator->>Generator: generate_infobox()
     Generator->>Generator: generate_introduction()
     Generator->>Generator: generate_content()
+    Generator->>Generator: generate_see_also()
     Generator->>Generator: generate_categories()
-    Generator-->>Main: Article content
+    Generator-->>PipelineExecutor: Article content
     
-    Main->>Export: save draft
+    PipelineExecutor->>Export: save draft
     Export-->>User: Brouillon sauvegardé
 ```
 
@@ -282,6 +293,7 @@ class ExoplanetWikipediaArticleGenerator(BaseWikipediaArticleGenerator):
         self.infobox_generator = ExoplanetInfoboxGenerator()
         self.intro_generator = ExoplanetIntroductionGenerator()
         self.content_generator = ExoplanetContentGenerator()
+        self.see_also_generator = ExoplanetSeeAlsoGenerator()
         self.category_generator = ExoplanetCategoryGenerator()
     
     def compose_article(self, exoplanet):
@@ -289,6 +301,7 @@ class ExoplanetWikipediaArticleGenerator(BaseWikipediaArticleGenerator):
         article += self.infobox_generator.generate(exoplanet)
         article += self.intro_generator.generate(exoplanet)
         article += self.content_generator.generate(exoplanet)
+        article += self.see_also_generator.generate(exoplanet)
         article += self.category_generator.generate(exoplanet)
         return article
 ```
@@ -437,6 +450,7 @@ articles/exoplanet/           # Spécialisations
     ├── ExoplanetInfoboxGenerator
     ├── ExoplanetIntroductionGenerator
     ├── ExoplanetContentGenerator
+    ├── ExoplanetSeeAlsoGenerator
     └── ExoplanetCategoryGenerator
 ```
 
@@ -495,9 +509,10 @@ exoplanet_categories:
 
 ```mermaid
 graph TD
-    Core[core/main.py] --> Collectors[collectors/]
-    Core --> Services[services/]
-    Core --> Generators[generators/]
+    Core[core/main.py] --> Orchestration[orchestration/]
+    Orchestration --> Collectors[collectors/]
+    Orchestration --> Services[services/]
+    Orchestration --> Generators[generators/]
     
     Collectors --> Mappers[mappers/]
     Collectors --> Models[models/]
@@ -515,6 +530,7 @@ graph TD
     Utils --> Models
     
     style Core fill:#ffebee
+    style Orchestration fill:#e1bee7
     style Models fill:#e8f5e9
     style Utils fill:#fff9c4
 ```
@@ -679,12 +695,12 @@ def test_transform_row_to_exoplanet():
 
 | Métrique | Valeur |
 |----------|--------|
-| **Modules principaux** | 10 |
-| **Fichiers Python** | ~40 |
-| **Lignes de code (src/)** | ~10,000 (estimation) |
+| **Modules principaux** | 11 |
+| **Fichiers Python** | ~50 |
+| **Lignes de code (src/)** | ~12,000 (estimation) |
 | **Classes abstraites** | 3 (BaseCollector, BaseGenerator, etc.) |
 | **Design patterns** | 5 (Factory, Template, Repository, Service, Composition) |
-| **Couverture de tests** | < 5% ⚠️ |
+| **Couverture de tests** | ~48% 📈 |
 | **Configuration MyPy** | Strict ✅ |
 | **Dépendances externes** | 11 |
 
