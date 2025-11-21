@@ -150,6 +150,68 @@ class StarContentGenerator:
         return "\n".join(content)
 
     # --- SYSTEM PLANETAIRE ---
+    def _format_field_with_uncertainty(self, value_obj) -> str:
+        """Helper to format a value with its uncertainty."""
+        if value_obj and value_obj.value is not None:
+            try:
+                val = float(value_obj.value)
+                return self._format_uncertainty(
+                    val,
+                    value_obj.error_positive,
+                    value_obj.error_negative,
+                )
+            except (ValueError, TypeError):
+                pass
+        return ""
+
+    def _generate_planet_template(self, exoplanet: Exoplanet) -> str:
+        """Génère le template Wiki pour une exoplanète donnée."""
+        pl_name: str = exoplanet.pl_name
+        template = "{{Système planétaire\n"
+        template += f"| exoplanète = [[{pl_name}]]\n"
+
+        # Masse
+        mass_str = self._format_field_with_uncertainty(exoplanet.pl_mass)
+        template += f"| masse = {mass_str}\n"
+
+        # Rayon
+        radius_str = self._format_field_with_uncertainty(exoplanet.pl_radius)
+        template += f"| rayon = {radius_str}\n"
+
+        # Demi-grand axe
+        axis_str = self._format_field_with_uncertainty(exoplanet.pl_semi_major_axis)
+        template += f"| demi grand axe = {axis_str}\n"
+
+        # Période
+        period_str = ""
+        if exoplanet.pl_orbital_period and exoplanet.pl_orbital_period.value is not None:
+            try:
+                period = float(exoplanet.pl_orbital_period.value)
+                if period.is_integer():
+                    period_str = f"{int(period)}"
+                else:
+                    period_str = f"{period:.2f}"
+            except (ValueError, TypeError):
+                pass
+        template += f"| période = {period_str}\n"
+
+        # Excentricité
+        ecc_str = ""
+        if exoplanet.pl_eccentricity and exoplanet.pl_eccentricity.value is not None:
+            try:
+                ecc = float(exoplanet.pl_eccentricity.value)
+                ecc_str = f"{ecc:.3f}"
+            except (ValueError, TypeError):
+                pass
+        template += f"| excentricité = {ecc_str}\n"
+
+        # Inclinaison
+        incl_str = self._format_field_with_uncertainty(exoplanet.pl_inclination)
+        template += f"| inclinaison = {incl_str}\n"
+
+        template += "}}\n"
+        return template
+
     def build_exoplanets_section(self, star: Star, exoplanets: list[Exoplanet]) -> str:
         """
         Génère une section listant les exoplanètes de l'étoile avec le template Wikipedia.
@@ -170,94 +232,7 @@ class StarContentGenerator:
         exoplanets.sort(key=lambda exoplanet: exoplanet.pl_name)
 
         for exoplanet in exoplanets:
-            pl_name: str = exoplanet.pl_name
-            section += "{{Système planétaire\n"
-            section += f"| exoplanète = [[{pl_name}]]\n"
-
-            # Masse
-            if exoplanet.pl_mass and exoplanet.pl_mass.value is not None:
-                try:
-                    mass = float(exoplanet.pl_mass.value)
-                    formatted_mass = self._format_uncertainty(
-                        mass,
-                        exoplanet.pl_mass.error_positive,
-                        exoplanet.pl_mass.error_negative,
-                    )
-                    section += f"| masse = {formatted_mass}\n"
-                except (ValueError, TypeError):
-                    section += "| masse = \n"
-            else:
-                section += "| masse = \n"
-
-            # Rayon
-            if exoplanet.pl_radius and exoplanet.pl_radius.value is not None:
-                try:
-                    radius = float(exoplanet.pl_radius.value)
-                    formatted_radius = self._format_uncertainty(
-                        radius,
-                        exoplanet.pl_radius.error_positive,
-                        exoplanet.pl_radius.error_negative,
-                    )
-                    section += f"| rayon = {formatted_radius}\n"
-                except (ValueError, TypeError):
-                    section += "| rayon = \n"
-            else:
-                section += "| rayon = \n"
-
-            # Demi-grand axe
-            if exoplanet.pl_semi_major_axis and exoplanet.pl_semi_major_axis.value is not None:
-                try:
-                    axis = float(exoplanet.pl_semi_major_axis.value)
-                    formatted_axis = self._format_uncertainty(
-                        axis,
-                        exoplanet.pl_semi_major_axis.error_positive,
-                        exoplanet.pl_semi_major_axis.error_negative,
-                    )
-                    section += f"| demi grand axe = {formatted_axis}\n"
-                except (ValueError, TypeError):
-                    section += "| demi grand axe = \n"
-            else:
-                section += "| demi grand axe = \n"
-
-            # Période
-            if exoplanet.pl_orbital_period and exoplanet.pl_orbital_period.value is not None:
-                try:
-                    period = float(exoplanet.pl_orbital_period.value)
-                    if period.is_integer():
-                        section += f"| période = {int(period)}\n"
-                    else:
-                        section += f"| période = {period:.2f}\n"
-                except (ValueError, TypeError):
-                    section += "| période = \n"
-            else:
-                section += "| période = \n"
-
-            # Excentricité
-            if exoplanet.pl_eccentricity and exoplanet.pl_eccentricity.value is not None:
-                try:
-                    ecc = float(exoplanet.pl_eccentricity.value)
-                    section += f"| excentricité = {ecc:.3f}\n"
-                except (ValueError, TypeError):
-                    section += "| excentricité = \n"
-            else:
-                section += "| excentricité = \n"
-
-            # Inclinaison
-            if exoplanet.pl_inclination and exoplanet.pl_inclination.value is not None:
-                try:
-                    incl = float(exoplanet.pl_inclination.value)
-                    formatted_incl = self._format_uncertainty(
-                        incl,
-                        exoplanet.pl_inclination.error_positive,
-                        exoplanet.pl_inclination.error_negative,
-                    )
-                    section += f"| inclinaison = {formatted_incl}\n"
-                except (ValueError, TypeError):
-                    section += "| inclinaison = \n"
-            else:
-                section += "| inclinaison = \n"
-
-            section += "}}\n"
+            section += self._generate_planet_template(exoplanet)
 
         # Template de fin
         section += "{{Système planétaire fin}}\n"

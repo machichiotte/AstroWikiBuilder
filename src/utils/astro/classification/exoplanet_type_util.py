@@ -102,6 +102,36 @@ class ExoplanetTypeUtil:
         # Masse modérée et densité moyenne ou élevée → tendance terrestre
         return self.classify_terrestrial_type_by_mass_and_radius(m, r)
 
+    def _classify_jupiter_type(
+        self, temperature: float | None, insolation: float | None, semi_major_axis: float | None
+    ) -> str:
+        """Classifie un Jupiter par température/insolation."""
+        if insolation and insolation >= self.CLASSIFICATION_LIMITS["insolation"]["high"]:
+            return "Jupiter ultra-chaud"
+
+        if temperature:
+            if temperature >= self.CLASSIFICATION_LIMITS["temperature"]["ultra_hot"]:
+                return "Jupiter ultra-chaud"
+            if temperature >= self.CLASSIFICATION_LIMITS["temperature"]["hot"]:
+                return "Jupiter chaud"
+            if temperature >= self.CLASSIFICATION_LIMITS["temperature"]["warm"]:
+                return "Jupiter tiède"
+
+        if semi_major_axis and semi_major_axis >= 1.0:
+            return "Jupiter froid"
+
+        return "Planète géante gazeuse"
+
+    def _classify_neptune_type(
+        self, insolation: float | None, semi_major_axis: float | None
+    ) -> str:
+        """Classifie un Neptune par insolation/distance."""
+        if insolation:
+            return "Neptune chaud" if insolation > 20 else "Neptune froid"
+        if semi_major_axis:
+            return "Neptune chaud" if semi_major_axis < 1.0 else "Neptune froid"
+        return "Planète géante de glaces"
+
     def classify_giant_planet_by_temperature_or_insolation(
         self, m: float, p: Exoplanet, insolation: float | None
     ) -> str:
@@ -112,35 +142,16 @@ class ExoplanetTypeUtil:
             else None
         )
 
+        # Jupiter-mass planets
         if m >= self.CLASSIFICATION_LIMITS["mass"]["jupiter"]:
-            if insolation and insolation >= self.CLASSIFICATION_LIMITS["insolation"]["high"]:
-                return "Jupiter ultra-chaud"
-            if t:
-                if t >= self.CLASSIFICATION_LIMITS["temperature"]["ultra_hot"]:
-                    return "Jupiter ultra-chaud"
-                if t >= self.CLASSIFICATION_LIMITS["temperature"]["hot"]:
-                    return "Jupiter chaud"
-                if t >= self.CLASSIFICATION_LIMITS["temperature"]["warm"]:
-                    return "Jupiter tiède"
-            if a and a >= 1.0:
-                return "Jupiter froid"
-            return "Planète géante gazeuse"
+            return self._classify_jupiter_type(t, insolation, a)
 
+        # Neptune-mass planets (ice giants)
         if m <= self.CLASSIFICATION_LIMITS["mass"]["ice_giant_max"]:
-            if insolation:
-                return "Neptune chaud" if insolation > 20 else "Neptune froid"
-            if a:
-                return "Neptune chaud" if a < 1.0 else "Neptune froid"
-            return "Planète géante de glaces"
+            return self._classify_neptune_type(insolation, a)
 
-        if t:
-            if t >= self.CLASSIFICATION_LIMITS["temperature"]["hot"]:
-                return "Jupiter chaud"
-            if t >= self.CLASSIFICATION_LIMITS["temperature"]["warm"]:
-                return "Jupiter tiède"
-        if a and a >= 1.0:
-            return "Jupiter froid"
-        return "Planète géante gazeuse"
+        # Intermediate mass planets (between Neptune and Jupiter)
+        return self._classify_jupiter_type(t, insolation, a)
 
     def classify_terrestrial_type_by_mass_and_radius(self, m: float, r: float) -> str:
         if (

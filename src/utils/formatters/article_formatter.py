@@ -40,7 +40,7 @@ class ArticleFormatter:
         """
         if value is None:
             return ""
-        if isinstance(value, (int, float)) and float(value).is_integer():
+        if isinstance(value, int | float) and float(value).is_integer():
             return str(int(value))
         return str(value)
 
