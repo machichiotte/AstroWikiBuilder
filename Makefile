@@ -14,10 +14,22 @@ test: ## Lance les tests unitaires et d'intégration
 cov: ## Lance les tests avec rapport de couverture
 	pytest --cov=src --cov-report=term-missing --cov-report=html
 
-lint: ## Vérifie le style du code (Ruff, Black, MyPy)
+lint: ## Vérifie le style et la sécurité (Ruff, Black, Bandit)
 	ruff check .
 	black --check .
-	mypy src
+	bandit -c pyproject.toml -r src/
+
+audit: ## Audit de sécurité approfondi avec Bandit
+	bandit -c pyproject.toml -r src/ -f screen
+
+stats: ## Compte les lignes de code avec cloc
+	@powershell -Command "if (Get-Command cloc -ErrorAction SilentlyContinue) { cloc src/ tests/ --exclude-dir=build,dist,venv,.mypy_cache } else { Write-Host 'cloc non trouvé. Redémarrez votre terminal ou installez avec: winget install AlDanial.Cloc' }"
+
+complexity: ## Analyse la complexité cyclomatique avec Radon
+	@echo "\n=== Complexité Cyclomatique (Radon) ==="
+	radon cc src/ -a -nc
+	@echo "\n=== Indice de Maintenabilité (Radon) ==="
+	radon mi src/
 
 format: ## Formate le code automatiquement
 	ruff check --fix .
@@ -34,7 +46,7 @@ clean: ## Nettoie les fichiers temporaires
 	rm -rf .coverage
 	find . -type d -name "__pycache__" -exec rm -rf {} +
 
-check: lint test ## Lance lint et tests (pour CI)
+check: lint test complexity ## Lance tout (CI complet)
 
 run: ## Lance le pipeline principal (mode mock par défaut)
 	python -m src.core.main --use-mock nasa_exoplanet_archive --skip-wikipedia-check

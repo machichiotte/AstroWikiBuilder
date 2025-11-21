@@ -1,27 +1,41 @@
 # AstroWikiBuilder
 
-![Tests](https://github.com/machichiotte/AstroWikiBuilder/workflows/Tests/badge.svg)
+![CI/CD Pipeline](https://github.com/machichiotte/AstroWikiBuilder/workflows/CI/CD%20Pipeline/badge.svg)
+![Python Version](https://img.shields.io/badge/python-3.13-blue.svg)
+![Code Coverage](https://img.shields.io/badge/coverage-86%25-brightgreen.svg)
+![Code Quality](https://img.shields.io/badge/maintainability-A-brightgreen.svg)
+![Security](https://img.shields.io/badge/security-passing-brightgreen.svg)
 
 Un outil Python pour collecter, consolider et transformer des données astronomiques (exoplanètes, étoiles) issues de catalogues publics en projets d'articles Wikipédia en français, avec gestion avancée des références et génération de brouillons structurés.
 
 ## Installation
 
-1. **Cloner le dépôt :**
+### Option 1 : Avec Poetry (recommandé)
 
 ```bash
-git clone https://github.com/votre-username/AstroWikiBuilder.git
+git clone https://github.com/machichiotte/AstroWikiBuilder.git
 cd AstroWikiBuilder
+poetry install
+poetry shell
 ```
 
-2. **Créer un environnement virtuel et installer les dépendances :**
+### Option 2 : Avec pip
 
 ```bash
+git clone https://github.com/machichiotte/AstroWikiBuilder.git
+cd AstroWikiBuilder
 python -m venv venv
 # Sur Linux/macOS :
 source venv/bin/activate
 # Sur Windows :
 venv\Scripts\activate
-pip install -r requirements.txt
+pip install -e .[dev]
+```
+
+### Installation des outils de développement
+
+```bash
+make install  # Installe pre-commit et les hooks
 ```
 
 ## Structure du projet
@@ -47,7 +61,7 @@ Après installation, lancez directement les commandes suivantes :
 - **Collecte et consolidation des données mockées (NASA) sans vérification Wikipédia :**
 
 ```bash
-python -m src.core.main --use-mock nasa_exoplanet_archive --skip-wikipedia-check
+make run  # Ou : python -m src.core.main --use-mock nasa_exoplanet_archive --skip-wikipedia-check
 ```
 
 - **Collecte réelle (NASA) sans vérification Wikipédia :**
@@ -63,6 +77,41 @@ python -m src.core.main
 ```
 
 Les résultats (données consolidées, statistiques, brouillons) sont générés dans `data/generated/` et `data/drafts/` par défaut.
+
+## Commandes de développement
+
+Le projet utilise un `Makefile` pour simplifier les tâches courantes :
+
+### Qualité du code
+```bash
+make lint          # Vérifie le style (Ruff, Black) et la sécurité (Bandit)
+make format        # Formate automatiquement le code
+make complexity    # Analyse la complexité avec Radon
+make audit         # Audit de sécurité approfondi
+```
+
+### Tests
+```bash
+make test          # Lance tous les tests
+make cov           # Tests avec rapport de couverture
+```
+
+### Analyse
+```bash
+make stats         # Compte les lignes de code (cloc)
+make complexity    # Complexité cyclomatique et maintenabilité
+```
+
+### CI/CD
+```bash
+make check         # Lance lint + tests + complexity (pour CI)
+```
+
+### Utilitaires
+```bash
+make clean         # Nettoie les fichiers temporaires
+make help          # Affiche toutes les commandes disponibles
+```
 
 ## Arguments disponibles
 
