@@ -13,9 +13,7 @@ from src.services.repositories.star_repository import StarRepository
 from src.utils.wikipedia.wikipedia_checker import WikiArticleInfo
 
 # Setup basic logging
-logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-)
+
 logger = logging.getLogger(__name__)
 
 
@@ -96,9 +94,9 @@ class DataProcessor:
         Récupère les informations des articles Wikipedia et les sépare en existants et manquants.
         """
         logger.info("Starting process to get and separate Wikipedia articles by status.")
-        all_articles_info: dict[str, dict[str, WikiArticleInfo]] = (
-            self.fetch_wikipedia_articles_for_exoplanets()
-        )
+        all_articles_info: dict[
+            str, dict[str, WikiArticleInfo]
+        ] = self.fetch_wikipedia_articles_for_exoplanets()
         if not all_articles_info:
             logger.warning("No Wikipedia article information was retrieved.")
             return {}, {}
@@ -153,7 +151,9 @@ class DataProcessor:
         logger.info(
             f"Preparing to export Wikipedia links data for status: {status_description_for_filename}"
         )
-        all_exoplanets_from_repo: list[Exoplanet] = (
+        all_exoplanets_from_repo: list[
+            Exoplanet
+        ] = (
             self.exoplanet_repository.get_all_exoplanets()
         )  # Still needed for context in format_wiki_links_data_for_export
         if not all_exoplanets_from_repo:

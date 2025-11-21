@@ -11,7 +11,6 @@ from src.models.entities.exoplanet_entity import Exoplanet
 from src.models.entities.star_entity import Star
 from src.models.references.reference import SourceType
 
-logging.basicConfig(level=logging.INFO)
 logger: logging.Logger = logging.getLogger(__name__)
 
 

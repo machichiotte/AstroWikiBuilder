@@ -49,4 +49,4 @@ clean: ## Nettoie les fichiers temporaires
 check: lint test complexity ## Lance tout (CI complet)
 
 run: ## Lance le pipeline principal (mode mock par défaut)
-	python -m src.core.main --use-mock nasa_exoplanet_archive --skip-wikipedia-check
+	poetry run python -m src.core.main --use-mock nasa_exoplanet_archive --skip-wikipedia-check
