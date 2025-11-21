@@ -1,5 +1,4 @@
 import urllib.parse
-from typing import List
 
 from src.models.entities.exoplanet_entity import Exoplanet
 
@@ -15,7 +14,7 @@ class ExoplanetSeeAlsoGenerator:
         Génère le contenu de la section 'Voir aussi'.
         """
         parts = []
-        
+
         # Section Articles connexes
         related_articles = self._generate_related_articles(exoplanet)
         if related_articles:
@@ -119,7 +118,7 @@ class ExoplanetSeeAlsoGenerator:
         # User example: Kepler-99b -> kepler99b
         kepler_id = pl_name.lower().replace(" ", "").replace("-", "")
         pl_name_compact = pl_name.replace(" ", "")
-        
+
         return (
             f"{{{{en}}}} [http://kepler.nasa.gov/Mission/discoveries/{kepler_id}/ "
             f"{pl_name_compact}] sur le site de la [[Kepler (télescope spatial)|"

@@ -1,4 +1,5 @@
 import pytest
+
 from src.generators.articles.exoplanet.parts.exoplanet_see_also_generator import (
     ExoplanetSeeAlsoGenerator,
 )
@@ -22,7 +23,10 @@ class TestExoplanetSeeAlsoGenerator:
         assert "[[Liste des planètes découvertes grâce au télescope spatial Kepler" in result
         assert "=== Liens externes ===" in result
         # NASA Archive
-        assert "http://exoplanetarchive.ipac.caltech.edu/cgi-bin/DisplayOverview/nph-DisplayOverview?objname=Kepler-99+b" in result
+        assert (
+            "http://exoplanetarchive.ipac.caltech.edu/cgi-bin/DisplayOverview/nph-DisplayOverview?objname=Kepler-99+b"
+            in result
+        )
         # Simbad with KOI
         assert "{{Simbad|id=Kepler-99b|nom=KOI-305.01}}" in result
         # Kepler Mission (temporarily disabled)
@@ -40,7 +44,10 @@ class TestExoplanetSeeAlsoGenerator:
         assert "=== Articles connexes ===" not in result
         assert "=== Liens externes ===" in result
         # NASA Archive
-        assert "http://exoplanetarchive.ipac.caltech.edu/cgi-bin/DisplayOverview/nph-DisplayOverview?objname=WASP-12+b" in result
+        assert (
+            "http://exoplanetarchive.ipac.caltech.edu/cgi-bin/DisplayOverview/nph-DisplayOverview?objname=WASP-12+b"
+            in result
+        )
         # Simbad without KOI
         assert "{{Simbad|id=WASP-12b|nom=WASP-12 b}}" in result
         # No Kepler Mission link
