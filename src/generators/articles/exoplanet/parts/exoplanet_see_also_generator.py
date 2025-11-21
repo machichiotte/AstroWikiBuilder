@@ -1,5 +1,3 @@
-import urllib.parse
-
 from src.models.entities.exoplanet_entity import Exoplanet
 
 
