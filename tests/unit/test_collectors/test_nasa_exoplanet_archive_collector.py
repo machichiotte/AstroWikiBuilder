@@ -1,6 +1,6 @@
-# tests/unit/test_collectors/test_nasa_collector.py
+# tests/unit/test_collectors/test_nasa_exoplanet_archive_collector.py
 """
-Tests pour NASAExoplanetArchiveCollector.
+Tests pour NasaExoplanetArchiveCollector.
 """
 
 from unittest.mock import patch
@@ -13,7 +13,7 @@ from src.collectors.implementations.nasa_exoplanet_archive_collector import (
 from src.models.references.reference import SourceType
 
 
-class TestNASAExoplanetArchiveCollector:
+class TestNasaExoplanetArchiveCollector:
     """Tests du collecteur NASA."""
 
     def test_initialization_with_mock_data(self, mock_cache_dir):

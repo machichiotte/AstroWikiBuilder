@@ -51,7 +51,7 @@ AstroWikiBuilder/
 │   ├── collectors/          # 🔍 Collecte de données depuis APIs
 │   │   ├── base_collector.py
 │   │   └── implementations/
-│   │       └── nasa_exoplanet_archive_collector.py
+│   │       └── nasa_exoplanet_archive.py
 │   │
 │   ├── mappers/             # 🔄 Transformation données brutes → modèles
 │   │   └── nasa_exoplanet_archive_mapper.py
@@ -130,7 +130,7 @@ AstroWikiBuilder/
 │   │
 │   └── pour_plus_tard/      # 📦 Code en attente d'intégration
 │       ├── exoplanet_eu.py
-│       └── open_exoplanet_collection.py
+│       └── open_exoplanet_catalogue.py
 │
 ├── data/                    # 💾 Données et cache
 │   ├── cache/
@@ -650,12 +650,12 @@ parts/
 ### Exemple de test
 
 ```python
-# tests/unit/test_collectors/test_nasa_collector.py
+# tests/unit/test_collectors/test_nasa_exoplanet_archive.py
 from unittest.mock import Mock, patch
 import pandas as pd
 
 def test_transform_row_to_exoplanet():
-    collector = NASAExoplanetArchiveCollector(
+    collector = NasaExoplanetArchive(
         cache_dir="tests/fixtures",
         use_mock_data=True
     )

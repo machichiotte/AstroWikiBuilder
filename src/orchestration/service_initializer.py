@@ -12,12 +12,12 @@ import argparse
 import os
 from typing import Any
 
-from src.collectors.implementations.exoplanet_eu import ExoplanetEUCollector
+from src.collectors.implementations.exoplanet_eu_collector import ExoplanetEUCollector
 from src.collectors.implementations.nasa_exoplanet_archive_collector import (
     NasaExoplanetArchiveCollector,
 )
-from src.collectors.implementations.open_exoplanet_collection import (
-    OpenExoplanetCollector,
+from src.collectors.implementations.open_exoplanet_catalogue_collector import (
+    OpenExoplanetCatalogueCollector,
 )
 from src.core.config import (
     CACHE_PATHS,
@@ -98,7 +98,7 @@ def initialize_collectors(args: argparse.Namespace) -> dict[str, Any]:
     mock_sources = args.use_mock
 
     # Sources de données disponibles
-    data_sources = ["nasa_exoplanet_archive", "exoplanet_eu", "open_exoplanet"]
+    data_sources = ["nasa_exoplanet_archive", "exoplanet_eu", "open_exoplanet_catalogue"]
 
     for source in data_sources:
         if source in args.sources:
@@ -135,7 +135,7 @@ def _get_collector_instance(source: str, use_mock: bool, cache_path: str) -> Any
     elif source == "exoplanet_eu":
         return ExoplanetEUCollector(cache_dir=cache_path, use_mock_data=use_mock)
     elif source == "open_exoplanet":
-        return OpenExoplanetCollector(cache_dir=cache_path, use_mock_data=use_mock)
+        return OpenExoplanetCatalogueCollector(cache_dir=cache_path, use_mock_data=use_mock)
     else:
         raise ValueError(f"Source inconnue : {source}")
 

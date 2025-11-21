@@ -7,7 +7,7 @@ from unittest.mock import patch
 
 import pandas as pd
 
-from src.collectors.implementations.exoplanet_eu import ExoplanetEUCollector
+from src.collectors.implementations.exoplanet_eu_collector import ExoplanetEUCollector
 from src.models.references.reference import SourceType
 
 

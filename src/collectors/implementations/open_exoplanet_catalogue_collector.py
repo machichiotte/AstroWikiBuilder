@@ -1,6 +1,5 @@
-# src/collectors/implementations/exoplanet_eu.py
+# src/collectors/implementations/open_exoplanet_catalogue_collector.py
 import logging
-from typing import Any
 
 import pandas as pd
 
@@ -12,33 +11,33 @@ from src.models.references.reference import SourceType
 logger: logging.Logger = logging.getLogger(__name__)
 
 
-class ExoplanetEUCollector(BaseCollector):
-    def __init__(self, cache_dir: str = "data/cache/exoplanet_eu", use_mock_data: bool = False):
+class OpenExoplanetCatalogueCollector(BaseCollector):
+    def __init__(self, cache_dir: str = "data/cache/oec", use_mock_data: bool = False):
         super().__init__(cache_dir, use_mock_data)
 
     def get_default_cache_filename(self) -> str:
-        return "exoplanet.eu_catalog.csv"
+        return "open_exoplanet_catalogue.txt"
 
     def get_data_download_url(self) -> str:
-        return "http://exoplanet.eu/catalog/exoplanet.eu_catalog.csv"
+        return "https://raw.githubusercontent.com/OpenExoplanetCatalogue/oec_tables/master/comma_separated/open_exoplanet_catalogue.txt"
 
     def get_source_type(self) -> SourceType:
-        return SourceType.EPE
+        return SourceType.OEC
 
     def get_source_reference_url(self) -> str:
-        return "https://exoplanet.eu/"
+        return "https://github.com/OpenExoplanetCatalogue/oec_tables"
 
     def get_required_csv_columns(self) -> list[str]:
-        return ["name", "star_name", "discovery_method", "discovery_year"]
+        # Définissez ici les colonnes que vous considérez comme critiques pour OEC, par exemple:
+        return ["name", "star_name"]  # À adapter selon les besoins réels
 
-    def get_csv_reader_options(self) -> dict[str, Any]:
-        return {"comment": "#"}
+    # _get_csv_reader_kwargs n'a pas besoin d'être surchargé si le CSV OEC n'a pas de commentaires spéciaux
 
     def transform_row_to_exoplanet(self, row: pd.Series) -> Exoplanet | None:
         try:
             if pd.isna(row["name"]) or pd.isna(row["star_name"]):
                 logger.warning(
-                    f"Données de base manquantes pour l'exoplanète : {row.get('name', 'Unknown')} (Source: Exoplanet.eu)"
+                    f"Données de base manquantes pour l'exoplanète : {row.get('name', 'Unknown')} (Source: OEC)"
                 )
                 return None
 
@@ -57,12 +56,12 @@ class ExoplanetEUCollector(BaseCollector):
 
             # Caractéristiques orbitales
             for field, csv_field in [
-                ("semi_major_axis", "semi_major_axis"),
+                ("semi_major_axis", "semimajoraxis"),
                 ("eccentricity", "eccentricity"),
-                ("orbital_period", "orbital_period"),
+                ("orbital_period", "period"),
                 ("inclination", "inclination"),
-                ("argument_of_periastron", "argument_of_periastron"),
-                ("periastron_time", "periastron_time"),
+                ("argument_of_periastron", "longitudeofperiastron"),
+                ("periastron_time", "periastrontime"),
             ]:
                 value: float | None = self.convert_to_float_if_possible(row.get(csv_field))
                 if value is not None:
@@ -80,16 +79,16 @@ class ExoplanetEUCollector(BaseCollector):
 
             # Informations sur l'étoile
             for field, csv_field in [
-                ("spectral_type", "spectral_type"),
+                ("spectral_type", "spectraltype"),
                 ("star_temperature", "star_temperature"),
                 ("star_radius", "star_radius"),
                 ("star_mass", "star_mass"),
                 ("distance", "distance"),
-                ("apparent_magnitude", "apparent_magnitude"),
+                ("apparent_magnitude", "apparentmagnitude"),
             ]:
                 value = row.get(csv_field)
                 if pd.notna(value):
-                    processed_value: float | None | str = (
+                    processed_value = (
                         self.convert_to_float_if_possible(value)
                         if isinstance(value, (int, float, str))
                         and str(value).replace(".", "", 1).isdigit()
@@ -100,15 +99,15 @@ class ExoplanetEUCollector(BaseCollector):
                             setattr(
                                 exoplanet,
                                 field,
-                                processed_value,
+                                ValueWithUncertainty(value=processed_value),
                             )
                         else:
                             setattr(exoplanet, field, processed_value)
 
             if pd.notna(row.get("alt_names")):
-                names: list[str] = str(row["alt_names"]).split(",")
+                names = str(row["alt_names"]).split(",")
                 for name in names:
-                    name: str = name.strip()
+                    name = name.strip()
                     if name and name != exoplanet.pl_name:
                         exoplanet.pl_altname.append(name)
 
@@ -116,7 +115,7 @@ class ExoplanetEUCollector(BaseCollector):
 
         except Exception as e:
             logger.error(
-                f"Erreur Exoplanet.eu lors de la conversion de la ligne : {row.get('name', 'Unknown')}. Erreur: {e}",
+                f"Erreur OEC lors de la conversion de la ligne : {row.get('name', 'Unknown')}. Erreur: {e}",
                 exc_info=True,
             )
             return None
@@ -125,7 +124,7 @@ class ExoplanetEUCollector(BaseCollector):
         """
         Convertit une ligne du DataFrame en objet Star.
 
-        Note: Exoplanet.eu ne fournit pas de données d'étoiles séparées.
+        Note: Open Exoplanet Catalogue ne fournit pas de données d'étoiles séparées.
         Les informations d'étoile sont déjà intégrées dans les objets Exoplanet.
 
         Returns:
