@@ -15,6 +15,9 @@ from src.generators.articles.exoplanet.parts.exoplanet_infobox_generator import 
 from src.generators.articles.exoplanet.parts.exoplanet_introduction_generator import (
     ExoplanetIntroductionGenerator,
 )
+from src.generators.articles.exoplanet.parts.exoplanet_see_also_generator import (
+    ExoplanetSeeAlsoGenerator,
+)
 from src.generators.base.base_wikipedia_article_generator import (
     BaseWikipediaArticleGenerator,
 )
@@ -56,6 +59,7 @@ class ExoplanetWikipediaArticleGenerator(BaseWikipediaArticleGenerator):
         )
 
         self.content_generator = ExoplanetContentGenerator()
+        self.see_also_generator = ExoplanetSeeAlsoGenerator()
 
     def compose_wikipedia_article_content(self, exoplanet: Exoplanet) -> str:
         """
@@ -68,6 +72,7 @@ class ExoplanetWikipediaArticleGenerator(BaseWikipediaArticleGenerator):
             self.content_generator.compose_exoplanet_content(exoplanet),
             self.build_references_section(),
             self.build_palettes_section(exoplanet),
+            self.see_also_generator.generate(exoplanet),
             self.build_portails_section(),
             self.build_category_section(exoplanet),
         ]
