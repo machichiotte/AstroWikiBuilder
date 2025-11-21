@@ -5,10 +5,9 @@
 # IMPORTS
 # ============================================================================
 
-from src.utils.formatters.article_formatter import ArticleFormatter
-
 from src.models.entities.exoplanet_entity import Exoplanet
 from src.models.entities.star_entity import Star
+from src.utils.formatters.article_formatter import ArticleFormatter
 from src.utils.lang.phrase.constellation import phrase_dans_constellation
 
 

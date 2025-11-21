@@ -3,13 +3,12 @@
 from abc import ABC, abstractmethod
 from typing import Any
 
-from src.utils.formatters.article_formatter import ArticleFormatter
-
 from src.models.entities.exoplanet_entity import Exoplanet
 from src.models.entities.star_entity import Star
 from src.models.infobox_fields import FieldMapping
 from src.services.processors.reference_manager import ReferenceManager
 from src.utils.astro.constellation_util import ConstellationUtil
+from src.utils.formatters.article_formatter import ArticleFormatter
 from src.utils.formatters.infobox_field_formatter import InboxFieldFormatter
 
 

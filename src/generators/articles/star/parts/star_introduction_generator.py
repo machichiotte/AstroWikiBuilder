@@ -1,9 +1,8 @@
 # src/generators/articles/star/parts/star_introduction_generator.py
 
-from src.utils.formatters.article_formatter import ArticleFormatter
-
 from src.models.entities.star_entity import Star
 from src.utils.astro.classification.star_type_util import StarTypeUtil
+from src.utils.formatters.article_formatter import ArticleFormatter
 from src.utils.lang.phrase.constellation import phrase_situee_dans_constellation
 
 

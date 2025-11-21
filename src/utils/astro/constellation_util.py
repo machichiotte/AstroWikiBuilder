@@ -1,9 +1,9 @@
 # src/utils/astro/constellation_util.py
 import astropy.units as u
 from astropy.coordinates import SkyCoord
-from src.utils.formatters.article_formatter import ArticleFormatter
 
 from src.constants.wikipedia_field_config import WIKIPEDIA_CONSTELLATION_ENG_TO_FR
+from src.utils.formatters.article_formatter import ArticleFormatter
 
 
 class ConstellationUtil:

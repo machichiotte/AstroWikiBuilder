@@ -1,8 +1,6 @@
 # src/generators/articles/exoplanet/parts/exoplanet_introduction_generator.py
 
 
-from src.utils.formatters.article_formatter import ArticleFormatter
-
 from src.models.entities.exoplanet_entity import Exoplanet
 from src.utils.astro.classification.exoplanet_comparison_util import (
     ExoplanetComparisonUtil,
@@ -10,6 +8,7 @@ from src.utils.astro.classification.exoplanet_comparison_util import (
 from src.utils.astro.classification.exoplanet_type_util import ExoplanetTypeUtil
 from src.utils.astro.classification.star_type_util import StarTypeUtil
 from src.utils.astro.constellation_util import ConstellationUtil
+from src.utils.formatters.article_formatter import ArticleFormatter
 from src.utils.lang.french_articles import get_french_article_noun, guess_grammatical_gender
 from src.utils.lang.phrase.constellation import phrase_dans_constellation
 

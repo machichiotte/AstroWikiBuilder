@@ -3,8 +3,6 @@
 import locale
 import re
 
-from src.utils.formatters.article_formatter import ArticleFormatter
-
 from src.generators.articles.exoplanet.parts.exoplanet_category_generator import (
     ExoplanetCategoryGenerator,
 )
@@ -27,6 +25,7 @@ from src.utils.astro.classification.exoplanet_comparison_util import (
 )
 from src.utils.astro.classification.exoplanet_type_util import ExoplanetTypeUtil
 from src.utils.astro.constellation_util import ConstellationUtil
+from src.utils.formatters.article_formatter import ArticleFormatter
 
 
 class ExoplanetWikipediaArticleGenerator(BaseWikipediaArticleGenerator):

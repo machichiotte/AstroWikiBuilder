@@ -3,8 +3,6 @@
 import locale
 import re
 
-from src.utils.formatters.article_formatter import ArticleFormatter
-
 from src.constants.wikipedia_field_config import CONSTELLATION_GENDER_FR
 from src.generators.articles.star.parts.star_category_generator import (
     StarCategoryGenerator,
@@ -25,6 +23,7 @@ from src.models.entities.exoplanet_entity import Exoplanet
 from src.models.entities.star_entity import Star
 from src.services.processors.reference_manager import ReferenceManager
 from src.utils.astro.classification.star_type_util import StarTypeUtil
+from src.utils.formatters.article_formatter import ArticleFormatter
 from src.utils.lang.phrase.constellation import phrase_de_la_constellation
 
 
