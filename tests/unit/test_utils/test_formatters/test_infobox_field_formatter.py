@@ -1,123 +1,124 @@
-"""Tests pour infobox_field_formatters."""
+# tests/unit/test_utils/test_infobox_field_formatter.py
+"""Tests pour infobox_field_formatter."""
 
 import pytest
 
-from src.models.entities.exoplanet_model import ValueWithUncertainty
+from src.models.entities.exoplanet_entity import ValueWithUncertainty
 from src.models.infobox_fields import FieldMapping
-from src.utils.formatters.infobox_field_formatters import FieldFormatter, InfoboxField
+from src.utils.formatters.infobox_field_formatter import InboxFieldFormatter, InfoboxField
 
 
 class TestFieldFormatter:
-    """Tests pour FieldFormatter."""
+    """Tests pour InboxFieldFormatter."""
 
     @pytest.fixture
     def formatter(self):
-        """Fixture pour créer un FieldFormatter."""
-        return FieldFormatter()
+        """Fixture pour créer un InboxFieldFormatter."""
+        return InboxFieldFormatter()
 
     def test_format_error_number_with_both_errors(self):
         """Test de formatage avec erreurs positive et négative."""
         value = ValueWithUncertainty(value=1.234, error_positive=0.05, error_negative=0.03)
-        result = FieldFormatter._format_error_number(value)
+        result = InboxFieldFormatter._format_error_number(value)
         assert "1.23" in result
         assert "{{±|0.05|0.03}}" in result
 
     def test_format_error_number_with_positive_error_only(self):
         """Test de formatage avec erreur positive seulement."""
         value = ValueWithUncertainty(value=2.5, error_positive=0.1, error_negative=None)
-        result = FieldFormatter._format_error_number(value)
+        result = InboxFieldFormatter._format_error_number(value)
         assert "2.50" in result
         assert "{{±|0.10|}}" in result
 
     def test_format_error_number_with_negative_error_only(self):
         """Test de formatage avec erreur négative seulement."""
         value = ValueWithUncertainty(value=3.7, error_positive=None, error_negative=0.2)
-        result = FieldFormatter._format_error_number(value)
+        result = InboxFieldFormatter._format_error_number(value)
         assert "3.70" in result
         assert "{{±||0.20}}" in result
 
     def test_format_error_number_without_errors(self):
         """Test de formatage sans erreurs."""
         value = ValueWithUncertainty(value=4.5, error_positive=None, error_negative=None)
-        result = FieldFormatter._format_error_number(value)
+        result = InboxFieldFormatter._format_error_number(value)
         assert result == "4.50"
 
     def test_format_error_number_none_value(self):
         """Test de formatage avec valeur None."""
-        result = FieldFormatter._format_error_number(None)
+        result = InboxFieldFormatter._format_error_number(None)
         assert result == ""
 
     def test_format_error_number_value_none(self):
         """Test de formatage avec value.value = None."""
         value = ValueWithUncertainty(value=None)
-        result = FieldFormatter._format_error_number(value)
+        result = InboxFieldFormatter._format_error_number(value)
         assert result == ""
 
     def test_format_discovery_facility_mapped(self):
         """Test de formatage du lieu de découverte avec mapping."""
         # Note: Ce test dépend du contenu de WIKIPEDIA_DISC_FACILITY_MAP
-        result = FieldFormatter._format_discovery_facility("Kepler")
+        result = InboxFieldFormatter._format_discovery_facility("Kepler")
         assert isinstance(result, str)
 
     def test_format_discovery_facility_unmapped(self):
         """Test de formatage du lieu de découverte sans mapping."""
-        result = FieldFormatter._format_discovery_facility("Unknown Facility")
+        result = InboxFieldFormatter._format_discovery_facility("Unknown Facility")
         assert result == "Unknown Facility"
 
     def test_format_discovery_method_mapped(self):
         """Test de formatage de la méthode de découverte avec mapping."""
         # Note: Ce test dépend du contenu de WIKIPEDIA_DISC_METHOD_MAP
-        result = FieldFormatter._format_discovery_method("transit")
+        result = InboxFieldFormatter._format_discovery_method("transit")
         assert isinstance(result, str)
 
     def test_format_discovery_method_unmapped(self):
         """Test de formatage de la méthode de découverte sans mapping."""
-        result = FieldFormatter._format_discovery_method("Unknown Method")
+        result = InboxFieldFormatter._format_discovery_method("Unknown Method")
         assert result == "Unknown Method"
 
     def test_format_designations_hd(self):
         """Test de formatage des désignations HD."""
-        result = FieldFormatter._format_designations("HD 209458")
+        result = InboxFieldFormatter._format_designations("HD 209458")
         assert "{{HD|209458}}" in result
 
     def test_format_designations_hip(self):
         """Test de formatage des désignations HIP."""
-        result = FieldFormatter._format_designations("HIP 108859")
+        result = InboxFieldFormatter._format_designations("HIP 108859")
         assert "{{HIP|108859}}" in result
 
     def test_format_designations_koi(self):
         """Test de formatage des désignations KOI."""
-        result = FieldFormatter._format_designations("KOI 87")
+        result = InboxFieldFormatter._format_designations("KOI 87")
         assert "{{StarKOI|87}}" in result
 
     def test_format_designations_kic(self):
         """Test de formatage des désignations KIC."""
-        result = FieldFormatter._format_designations("KIC 11804465")
+        result = InboxFieldFormatter._format_designations("KIC 11804465")
         assert "{{StarKIC|11804465}}" in result
 
     def test_format_designations_tic(self):
         """Test de formatage des désignations TIC."""
-        result = FieldFormatter._format_designations("TIC 307210830")
+        result = InboxFieldFormatter._format_designations("TIC 307210830")
         assert "{{StarTIC|307210830}}" in result
 
     def test_format_designations_2mass_with_plus(self):
         """Test de formatage des désignations 2MASS avec +."""
-        result = FieldFormatter._format_designations("2MASS J19285196+4824465")
+        result = InboxFieldFormatter._format_designations("2MASS J19285196+4824465")
         assert "{{Star2MASS|19285196|+4824465}}" in result
 
     def test_format_designations_2mass_with_minus(self):
         """Test de formatage des désignations 2MASS avec -."""
-        result = FieldFormatter._format_designations("2MASS J19285196-4824465")
+        result = InboxFieldFormatter._format_designations("2MASS J19285196-4824465")
         assert "{{Star2MASS|19285196|-4824465}}" in result
 
     def test_format_designations_unknown(self):
         """Test de formatage des désignations inconnues."""
-        result = FieldFormatter._format_designations("Unknown Designation")
+        result = InboxFieldFormatter._format_designations("Unknown Designation")
         assert result == "Unknown Designation"
 
     def test_format_designations_list(self):
         """Test de formatage d'une liste de désignations."""
-        result = FieldFormatter._format_designations(["HD 209458", "HIP 108859"])
+        result = InboxFieldFormatter._format_designations(["HD 209458", "HIP 108859"])
         assert "{{HD|209458}}" in result
         assert "{{HIP|108859}}" in result
         assert ", " in result
@@ -125,19 +126,19 @@ class TestFieldFormatter:
     def test_format_age_with_value(self):
         """Test de formatage de l'âge."""
         value = ValueWithUncertainty(value=4.5)
-        result = FieldFormatter.format_age(value)
+        result = InboxFieldFormatter.format_age(value)
         assert "4.5" in result
         assert "×10<sup>9</sup>" in result
 
     def test_format_age_none(self):
         """Test de formatage de l'âge avec None."""
-        result = FieldFormatter.format_age(None)
+        result = InboxFieldFormatter.format_age(None)
         assert result == ""
 
     def test_format_age_value_none(self):
         """Test de formatage de l'âge avec value.value = None."""
         value = ValueWithUncertainty(value=None)
-        result = FieldFormatter.format_age(value)
+        result = InboxFieldFormatter.format_age(value)
         assert result == ""
 
     def test_process_field_with_string_value(self, formatter):

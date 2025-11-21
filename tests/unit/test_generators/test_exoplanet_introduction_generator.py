@@ -8,11 +8,11 @@ import pytest
 from src.generators.articles.exoplanet.parts.exoplanet_introduction_generator import (
     ExoplanetIntroductionGenerator,
 )
-from src.models.entities.exoplanet_model import Exoplanet, ValueWithUncertainty
-from src.utils.astro.classification.exoplanet_comparison_utils import (
-    ExoplanetComparisonUtils,
+from src.models.entities.exoplanet_entity import Exoplanet, ValueWithUncertainty
+from src.utils.astro.classification.exoplanet_comparison_util import (
+    ExoplanetComparisonUtil,
 )
-from src.utils.formatters.article_formatters import ArticleUtils
+from src.utils.formatters.article_formatter import ArticleFormatter
 
 
 class TestExoplanetIntroductionGenerator:
@@ -21,9 +21,9 @@ class TestExoplanetIntroductionGenerator:
     @pytest.fixture
     def generator(self):
         """Fixture pour créer une instance du générateur."""
-        comparison_utils = ExoplanetComparisonUtils()
-        article_utils = ArticleUtils()
-        return ExoplanetIntroductionGenerator(comparison_utils, article_utils)
+        comparison_util = ExoplanetComparisonUtil()
+        article_util = ArticleFormatter()
+        return ExoplanetIntroductionGenerator(comparison_util, article_util)
 
     @pytest.fixture
     def sample_exoplanet_complete(self):

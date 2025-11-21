@@ -1,12 +1,12 @@
-# src/utils/astro/classification/exoplanet_type_utils.py
+# src/utils/astro/classification/exoplanet_type_util.py
 
-from src.models.entities.exoplanet_model import Exoplanet
+from src.models.entities.exoplanet_entity import Exoplanet
 
 
 # ============================================================================
-# DÉCLARATION DE LA CLASSE ExoplanetTypeUtils
+# DÉCLARATION DE LA CLASSE ExoplanetTypeUtil
 # ============================================================================
-class ExoplanetTypeUtils:
+class ExoplanetTypeUtil:
     # ============================================================================
     # CONSTANTES ET LIMITES DE CLASSIFICATION
     # ============================================================================

@@ -1,11 +1,11 @@
-# tests/unit/test_models/test_exoplanet.py
+# tests/unit/test_models/test_exoplanet_entity.py
 """
 Tests pour le modèle Exoplanet.
 """
 
 from datetime import datetime
 
-from src.models.entities.exoplanet_model import Exoplanet, ValueWithUncertainty
+from src.models.entities.exoplanet_entity import Exoplanet, ValueWithUncertainty
 from src.models.references.reference import Reference, SourceType
 
 

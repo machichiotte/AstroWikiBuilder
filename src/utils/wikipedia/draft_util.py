@@ -1,4 +1,4 @@
-# src/utils/draft_utils.py
+# src/utils/draft_util.py
 import logging
 import os
 
@@ -10,8 +10,8 @@ from src.generators.articles.star.star_article_generator import (
 )
 
 # Project imports
-from src.models.entities.exoplanet_model import Exoplanet
-from src.models.entities.star import Star
+from src.models.entities.exoplanet_entity import Exoplanet
+from src.models.entities.star_entity import Star
 
 # Configure un logger pour ce module spécifique
 logger = logging.getLogger(__name__)

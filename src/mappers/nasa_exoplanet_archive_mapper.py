@@ -5,15 +5,15 @@ import math
 from datetime import datetime
 from typing import Any
 
-from src.models.entities.exoplanet_model import Exoplanet, ValueWithUncertainty
+from src.models.entities.exoplanet_entity import Exoplanet, ValueWithUncertainty
 from src.models.entities.nea_entity import (
     NEA_ENTITY,
     NEA_TO_EXOPLANET_MAPPING,
     NEA_TO_STAR_MAPPING,
 )
-from src.models.entities.star import Star
+from src.models.entities.star_entity import Star
 from src.models.references.reference import Reference, SourceType
-from src.utils.astro.constellation_utils import ConstellationUtils
+from src.utils.astro.constellation_util import ConstellationUtil
 
 
 def is_invalid_raw_value(value: Any) -> bool:
@@ -33,7 +33,7 @@ class NasaExoplanetArchiveMapper:
     """Mapper pour convertir les données NEA Exoplanet Archive vers le modèle Exoplanet"""
 
     def __init__(self):
-        self.constellation_utils = ConstellationUtils()
+        self.constellation_util = ConstellationUtil()
 
     def map_star_from_nea_record(self, nea_data: NEA_ENTITY) -> Star:
         return self._map_from_nea_record(
@@ -180,7 +180,7 @@ class NasaExoplanetArchiveMapper:
 
         # Calcul de la constellation
         if obj.st_right_ascension and obj.st_declination:
-            constellation = self.constellation_utils.get_constellation_name(
+            constellation = self.constellation_util.get_constellation_name(
                 obj.st_right_ascension, obj.st_declination
             )
             if constellation:

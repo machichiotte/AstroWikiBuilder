@@ -1,10 +1,10 @@
-# src/utils/formatters/article_formatters.py
+# src/utils/formatters/article_formatter.py
 import locale
 
-from src.models.entities.exoplanet_model import ValueWithUncertainty
+from src.models.entities.exoplanet_entity import ValueWithUncertainty
 
 
-class ArticleUtils:
+class ArticleFormatter:
     """
     Classe utilitaire pour le formatage des valeurs dans les articles Wikipedia
     """

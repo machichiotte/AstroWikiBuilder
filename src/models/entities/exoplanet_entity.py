@@ -1,4 +1,4 @@
-# src/models/entities/exoplanet.py
+# src/models/entities/exoplanet_entity.py
 
 from dataclasses import dataclass, field
 

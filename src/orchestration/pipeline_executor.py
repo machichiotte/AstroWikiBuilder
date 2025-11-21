@@ -26,7 +26,7 @@ from src.orchestration.service_initializer import (
     initialize_services,
 )
 from src.services.processors.data_processor import DataProcessor
-from src.utils.directory_utils import create_output_directories
+from src.utils.directory_util import create_output_directories
 
 
 def execute_pipeline(args: argparse.Namespace) -> None:

@@ -1,11 +1,11 @@
-# tests/unit/test_models/test_star.py
+# tests/unit/test_models/test_star_entity.py
 """
 Tests pour le modèle Star.
 """
 
 from datetime import datetime
 
-from src.models.entities.star import Star
+from src.models.entities.star_entity import Star
 from src.models.references.reference import Reference, SourceType
 
 

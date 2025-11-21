@@ -1,5 +1,5 @@
 """
-Tests unitaires pour draft_utils.
+Tests unitaires pour draft_util.
 
 Ce module teste les utilitaires de génération et sauvegarde de brouillons.
 """
@@ -9,10 +9,10 @@ from unittest.mock import mock_open, patch
 
 import pytest
 
-from src.models.entities.exoplanet_model import Exoplanet, ValueWithUncertainty
-from src.models.entities.star import Star
+from src.models.entities.exoplanet_entity import Exoplanet, ValueWithUncertainty
+from src.models.entities.star_entity import Star
 from src.models.references.reference import Reference, SourceType
-from src.utils.wikipedia.draft_utils import (
+from src.utils.wikipedia.draft_util import (
     build_exoplanet_article_draft,
     build_star_article_draft,
     persist_drafts_by_entity_type,

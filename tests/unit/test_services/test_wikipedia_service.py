@@ -4,7 +4,7 @@ from unittest.mock import Mock
 
 import pytest
 
-from src.models.entities.exoplanet_model import Exoplanet
+from src.models.entities.exoplanet_entity import Exoplanet
 from src.services.external.wikipedia_service import WikipediaService
 from src.utils.wikipedia.wikipedia_checker import WikiArticleInfo, WikipediaChecker
 

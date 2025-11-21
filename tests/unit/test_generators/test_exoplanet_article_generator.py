@@ -1,4 +1,4 @@
-# tests/unit/test_generators/test_article_generators.py
+# tests/unit/test_generators/test_exoplanet_article_generator.py
 """
 Tests pour les générateurs d'articles Wikipedia.
 """

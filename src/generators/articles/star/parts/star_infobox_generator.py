@@ -5,7 +5,7 @@ from src.constants.wikipedia_field_config import (
     IS_NOTES_FIELDS_STAR,
 )
 from src.generators.base.base_infobox_generator import InfoboxBaseGenerator
-from src.models.entities.star import Star
+from src.models.entities.star_entity import Star
 from src.models.infobox_fields import FieldMapping, InfoboxMapper
 
 

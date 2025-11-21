@@ -9,8 +9,8 @@ import pytest
 import requests
 
 from src.collectors.base_collector import BaseCollector
-from src.models.entities.exoplanet_model import Exoplanet
-from src.models.entities.star import Star
+from src.models.entities.exoplanet_entity import Exoplanet
+from src.models.entities.star_entity import Star
 from src.models.references.reference import SourceType
 
 

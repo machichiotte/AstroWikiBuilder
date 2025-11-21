@@ -5,9 +5,10 @@
 # IMPORTS
 # ============================================================================
 
-from src.models.entities.exoplanet_model import Exoplanet
-from src.models.entities.star import Star
-from src.utils.formatters.article_formatters import ArticleUtils
+from src.utils.formatters.article_formatter import ArticleFormatter
+
+from src.models.entities.exoplanet_entity import Exoplanet
+from src.models.entities.star_entity import Star
 from src.utils.lang.phrase.constellation import phrase_dans_constellation
 
 
@@ -21,7 +22,7 @@ class StarContentGenerator:
     # INITIALISATION
     # ============================================================================
     def __init__(self):
-        self.article_utils = ArticleUtils()
+        self.article_util = ArticleFormatter()
 
     # ============================================================================
     # MÉTHODE PRINCIPALE
@@ -67,19 +68,19 @@ class StarContentGenerator:
             content.append(f"Cette étoile est de type spectral {star.st_spectral_type}.")
 
         if star.st_temperature and star.st_temperature.value:
-            temp: str = self.article_utils.format_number_as_french_string(star.st_temperature.value)
+            temp: str = self.article_util.format_number_as_french_string(star.st_temperature.value)
             content.append(f"Sa température effective est d'environ {temp} [[kelvin|K]].")
 
         if star.st_mass and star.st_mass.value:
-            mass: str = self.article_utils.format_number_as_french_string(star.st_mass.value)
+            mass: str = self.article_util.format_number_as_french_string(star.st_mass.value)
             content.append(f"Sa masse est estimée à {mass} fois celle du [[Soleil]].")
 
         if star.st_radius and star.st_radius.value:
-            radius: str = self.article_utils.format_number_as_french_string(star.st_radius.value)
+            radius: str = self.article_util.format_number_as_french_string(star.st_radius.value)
             content.append(f"Son rayon est d'environ {radius} fois celui du Soleil.")
 
         if star.st_luminosity and star.st_luminosity.value:
-            lum: str = self.article_utils.format_number_as_french_string(star.st_luminosity.value)
+            lum: str = self.article_util.format_number_as_french_string(star.st_luminosity.value)
             content.append(f"Sa luminosité est d'environ {lum} fois celle du Soleil.")
 
         return "\n".join(content)
@@ -95,7 +96,7 @@ class StarContentGenerator:
         content: list[str] = ["== Observation ==\n"]
 
         if star.st_apparent_magnitude and star.st_apparent_magnitude.value:
-            mag: str = self.article_utils.format_number_as_french_string(star.st_magnitude.value)
+            mag: str = self.article_util.format_number_as_french_string(star.st_magnitude.value)
             content.append(f"Sa magnitude apparente est de {mag}.")
 
         if star.st_right_ascension and star.st_declination:

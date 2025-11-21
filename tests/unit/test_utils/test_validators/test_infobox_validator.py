@@ -1,6 +1,6 @@
 """Tests pour les validateurs d'infobox."""
 
-from src.utils.validators.infobox_validators import (
+from src.utils.validators.infobox_validator import (
     is_needed_infobox_unit,
     is_valid_infobox_note,
     is_valid_infobox_value,

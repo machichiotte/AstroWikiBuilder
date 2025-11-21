@@ -1,7 +1,7 @@
 # src/services/repositories/exoplanet_repository.py
 import logging
 
-from src.models.entities.exoplanet_model import Exoplanet
+from src.models.entities.exoplanet_entity import Exoplanet
 
 logger: logging.Logger = logging.getLogger(__name__)
 

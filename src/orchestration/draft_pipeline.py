@@ -10,10 +10,10 @@ Responsabilité :
 
 
 from src.core.config import logger
-from src.models.entities.exoplanet_model import Exoplanet
-from src.models.entities.star import Star
+from src.models.entities.exoplanet_entity import Exoplanet
+from src.models.entities.star_entity import Star
 from src.services.processors.data_processor import DataProcessor
-from src.utils.wikipedia.draft_utils import (
+from src.utils.wikipedia.draft_util import (
     build_exoplanet_article_draft,
     build_star_article_draft,
     persist_drafts_by_entity_type,

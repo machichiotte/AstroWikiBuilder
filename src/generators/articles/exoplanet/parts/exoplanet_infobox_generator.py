@@ -5,7 +5,7 @@ from src.constants.wikipedia_field_config import (
     IS_NOTES_FIELDS_EXOPLANET,
 )
 from src.generators.base.base_infobox_generator import InfoboxBaseGenerator
-from src.models.entities.exoplanet_model import Exoplanet
+from src.models.entities.exoplanet_entity import Exoplanet
 from src.models.infobox_fields import FieldMapping, InfoboxMapper
 
 

@@ -1,14 +1,14 @@
-# tests/unit/test_utils/test_directory_utils.py
+# tests/unit/test_utils/test_directory_util.py
 """
-Tests pour le module directory_utils.
+Tests pour le module directory_util.
 """
 
 import os
 
-from src.utils.directory_utils import create_output_directories
+from src.utils.directory_util import create_output_directories
 
 
-class TestDirectoryUtils:
+class TestDirectoryUtil:
     """Tests des utilitaires de gestion de répertoires."""
 
     def test_create_output_directories(self, tmp_path):

@@ -1,8 +1,9 @@
 # src/generators/articles/star/parts/star_introduction_generator.py
 
-from src.models.entities.star import Star
-from src.utils.astro.classification.star_type_utils import StarTypeUtils
-from src.utils.formatters.article_formatters import ArticleUtils
+from src.utils.formatters.article_formatter import ArticleFormatter
+
+from src.models.entities.star_entity import Star
+from src.utils.astro.classification.star_type_util import StarTypeUtil
 from src.utils.lang.phrase.constellation import phrase_situee_dans_constellation
 
 
@@ -12,8 +13,8 @@ class StarIntroductionGenerator:
     """
 
     def __init__(self):
-        self.star_type_utils = StarTypeUtils()
-        self.article_utils = ArticleUtils()
+        self.star_type_util = StarTypeUtil()
+        self.article_util = ArticleFormatter()
 
     # ============================================================================
     # COMPOSITION DES SEGMENTS DE PHRASE
@@ -25,7 +26,7 @@ class StarIntroductionGenerator:
         if not star.st_spectral_type:
             return None
 
-        star_types = self.star_type_utils.determine_star_types_from_properties(star)
+        star_types = self.star_type_util.determine_star_types_from_properties(star)
         if not star_types:
             return None
 

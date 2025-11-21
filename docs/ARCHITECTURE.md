@@ -102,19 +102,19 @@ AstroWikiBuilder/
 │   ├── utils/               # 🛠️ Utilitaires réutilisables
 │   │   ├── astro/
 │   │   │   ├── classification/
-│   │   │   │   ├── exoplanet_type_utils.py
-│   │   │   │   ├── exoplanet_comparison_utils.py
-│   │   │   │   └── star_type_utils.py
-│   │   │   └── constellation_utils.py
+│   │   │   │   ├── exoplanet_type_util.py
+│   │   │   │   ├── exoplanet_comparison_util.py
+│   │   │   │   └── star_type_util.py
+│   │   │   └── constellation_util.py
 │   │   ├── formatters/
-│   │   │   ├── article_formatters.py
-│   │   │   ├── infobox_field_formatters.py
+│   │   │   ├── article_formatter.py
+│   │   │   ├── infobox_field_formatter.py
 │   │   │   └── number_formatter.py
 │   │   ├── validators/
-│   │   │   └── infobox_validators.py
+│   │   │   └── infobox_validator.py
 │   │   ├── wikipedia/
 │   │   │   ├── wikipedia_checker.py
-│   │   │   └── draft_utils.py
+│   │   │   └── draft_util.py
 │   │   └── lang/
 │   │       ├── french_articles.py
 │   │       └── phrase/

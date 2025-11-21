@@ -13,8 +13,8 @@ from src.mappers.nasa_exoplanet_archive_mapper import (
     NasaExoplanetArchiveMapper,
     is_invalid_raw_value,
 )
-from src.models.entities.exoplanet_model import Exoplanet, ValueWithUncertainty
-from src.models.entities.star import Star
+from src.models.entities.exoplanet_entity import Exoplanet, ValueWithUncertainty
+from src.models.entities.star_entity import Star
 from src.models.references.reference import SourceType
 
 
@@ -196,14 +196,14 @@ class TestNasaExoplanetArchiveMapper:
         result = mapper.extract_exoplanet_alternative_names(nea_data)
         assert result is None  # Actuellement retourne None
 
-    @patch("src.mappers.nasa_exoplanet_archive_mapper.ConstellationUtils")
+    @patch("src.mappers.nasa_exoplanet_archive_mapper.ConstellationUtil")
     def test_set_coordinates_and_constellation_with_str(
-        self, mock_constellation_utils, mapper, sample_nea_data
+        self, mock_constellation_util, mapper, sample_nea_data
     ):
         """Test de définition des coordonnées avec chaînes."""
-        mock_utils_instance = Mock()
-        mock_utils_instance.get_constellation_name.return_value = "Cygnus"
-        mapper.constellation_utils = mock_utils_instance
+        mock_util_instance = Mock()
+        mock_util_instance.get_constellation_name.return_value = "Cygnus"
+        mapper.constellation_util = mock_util_instance
 
         obj = Mock()
         obj.st_right_ascension = None
@@ -217,12 +217,12 @@ class TestNasaExoplanetArchiveMapper:
         assert obj.st_declination == "+43/57/03.8"
         assert obj.sy_constellation == "Cygnus"
 
-    @patch("src.mappers.nasa_exoplanet_archive_mapper.ConstellationUtils")
-    def test_map_exoplanet_from_nea_record(self, mock_constellation_utils, mapper, sample_nea_data):
+    @patch("src.mappers.nasa_exoplanet_archive_mapper.ConstellationUtil")
+    def test_map_exoplanet_from_nea_record(self, mock_constellation_util, mapper, sample_nea_data):
         """Test de mapping complet d'une exoplanète."""
-        mock_utils_instance = Mock()
-        mock_utils_instance.get_constellation_name.return_value = "Cygnus"
-        mapper.constellation_utils = mock_utils_instance
+        mock_util_instance = Mock()
+        mock_util_instance.get_constellation_name.return_value = "Cygnus"
+        mapper.constellation_util = mock_util_instance
 
         exoplanet = mapper.map_exoplanet_from_nea_record(sample_nea_data)
 
@@ -233,12 +233,12 @@ class TestNasaExoplanetArchiveMapper:
         assert exoplanet.st_right_ascension == "19/54/36.65"
         assert exoplanet.sy_constellation == "Cygnus"
 
-    @patch("src.mappers.nasa_exoplanet_archive_mapper.ConstellationUtils")
-    def test_map_star_from_nea_record(self, mock_constellation_utils, mapper, sample_nea_data):
+    @patch("src.mappers.nasa_exoplanet_archive_mapper.ConstellationUtil")
+    def test_map_star_from_nea_record(self, mock_constellation_util, mapper, sample_nea_data):
         """Test de mapping complet d'une étoile."""
-        mock_utils_instance = Mock()
-        mock_utils_instance.get_constellation_name.return_value = "Cygnus"
-        mapper.constellation_utils = mock_utils_instance
+        mock_util_instance = Mock()
+        mock_util_instance.get_constellation_name.return_value = "Cygnus"
+        mapper.constellation_util = mock_util_instance
 
         star = mapper.map_star_from_nea_record(sample_nea_data)
 

@@ -1,8 +1,8 @@
-# src/models/entities/star.py
+# src/models/entities/star_entity.py
 from dataclasses import dataclass, field
 
 from ..references.reference import Reference
-from .exoplanet_model import ValueWithUncertainty
+from .exoplanet_entity import ValueWithUncertainty
 
 
 @dataclass

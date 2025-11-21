@@ -1,7 +1,7 @@
 # src/services/repositories/star_repository.py
 import logging
 
-from src.models.entities.star import Star
+from src.models.entities.star_entity import Star
 
 logger: logging.Logger = logging.getLogger(__name__)
 

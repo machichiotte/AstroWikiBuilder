@@ -7,7 +7,7 @@ import pytest
 from src.generators.articles.exoplanet.parts.exoplanet_category_generator import (
     ExoplanetCategoryGenerator,
 )
-from src.models.entities.exoplanet_model import Exoplanet, ValueWithUncertainty
+from src.models.entities.exoplanet_entity import Exoplanet, ValueWithUncertainty
 
 
 class TestExoplanetCategoryGenerator:

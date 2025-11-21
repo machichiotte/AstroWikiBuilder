@@ -1,10 +1,10 @@
-# src/utils/astro/classification/exoplatnet_comparison_utils.py
+# src/utils/astro/classification/exoplatnet_comparison_util.py
 
-from src.models.entities.exoplanet_model import Exoplanet, ValueWithUncertainty
-from src.utils.formatters.article_formatters import ArticleUtils
+from src.models.entities.exoplanet_entity import Exoplanet, ValueWithUncertainty
+from src.utils.formatters.article_formatter import ArticleFormatter
 
 
-class ExoplanetComparisonUtils:
+class ExoplanetComparisonUtil:
     """
     Classe utilitaire pour les comparaisons physiques des exoplanètes
     """
@@ -14,7 +14,7 @@ class ExoplanetComparisonUtils:
     SIMILARITY_MARGIN = 0.2
 
     def __init__(self):
-        self.article_utils = ArticleUtils()
+        self.article_util = ArticleFormatter()
         self.mercury_orbit_au = 0.387
         self.venus_orbit_au = 0.723
         self.earth_orbit_au = 1.0
@@ -43,7 +43,7 @@ class ExoplanetComparisonUtils:
             if radius_rj <= JUPITER_SIMILARITY_UPPER_RJ:
                 return "d'un rayon environ similaire à celui de [[Jupiter (planète)|Jupiter]]"
             else:
-                return f"d'un rayon environ {self.article_utils.format_number_as_french_string(radius_rj, 1)} fois celui de [[Jupiter (planète)|Jupiter]]"
+                return f"d'un rayon environ {self.article_util.format_number_as_french_string(radius_rj, 1)} fois celui de [[Jupiter (planète)|Jupiter]]"
 
         # Comparaison avec la Terre
         radius_re: float = radius_rj * self._R_JUPITER_IN_RE
@@ -53,9 +53,9 @@ class ExoplanetComparisonUtils:
         if radius_re >= EARTH_SIMILARITY_LOWER_RE and radius_re <= EARTH_SIMILARITY_UPPER_RE:
             return "d'un rayon environ similaire à celui de la [[Terre]]"
         elif radius_re > EARTH_SIMILARITY_UPPER_RE:
-            return f"d'un rayon environ {self.article_utils.format_number_as_french_string(radius_re, 1)} fois celui de la [[Terre]]"
+            return f"d'un rayon environ {self.article_util.format_number_as_french_string(radius_re, 1)} fois celui de la [[Terre]]"
         elif radius_re > 0:
-            return f"d'un rayon environ {self.article_utils.format_number_as_french_string(1 / radius_re, 1)} fois plus petit que celui de la [[Terre]]"
+            return f"d'un rayon environ {self.article_util.format_number_as_french_string(1 / radius_re, 1)} fois plus petit que celui de la [[Terre]]"
 
         return ""
 
@@ -83,13 +83,13 @@ class ExoplanetComparisonUtils:
             if mass_mj <= JUPITER_SIMILARITY_UPPER_MJ:
                 return "environ la même masse que [[Jupiter (planète)|Jupiter]]"
             else:
-                return f"environ {self.article_utils.format_number_as_french_string(mass_mj, 1)} fois plus massif que [[Jupiter (planète)|Jupiter]]"
+                return f"environ {self.article_util.format_number_as_french_string(mass_mj, 1)} fois plus massif que [[Jupiter (planète)|Jupiter]]"
         elif mass_me >= EARTH_SIMILARITY_LOWER_ME and mass_me <= EARTH_SIMILARITY_UPPER_ME:
             return "environ la même masse que la [[Terre]]"
         elif mass_me > EARTH_SIMILARITY_UPPER_ME:
-            return f"environ {self.article_utils.format_number_as_french_string(mass_me, 1)} fois plus massif que la [[Terre]]"
+            return f"environ {self.article_util.format_number_as_french_string(mass_me, 1)} fois plus massif que la [[Terre]]"
         elif mass_me > 0:
-            return f"environ {self.article_utils.format_number_as_french_string(1 / mass_me, 1)} fois moins massif que la [[Terre]]"
+            return f"environ {self.article_util.format_number_as_french_string(1 / mass_me, 1)} fois moins massif que la [[Terre]]"
 
         return ""
 

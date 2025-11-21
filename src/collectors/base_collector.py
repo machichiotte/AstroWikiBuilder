@@ -8,8 +8,8 @@ from typing import Any
 import pandas as pd
 import requests
 
-from src.models.entities.exoplanet_model import Exoplanet
-from src.models.entities.star import Star
+from src.models.entities.exoplanet_entity import Exoplanet
+from src.models.entities.star_entity import Star
 from src.models.references.reference import SourceType
 from src.services.processors.reference_manager import ReferenceManager
 

@@ -1,14 +1,15 @@
 # src/generators/articles/exoplanet/parts/exoplanet_introduction_generator.py
 
 
-from src.models.entities.exoplanet_model import Exoplanet
-from src.utils.astro.classification.exoplanet_comparison_utils import (
-    ExoplanetComparisonUtils,
+from src.utils.formatters.article_formatter import ArticleFormatter
+
+from src.models.entities.exoplanet_entity import Exoplanet
+from src.utils.astro.classification.exoplanet_comparison_util import (
+    ExoplanetComparisonUtil,
 )
-from src.utils.astro.classification.exoplanet_type_utils import ExoplanetTypeUtils
-from src.utils.astro.classification.star_type_utils import StarTypeUtils
-from src.utils.astro.constellation_utils import ConstellationUtils
-from src.utils.formatters.article_formatters import ArticleUtils
+from src.utils.astro.classification.exoplanet_type_util import ExoplanetTypeUtil
+from src.utils.astro.classification.star_type_util import StarTypeUtil
+from src.utils.astro.constellation_util import ConstellationUtil
 from src.utils.lang.french_articles import get_french_article_noun, guess_grammatical_gender
 from src.utils.lang.phrase.constellation import phrase_dans_constellation
 
@@ -21,12 +22,12 @@ class ExoplanetIntroductionGenerator:
     # ============================================================================
     # INITIALISATION
     # ============================================================================
-    def __init__(self, comparison_utils: ExoplanetComparisonUtils, article_utils: ArticleUtils):
-        self.comparison_utils: ExoplanetComparisonUtils = comparison_utils
-        self.article_utils: ArticleUtils = article_utils
-        self.planet_type_utils = ExoplanetTypeUtils()
-        self.constellation_utils = ConstellationUtils()
-        self.star_type_utils = StarTypeUtils()
+    def __init__(self, comparison_util: ExoplanetComparisonUtil, article_util: ArticleFormatter):
+        self.comparison_util: ExoplanetComparisonUtil = comparison_util
+        self.article_util: ArticleFormatter = article_util
+        self.planet_type_util = ExoplanetTypeUtil()
+        self.constellation_util = ConstellationUtil()
+        self.star_type_util = StarTypeUtil()
 
     # ============================================================================
     # COMPOSITION DES SEGMENTS DE PHRASE
@@ -38,7 +39,7 @@ class ExoplanetIntroductionGenerator:
 
         st_name: str = exoplanet.st_name
         star_type_descriptions: list[str] = (
-            self.star_type_utils.determine_star_types_from_properties(exoplanet)
+            self.star_type_util.determine_star_types_from_properties(exoplanet)
         )
 
         if star_type_descriptions:
@@ -60,9 +61,9 @@ class ExoplanetIntroductionGenerator:
 
         try:
             distance_pc = float(exoplanet.st_distance.value)
-            distance_ly: float = self.article_utils.convert_parsecs_to_lightyears(distance_pc)
+            distance_ly: float = self.article_util.convert_parsecs_to_lightyears(distance_pc)
             if distance_ly is not None:
-                formatted_distance_ly = self.article_utils.format_number_as_french_string(
+                formatted_distance_ly = self.article_util.format_number_as_french_string(
                     distance_ly
                 )
                 return f", située à environ {formatted_distance_ly} [[année-lumière|années-lumière]] de la [[Terre]]"
@@ -90,7 +91,7 @@ class ExoplanetIntroductionGenerator:
         """
         Génère l'introduction pour une exoplanète.
         """
-        planet_type = self.planet_type_utils.determine_exoplanet_classification(exoplanet)
+        planet_type = self.planet_type_util.determine_exoplanet_classification(exoplanet)
         # planet_type est supposé être une chaîne comme "Jupiter chaud", pour être utilisé dans "[[Jupiter chaud]]"
 
         planet_name_str = exoplanet.pl_name or "Nom inconnu"

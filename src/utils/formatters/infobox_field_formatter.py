@@ -1,4 +1,4 @@
-# src/utils/formatters/infobox_field_formatters.py
+# src/utils/formatters/infobox_field_formatter.py
 import logging
 from enum import Enum
 
@@ -6,9 +6,9 @@ from src.constants.wikipedia_field_config import (
     WIKIPEDIA_DISC_FACILITY_MAP,
     WIKIPEDIA_DISC_METHOD_MAP,
 )
-from src.models.entities.exoplanet_model import ValueWithUncertainty
+from src.models.entities.exoplanet_entity import ValueWithUncertainty
 from src.models.infobox_fields import FieldMapping
-from src.utils.validators import infobox_validators
+from src.utils.validators import infobox_validator
 
 logger = logging.getLogger(__name__)
 
@@ -30,7 +30,7 @@ class InfoboxField(str, Enum):
     NORMAL = "normal"
 
 
-class FieldFormatter:
+class InboxFieldFormatter:
     """Formatters pour différents types de champs"""
 
     @staticmethod
@@ -196,7 +196,7 @@ class FieldFormatter:
         field: str = f" | {mapping.infobox_field} = {formatted_value}"
 
         # Ajout des notes si nécessaire
-        if reference and infobox_validators.is_valid_infobox_note(
+        if reference and infobox_validator.is_valid_infobox_note(
             mapping.infobox_field, notes_fields
         ):
             field += f"\n | {mapping.infobox_field} notes = {reference}"
@@ -206,12 +206,12 @@ class FieldFormatter:
 
 # Dictionnaire des formatters spécifiques
 _FORMATTERS = {
-    InfoboxField.LOCATION: FieldFormatter._format_discovery_facility,
-    InfoboxField.METHOD: FieldFormatter._format_discovery_method,
-    InfoboxField.AGE: FieldFormatter.format_age,
-    InfoboxField.DESIGNATIONS: FieldFormatter._format_designations,
+    InfoboxField.LOCATION: InboxFieldFormatter._format_discovery_facility,
+    InfoboxField.METHOD: InboxFieldFormatter._format_discovery_method,
+    InfoboxField.AGE: InboxFieldFormatter.format_age,
+    InfoboxField.DESIGNATIONS: InboxFieldFormatter._format_designations,
     InfoboxField.UAI_MAP: lambda v: v,
     InfoboxField.CONSTELLATION: lambda v: f"[[{v} (constellation)|{v}]]",
-    InfoboxField.ERROR_NUMBER: FieldFormatter._format_error_number,
+    InfoboxField.ERROR_NUMBER: InboxFieldFormatter._format_error_number,
     InfoboxField.NORMAL: lambda v: v,
 }

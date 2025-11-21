@@ -9,7 +9,7 @@ from unittest.mock import mock_open, patch
 
 import pytest
 
-from src.models.entities.exoplanet_model import Exoplanet, ValueWithUncertainty
+from src.models.entities.exoplanet_entity import Exoplanet, ValueWithUncertainty
 from src.models.references.reference import Reference, SourceType
 from src.services.external.export_service import ExportService
 

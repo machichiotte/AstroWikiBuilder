@@ -3,8 +3,8 @@ import logging
 from typing import Any
 
 from src.mappers.nasa_exoplanet_archive_mapper import NasaExoplanetArchiveMapper
-from src.models.entities.exoplanet_model import Exoplanet
-from src.models.entities.star import Star
+from src.models.entities.exoplanet_entity import Exoplanet
+from src.models.entities.star_entity import Star
 from src.services.external.export_service import ExportService
 from src.services.external.wikipedia_service import WikipediaService
 from src.services.processors.statistics_service import StatisticsService

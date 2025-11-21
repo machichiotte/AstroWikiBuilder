@@ -3,21 +3,22 @@
 from abc import ABC, abstractmethod
 from typing import Any
 
-from src.models.entities.exoplanet_model import Exoplanet
-from src.models.entities.star import Star
+from src.utils.formatters.article_formatter import ArticleFormatter
+
+from src.models.entities.exoplanet_entity import Exoplanet
+from src.models.entities.star_entity import Star
 from src.models.infobox_fields import FieldMapping
 from src.services.processors.reference_manager import ReferenceManager
-from src.utils.astro.constellation_utils import ConstellationUtils
-from src.utils.formatters.article_formatters import ArticleUtils
-from src.utils.formatters.infobox_field_formatters import FieldFormatter
+from src.utils.astro.constellation_util import ConstellationUtil
+from src.utils.formatters.infobox_field_formatter import InboxFieldFormatter
 
 
 class InfoboxBaseGenerator(ABC):
     def __init__(self, reference_manager: ReferenceManager):
         self.reference_manager: ReferenceManager = reference_manager
-        self.field_formatter = FieldFormatter()
-        self.article_utils = ArticleUtils()
-        self.constellation_utils = ConstellationUtils()
+        self.inbox_field_formatter = InboxFieldFormatter()
+        self.article_util = ArticleFormatter()
+        self.constellation_util = ConstellationUtil()
 
     def build_infobox(self, obj: Exoplanet | Star) -> str:
         if not self.is_supported_entity(obj):
@@ -30,7 +31,7 @@ class InfoboxBaseGenerator(ABC):
         for mapping in self.retrieve_field_mappings():
             value = getattr(obj, mapping.source_attribute, None)
 
-            field_block: str = self.field_formatter.process_field(
+            field_block: str = self.inbox_field_formatter.process_field(
                 value=value,
                 mapping=mapping,
                 notes_fields=self.retrieve_noted_fields(),

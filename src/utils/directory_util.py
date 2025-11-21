@@ -1,4 +1,4 @@
-# src/utils/directory_utils.py
+# src/utils/directory_util.py
 """
 Utilitaires pour la gestion des répertoires.
 

@@ -1,4 +1,4 @@
-# src/utils/validators/infobox_validators.py
+# src/utils/validators/infobox_validator.py
 import unicodedata
 from typing import Any
 

@@ -3,6 +3,8 @@
 import locale
 import re
 
+from src.utils.formatters.article_formatter import ArticleFormatter
+
 from src.generators.articles.exoplanet.parts.exoplanet_category_generator import (
     ExoplanetCategoryGenerator,
 )
@@ -18,14 +20,13 @@ from src.generators.articles.exoplanet.parts.exoplanet_introduction_generator im
 from src.generators.base.base_wikipedia_article_generator import (
     BaseWikipediaArticleGenerator,
 )
-from src.models.entities.exoplanet_model import Exoplanet
+from src.models.entities.exoplanet_entity import Exoplanet
 from src.services.processors.reference_manager import ReferenceManager
-from src.utils.astro.classification.exoplanet_comparison_utils import (
-    ExoplanetComparisonUtils,
+from src.utils.astro.classification.exoplanet_comparison_util import (
+    ExoplanetComparisonUtil,
 )
-from src.utils.astro.classification.exoplanet_type_utils import ExoplanetTypeUtils
-from src.utils.astro.constellation_utils import ConstellationUtils
-from src.utils.formatters.article_formatters import ArticleUtils
+from src.utils.astro.classification.exoplanet_type_util import ExoplanetTypeUtil
+from src.utils.astro.constellation_util import ConstellationUtil
 
 
 class ExoplanetWikipediaArticleGenerator(BaseWikipediaArticleGenerator):
@@ -47,12 +48,12 @@ class ExoplanetWikipediaArticleGenerator(BaseWikipediaArticleGenerator):
         super().__init__(reference_manager, category_generator, stub_type, portals)
 
         self.infobox_generator = ExoplanetInfoboxGenerator(self.reference_manager)
-        self.article_utils = ArticleUtils()
-        self.constellation_utils = ConstellationUtils()
-        self.comparison_utils = ExoplanetComparisonUtils()
-        self.planet_type_utils = ExoplanetTypeUtils()
+        self.article_util = ArticleFormatter()
+        self.constellation_util = ConstellationUtil()
+        self.comparison_util = ExoplanetComparisonUtil()
+        self.planet_type_util = ExoplanetTypeUtil()
         self.introduction_generator = ExoplanetIntroductionGenerator(
-            self.comparison_utils, self.article_utils
+            self.comparison_util, self.article_util
         )
 
         self.content_generator = ExoplanetContentGenerator()

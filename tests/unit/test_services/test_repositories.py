@@ -40,7 +40,7 @@ class TestExoplanetRepository:
 
         from datetime import datetime
 
-        from src.models.entities.exoplanet_model import Exoplanet, ValueWithUncertainty
+        from src.models.entities.exoplanet_entity import Exoplanet, ValueWithUncertainty
         from src.models.references.reference import Reference, SourceType
 
         ref2 = Reference(
@@ -94,7 +94,7 @@ class TestStarRepository:
 
         from datetime import datetime
 
-        from src.models.entities.star import Star
+        from src.models.entities.star_entity import Star
         from src.models.references.reference import Reference, SourceType
 
         ref2 = Reference(

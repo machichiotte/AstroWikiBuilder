@@ -2,8 +2,8 @@
 from collections.abc import Callable
 
 from src.generators.base.base_category_generator import BaseCategoryGenerator
-from src.models.entities.star import Star
-from src.utils.astro.classification.star_type_utils import StarTypeUtils
+from src.models.entities.star_entity import Star
+from src.utils.astro.classification.star_type_util import StarTypeUtil
 
 
 class StarCategoryGenerator(BaseCategoryGenerator):
@@ -14,7 +14,7 @@ class StarCategoryGenerator(BaseCategoryGenerator):
 
     def __init__(self, rules_filepath: str = "src/constants/categories_rules.yaml"):
         super().__init__(rules_filepath)
-        self.star_type_utils = StarTypeUtils()
+        self.star_type_util = StarTypeUtil()
 
     # --- Implémentation des méthodes abstraites ---
 
@@ -91,7 +91,7 @@ class StarCategoryGenerator(BaseCategoryGenerator):
         """
         Catégorie basée sur la lettre principale du type spectral.
         """
-        spectral_class: str | None = self.star_type_utils.extract_spectral_class_from_star(star)
+        spectral_class: str | None = self.star_type_util.extract_spectral_class_from_star(star)
         if spectral_class:
             mapping = (
                 self._category_rules_manager.rules.get("star", {})
@@ -109,7 +109,7 @@ class StarCategoryGenerator(BaseCategoryGenerator):
         """
         Catégorie basée sur la classe de luminosité (V, IV, III, etc.)
         """
-        luminosity: str | None = self.star_type_utils.extract_luminosity_class_from_star(star)
+        luminosity: str | None = self.star_type_util.extract_luminosity_class_from_star(star)
         if luminosity:
             mapping = (
                 self._category_rules_manager.rules.get("star", {})
@@ -126,7 +126,7 @@ class StarCategoryGenerator(BaseCategoryGenerator):
         """
         Règle personnalisée pour déterminer la catégorie de type d'étoile.
         """
-        star_types: list[str] = self.star_type_utils.determine_star_types_from_properties(star)
+        star_types: list[str] = self.star_type_util.determine_star_types_from_properties(star)
         if not star_types:
             return None
 

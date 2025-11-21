@@ -1,4 +1,4 @@
-# src/utils/astro/classification/star_type_utils.py
+# src/utils/astro/classification/star_type_util.py
 # ============================================================================
 # IMPORTS
 # ============================================================================
@@ -6,8 +6,8 @@ import re
 from dataclasses import dataclass
 
 from src.constants.wikipedia_field_config import STELLAR_EVOLUTION_MAP
-from src.models.entities.exoplanet_model import Exoplanet
-from src.models.entities.star import Star
+from src.models.entities.exoplanet_entity import Exoplanet
+from src.models.entities.star_entity import Star
 
 
 # ============================================================================
@@ -21,9 +21,9 @@ class SpectralComponents:
 
 
 # ============================================================================
-# CLASSE PRINCIPALE StarTypeUtils
+# CLASSE PRINCIPALE StarTypeUtil
 # ============================================================================
-class StarTypeUtils:
+class StarTypeUtil:
     """
     Classe utilitaire pour déterminer les types d'étoiles.
     """
@@ -82,7 +82,7 @@ class StarTypeUtils:
         if not spectral_type:
             return None
         spectral_components: SpectralComponents = (
-            StarTypeUtils.extract_spectral_components_from_string(spectral_type)
+            StarTypeUtil.extract_spectral_components_from_string(spectral_type)
         )
         return spectral_components.luminosity_class
 
@@ -98,7 +98,7 @@ class StarTypeUtils:
         if not spectral_type:
             return None
         spectral_component: SpectralComponents = (
-            StarTypeUtils.extract_spectral_components_from_string(spectral_type)
+            StarTypeUtil.extract_spectral_components_from_string(spectral_type)
         )
         return spectral_component.spectral_class
 
@@ -133,7 +133,7 @@ class StarTypeUtils:
         types = []
         if not obj.st_spectral_type:
             return types
-        spectral_components = StarTypeUtils.extract_spectral_components_from_string(
+        spectral_components = StarTypeUtil.extract_spectral_components_from_string(
             obj.st_spectral_type
         )
         spectral_class = spectral_components.spectral_class
@@ -142,11 +142,11 @@ class StarTypeUtils:
 
         if not spectral_class:
             return types
-        types += StarTypeUtils._get_neutron_star_type(obj)
-        types += StarTypeUtils._get_evolutionary_stages(spectral_class, luminosity)
-        types += StarTypeUtils._get_variability_type(obj)
-        types += StarTypeUtils._get_metallicity_type(obj)
-        types += StarTypeUtils._get_raw_spectral_type(spectral_class, subtype, luminosity)
+        types += StarTypeUtil._get_neutron_star_type(obj)
+        types += StarTypeUtil._get_evolutionary_stages(spectral_class, luminosity)
+        types += StarTypeUtil._get_variability_type(obj)
+        types += StarTypeUtil._get_metallicity_type(obj)
+        types += StarTypeUtil._get_raw_spectral_type(spectral_class, subtype, luminosity)
         return types
 
     @staticmethod
@@ -164,12 +164,12 @@ class StarTypeUtils:
     @staticmethod
     def _get_evolutionary_stages(spectral_class: str, luminosity: str | None) -> list[str]:
         stages = []
-        stage1 = StarTypeUtils.infer_evolutionary_stage_from_spectral_data(
+        stage1 = StarTypeUtil.infer_evolutionary_stage_from_spectral_data(
             spectral_class, luminosity
         )
         if stage1:
             stages.append(stage1)
-        stage2 = StarTypeUtils.infer_evolutionary_stage_from_spectral_class(spectral_class)
+        stage2 = StarTypeUtil.infer_evolutionary_stage_from_spectral_class(spectral_class)
         if stage2:
             stages.append(stage2)
         return stages

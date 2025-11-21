@@ -9,8 +9,8 @@ from unittest.mock import Mock
 
 import pytest
 
-from src.models.entities.exoplanet_model import Exoplanet, ValueWithUncertainty
-from src.models.entities.star import Star
+from src.models.entities.exoplanet_entity import Exoplanet, ValueWithUncertainty
+from src.models.entities.star_entity import Star
 from src.models.references.reference import Reference, SourceType
 from src.services.processors.data_processor import DataProcessor
 from src.utils.wikipedia.wikipedia_checker import WikiArticleInfo

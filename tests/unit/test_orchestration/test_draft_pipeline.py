@@ -9,8 +9,8 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from src.models.entities.exoplanet_model import Exoplanet
-from src.models.entities.star import Star
+from src.models.entities.exoplanet_entity import Exoplanet
+from src.models.entities.star_entity import Star
 from src.models.references.reference import Reference, SourceType
 from src.orchestration.draft_pipeline import (
     generate_and_persist_exoplanet_drafts,

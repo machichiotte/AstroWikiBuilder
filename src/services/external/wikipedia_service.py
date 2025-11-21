@@ -2,7 +2,7 @@
 import logging
 from typing import Any
 
-from src.models.entities.exoplanet_model import Exoplanet
+from src.models.entities.exoplanet_entity import Exoplanet
 from src.utils.wikipedia.wikipedia_checker import WikiArticleInfo, WikipediaChecker
 
 logger: logging.Logger = logging.getLogger(__name__)

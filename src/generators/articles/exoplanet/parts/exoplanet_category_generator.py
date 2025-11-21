@@ -3,8 +3,8 @@ import logging
 from collections.abc import Callable
 
 from src.generators.base.base_category_generator import BaseCategoryGenerator
-from src.models.entities.exoplanet_model import Exoplanet
-from src.utils.astro.classification.exoplanet_type_utils import ExoplanetTypeUtils
+from src.models.entities.exoplanet_entity import Exoplanet
+from src.utils.astro.classification.exoplanet_type_util import ExoplanetTypeUtil
 
 
 class ExoplanetCategoryGenerator(BaseCategoryGenerator):
@@ -15,7 +15,7 @@ class ExoplanetCategoryGenerator(BaseCategoryGenerator):
 
     def __init__(self, rules_filepath: str = "src/constants/categories_rules.yaml"):
         super().__init__(rules_filepath)
-        self.planet_type_utils = ExoplanetTypeUtils()
+        self.planet_type_util = ExoplanetTypeUtil()
 
     # --- Implémentation des méthodes abstraites ---
 
@@ -36,7 +36,7 @@ class ExoplanetCategoryGenerator(BaseCategoryGenerator):
         Règle personnalisée pour déterminer la catégorie de type de planète.
         """
         try:
-            planet_type: str = self.planet_type_utils.determine_exoplanet_classification(exoplanet)
+            planet_type: str = self.planet_type_util.determine_exoplanet_classification(exoplanet)
             if planet_type:
                 mapping = (
                     self._category_rules_manager.rules.get("exoplanet", {})

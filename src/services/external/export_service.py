@@ -4,7 +4,7 @@ import json
 import logging
 from typing import Any
 
-from src.models.entities.exoplanet_model import Exoplanet
+from src.models.entities.exoplanet_entity import Exoplanet
 
 logger: logging.Logger = logging.getLogger(__name__)
 
