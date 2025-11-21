@@ -52,7 +52,7 @@ def parse_cli_arguments() -> argparse.Namespace:
     parser.add_argument(
         "--skip-wikipedia-check",
         action="store_true",
-        help="Ignorer l'étape de vérification des articles Wikipedia",
+        help="Générer tous les brouillons sans vérifier l'existence sur Wikipedia (mode test)",
     )
 
     parser.add_argument(

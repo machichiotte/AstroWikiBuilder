@@ -108,6 +108,10 @@ class NasaExoplanetArchiveMapper:
             return self.parse_composite_formatted_value(raw_value)
 
         try:
+            # Cas spécial pour disc_year : retourner un simple int
+            if attribute == "disc_year":
+                return int(float(raw_value))
+            
             # Cas spécial luminosité exprimée en log10
             if attribute == "st_luminosity":
                 numeric_value = float(10 ** float(raw_value))

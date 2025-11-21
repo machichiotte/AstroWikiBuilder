@@ -30,15 +30,17 @@ CACHE_PATHS: dict[str, dict[str, str]] = {
     "nasa_exoplanet_archive": {
         # "mock": "generated/random_exoplanets_100.csv",
         # "mock": "generated/random_exoplanets_50.csv",
-        "mock": "generated/random_exoplanets_25.csv",
-        "real": "cache/nasa_exoplanet_archive/nea_mock_complete.csv",
+        # "mock": "generated/random_exoplanets_25.csv",
+        "mock": "cache/nasa_exoplanet_archive/nea_mock_25.csv",
+        # "mock": "cache/nasa_exoplanet_archive/nea_mock_complete.csv",
+        "real": "cache/nasa_exoplanet_archive/nea_downloaded.csv",
     },
     "exoplanet_eu": {
-        "mock": "cache/exoplanet_eu_mock.csv",
-        "real": "cache/exoplanet_eu_downloaded.csv",
+        "mock": "cache/exoplanet_eu/exoplanet_eu_mock.csv",
+        "real": "cache/exoplanet_eu/exoplanet_eu.csv",
     },
     "open_exoplanet": {
-        "mock": "cache/open_exoplanet_mock.csv",
-        "real": "cache/open_exoplanet_downloaded.txt",
+        "mock": "cache/oec/open_exoplanet_mock.csv",
+        "real": "cache/oec/open_exoplanet.csv",
     },
 }
