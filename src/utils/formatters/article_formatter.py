@@ -10,11 +10,15 @@ class ArticleFormatter:
     """
 
     def __init__(self):
-        try:
-            locale.setlocale(locale.LC_ALL, "fr_FR.UTF-8")
-        except locale.Error:
-            # Fallback or pass if locale is not available
-            pass
+        # Liste des locales à essayer pour la compatibilité (Linux/Mac vs Windows)
+        locales_to_try = ["fr_FR.UTF-8", "fr_FR", "fra", "French_France.1252", "French"]
+
+        for loc in locales_to_try:
+            try:
+                locale.setlocale(locale.LC_ALL, loc)
+                break
+            except locale.Error:
+                continue
 
     def format_number_as_french_string(self, value: float | None, precision: int = 2) -> str:
         """
@@ -32,7 +36,14 @@ class ArticleFormatter:
         if fval.is_integer():
             return str(int(fval))
 
-        return locale.format_string(f"%.{precision}f", fval, grouping=True).rstrip("0").rstrip(".")
+        formatted = locale.format_string(f"%.{precision}f", fval, grouping=True)
+
+        # Fallback : si le formatage locale n'a pas mis de virgule (ex: locale non dispo),
+        # on force le remplacement du point par la virgule pour le format français
+        if "." in formatted and "," not in formatted:
+            formatted = formatted.replace(".", ",")
+
+        return formatted.rstrip("0").rstrip(",")
 
     def format_year_without_decimals(self, value: float | None) -> str:
         """
