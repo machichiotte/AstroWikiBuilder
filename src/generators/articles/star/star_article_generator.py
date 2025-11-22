@@ -4,17 +4,17 @@ import locale
 import re
 
 from src.constants.wikipedia_field_config import CONSTELLATION_GENDER_FR
-from src.generators.articles.star.parts.star_category_generator import (
-    StarCategoryGenerator,
+from src.generators.articles.star.sections.category_section import (
+    CategorySection,
 )
-from src.generators.articles.star.parts.star_content_generator import (
-    StarContentGenerator,
+from src.generators.articles.star.sections.content_section import (
+    ContentSection,
 )
-from src.generators.articles.star.parts.star_infobox_generator import (
-    StarInfoboxGenerator,
+from src.generators.articles.star.sections.infobox_section import (
+    InfoboxSection,
 )
-from src.generators.articles.star.parts.star_introduction_generator import (
-    StarIntroductionGenerator,
+from src.generators.articles.star.sections.introduction_section import (
+    IntroductionSection,
 )
 from src.generators.base.base_wikipedia_article_generator import (
     BaseWikipediaArticleGenerator,
@@ -40,18 +40,18 @@ class StarWikipediaArticleGenerator(BaseWikipediaArticleGenerator):
             pass
 
         reference_manager = ReferenceManager()
-        category_generator = StarCategoryGenerator()
+        category_section = CategorySection()
 
         super().__init__(
             reference_manager=reference_manager,
-            category_generator=category_generator,
+            category_section=category_section,
             stub_type="étoile",
             portals=["astronomie", "étoiles", "exoplanètes"],
         )
 
-        self.infobox_generator = StarInfoboxGenerator(self.reference_manager)
-        self.introduction_generator = StarIntroductionGenerator()
-        self.content_generator = StarContentGenerator()
+        self.infobox_section = InfoboxSection(self.reference_manager)
+        self.introduction_section = IntroductionSection()
+        self.content_section = ContentSection()
         self.article_util = ArticleFormatter()
         self.star_type_util = StarTypeUtil()
 
@@ -63,9 +63,9 @@ class StarWikipediaArticleGenerator(BaseWikipediaArticleGenerator):
         """
         parts = [
             self.compose_stub_and_source(),
-            self.infobox_generator.build_infobox(star),
-            self.introduction_generator.compose_star_introduction(star),
-            self.content_generator.compose_star_content(star, exoplanets),
+            self.infobox_section.build_infobox(star),
+            self.introduction_section.compose_star_introduction(star),
+            self.content_section.compose_star_content(star, exoplanets),
             self.build_references_section(),
             self.build_palettes_section(star),
             self.build_portails_section(),

@@ -1,4 +1,4 @@
-# src/generators/articles/star/parts/star_category_generator.py
+# src/generators/articles/star/sections/category_generator.py
 from collections.abc import Callable
 
 from src.generators.base.base_category_generator import BaseCategoryGenerator
@@ -6,7 +6,7 @@ from src.models.entities.star_entity import Star
 from src.utils.astro.classification.star_type_util import StarTypeUtil
 
 
-class StarCategoryGenerator(BaseCategoryGenerator):
+class CategorySection(BaseCategoryGenerator):
     """
     Classe pour générer les catégories des articles d'étoiles.
     Utilise un générateur de règles centralisé.

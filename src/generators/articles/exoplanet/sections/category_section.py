@@ -1,40 +1,40 @@
-# src/generators/articles/exoplanet/parts/exoplanet_category_generator.py
+# src/generators/articles/exoplanet/sections/category_section.py
+
 import logging
 from collections.abc import Callable
 
-from src.generators.base.base_category_generator import BaseCategoryGenerator
+from src.generators.base.category_rules_manager import CategoryRulesManager
 from src.models.entities.exoplanet_entity import Exoplanet
 from src.utils.astro.classification.exoplanet_type_util import ExoplanetTypeUtil
 
 
-class ExoplanetCategoryGenerator(BaseCategoryGenerator):
+class CategorySection:
     """
-    Classe pour générer les catégories des articles d'exoplanètes.
-    Utilise un générateur de règles centralisé.
+    Génère les catégories pour les articles d'exoplanètes.
     """
 
     def __init__(self, rules_filepath: str = "src/constants/categories_rules.yaml"):
-        super().__init__(rules_filepath)
+        self._category_rules_manager = CategoryRulesManager(rules_filepath)
         self.planet_type_util = ExoplanetTypeUtil()
 
-    # --- Implémentation des méthodes abstraites ---
+    def generate(self, exoplanet: Exoplanet) -> str:
+        """Génère la section des catégories."""
+        categories = self.build_categories(exoplanet)
+        return "\n".join(categories) if categories else ""
 
-    def retrieve_object_type(self) -> str:
-        return "exoplanet"
-
-    def define_category_rules(self) -> list[Callable]:
-        return [
+    def build_categories(self, exoplanet: Exoplanet) -> list[str]:
+        """Génère la liste des catégories."""
+        custom_rules: list[Callable] = [
             self.map_planet_type_to_category,
             self.map_discovery_program_to_category,
-            self.map_constellation_to_category,  # Cette méthode doit exister !
+            self.map_constellation_to_category,
         ]
-
-    # --- Règles de catégorisation spécifiques aux exoplanètes ---
+        return self._category_rules_manager.generate_categories_for(
+            exoplanet, "exoplanet", custom_rules=custom_rules
+        )
 
     def map_planet_type_to_category(self, exoplanet: Exoplanet) -> str | None:
-        """
-        Règle personnalisée pour déterminer la catégorie de type de planète.
-        """
+        """Règle personnalisée pour déterminer la catégorie de type de planète."""
         try:
             planet_type: str = self.planet_type_util.determine_exoplanet_classification(exoplanet)
             if planet_type:
@@ -49,19 +49,14 @@ class ExoplanetCategoryGenerator(BaseCategoryGenerator):
             logging.warning(
                 f"Clé de mapping non trouvée pour l'exoplanète {exoplanet.pl_name}: {e}"
             )
-            pass
         except Exception as e:
             logging.error(
-                f"Erreur inattendue dans _get_planet_type_category pour {exoplanet.pl_name}: {e}"
+                f"Erreur inattendue dans map_planet_type_to_category pour {exoplanet.pl_name}: {e}"
             )
-            pass
         return None
 
     def map_discovery_program_to_category(self, exoplanet: Exoplanet) -> str | None:
-        """
-        Règle personnalisée pour déterminer la catégorie 'découverte grâce à'
-        en utilisant le champ 'discovery_program' de l'exoplanète et le mapping.
-        """
+        """Règle personnalisée pour déterminer la catégorie 'découverte grâce à'."""
         discovered_by_program: str | None = (
             exoplanet.disc_program.value if exoplanet.disc_program else None
         )
@@ -73,26 +68,17 @@ class ExoplanetCategoryGenerator(BaseCategoryGenerator):
         )
 
         if discovered_by_program:
-            # Check for exact matches first
             if discovered_by_program in disc_facility_list:
                 return disc_facility_list[discovered_by_program]
-            # If no exact match, check for partial matches (case-insensitive for robustness)
             for key, cat in disc_facility_list.items():
                 if key.lower() in discovered_by_program.lower():
                     return cat
         return None
 
     def map_constellation_to_category(self, exoplanet: Exoplanet) -> str | None:
-        """
-        Règle personnalisée pour déterminer la catégorie liée à la constellation.
-        Génère une catégorie sous la forme "Exoplanète de la constellation de [Nom]".
-        """
+        """Règle personnalisée pour déterminer la catégorie liée à la constellation."""
         if not exoplanet.sy_constellation:
             return None
 
-        # On nettoie le nom de la constellation si nécessaire
         constellation = exoplanet.sy_constellation.strip()
-
-        # Construction de la catégorie
-        # Note: Ceci suppose que 'sy_constellation' est le nom français (ex: "Cygne")
         return f"Exoplanète de la constellation de {constellation}"

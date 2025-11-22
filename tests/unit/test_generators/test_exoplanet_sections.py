@@ -1,22 +1,27 @@
 """
-Tests unitaires pour ExoplanetContentGenerator.
+Tests unitaires pour les sections de contenu d'exoplanètes.
 """
 
 import pytest
 
-from src.generators.articles.exoplanet.parts.exoplanet_content_generator import (
-    ExoplanetContentGenerator,
+from src.generators.articles.exoplanet.sections import (
+    DiscoverySection,
+    HabitabilitySection,
+    HostStarSection,
+    NomenclatureSection,
+    OrbitSection,
+    PhysicalCharacteristicsSection,
 )
 from src.models.entities.exoplanet_entity import Exoplanet, ValueWithUncertainty
+from src.utils.formatters.article_formatter import ArticleFormatter
 
 
-class TestExoplanetContentGenerator:
-    """Tests pour le générateur de contenu d'exoplanètes."""
+class TestExoplanetSections:
+    """Tests pour les sections individuelles d'exoplanètes."""
 
     @pytest.fixture
-    def generator(self):
-        """Fixture pour créer une instance du générateur."""
-        return ExoplanetContentGenerator()
+    def article_formatter(self):
+        return ArticleFormatter()
 
     @pytest.fixture
     def exoplanet_with_orbit(self):
@@ -46,6 +51,7 @@ class TestExoplanetContentGenerator:
         class MethodEnum:
             def __init__(self, value):
                 self.value = value
+                self.name = value  # Mock name attribute if needed
 
         return Exoplanet(
             pl_name="Test Planet b",
@@ -53,10 +59,11 @@ class TestExoplanetContentGenerator:
             disc_method=MethodEnum("Transit"),
         )
 
-    # Tests pour build_orbit_section
-    def test_build_orbit_section_complete(self, generator, exoplanet_with_orbit):
+    # Tests pour OrbitSection
+    def test_orbit_section_complete(self, article_formatter, exoplanet_with_orbit):
         """Test de la section orbite avec toutes les données."""
-        result = generator.build_orbit_section(exoplanet_with_orbit)
+        section = OrbitSection(article_formatter)
+        result = section.generate(exoplanet_with_orbit)
 
         assert result != ""
         assert "== Orbite ==" in result
@@ -65,31 +72,34 @@ class TestExoplanetContentGenerator:
         assert "période orbitale" in result
         assert "inclinaison" in result
 
-    def test_build_orbit_section_empty(self, generator):
+    def test_orbit_section_empty(self, article_formatter):
         """Test avec une exoplanète sans données orbitales."""
         exoplanet = Exoplanet(pl_name="Test b")
-        result = generator.build_orbit_section(exoplanet)
+        section = OrbitSection(article_formatter)
+        result = section.generate(exoplanet)
 
         assert result == ""
 
-    def test_build_orbit_section_partial(self, generator):
+    def test_orbit_section_partial(self, article_formatter):
         """Test avec seulement certaines données orbitales."""
         exoplanet = Exoplanet(
             pl_name="Test b",
             pl_semi_major_axis=ValueWithUncertainty(value=1.0),
         )
-        result = generator.build_orbit_section(exoplanet)
+        section = OrbitSection(article_formatter)
+        result = section.generate(exoplanet)
 
         assert result != ""
         assert "== Orbite ==" in result
         assert "UA" in result
 
-    # Tests pour build_physical_characteristics_section
-    def test_build_physical_characteristics_complete(
-        self, generator, exoplanet_with_physical_chars
+    # Tests pour PhysicalCharacteristicsSection
+    def test_physical_characteristics_complete(
+        self, article_formatter, exoplanet_with_physical_chars
     ):
         """Test de la section caractéristiques physiques complète."""
-        result = generator.build_physical_characteristics_section(exoplanet_with_physical_chars)
+        section = PhysicalCharacteristicsSection(article_formatter)
+        result = section.generate(exoplanet_with_physical_chars)
 
         assert result != ""
         assert "== Caractéristiques physiques ==" in result
@@ -97,87 +107,99 @@ class TestExoplanetContentGenerator:
         assert "rayon" in result
         assert "température" in result
 
-    def test_build_physical_characteristics_empty(self, generator):
+    def test_physical_characteristics_empty(self, article_formatter):
         """Test avec une exoplanète sans caractéristiques physiques."""
         exoplanet = Exoplanet(pl_name="Test b")
-        result = generator.build_physical_characteristics_section(exoplanet)
+        section = PhysicalCharacteristicsSection(article_formatter)
+        result = section.generate(exoplanet)
 
         assert result == ""
 
-    def test_build_physical_characteristics_mass_labels(self, generator):
+    def test_physical_characteristics_mass_labels(self, article_formatter):
         """Test des labels de masse (faible, modérée, imposante)."""
+        section = PhysicalCharacteristicsSection(article_formatter)
+
         # Masse faible
         exo_low = Exoplanet(pl_name="Low", pl_mass=ValueWithUncertainty(value=0.05))
-        result_low = generator.build_physical_characteristics_section(exo_low)
+        result_low = section.generate(exo_low)
         assert "faible" in result_low
 
         # Masse modérée
         exo_mod = Exoplanet(pl_name="Mod", pl_mass=ValueWithUncertainty(value=0.5))
-        result_mod = generator.build_physical_characteristics_section(exo_mod)
+        result_mod = section.generate(exo_mod)
         assert "modérée" in result_mod
 
         # Masse imposante
         exo_high = Exoplanet(pl_name="High", pl_mass=ValueWithUncertainty(value=2.0))
-        result_high = generator.build_physical_characteristics_section(exo_high)
+        result_high = section.generate(exo_high)
         assert "imposante" in result_high
 
-    def test_build_physical_characteristics_radius_labels(self, generator):
+    def test_physical_characteristics_radius_labels(self, article_formatter):
         """Test des labels de rayon (compact, étendu)."""
+        section = PhysicalCharacteristicsSection(article_formatter)
+
         # Rayon compact
         exo_compact = Exoplanet(pl_name="Compact", pl_radius=ValueWithUncertainty(value=0.3))
-        result_compact = generator.build_physical_characteristics_section(exo_compact)
+        result_compact = section.generate(exo_compact)
         assert "compact" in result_compact
 
         # Rayon étendu
         exo_extended = Exoplanet(pl_name="Extended", pl_radius=ValueWithUncertainty(value=2.0))
-        result_extended = generator.build_physical_characteristics_section(exo_extended)
+        result_extended = section.generate(exo_extended)
         assert "étendu" in result_extended
 
-    def test_build_physical_characteristics_temp_labels(self, generator):
+    def test_physical_characteristics_temp_labels(self, article_formatter):
         """Test des labels de température."""
+        section = PhysicalCharacteristicsSection(article_formatter)
+
         # Température élevée
         exo_hot = Exoplanet(pl_name="Hot", pl_temperature=ValueWithUncertainty(value=800))
-        result_hot = generator.build_physical_characteristics_section(exo_hot)
+        result_hot = section.generate(exo_hot)
         assert "élevée" in result_hot
 
         # Température extrême
         exo_extreme = Exoplanet(pl_name="Extreme", pl_temperature=ValueWithUncertainty(value=1500))
-        result_extreme = generator.build_physical_characteristics_section(exo_extreme)
+        result_extreme = section.generate(exo_extreme)
         assert "extrême" in result_extreme
 
-    # Tests pour build_discovery_section
-    def test_build_discovery_section_complete(self, generator, exoplanet_with_discovery):
+    # Tests pour DiscoverySection
+    def test_discovery_section_complete(self, article_formatter, exoplanet_with_discovery):
         """Test de la section découverte complète."""
-        result = generator.build_discovery_section(exoplanet_with_discovery)
+        section = DiscoverySection(article_formatter)
+        result = section.generate(exoplanet_with_discovery)
 
         assert result != ""
         assert "== Découverte ==" in result
         assert "1999" in result
         assert "transits" in result
 
-    def test_build_discovery_section_empty(self, generator):
+    def test_discovery_section_empty(self, article_formatter):
         """Test avec une exoplanète sans année de découverte."""
         exoplanet = Exoplanet(pl_name="Test b")
-        result = generator.build_discovery_section(exoplanet)
+        section = DiscoverySection(article_formatter)
+        result = section.generate(exoplanet)
 
         assert result == ""
 
-    def test_build_discovery_section_without_method(self, generator):
+    def test_discovery_section_without_method(self, article_formatter):
         """Test avec seulement l'année de découverte."""
         exoplanet = Exoplanet(pl_name="Test b", disc_year=2020)
-        result = generator.build_discovery_section(exoplanet)
+        section = DiscoverySection(article_formatter)
+        result = section.generate(exoplanet)
 
         assert result != ""
         assert "2020" in result
         assert "découverte" in result
 
-    def test_build_discovery_section_method_translations(self, generator):
+    def test_discovery_section_method_translations(self, article_formatter):
         """Test des traductions de méthodes de découverte."""
+        section = DiscoverySection(article_formatter)
 
         # Créer un objet simple avec un attribut value pour simuler un enum
         class MethodEnum:
             def __init__(self, value):
                 self.value = value
+                self.name = value
 
         methods_to_test = [
             (MethodEnum("Radial Velocity"), "vitesses radiales"),
@@ -191,105 +213,76 @@ class TestExoplanetContentGenerator:
                 disc_year=2000,
                 disc_method=method,
             )
-            result = generator.build_discovery_section(exoplanet)
+            result = section.generate(exoplanet)
             assert expected_text in result
 
-    # Tests pour compose_exoplanet_content
-    def test_compose_exoplanet_content_all_sections(self, generator):
-        """Test de la composition complète avec toutes les sections."""
-        exoplanet = Exoplanet(
-            pl_name="Complete Planet b",
-            pl_mass=ValueWithUncertainty(value=1.0),
-            pl_semi_major_axis=ValueWithUncertainty(value=0.5),
-            disc_year=2010,
-        )
-        result = generator.compose_exoplanet_content(exoplanet)
-
-        assert result != ""
-        assert "== Caractéristiques physiques ==" in result
-        assert "== Orbite ==" in result
-        assert "== Découverte ==" in result
-
-    def test_compose_exoplanet_content_empty(self, generator):
-        """Test avec une exoplanète sans données."""
-        exoplanet = Exoplanet(pl_name="Empty b")
-        result = generator.compose_exoplanet_content(exoplanet)
-
-        assert result != ""
-        assert "== Habitabilité ==" in result
-
-    def test_compose_exoplanet_content_partial(self, generator):
-        """Test avec seulement certaines sections."""
-        exoplanet = Exoplanet(
-            pl_name="Partial b",
-            disc_year=2015,
-        )
-        result = generator.compose_exoplanet_content(exoplanet)
-
-        assert result != ""
-        assert "== Découverte ==" in result
-        assert "== Orbite ==" not in result
-        assert "== Habitabilité ==" in result
-
-    # Tests pour build_habitability_section
-    def test_build_habitability_section_unknown(self, generator):
+    # Tests pour HabitabilitySection
+    def test_habitability_section_unknown(self, article_formatter):
         """Test habitabilité inconnue."""
         exoplanet = Exoplanet(pl_name="Test b")
-        result = generator.build_habitability_section(exoplanet)
+        section = HabitabilitySection(article_formatter)
+        result = section.generate(exoplanet)
         assert "ne sont pas déterminées" in result
 
-    def test_build_habitability_section_too_hot(self, generator):
+    def test_habitability_section_too_hot(self, article_formatter):
         """Test habitabilité trop chaud."""
         exoplanet = Exoplanet(pl_name="Hot b", pl_temperature=ValueWithUncertainty(value=500))
-        result = generator.build_habitability_section(exoplanet)
+        section = HabitabilitySection(article_formatter)
+        result = section.generate(exoplanet)
         assert "trop chaude" in result
         assert "500" in result
 
-    def test_build_habitability_section_too_cold(self, generator):
+    def test_habitability_section_too_cold(self, article_formatter):
         """Test habitabilité trop froid."""
         exoplanet = Exoplanet(pl_name="Cold b", pl_temperature=ValueWithUncertainty(value=100))
-        result = generator.build_habitability_section(exoplanet)
+        section = HabitabilitySection(article_formatter)
+        result = section.generate(exoplanet)
         assert "trop froide" in result
         assert "100" in result
 
-    def test_build_habitability_section_habitable(self, generator):
+    def test_habitability_section_habitable(self, article_formatter):
         """Test zone habitable théorique."""
         exoplanet = Exoplanet(pl_name="Earth 2.0", pl_temperature=ValueWithUncertainty(value=288))
-        result = generator.build_habitability_section(exoplanet)
+        section = HabitabilitySection(article_formatter)
+        result = section.generate(exoplanet)
         assert "zone habitable" in result
         assert "288" in result
 
-    # Tests pour build_nomenclature_section
-    def test_build_nomenclature_section_standard(self, generator):
+    # Tests pour NomenclatureSection
+    def test_nomenclature_section_standard(self, article_formatter):
         """Test de la section nomenclature."""
         exoplanet = Exoplanet(pl_name="Test b")
-        result = generator.build_nomenclature_section(exoplanet)
+        section = NomenclatureSection(article_formatter)
+        result = section.generate(exoplanet)
         assert "== Nomenclature ==" in result
         assert "Union astronomique internationale" in result
         assert "lettre « b »" in result
 
-    def test_build_nomenclature_section_empty_name(self, generator):
+    def test_nomenclature_section_empty_name(self, article_formatter):
         """Test avec nom vide."""
         exoplanet = Exoplanet(pl_name=None)
-        result = generator.build_nomenclature_section(exoplanet)
+        section = NomenclatureSection(article_formatter)
+        result = section.generate(exoplanet)
         assert result == ""
 
-    # Tests pour build_host_star_section
-    def test_build_host_star_section_empty(self, generator):
+    # Tests pour HostStarSection
+    def test_host_star_section_empty(self, article_formatter):
         """Test avec étoile vide."""
         exoplanet = Exoplanet(pl_name="Test b")
-        result = generator.build_host_star_section(exoplanet)
+        section = HostStarSection(article_formatter)
+        result = section.generate(exoplanet)
         assert result == ""
 
-    def test_build_host_star_section_name_only(self, generator):
+    def test_host_star_section_name_only(self, article_formatter):
         """Test avec seulement le nom de l'étoile."""
         exoplanet = Exoplanet(pl_name="Test b", st_name="Test Star")
-        result = generator.build_host_star_section(exoplanet)
+        section = HostStarSection(article_formatter)
+        result = section.generate(exoplanet)
         assert "== Étoile hôte ==" in result
         assert "Test Star" in result
         assert "type spectral" not in result
 
-    def test_build_host_star_section_full_info(self, generator):
+    def test_host_star_section_full_info(self, article_formatter):
         """Test avec toutes les infos de l'étoile."""
         exoplanet = Exoplanet(
             pl_name="Test b",
@@ -299,7 +292,8 @@ class TestExoplanetContentGenerator:
             st_metallicity=ValueWithUncertainty(value=0.1),
             st_age=ValueWithUncertainty(value=4.5),
         )
-        result = generator.build_host_star_section(exoplanet)
+        section = HostStarSection(article_formatter)
+        result = section.generate(exoplanet)
         assert "== Étoile hôte ==" in result
         assert "Test Star" in result
         assert "G2V" in result
@@ -307,14 +301,15 @@ class TestExoplanetContentGenerator:
         assert "métallicité de 0,1" in result
         assert "âgée de 4,5" in result
 
-    def test_build_host_star_section_partial_info(self, generator):
+    def test_host_star_section_partial_info(self, article_formatter):
         """Test avec info partielle de l'étoile."""
         exoplanet = Exoplanet(
             pl_name="Test b",
             st_name="Test Star",
             st_spectral_type="K5",
         )
-        result = generator.build_host_star_section(exoplanet)
+        section = HostStarSection(article_formatter)
+        result = section.generate(exoplanet)
         assert "== Étoile hôte ==" in result
         assert "type spectral K5" in result
         assert "masse" not in result

@@ -1,5 +1,4 @@
-# src/generators/articles/exoplanet/parts/exoplanet_introduction_generator.py
-
+# src/generators/articles/exoplanet/sections/introduction_section.py
 
 from src.models.entities.exoplanet_entity import Exoplanet
 from src.utils.astro.classification.exoplanet_comparison_util import (
@@ -9,29 +8,24 @@ from src.utils.astro.classification.exoplanet_type_util import ExoplanetTypeUtil
 from src.utils.astro.classification.star_type_util import StarTypeUtil
 from src.utils.astro.constellation_util import ConstellationUtil
 from src.utils.formatters.article_formatter import ArticleFormatter
-from src.utils.lang.french_articles import get_french_article_noun, guess_grammatical_gender
+from src.utils.lang.french_articles import (
+    get_french_article_noun,
+    guess_grammatical_gender,
+)
 from src.utils.lang.phrase.constellation import phrase_dans_constellation
 
 
-class ExoplanetIntroductionGenerator:
-    """
-    Classe pour générer l'introduction des articles d'exoplanètes.
-    """
+class IntroductionSection:
+    """Génère la section introduction pour les articles d'exoplanètes."""
 
-    # ============================================================================
-    # INITIALISATION
-    # ============================================================================
     def __init__(self, comparison_util: ExoplanetComparisonUtil, article_util: ArticleFormatter):
-        self.comparison_util: ExoplanetComparisonUtil = comparison_util
-        self.article_util: ArticleFormatter = article_util
+        self.comparison_util = comparison_util
+        self.article_util = article_util
         self.planet_type_util = ExoplanetTypeUtil()
         self.constellation_util = ConstellationUtil()
         self.star_type_util = StarTypeUtil()
 
-    # ============================================================================
-    # COMPOSITION DES SEGMENTS DE PHRASE
-    # ============================================================================
-    def compose_host_star_phrase(self, exoplanet: Exoplanet) -> str | None:
+    def _compose_host_star_phrase(self, exoplanet: Exoplanet) -> str | None:
         """Construit le segment de phrase concernant l'étoile hôte."""
         if not exoplanet.st_name:
             return None
@@ -48,12 +42,11 @@ class ExoplanetIntroductionGenerator:
             article = get_french_article_noun(
                 desc_clean, gender=genre, preposition="de", with_brackets=True
             )
-
             return f" en orbite autour {article} [[{st_name}]]"
         else:
             return f" en orbite autour de son étoile hôte [[{st_name}]]"
 
-    def compose_distance_phrase(self, exoplanet: Exoplanet) -> str | None:
+    def _compose_distance_phrase(self, exoplanet: Exoplanet) -> str | None:
         """Construit le segment de phrase concernant la distance."""
         if not exoplanet.st_distance or not exoplanet.st_distance.value:
             return None
@@ -67,11 +60,10 @@ class ExoplanetIntroductionGenerator:
                 )
                 return f", située à environ {formatted_distance_ly} [[année-lumière|années-lumière]] de la [[Terre]]"
         except (ValueError, TypeError):
-            # Gère les cas où distance.value n'est pas un nombre valide.
             return None
         return None
 
-    def compose_constellation_phrase(self, exoplanet: Exoplanet) -> str | None:
+    def _compose_constellation_phrase(self, exoplanet: Exoplanet) -> str | None:
         """Construit le segment de phrase concernant la constellation."""
         if not exoplanet.sy_constellation:
             return None
@@ -83,33 +75,25 @@ class ExoplanetIntroductionGenerator:
 
         return None
 
-    # ============================================================================
-    # GÉNÉRATION DE L'INTRODUCTION
-    # ============================================================================
-    def compose_exoplanet_introduction(self, exoplanet: Exoplanet) -> str:
-        """
-        Génère l'introduction pour une exoplanète.
-        """
+    def generate(self, exoplanet: Exoplanet) -> str:
+        """Génère l'introduction pour une exoplanète."""
         planet_type = self.planet_type_util.determine_exoplanet_classification(exoplanet)
-        # planet_type est supposé être une chaîne comme "Jupiter chaud", pour être utilisé dans "[[Jupiter chaud]]"
-
         planet_name_str = exoplanet.pl_name or "Nom inconnu"
-
         planet_type = planet_type[0].lower() + planet_type[1:]
 
         base_intro = f"'''{planet_name_str}''' est une exoplanète de type [[{planet_type}]]"
 
         parts = [base_intro]
 
-        host_star_segment = self.compose_host_star_phrase(exoplanet)
+        host_star_segment = self._compose_host_star_phrase(exoplanet)
         if host_star_segment:
             parts.append(host_star_segment)
 
-        distance_segment = self.compose_distance_phrase(exoplanet)
+        distance_segment = self._compose_distance_phrase(exoplanet)
         if distance_segment:
             parts.append(distance_segment)
 
-        constellation_segment = self.compose_constellation_phrase(exoplanet)
+        constellation_segment = self._compose_constellation_phrase(exoplanet)
         if constellation_segment:
             parts.append(f" {constellation_segment}")
 
