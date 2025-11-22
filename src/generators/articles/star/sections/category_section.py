@@ -170,3 +170,21 @@ class CategorySection:
         Ajoute une catégorie personnalisée pour le système planétaire.
         """
         return "\n[[Catégorie:Système planétaire]]"
+
+    def map_constellation_to_category(self, star: Star) -> str | None:
+        """
+        Règle commune pour déterminer la catégorie de constellation.
+        Fonctionne pour tout objet ayant un attribut 'sy_constellation'.
+        """
+        if hasattr(star, "sy_constellation") and star.sy_constellation:
+            constellation: str = star.sy_constellation
+
+            mapping = (
+                self._category_rules_manager.rules.get("common", {})
+                .get("mapped", {})
+                .get("sy_constellation", {})
+            )
+
+            if constellation in mapping:
+                return mapping[constellation]
+        return None

@@ -12,7 +12,7 @@ test: ## Lance les tests unitaires et d'intégration
 	pytest
 
 cov: ## Lance les tests avec rapport de couverture
-	pytest --cov=src --cov-report=term-missing --cov-report=html
+	pytest --cov=src --cov-report=term-missing --cov-report=html --cov-report=json
 
 lint: ## Vérifie le style et la sécurité (Ruff, Bandit)
 	ruff check .

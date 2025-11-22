@@ -131,3 +131,23 @@ class TestStarSections:
         assert "0.040" in content
         assert "89.90" in content
         assert "{{Système planétaire fin}}" in content
+
+    def test_map_constellation_to_category(self, mock_star):
+        from src.generators.articles.star.sections.category_section import CategorySection
+
+        # Mock the rules manager to return a known mapping
+        section = CategorySection()
+        section._category_rules_manager = MagicMock()
+        section._category_rules_manager.rules = {
+            "common": {
+                "mapped": {"sy_constellation": {"Cygne": "[[Catégorie:Constellation du Cygne]]"}}
+            }
+        }
+
+        mock_star.sy_constellation = "Cygne"
+        result = section.map_constellation_to_category(mock_star)
+        assert result == "[[Catégorie:Constellation du Cygne]]"
+
+        mock_star.sy_constellation = "Unknown"
+        result = section.map_constellation_to_category(mock_star)
+        assert result is None

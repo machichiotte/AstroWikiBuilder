@@ -1,7 +1,7 @@
 # 🏗️ Architecture du projet AstroWikiBuilder
 
-**Version :** 1.1  
-**Date :** 2025-11-21  
+**Version :** 1.1
+**Date :** 2025-11-21
 **Auteur :** Documentation technique générée
 
 ---
@@ -167,7 +167,7 @@ graph LR
     G --> I[Wikipedia Service]
     H --> J[Fichiers CSV/JSON]
     I --> K[Brouillons Wiki]
-    
+
     style A fill:#e3f2fd
     style B fill:#fff3e0
     style E fill:#fce4ec
@@ -192,23 +192,23 @@ sequenceDiagram
     User->>Main: python -m src.core.main
     Main->>PipelineExecutor: execute_pipeline()
     PipelineExecutor->>Collector: collect_entities_from_source()
-    
+
     alt Données en cache
         Collector->>Collector: read_csv_file(cache_path)
     else Pas de cache
         Collector->>Collector: fetch_and_cache_csv_data()
     end
-    
+
     Collector->>Mapper: transform_row_to_exoplanet(row)
     Mapper-->>Collector: Exoplanet object
     Collector->>Mapper: transform_row_to_star(row)
     Mapper-->>Collector: Star object
-    
+
     Collector-->>PipelineExecutor: List[Exoplanet], List[Star]
-    
+
     PipelineExecutor->>Processor: ingest entities
     Processor->>Processor: consolidate & deduplicate
-    
+
     PipelineExecutor->>Generator: compose_wikipedia_article_content(exoplanet)
     Generator->>Generator: generate_infobox()
     Generator->>Generator: generate_introduction()
@@ -216,7 +216,7 @@ sequenceDiagram
     Generator->>Generator: generate_see_also()
     Generator->>Generator: generate_categories()
     Generator-->>PipelineExecutor: Article content
-    
+
     PipelineExecutor->>Export: save draft
     Export-->>User: Brouillon sauvegardé
 ```
@@ -237,11 +237,11 @@ class BaseCollector(ABC):
     @abstractmethod
     def get_data_download_url(self) -> str:
         pass
-    
+
     @abstractmethod
     def transform_row_to_exoplanet(self, row: pd.Series) -> Optional[Exoplanet]:
         pass
-    
+
     @abstractmethod
     def transform_row_to_star(self, row: pd.Series) -> Optional[Star]:
         pass
@@ -250,7 +250,7 @@ class BaseCollector(ABC):
 class NASAExoplanetArchiveCollector(BaseCollector):
     def get_data_download_url(self) -> str:
         return "https://exoplanetarchive.ipac.caltech.edu/..."
-    
+
     def transform_row_to_exoplanet(self, row: pd.Series) -> Optional[Exoplanet]:
         # Logique spécifique NASA
         pass
@@ -295,7 +295,7 @@ class ExoplanetWikipediaArticleGenerator(BaseWikipediaArticleGenerator):
         self.content_generator = ExoplanetContentGenerator()
         self.see_also_generator = ExoplanetSeeAlsoGenerator()
         self.category_generator = ExoplanetCategoryGenerator()
-    
+
     def compose_article(self, exoplanet):
         article = ""
         article += self.infobox_generator.generate(exoplanet)
@@ -321,10 +321,10 @@ class ExoplanetWikipediaArticleGenerator(BaseWikipediaArticleGenerator):
 class ExoplanetRepository:
     def get_all_exoplanets(self) -> List[Exoplanet]:
         pass
-    
+
     def get_exoplanet_by_name(self, name: str) -> Optional[Exoplanet]:
         pass
-    
+
     def get_exoplanets_without_wikipedia_article(self) -> List[Exoplanet]:
         pass
 ```
@@ -344,7 +344,7 @@ class DataProcessor:
     """Service de consolidation et traitement des données."""
     def consolidate_data(self, exoplanets, stars):
         pass
-    
+
     def deduplicate_entities(self):
         pass
 
@@ -441,17 +441,15 @@ class ReferenceManager:
 ```
 base/                          # Classes abstraites
 ├── BaseWikipediaArticleGenerator
-├── BaseInfoboxGenerator
-└── BaseCategoryGenerator
 
 articles/exoplanet/           # Spécialisations
 ├── ExoplanetArticleGenerator
-└── parts/
-    ├── ExoplanetInfoboxGenerator
-    ├── ExoplanetIntroductionGenerator
-    ├── ExoplanetContentGenerator
-    ├── ExoplanetSeeAlsoGenerator
-    └── ExoplanetCategoryGenerator
+└── sections/
+    ├── InfoboxSection
+    ├── IntroductionSection
+    ├── ContentSection
+    ├── SeeAlsoSection
+    └── CategorySection
 ```
 
 **Design :** Chaque "part" génère une section spécifique de l'article.
@@ -513,22 +511,22 @@ graph TD
     Orchestration --> Collectors[collectors/]
     Orchestration --> Services[services/]
     Orchestration --> Generators[generators/]
-    
+
     Collectors --> Mappers[mappers/]
     Collectors --> Models[models/]
     Collectors --> RefMgr[services/processors/reference_manager]
-    
+
     Mappers --> Models
-    
+
     Services --> Models
     Services --> Utils[utils/]
-    
+
     Generators --> Models
     Generators --> Utils
     Generators --> Constants[constants/]
-    
+
     Utils --> Models
-    
+
     style Core fill:#ffebee
     style Orchestration fill:#e1bee7
     style Models fill:#e8f5e9
@@ -599,10 +597,10 @@ from src.collectors.base_collector import BaseCollector
 class ExoplanetEuCollector(BaseCollector):
     def get_data_download_url(self) -> str:
         return "http://exoplanet.eu/catalog/csv"
-    
+
     def get_source_type(self) -> SourceType:
         return SourceType.EXOPLANET_EU
-    
+
     # Implémenter les autres méthodes abstraites
 ```
 
@@ -675,16 +673,16 @@ def test_transform_row_to_exoplanet():
         cache_dir="tests/fixtures",
         use_mock_data=True
     )
-    
+
     # Créer une ligne de test
     row = pd.Series({
         'pl_name': 'Test Planet b',
         'pl_bmasse': 1.5,
         # ...
     })
-    
+
     exoplanet = collector.transform_row_to_exoplanet(row)
-    
+
     assert exoplanet.pl_name == 'Test Planet b'
     assert exoplanet.pl_mass.value == 1.5
 ```

@@ -62,7 +62,7 @@ def get_random_exoplanets(
 
     # Sélectionner n exoplanètes aléatoires
     n = min(n, len(exoplanets))
-    random_exoplanets = random.sample(exoplanets, n)
+    random_exoplanets = random.sample(exoplanets, n)  # nosec B311
 
     # Remplacer les NaN et les champs vides par la chaîne "NaN"
     if replace_nan:
@@ -104,7 +104,7 @@ def main():
 
     exoplanets = load_exoplanets(args.input)
     n = min(args.n, len(exoplanets))
-    random_exoplanets = random.sample(exoplanets, n)
+    random_exoplanets = random.sample(exoplanets, n)  # nosec B311
 
     # Remplacer les NaN et les champs vides par "NaN" (optionnel)
     for exoplanet in random_exoplanets:
