@@ -13,7 +13,6 @@ from src.generators.articles.exoplanet.sections import (
     InfoboxSection,
     InsolationSection,
     IntroductionSection,
-    NomenclatureSection,
     ObservationPotentialSection,
     OrbitSection,
     PhysicalCharacteristicsSection,
@@ -58,7 +57,6 @@ class ExoplanetWikipediaArticleGenerator(BaseWikipediaArticleGenerator):
 
         # Initialize all 14 section generators (13 sections + intro which needs both utils)
         self.introduction_section = IntroductionSection(comparison_util, article_util)
-        self.nomenclature_section = NomenclatureSection(article_util)
         self.host_star_section = HostStarSection(article_util)
         self.discovery_section = DiscoverySection(article_util)
         self.physical_characteristics_section = PhysicalCharacteristicsSection(article_util)
@@ -101,7 +99,6 @@ class ExoplanetWikipediaArticleGenerator(BaseWikipediaArticleGenerator):
         Compose le contenu principal de l'article en appelant toutes les sections de contenu.
         """
         sections = [
-            self.nomenclature_section.generate(exoplanet),
             self.host_star_section.generate(exoplanet),
             self.discovery_section.generate(exoplanet),
             self.physical_characteristics_section.generate(exoplanet),

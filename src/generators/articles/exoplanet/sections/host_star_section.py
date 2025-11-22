@@ -21,7 +21,7 @@ class HostStarSection:
             return ""
 
         content = "== Étoile hôte ==\n"
-        content += f"L'exoplanet orbite autour de [[{exoplanet.st_name}]], "
+        content += f"L'exoplanète orbite autour de [[{exoplanet.st_name}]], "
 
         characteristics = []
 

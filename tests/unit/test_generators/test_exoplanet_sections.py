@@ -8,7 +8,6 @@ from src.generators.articles.exoplanet.sections import (
     DiscoverySection,
     HabitabilitySection,
     HostStarSection,
-    NomenclatureSection,
     OrbitSection,
     PhysicalCharacteristicsSection,
 )
@@ -247,23 +246,6 @@ class TestExoplanetSections:
         result = section.generate(exoplanet)
         assert "zone habitable" in result
         assert "288" in result
-
-    # Tests pour NomenclatureSection
-    def test_nomenclature_section_standard(self, article_formatter):
-        """Test de la section nomenclature."""
-        exoplanet = Exoplanet(pl_name="Test b")
-        section = NomenclatureSection(article_formatter)
-        result = section.generate(exoplanet)
-        assert "== Nomenclature ==" in result
-        assert "Union astronomique internationale" in result
-        assert "lettre « b »" in result
-
-    def test_nomenclature_section_empty_name(self, article_formatter):
-        """Test avec nom vide."""
-        exoplanet = Exoplanet(pl_name=None)
-        section = NomenclatureSection(article_formatter)
-        result = section.generate(exoplanet)
-        assert result == ""
 
     # Tests pour HostStarSection
     def test_host_star_section_empty(self, article_formatter):

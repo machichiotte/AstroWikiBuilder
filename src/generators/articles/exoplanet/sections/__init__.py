@@ -9,7 +9,6 @@ from .host_star_section import HostStarSection
 from .infobox_section import InfoboxSection
 from .insolation_section import InsolationSection
 from .introduction_section import IntroductionSection
-from .nomenclature_section import NomenclatureSection
 from .observation_potential_section import ObservationPotentialSection
 from .orbit_section import OrbitSection
 from .physical_characteristics_section import PhysicalCharacteristicsSection
@@ -27,7 +26,6 @@ __all__ = [
     "InfoboxSection",
     "InsolationSection",
     "IntroductionSection",
-    "NomenclatureSection",
     "ObservationPotentialSection",
     "OrbitSection",
     "PhysicalCharacteristicsSection",
