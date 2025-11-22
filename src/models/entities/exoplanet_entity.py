@@ -101,6 +101,7 @@ class Exoplanet:
     image: str | None = None
     caption: str | None = None
     sy_constellation: str | None = None
+    sy_planet_count: int | None = None
 
     # Étoile hôte
     st_name: str = None
@@ -132,6 +133,8 @@ class Exoplanet:
     pl_gravity: float | None = None
     pl_rotation_period: float | None = None
     pl_temperature: ValueWithUncertainty | None = None
+    pl_insolation_flux: ValueWithUncertainty | None = None
+    pl_transit_depth: ValueWithUncertainty | None = None
     pl_albedo_bond: float | None = None
 
     # Atmosphère

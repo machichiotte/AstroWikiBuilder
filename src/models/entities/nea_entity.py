@@ -759,6 +759,9 @@ NEA_TO_EXOPLANET_MAPPING = {
     "st_mass": "st_mass",
     "st_met": "st_metallicity",
     "st_age": "st_age",
+    "pl_insol": "pl_insolation_flux",
+    "pl_trandep": "pl_transit_depth",
+    "sy_pnum": "sy_planet_count",
 }
 
 # Unités par défaut pour certains champs NEA

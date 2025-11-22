@@ -35,7 +35,13 @@ class ExoplanetContentGenerator:
             self.build_nomenclature_section(exoplanet),
             self.build_host_star_section(exoplanet),
             self.build_physical_characteristics_section(exoplanet),
+            self.build_composition_section(exoplanet),
             self.build_orbit_section(exoplanet),
+            self.build_tidal_locking_section(exoplanet),
+            self.build_system_architecture_section(exoplanet),
+            self.build_insolation_section(exoplanet),
+            self.build_observation_potential_section(exoplanet),
+            self.build_formation_mechanism_section(exoplanet),
             self.build_discovery_section(exoplanet),
             self.build_habitability_section(exoplanet),
         ]
@@ -361,3 +367,190 @@ class ExoplanetContentGenerator:
             content += f"{', '.join(characteristics[:-1])} et {characteristics[-1]}.\n"
 
         return content
+
+    def build_insolation_section(self, exoplanet: Exoplanet) -> str:
+        """Génère la section sur le flux d'insolation reçu par rapport à la Terre. Seuils basés sur Mars:0.43, Terre:1.0, Venus:1.9."""
+        if not exoplanet.pl_insolation_flux or not exoplanet.pl_insolation_flux.value:
+            return ""
+        try:
+            flux_value = float(exoplanet.pl_insolation_flux.value)
+        except (ValueError, TypeError):
+            return ""
+        section = "== Flux d'insolation ==\n"
+        flux_str = self.article_util.format_uncertain_value_for_article(
+            exoplanet.pl_insolation_flux
+        )
+        if flux_value < 0.1:
+            section += f"La planète reçoit environ {flux_str} fois le flux lumineux que la [[Terre]] reçoit du [[Soleil]], ce qui la place dans une zone très froide et sombre, similaire aux planètes externes du système solaire comme [[Jupiter (planète)|Jupiter]] ou [[Saturne (planète)|Saturne]].\n"
+        elif flux_value < 0.4:
+            section += f"La planète reçoit {flux_str} fois le flux lumineux que la Terre reçoit du Soleil, soit un niveau d'insolation inférieur à celui de [[Mars (planète)|Mars]]. Elle se trouve dans la zone externe du système planétaire.\n"
+        elif flux_value < 0.8:
+            section += f"La planète reçoit {flux_str} fois le flux lumineux que la Terre reçoit du Soleil, la plaçant dans la limite externe de la [[zone habitable]], où l'eau liquide pourrait théoriquement exister avec une atmosphère à effet de serre appropriée.\n"
+        elif flux_value < 1.3:
+            section += f"La planète reçoit {flux_str} fois le flux lumineux que la Terre reçoit du Soleil, soit un niveau d'insolation relativement comparable. Ces conditions sont favorables au maintien d'eau liquide en surface.\n"
+        elif flux_value < 1.9:
+            section += f"La planète reçoit {flux_str} fois le flux lumineux que la Terre reçoit du Soleil, la plaçant dans la limite interne de la zone habitable, proche des conditions de [[Vénus (planète)|Vénus]]. Le risque d'un effet de serre incontrôlé est élevé.\n"
+        elif flux_value < 4:
+            section += f"La planète reçoit {flux_str} fois le flux lumineux que la Terre reçoit du Soleil. Ce flux élevé indique une proximité importante avec son étoile hôte, susceptible d'entraîner une température de surface très élevée et l'évaporation de toute eau liquide.\n"
+        else:
+            section += f"La planète reçoit {flux_str} fois le flux lumineux que la Terre reçoit du Soleil. Ce flux extrêmement élevé, supérieur à celui de [[Mercure (planète)|Mercure]], indique une très grande proximité avec son étoile hôte. De telles conditions entraînent des températures de surface extrêmes et peuvent provoquer l'évaporation massive de l'atmosphère.\n"
+        return section
+
+    def build_composition_section(self, exoplanet: Exoplanet) -> str:
+        """Génère la section sur la composition théorique basée sur la densité."""
+        if not exoplanet.pl_density or not exoplanet.pl_density.value:
+            return ""
+        try:
+            density_value = float(exoplanet.pl_density.value)
+        except (ValueError, TypeError):
+            return ""
+        section = "== Composition ==\n"
+        density_str = self.article_util.format_uncertain_value_for_article(exoplanet.pl_density)
+        if density_value > 5.0:
+            section += f"Avec une densité de {density_str} g/cm³, cette exoplanète présente une composition probablement [[Planète tellurique|tellurique]].\n"
+        elif density_value > 3.0:
+            section += f"Avec une densité de {density_str} g/cm³, cette exoplanète pourrait avoir une composition [[Planète tellurique|tellurique]].\n"
+        elif density_value > 2.0:
+            section += f"Avec une densité de {density_str} g/cm³, cette exoplanète pourrait être une [[mini-Neptune]].\n"
+        else:
+            section += f"Avec une faible densité de {density_str} g/cm³, cette exoplanète est probablement une [[géante gazeuse]].\n"
+        return section
+
+    def build_tidal_locking_section(self, exoplanet: Exoplanet) -> str:
+        """Génère la section sur le verrouillage gravitationnel potentiel."""
+        if not exoplanet.pl_orbital_period or not exoplanet.pl_orbital_period.value:
+            return ""
+        try:
+            period_value = float(exoplanet.pl_orbital_period.value)
+        except (ValueError, TypeError):
+            return ""
+        eccentricity_value = 0.0
+        if exoplanet.pl_eccentricity and exoplanet.pl_eccentricity.value:
+            try:
+                eccentricity_value = float(exoplanet.pl_eccentricity.value)
+            except (ValueError, TypeError):
+                pass
+        is_likely_locked = period_value < 15 and eccentricity_value < 0.1
+        if not is_likely_locked:
+            return ""
+        section = "== Rotation et verrouillage gravitationnel ==\n"
+        section += "En raison de sa proximité avec son étoile hôte, il est très probable que cette exoplanète subisse un [[verrouillage gravitationnel|verrouillage par effet de marée]].\n"
+        return section
+
+    def build_observation_potential_section(self, exoplanet: Exoplanet) -> str:
+        """Génère la section sur le potentiel d'observation pour la spectroscopie."""
+        if not exoplanet.st_apparent_magnitude:
+            return ""
+        try:
+            if hasattr(exoplanet.st_apparent_magnitude, "value"):
+                mag_value = float(exoplanet.st_apparent_magnitude.value)
+            else:
+                mag_value = float(exoplanet.st_apparent_magnitude)
+        except (ValueError, TypeError, AttributeError):
+            return ""
+        if mag_value > 12:
+            return ""
+        section = "== Potentiel d'observation ==\n"
+        is_transiting = exoplanet.disc_method and "Transit" in str(exoplanet.disc_method)
+        has_transit_depth = exoplanet.pl_transit_depth and exoplanet.pl_transit_depth.value
+        if is_transiting and has_transit_depth and mag_value < 10:
+            section += f"Grâce à la brillance de son étoile hôte (magnitude apparente de {mag_value:.1f}) et à sa méthode de détection par transit, cette exoplanète constitue une cible prometteuse pour la caractérisation atmosphérique par [[spectroscopie de transmission]]. De telles observations peuvent révéler la composition chimique de son atmosphère, notamment avec des instruments comme ceux du [[Télescope spatial James-Webb|JWST]].\n"
+        elif mag_value < 10:
+            section += f"Son étoile hôte possède une magnitude apparente de {mag_value:.1f}, ce qui en fait une cible relativement brillante accessible aux télescopes modernes pour des observations photométriques ou spectroscopiques.\n"
+        elif mag_value < 12:
+            section += f"Avec une magnitude apparente de {mag_value:.1f}, l'étoile hôte est observable avec des télescopes de taille moyenne, permettant des études de suivi.\n"
+        return section
+
+    def build_system_architecture_section(self, exoplanet: Exoplanet) -> str:
+        """Génère la section sur l'architecture du système planétaire."""
+        if not exoplanet.sy_planet_count:
+            return ""
+        try:
+            if hasattr(exoplanet.sy_planet_count, "value"):
+                planet_count = int(exoplanet.sy_planet_count.value)
+            else:
+                planet_count = int(exoplanet.sy_planet_count)
+        except (ValueError, TypeError, AttributeError):
+            return ""
+        if planet_count <= 1:
+            return ""
+        section = "== Architecture du système ==\n"
+        if planet_count == 2:
+            section += f"Cette planète fait partie d'un système binaire planétaire orbitant autour de [[{exoplanet.st_name}]]. L'existence de multiples planètes dans un même système permet d'étudier la formation et l'évolution planétaire de manière comparative.\n"
+        elif planet_count >= 3 and planet_count <= 5:
+            section += f"Cette planète fait partie d'un système de {planet_count} planètes connues orbitant autour de [[{exoplanet.st_name}]]. L'étude de systèmes multi-planétaires fournit des informations précieuses sur les mécanismes de formation et de migration planétaire.\n"
+        else:
+            section += f"Cette planète fait partie d'un système planétaire remarquable contenant {planet_count} planètes connues autour de [[{exoplanet.st_name}]]. Un tel système dense offre une opportunité unique d'étudier les interactions gravitationnelles entre planètes et la stabilité dynamique à long terme.\n"
+        return section
+
+    def _is_hot_jupiter(self, exoplanet: Exoplanet) -> bool:
+        """Détermine si c'est un Hot Jupiter."""
+        is_massive = False
+        if exoplanet.pl_mass and exoplanet.pl_mass.value:
+            try:
+                mass_earth = float(exoplanet.pl_mass.value) * 318
+                is_massive = mass_earth > 30
+            except (ValueError, TypeError):
+                pass
+        is_large = False
+        if exoplanet.pl_radius and exoplanet.pl_radius.value:
+            try:
+                is_large = float(exoplanet.pl_radius.value) > 0.8
+            except (ValueError, TypeError):
+                pass
+        is_close = False
+        if exoplanet.pl_orbital_period and exoplanet.pl_orbital_period.value:
+            try:
+                is_close = float(exoplanet.pl_orbital_period.value) < 10
+            except (ValueError, TypeError):
+                pass
+        return (is_massive or is_large) and is_close
+
+    def _is_red_dwarf_system(self, exoplanet: Exoplanet) -> bool:
+        """Détermine si l'étoile est une naine rouge."""
+        if exoplanet.st_spectral_type and exoplanet.st_spectral_type.startswith("M"):
+            return True
+        if exoplanet.st_mass and hasattr(exoplanet.st_mass, "value"):
+            try:
+                return float(exoplanet.st_mass.value) < 0.5
+            except (ValueError, TypeError):
+                pass
+        return False
+
+    def _is_super_earth_or_mini_neptune(self, exoplanet: Exoplanet) -> bool:
+        """Détermine si c'est une super-Terre ou mini-Neptune."""
+        if not exoplanet.pl_radius or not exoplanet.pl_radius.value:
+            return False
+        try:
+            radius_earth = float(exoplanet.pl_radius.value)
+            return 1.5 < radius_earth < 4.0
+        except (ValueError, TypeError):
+            return False
+
+    def _has_eccentric_orbit(self, exoplanet: Exoplanet) -> bool:
+        """Détermine si l'orbite est fortement excentrique."""
+        if not exoplanet.pl_eccentricity or not exoplanet.pl_eccentricity.value:
+            return False
+        try:
+            return float(exoplanet.pl_eccentricity.value) > 0.3
+        except (ValueError, TypeError):
+            return False
+
+    def build_formation_mechanism_section(self, exoplanet: Exoplanet) -> str:
+        """Génère une section sur les mécanismes de formation (spéculatif)."""
+        is_hot_jupiter = self._is_hot_jupiter(exoplanet)
+        is_red_dwarf = self._is_red_dwarf_system(exoplanet)
+        is_super_earth = self._is_super_earth_or_mini_neptune(exoplanet)
+        is_eccentric = self._has_eccentric_orbit(exoplanet)
+        if not any([is_hot_jupiter, is_red_dwarf, is_super_earth, is_eccentric]):
+            return ""
+        section = "== Mécanismes de formation ==\n"
+        if is_hot_jupiter:
+            section += "Les modèles de formation planétaire suggèrent que cette exoplanète, de par sa nature gazeuse et sa proximité extrême avec son étoile, ne s'est probablement pas formée à sa position actuelle. Les théories de [[migration planétaire]] proposent qu'elle se soit formée dans les régions externes du système, où les températures permettent l'accumulation de gaz, avant de migrer vers l'intérieur par interaction gravitationnelle avec le [[Disque protoplanétaire|disque protoplanétaire]].\n"
+        elif is_red_dwarf:
+            section += f"L'évolution de cette planète autour de [[{exoplanet.st_name}]], une [[naine rouge]], présente des défis particuliers. L'[[activité stellaire]] intense des naines rouges, notamment les [[éruption stellaire|éruptions]] fréquentes, peut éroder l'atmosphère planétaire primitive. De plus, la [[zone habitable]] très proche de ces étoiles implique un fort [[verrouillage gravitationnel]], avec des conséquences importantes sur la circulation atmosphérique et le climat.\n"
+        elif is_eccentric:
+            section += "L'excentricité orbitale élevée de cette planète suggère qu'elle a subi des perturbations gravitationnelles importantes. De telles orbites excentriques peuvent résulter d'interactions dynamiques avec d'autres planètes du système, d'une migration induite par le disque, ou de rencontres stellaires dans l'environnement de formation.\n"
+        elif is_super_earth:
+            section += "La nature exacte de cette planète, située dans la catégorie des [[super-Terre]]s ou [[mini-Neptune]]s, reste débattue. Cette classe d'exoplanètes, rare dans notre Système solaire, soulève des questions sur les processus de formation. Il pourrait s'agir soit d'un noyau rocheux massif avec une atmosphère épaisse, soit d'une planète majoritairement composée de volatils.\n"
+        return section
