@@ -125,20 +125,17 @@ class WikipediaChecker:
         self,
         api_title: str,
         resolved_to_queried: dict[str, str],
-        redirect_map: dict[str, str],
-        normalized_map: dict[str, str],
-        results: dict[str, WikiArticleInfo],
+        # Les arguments ci-dessous sont retirés de la signature pour simplifier
+        # et éviter la logique redondante et erronée.
+        # redirect_map: dict[str, str],
+        # normalized_map: dict[str, str],
+        # results: dict[str, WikiArticleInfo],
     ) -> str | None:
-        original = resolved_to_queried.get(api_title)
-        if original:
-            return original
-
-        for r_from, r_to in redirect_map.items():
-            if r_to == api_title:
-                candidate = normalized_map.get(r_from, r_from)
-                if candidate in results:
-                    return candidate
-        return None
+        """
+        Trouve le titre original (queried_title) associé au titre retourné par l'API (api_title).
+        Se base UNIQUEMENT sur la map de résolution (resolved_to_queried) qui doit être complète.
+        """
+        return resolved_to_queried.get(api_title)
 
     def _create_wiki_article_info(
         self,
@@ -195,9 +192,9 @@ class WikipediaChecker:
     ) -> None:
         for page in data.get("pages", {}).values():
             api_title = page.get("title")
-            original = self._find_original_title(
-                api_title, resolved_to_queried, redirect_map, normalized_map, results
-            )
+
+            # Correction de l'appel pour correspondre à la signature simplifiée
+            original = self._find_original_title(api_title, resolved_to_queried)
 
             if not original:
                 logger.warning(f"Pas de correspondance trouvée pour {api_title}")

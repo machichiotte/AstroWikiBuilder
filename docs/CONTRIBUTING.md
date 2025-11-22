@@ -228,8 +228,8 @@ def test_something(sample_exoplanet):
 ### Before Submitting
 
 - [ ] All tests pass
-- [ ] Code is formatted (Black)
-- [ ] No linting errors (flake8)
+- [ ] Code is formatted (Ruff)
+- [ ] No linting errors (Ruff)
 - [ ] Type checking passes (mypy)
 - [ ] Documentation is updated
 - [ ] CHANGELOG is updated (if applicable)

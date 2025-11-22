@@ -28,3 +28,12 @@ repos:
       - id: bandit
         args: ["-c", "pyproject.toml"]
         additional_dependencies: ["bandit[toml]"]
+
+  - repo: local
+    hooks:
+      - id: pytest-before-push
+        name: Run pytest before pushing
+        entry: pytest
+        language: system
+        pass_filenames: false
+        stages: [push]

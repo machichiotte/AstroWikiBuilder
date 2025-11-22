@@ -77,6 +77,7 @@ class TestWikipediaChecker:
             "query": {
                 "pages": {
                     "123": {
+                        "pageid": 123,
                         "title": "Test Article",
                         "fullurl": "https://fr.wikipedia.org/wiki/Test_Article",
                     }
@@ -143,8 +144,13 @@ class TestWikipediaChecker:
             )
         }
         resolved_map = {"Missing Article": "Missing Article"}
+        # Correction : définir explicitement les cartes vides
+        redirect_map = {}
+        normalized_map = {}
 
-        checker.resolve_article_existence_from_pages(data, resolved_map, {}, {}, results, None)
+        checker.resolve_article_existence_from_pages(
+            data, resolved_map, redirect_map, normalized_map, results, None
+        )
 
         assert results["Missing Article"].exists is False
 
@@ -153,6 +159,7 @@ class TestWikipediaChecker:
         data = {
             "pages": {
                 "123": {
+                    "pageid": 123,
                     "title": "Existing Article",
                     "fullurl": "https://fr.wikipedia.org/wiki/Existing_Article",
                 }
@@ -164,8 +171,13 @@ class TestWikipediaChecker:
             )
         }
         resolved_map = {"Existing Article": "Existing Article"}
+        # Correction : définir explicitement les cartes vides
+        redirect_map = {}
+        normalized_map = {}
 
-        checker.resolve_article_existence_from_pages(data, resolved_map, {}, {}, results, None)
+        checker.resolve_article_existence_from_pages(
+            data, resolved_map, redirect_map, normalized_map, results, None
+        )
 
         assert results["Existing Article"].exists is True
         assert results["Existing Article"].url == "https://fr.wikipedia.org/wiki/Existing_Article"
@@ -175,6 +187,7 @@ class TestWikipediaChecker:
         data = {
             "pages": {
                 "123": {
+                    "pageid": 123,
                     "title": "Target Article",
                     "fullurl": "https://fr.wikipedia.org/wiki/Target_Article",
                 }
@@ -187,9 +200,11 @@ class TestWikipediaChecker:
         }
         resolved_map = {"Target Article": "Source Article"}
         redirect_map = {"Source Article": "Target Article"}
+        # Correction : définir explicitement la carte vide
+        normalized_map = {}
 
         checker.resolve_article_existence_from_pages(
-            data, resolved_map, redirect_map, {}, results, None
+            data, resolved_map, redirect_map, normalized_map, results, None
         )
 
         assert results["Source Article"].exists is True
@@ -200,7 +215,11 @@ class TestWikipediaChecker:
         """Test de résolution avec correspondance d'étoile hôte."""
         data = {
             "pages": {
-                "123": {"title": "Kepler-22", "fullurl": "https://fr.wikipedia.org/wiki/Kepler-22"}
+                "123": {
+                    "pageid": 123,
+                    "title": "Kepler-22",
+                    "fullurl": "https://fr.wikipedia.org/wiki/Kepler-22",
+                }
             }
         }
         results = {
@@ -210,9 +229,12 @@ class TestWikipediaChecker:
         }
         resolved_map = {"Kepler-22": "Kepler-22 b"}
         exoplanet_context = {"Kepler-22 b": {"st_name": "Kepler-22"}}
+        # Correction : définir explicitement les cartes vides
+        redirect_map = {}
+        normalized_map = {}
 
         checker.resolve_article_existence_from_pages(
-            data, resolved_map, {}, {}, results, exoplanet_context
+            data, resolved_map, redirect_map, normalized_map, results, exoplanet_context
         )
 
         assert results["Kepler-22 b"].exists is False
@@ -236,6 +258,7 @@ class TestWikipediaChecker:
             "query": {
                 "pages": {
                     "123": {
+                        "pageid": 123,
                         "title": "Test Article",
                         "fullurl": "https://fr.wikipedia.org/wiki/Test_Article",
                     }
