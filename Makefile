@@ -32,6 +32,7 @@ complexity: ## Analyse la complexité cyclomatique avec Radon
 
 format: ## Formate le code automatiquement
 	ruff check --fix .
+	ruff format .
 
 clean: ## Nettoie les fichiers temporaires
 	rm -rf build/
