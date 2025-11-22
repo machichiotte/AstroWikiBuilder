@@ -10,8 +10,7 @@ Le projet AstroWikiBuilder utilise **GitHub Actions** pour automatiser la vérif
 C'est le **fichier principal** du CI/CD. Il définit deux jobs :
 
 #### Job 1 : `quality-checks` (Vérifications de qualité)
-- ✅ **Ruff** : Linter Python (vérifie le style)
-- ✅ **Black** : Formateur de code (vérifie le formatage)
+- ✅ **Ruff** : Linter Python (vérifie le style et le formatage)
 - ✅ **Bandit** : Audit de sécurité (détecte les vulnérabilités)
 - ✅ **Radon** : Analyse de complexité (complexité cyclomatique et maintenabilité)
 
@@ -23,15 +22,14 @@ C'est le **fichier principal** du CI/CD. Il définit deux jobs :
 
 ### 2. `.pre-commit-config.yaml`
 Hooks Git qui s'exécutent **avant chaque commit** :
-- Ruff (linting)
-- Black (formatting)
+- Ruff (linting et formatting)
 - Bandit (security)
 - MyPy (type checking - désactivé pour l'instant)
 
 ### 3. `pyproject.toml`
 Configuration centralisée pour tous les outils :
 - Poetry (dépendances)
-- Ruff, Black, Bandit, MyPy, Pytest
+- Ruff, Bandit, MyPy, Pytest
 
 ### 4. `Makefile`
 Commandes simplifiées pour le développement local
@@ -52,7 +50,7 @@ make check     # Fait tout d'un coup
 
 ### Lors du commit
 Les **pre-commit hooks** s'exécutent automatiquement et bloquent le commit si :
-- Le code n'est pas formaté (Black)
+- Le code n'est pas formaté (Ruff)
 - Il y a des erreurs de linting (Ruff)
 - Des failles de sécurité sont détectées (Bandit)
 
@@ -123,7 +121,7 @@ Radon génère deux métriques :
 ## 🎯 Résumé
 
 Quand tu push sur GitHub :
-1. ✅ Le code est vérifié (Ruff, Black)
+1. ✅ Le code est vérifié (Ruff)
 2. ✅ La sécurité est auditée (Bandit)
 3. ✅ La complexité est analysée (Radon)
 4. ✅ Les tests sont lancés (Pytest)

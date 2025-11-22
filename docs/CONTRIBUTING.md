@@ -43,7 +43,7 @@ source venv/bin/activate
 pip install -r requirements.txt
 
 # Install dev dependencies
-pip install pytest pytest-cov pytest-mock black flake8 mypy
+pip install pytest pytest-cov pytest-mock mypy
 ```
 
 ---
@@ -82,12 +82,6 @@ open htmlcov/index.html  # or start htmlcov/index.html on Windows
 ### 4. Code Quality Checks
 
 ```bash
-# Format code with Black
-black src/ tests/
-
-# Check with flake8
-flake8 src/ tests/
-
 # Type checking with mypy
 mypy src/
 ```
@@ -205,10 +199,10 @@ def test_create_exoplanet_with_all_fields():
 def test_parse_cli_arguments():
     # Arrange
     args_list = ['--sources', 'nasa_exoplanet_archive']
-    
+
     # Act
     args = parse_cli_arguments(args_list)
-    
+
     # Assert
     assert 'nasa_exoplanet_archive' in args.sources
 ```
@@ -310,7 +304,7 @@ from src.collectors.base_collector import BaseCollector
 class MySourceCollector(BaseCollector):
     def get_data_download_url(self) -> str:
         return "https://my-source-api.com/data"
-    
+
     # Implement other abstract methods
 ```
 

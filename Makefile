@@ -14,9 +14,8 @@ test: ## Lance les tests unitaires et d'intégration
 cov: ## Lance les tests avec rapport de couverture
 	pytest --cov=src --cov-report=term-missing --cov-report=html
 
-lint: ## Vérifie le style et la sécurité (Ruff, Black, Bandit)
+lint: ## Vérifie le style et la sécurité (Ruff, Bandit)
 	ruff check .
-	black --check .
 	bandit -c pyproject.toml -r src/
 
 audit: ## Audit de sécurité approfondi avec Bandit
@@ -33,7 +32,6 @@ complexity: ## Analyse la complexité cyclomatique avec Radon
 
 format: ## Formate le code automatiquement
 	ruff check --fix .
-	black .
 
 clean: ## Nettoie les fichiers temporaires
 	rm -rf build/

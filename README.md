@@ -84,7 +84,7 @@ Le projet utilise un `Makefile` pour simplifier les tâches courantes :
 
 ### Qualité du code
 ```bash
-make lint          # Vérifie le style (Ruff, Black) et la sécurité (Bandit)
+make lint          # Vérifie le style (Ruff) et la sécurité (Bandit)
 make format        # Formate automatiquement le code
 make complexity    # Analyse la complexité avec Radon
 make audit         # Audit de sécurité approfondi

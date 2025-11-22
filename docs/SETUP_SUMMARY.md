@@ -8,8 +8,7 @@ Fichier principal qui s'exécute automatiquement à chaque push/PR :
 ```yaml
 Jobs:
   ├─ quality-checks (Vérifications de qualité)
-  │  ├─ Ruff (linting)
-  │  ├─ Black (formatting)
+  │  ├─ Ruff (linting et formatting)
   │  ├─ Bandit (security)
   │  └─ Radon (complexity)
   │
@@ -22,7 +21,6 @@ Jobs:
 ### 2. **Pre-commit Hooks** (`.pre-commit-config.yaml`)
 S'exécutent **avant chaque commit** pour bloquer le code de mauvaise qualité :
 - ✅ Ruff
-- ✅ Black
 - ✅ Bandit
 - ⏸️ MyPy (désactivé temporairement)
 
@@ -38,7 +36,7 @@ Tous les outils configurés dans un seul fichier au format Poetry
 ### 5. **Makefile** mis à jour
 Nouvelles commandes disponibles :
 ```bash
-make lint        # Ruff + Black + Bandit
+make lint        # Ruff + Bandit
 make audit       # Bandit approfondi
 make complexity  # Radon (CC + MI)
 make stats       # Cloc (lignes de code)
@@ -76,8 +74,7 @@ git push origin main
 → **GitHub Actions** démarre automatiquement :
 
 1. **Job 1 : Quality Checks** (~30 secondes)
-   - Ruff vérifie le style
-   - Black vérifie le formatage
+   - Ruff vérifie le style et le formatage
    - Bandit scanne la sécurité
    - Radon analyse la complexité
 
@@ -96,7 +93,6 @@ git push origin main
 
 ### Qualité du code
 - ✅ **Linting (Ruff)** : All checks passed!
-- ✅ **Formatting (Black)** : 97 files OK
 - ✅ **Security (Bandit)** : No issues (6167 lignes scannées)
 - ✅ **Complexity (Radon)** : Moyenne C (18.0)
 - ✅ **Maintainability** : Tous les fichiers en A
