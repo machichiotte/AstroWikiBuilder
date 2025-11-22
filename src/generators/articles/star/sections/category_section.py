@@ -1,28 +1,31 @@
-# src/generators/articles/star/sections/category_generator.py
 from collections.abc import Callable
 
-from src.generators.base.base_category_generator import BaseCategoryGenerator
+from src.generators.base.category_rules_manager import CategoryRulesManager
 from src.models.entities.star_entity import Star
 from src.utils.astro.classification.star_type_util import StarTypeUtil
 
 
-class CategorySection(BaseCategoryGenerator):
+class CategorySection:
     """
     Classe pour générer les catégories des articles d'étoiles.
     Utilise un générateur de règles centralisé.
     """
 
     def __init__(self, rules_filepath: str = "src/constants/categories_rules.yaml"):
-        super().__init__(rules_filepath)
+        self._category_rules_manager = CategoryRulesManager(rules_filepath)
         self.star_type_util = StarTypeUtil()
 
-    # --- Implémentation des méthodes abstraites ---
+    def generate(self, star: Star) -> str:
+        """Génère la section des catégories."""
+        categories = self.build_categories(star)
+        return "\n".join(categories) if categories else ""
 
-    def retrieve_object_type(self) -> str:
-        return "star"
-
-    def define_category_rules(self) -> list[Callable]:
-        return [
+    def build_categories(self, star: Star) -> list[str]:
+        """
+        Génère les catégories pour une étoile en utilisant les règles standard
+        et les règles personnalisées.
+        """
+        custom_rules: list[Callable] = [
             self.append_static_planetary_system_category,
             self.map_catalog_prefix_to_category,
             self.map_spectral_type_to_category,
@@ -30,6 +33,9 @@ class CategorySection(BaseCategoryGenerator):
             self.map_star_type_to_category,
             self.map_constellation_to_category,
         ]
+        return self._category_rules_manager.generate_categories_for(
+            star, "star", custom_rules=custom_rules
+        )
 
     # --- Règles de catégorisation spécifiques aux "étoiles" ---
 
