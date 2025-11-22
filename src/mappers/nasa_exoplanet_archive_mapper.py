@@ -1,9 +1,10 @@
-# ============================================================================
-# IMPORTS
-# ============================================================================
 import math
+import re
 from datetime import datetime
 from typing import Any
+
+import pandas as pd
+from bs4 import BeautifulSoup
 
 from src.models.entities.exoplanet_entity import Exoplanet, ValueWithUncertainty
 from src.models.entities.nea_entity import (
@@ -150,11 +151,7 @@ class NasaExoplanetArchiveMapper:
             planet_id=nea_data.get("pl_name") if isPlanet else None,
         )
 
-    def set_coordinates_and_constellation(
-        self, obj: Any, nea_data: NEA_ENTITY, reference: Reference
-    ) -> None:
-        """Traite les coordonnées (RA et DEC) pour un objet."""
-        # Traitement de l'ascension droite
+    def _set_right_ascension(self, obj: Any, nea_data: NEA_ENTITY) -> None:
         if "rastr" in nea_data and nea_data["rastr"]:
             formatted_ra = self._format_right_ascension_str(nea_data["rastr"])
             if formatted_ra:
@@ -168,7 +165,7 @@ class NasaExoplanetArchiveMapper:
             except (ValueError, TypeError):
                 pass
 
-        # Traitement de la déclinaison
+    def _set_declination(self, obj: Any, nea_data: NEA_ENTITY) -> None:
         if "decstr" in nea_data and nea_data["decstr"]:
             formatted_dec = self._format_declination_str(nea_data["decstr"])
             if formatted_dec:
@@ -181,6 +178,13 @@ class NasaExoplanetArchiveMapper:
                     obj.st_declination = formatted_dec_deg
             except (ValueError, TypeError):
                 pass
+
+    def set_coordinates_and_constellation(
+        self, obj: Any, nea_data: NEA_ENTITY, reference: Reference
+    ) -> None:
+        """Traite les coordonnées (RA et DEC) pour un objet."""
+        self._set_right_ascension(obj, nea_data)
+        self._set_declination(obj, nea_data)
 
         # Calcul de la constellation
         if obj.st_right_ascension and obj.st_declination:
@@ -255,28 +259,63 @@ class NasaExoplanetArchiveMapper:
         raw_value = raw_value.strip()
         return any(sub in raw_value for sub in ("<span", "<div", "&plusmn", "&gt", "&lt"))
 
+    def _parse_plusmn_value(self, epoch_str_val: str) -> ValueWithUncertainty | None:
+        try:
+            parts = epoch_str_val.split("&plusmn")
+            value = float(parts[0].strip())
+            error = float(parts[1].strip()) if len(parts) > 1 else None
+            return ValueWithUncertainty(
+                value=value, error_positive=error, error_negative=error, sign="±"
+            )
+        except ValueError:
+            return None
+
+    def _parse_html_value(self, epoch_str_val: str) -> ValueWithUncertainty | None:
+        fixed_html_str = re.sub(r'class=(\w+)"', r'class="\1"', epoch_str_val)
+        soup = BeautifulSoup(fixed_html_str, "html5lib")
+
+        try:
+            val = soup.find("span", class_="supersubNumber")
+            pos = soup.find("span", class_="superscript")
+            neg = soup.find("span", class_="subscript")
+
+            value = float(val.get_text().strip()) if val else None
+            err_pos = float(pos.get_text().strip().replace("+", "")) if pos else None
+            err_neg = float(neg.get_text().strip().replace("-", "")) if neg else None
+
+            return ValueWithUncertainty(
+                value=value,
+                error_positive=err_pos,
+                error_negative=err_neg,
+                sign="±",
+            )
+        except Exception:
+            return None
+
+    def _parse_gt_lt_value(self, epoch_str_val: str) -> ValueWithUncertainty | None:
+        if epoch_str_val.startswith("&gt"):
+            sign = ">"
+            val_str = epoch_str_val[3:]
+        elif epoch_str_val.startswith("&lt"):
+            sign = "<"
+            val_str = epoch_str_val[3:]
+        else:
+            return None
+
+        try:
+            value = float(val_str.strip())
+            return ValueWithUncertainty(value=value, sign=sign)
+        except ValueError:
+            return None
+
     def parse_composite_formatted_value(
+        self,
         raw_value: str,
     ) -> ValueWithUncertainty | None:
         """
-        Parses the composite string (pl_tranmidstr) which can be in several formats:
-        1. "2458950.09242&plusmn0.00076" -> [2458950.09242,0.00076, , ±]
-        2. "<div><span class=supersubNumber">2458360.0754</span><span class="superscript">+0.0049</span><span class="subscript">-0.0078</span></div>"
-           -> [2458360.0754,0.0049,0.0078,±]"
-        3. "2458360.0754" (a simple numerical value) -> [2458360.0754,,,]
-        4. "&gt789" -> [789, , >]
-        5. "&lt1084" -> [1084, , <]
-
+        Parses the composite string (pl_tranmidstr) which can be in several formats.
         Returns the formatted string or None if parsing fails.
         """
-        import logging
-        import re
-
-        import pandas as pd
-        from bs4 import BeautifulSoup
-
-        logger = logging.getLogger(__name__)
-
         if pd.isna(raw_value) or not isinstance(raw_value, str):
             return None
 
@@ -284,58 +323,15 @@ class NasaExoplanetArchiveMapper:
 
         # Cas 1 : format avec &plusmn
         if "&plusmn" in epoch_str_val:
-            try:
-                parts = epoch_str_val.split("&plusmn")
-                value = float(parts[0].strip())
-                error = float(parts[1].strip()) if len(parts) > 1 else None
-                return ValueWithUncertainty(
-                    value=value, error_positive=error, error_negative=error, sign="±"
-                )
-            except ValueError:
-                logger.warning(f"Erreur de parsing dans '&plusmn': {epoch_str_val}")
-                return None
+            return self._parse_plusmn_value(epoch_str_val)
 
         # Cas 2 : HTML
         elif "<div" in epoch_str_val and "<span" in epoch_str_val:
-            fixed_html_str = re.sub(r'class=(\w+)"', r'class="\1"', epoch_str_val)
-            soup = BeautifulSoup(fixed_html_str, "html5lib")
+            return self._parse_html_value(epoch_str_val)
 
-            try:
-                val = soup.find("span", class_="supersubNumber")
-                pos = soup.find("span", class_="superscript")
-                neg = soup.find("span", class_="subscript")
-
-                value = float(val.get_text().strip()) if val else None
-                err_pos = float(pos.get_text().strip().replace("+", "")) if pos else None
-                err_neg = float(neg.get_text().strip().replace("-", "")) if neg else None
-
-                return ValueWithUncertainty(
-                    value=value,
-                    error_positive=err_pos,
-                    error_negative=err_neg,
-                    sign="±",
-                )
-            except Exception as e:
-                logger.warning(f"Erreur de parsing HTML: {e} | contenu: {epoch_str_val}")
-                return None
-
-        # Cas 3 : &gt
-        elif epoch_str_val.startswith("&gt"):
-            try:
-                value = float(epoch_str_val[3:].strip())
-                return ValueWithUncertainty(value=value, sign=">")
-            except ValueError:
-                logger.warning(f"Erreur parsing &gt : {epoch_str_val}")
-                return None
-
-        # Cas 4 : &lt
-        elif epoch_str_val.startswith("&lt"):
-            try:
-                value = float(epoch_str_val[3:].strip())
-                return ValueWithUncertainty(value=value, sign="<")
-            except ValueError:
-                logger.warning(f"Erreur parsing &lt : {epoch_str_val}")
-                return None
+        # Cas 3 & 4 : &gt / &lt
+        elif epoch_str_val.startswith("&gt") or epoch_str_val.startswith("&lt"):
+            return self._parse_gt_lt_value(epoch_str_val)
 
         # Cas 5 : simple valeur numérique
         else:
@@ -343,7 +339,6 @@ class NasaExoplanetArchiveMapper:
                 value = float(epoch_str_val)
                 return ValueWithUncertainty(value=value)
             except ValueError:
-                logger.warning(f"Format d'époque non reconnu : {epoch_str_val}")
                 return None
 
     def _format_right_ascension_str(self, rastr_val: str) -> str:

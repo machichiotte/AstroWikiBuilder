@@ -69,6 +69,51 @@ class WikipediaService:
 
         return all_results
 
+    def _should_exclude_links(
+        self, only_existing: bool, only_missing: bool, has_existing: bool
+    ) -> bool:
+        if only_existing and not has_existing:
+            return True
+        if only_missing and has_existing:
+            return True
+        return False
+
+    def _process_exoplanet_links(
+        self,
+        exoplanet_name: str,
+        articles: dict[str, Any],
+        exoplanet_map: dict[str, Exoplanet],
+        only_existing: bool,
+        only_missing: bool,
+    ) -> list[dict[str, Any]]:
+        exoplanet_obj: Exoplanet | None = exoplanet_map.get(exoplanet_name)
+        if not exoplanet_obj:
+            logger.warning(
+                f"Exoplanet object for '{exoplanet_name}' not found during formatting. Skipping."
+            )
+            return []
+
+        has_any_existing_article: bool = any(info.exists for info in articles.values())
+
+        if self._should_exclude_links(only_existing, only_missing, has_any_existing_article):
+            return []
+
+        results = []
+        for title, info in articles.items():
+            results.append(
+                {
+                    "exoplanet_primary_name": exoplanet_name,
+                    "queried_name": title,
+                    "article_exists": info.exists,
+                    "wikipedia_title": info.title if info.exists else None,
+                    "is_redirect": info.is_redirect if info.exists else False,
+                    "redirect_target": (info.redirect_target if info.exists else None),
+                    "url": info.url if info.exists else None,
+                    "host_star": exoplanet_obj.st_name,
+                }
+            )
+        return results
+
     def format_article_links_for_export(
         self,
         exoplanets: list[Exoplanet],
@@ -90,34 +135,11 @@ class WikipediaService:
         exoplanet_map: dict[str, Exoplanet] = {exo.pl_name: exo for exo in exoplanets}
 
         for exoplanet_name, articles in exoplanet_articles_info.items():
-            exoplanet_obj: Exoplanet | None = exoplanet_map.get(exoplanet_name)
-            if not exoplanet_obj:
-                logger.warning(
-                    f"Exoplanet object for '{exoplanet_name}' not found during formatting. Skipping."
+            formatted_list.extend(
+                self._process_exoplanet_links(
+                    exoplanet_name, articles, exoplanet_map, only_existing, only_missing
                 )
-                continue
-
-            has_any_existing_article: bool = any(info.exists for info in articles.values())
-
-            if (only_existing and not has_any_existing_article) or (
-                only_missing and has_any_existing_article
-            ):
-                continue
-
-            # Pour chaque article (nom principal et alias), créer une entrée dans la liste
-            for title, info in articles.items():
-                formatted_list.append(
-                    {
-                        "exoplanet_primary_name": exoplanet_name,
-                        "queried_name": title,
-                        "article_exists": info.exists,
-                        "wikipedia_title": info.title if info.exists else None,
-                        "is_redirect": info.is_redirect if info.exists else False,
-                        "redirect_target": (info.redirect_target if info.exists else None),
-                        "url": info.url if info.exists else None,
-                        "host_star": exoplanet_obj.st_name,
-                    }
-                )
+            )
 
         return formatted_list
 

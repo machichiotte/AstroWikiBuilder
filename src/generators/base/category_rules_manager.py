@@ -24,24 +24,13 @@ class CategoryRulesManager:
             return attr
         return None
 
-    def generate_categories_for(
+    def _apply_mapped_rules(
         self,
         data_object: Any,
-        rule_key: str,
-        custom_rules: list[Callable[[Any], str | None]] | None = None,
-    ) -> list[str]:
-        """
-        Génère une liste de catégories pour l'objet de données fourni.
-        """
-        categories: set[str] = set()
-        config = self.rules.get(rule_key, {})
-        common_config = self.rules.get("common", {})
-
-        # 1. Catégorie de base
-        if "base" in config:
-            categories.add(config["base"])
-
-        # 2. Règles de mapping (spécifiques et communes)
+        config: dict,
+        common_config: dict,
+        categories: set[str],
+    ) -> None:
         all_mappings = {**common_config.get("mapped", {}), **config.get("mapped", {})}
         for attribute, mapping in all_mappings.items():
             value = self._retrieve_attribute_value(data_object, attribute)
@@ -60,7 +49,12 @@ class CategoryRulesManager:
                     categories.add(cat)
                     break
 
-        # 3. Règles de génération
+    def _apply_generated_rules(
+        self,
+        data_object: Any,
+        config: dict,
+        categories: set[str],
+    ) -> None:
         if "generated" in config:
             for attribute, rule in config["generated"].items():
                 value = self._retrieve_attribute_value(data_object, attribute)
@@ -71,11 +65,42 @@ class CategoryRulesManager:
                     template = rule["template"]
                     categories.add(template.format(value=int(value)))
 
-        # 4. Règles personnalisées (pour la logique complexe)
+    def _apply_custom_rules(
+        self,
+        data_object: Any,
+        custom_rules: list[Callable[[Any], str | None]] | None,
+        categories: set[str],
+    ) -> None:
         if custom_rules:
             for rule_func in custom_rules:
                 category = rule_func(data_object)
                 if category:
                     categories.add(category)
+
+    def generate_categories_for(
+        self,
+        data_object: Any,
+        rule_key: str,
+        custom_rules: list[Callable[[Any], str | None]] | None = None,
+    ) -> list[str]:
+        """
+        Génère une liste de catégories pour l'objet de données fourni.
+        """
+        categories: set[str] = set()
+        config = self.rules.get(rule_key, {})
+        common_config = self.rules.get("common", {})
+
+        # 1. Catégorie de base
+        if "base" in config:
+            categories.add(config["base"])
+
+        # 2. Règles de mapping (spécifiques et communes)
+        self._apply_mapped_rules(data_object, config, common_config, categories)
+
+        # 3. Règles de génération
+        self._apply_generated_rules(data_object, config, categories)
+
+        # 4. Règles personnalisées (pour la logique complexe)
+        self._apply_custom_rules(data_object, custom_rules, categories)
 
         return sorted(categories)

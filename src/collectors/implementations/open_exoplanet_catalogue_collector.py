@@ -33,6 +33,64 @@ class OpenExoplanetCatalogueCollector(BaseCollector):
 
     # _get_csv_reader_kwargs n'a pas besoin d'être surchargé si le CSV OEC n'a pas de commentaires spéciaux
 
+    def _set_orbital_characteristics(self, exoplanet: Exoplanet, row: pd.Series) -> None:
+        for field, csv_field in [
+            ("semi_major_axis", "semimajoraxis"),
+            ("eccentricity", "eccentricity"),
+            ("orbital_period", "period"),
+            ("inclination", "inclination"),
+            ("argument_of_periastron", "longitudeofperiastron"),
+            ("periastron_time", "periastrontime"),
+        ]:
+            value: float | None = self.convert_to_float_if_possible(row.get(csv_field))
+            if value is not None:
+                setattr(exoplanet, field, ValueWithUncertainty(value=value))
+
+    def _set_physical_characteristics(self, exoplanet: Exoplanet, row: pd.Series) -> None:
+        for field, csv_field in [
+            ("mass", "mass"),
+            ("radius", "radius"),
+            ("temperature", "temperature"),
+        ]:
+            value = self.convert_to_float_if_possible(row.get(csv_field))
+            if value is not None:
+                setattr(exoplanet, field, ValueWithUncertainty(value=value))
+
+    def _set_star_info(self, exoplanet: Exoplanet, row: pd.Series) -> None:
+        for field, csv_field in [
+            ("spectral_type", "spectraltype"),
+            ("star_temperature", "star_temperature"),
+            ("star_radius", "star_radius"),
+            ("star_mass", "star_mass"),
+            ("distance", "distance"),
+            ("apparent_magnitude", "apparentmagnitude"),
+        ]:
+            value = row.get(csv_field)
+            if pd.notna(value):
+                processed_value = (
+                    self.convert_to_float_if_possible(value)
+                    if isinstance(value, (int, float, str))
+                    and str(value).replace(".", "", 1).isdigit()
+                    else str(value).strip()
+                )
+                if processed_value is not None:
+                    if isinstance(processed_value, (int, float)):
+                        setattr(
+                            exoplanet,
+                            field,
+                            ValueWithUncertainty(value=processed_value),
+                        )
+                    else:
+                        setattr(exoplanet, field, processed_value)
+
+    def _set_alt_names(self, exoplanet: Exoplanet, row: pd.Series) -> None:
+        if pd.notna(row.get("alt_names")):
+            names = str(row["alt_names"]).split(",")
+            for name in names:
+                name = name.strip()
+                if name and name != exoplanet.pl_name:
+                    exoplanet.pl_altname.append(name)
+
     def transform_row_to_exoplanet(self, row: pd.Series) -> Exoplanet | None:
         try:
             if pd.isna(row["name"]) or pd.isna(row["star_name"]):
@@ -54,62 +112,10 @@ class OpenExoplanetCatalogueCollector(BaseCollector):
                 reference=ref,
             )
 
-            # Caractéristiques orbitales
-            for field, csv_field in [
-                ("semi_major_axis", "semimajoraxis"),
-                ("eccentricity", "eccentricity"),
-                ("orbital_period", "period"),
-                ("inclination", "inclination"),
-                ("argument_of_periastron", "longitudeofperiastron"),
-                ("periastron_time", "periastrontime"),
-            ]:
-                value: float | None = self.convert_to_float_if_possible(row.get(csv_field))
-                if value is not None:
-                    setattr(exoplanet, field, ValueWithUncertainty(value=value))
-
-            # Caractéristiques physiques
-            for field, csv_field in [
-                ("mass", "mass"),
-                ("radius", "radius"),
-                ("temperature", "temperature"),
-            ]:
-                value = self.convert_to_float_if_possible(row.get(csv_field))
-                if value is not None:
-                    setattr(exoplanet, field, ValueWithUncertainty(value=value))
-
-            # Informations sur l'étoile
-            for field, csv_field in [
-                ("spectral_type", "spectraltype"),
-                ("star_temperature", "star_temperature"),
-                ("star_radius", "star_radius"),
-                ("star_mass", "star_mass"),
-                ("distance", "distance"),
-                ("apparent_magnitude", "apparentmagnitude"),
-            ]:
-                value = row.get(csv_field)
-                if pd.notna(value):
-                    processed_value = (
-                        self.convert_to_float_if_possible(value)
-                        if isinstance(value, (int, float, str))
-                        and str(value).replace(".", "", 1).isdigit()
-                        else str(value).strip()
-                    )
-                    if processed_value is not None:
-                        if isinstance(processed_value, (int, float)):
-                            setattr(
-                                exoplanet,
-                                field,
-                                ValueWithUncertainty(value=processed_value),
-                            )
-                        else:
-                            setattr(exoplanet, field, processed_value)
-
-            if pd.notna(row.get("alt_names")):
-                names = str(row["alt_names"]).split(",")
-                for name in names:
-                    name = name.strip()
-                    if name and name != exoplanet.pl_name:
-                        exoplanet.pl_altname.append(name)
+            self._set_orbital_characteristics(exoplanet, row)
+            self._set_physical_characteristics(exoplanet, row)
+            self._set_star_info(exoplanet, row)
+            self._set_alt_names(exoplanet, row)
 
             return exoplanet
 

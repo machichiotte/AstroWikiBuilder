@@ -12,6 +12,28 @@ class StatisticsService:
     def __init__(self):
         logger.info("StatisticsService initialized.")
 
+    def _update_discovery_methods_stats(self, exoplanet: Exoplanet, stats: dict[str, Any]) -> None:
+        if exoplanet.disc_method:
+            method: str = exoplanet.disc_method
+            stats["discovery_methods"][method] = stats["discovery_methods"].get(method, 0) + 1
+
+    def _update_discovery_years_stats(self, exoplanet: Exoplanet, stats: dict[str, Any]) -> None:
+        if exoplanet.disc_year:
+            year: int = int(exoplanet.disc_year)
+            stats["discovery_years"][year] = stats["discovery_years"].get(year, 0) + 1
+
+    def _update_range_stats(self, value: float, ranges_dict: dict[str, int]) -> None:
+        if value <= 1:
+            ranges_dict["0-1"] += 1
+        elif value <= 2:
+            ranges_dict["1-2"] += 1
+        elif value <= 5:
+            ranges_dict["2-5"] += 1
+        elif value <= 10:
+            ranges_dict["5-10"] += 1
+        else:
+            ranges_dict["10+"] += 1
+
     def generate_statistics_exoplanet(self, exoplanets: list[Exoplanet]) -> dict[str, Any]:
         """Génère les statistiques pour les exoplanètes"""
         logger.info(f"Generating statistics for {len(exoplanets)} exoplanets.")
@@ -36,43 +58,16 @@ class StatisticsService:
         }
 
         for exoplanet in exoplanets:
-            # Méthodes de découverte
-            if exoplanet.disc_method:
-                method: str = exoplanet.disc_method
-                stats["discovery_methods"][method] = stats["discovery_methods"].get(method, 0) + 1
-
-            # Années de découverte
-            if exoplanet.disc_year:
-                year: int = int(exoplanet.disc_year)
-                stats["discovery_years"][year] = stats["discovery_years"].get(year, 0) + 1
+            self._update_discovery_methods_stats(exoplanet, stats)
+            self._update_discovery_years_stats(exoplanet, stats)
 
             # Plages de masse
             if exoplanet.pl_mass and exoplanet.pl_mass.value:
-                mass: float = exoplanet.pl_mass.value
-                if mass <= 1:
-                    stats["mass_ranges"]["0-1"] += 1
-                elif mass <= 2:
-                    stats["mass_ranges"]["1-2"] += 1
-                elif mass <= 5:
-                    stats["mass_ranges"]["2-5"] += 1
-                elif mass <= 10:
-                    stats["mass_ranges"]["5-10"] += 1
-                else:
-                    stats["mass_ranges"]["10+"] += 1
+                self._update_range_stats(exoplanet.pl_mass.value, stats["mass_ranges"])
 
             # Plages de rayon
             if exoplanet.pl_radius and exoplanet.pl_radius.value:
-                radius: float = exoplanet.pl_radius.value
-                if radius <= 1:
-                    stats["radius_ranges"]["0-1"] += 1
-                elif radius <= 2:
-                    stats["radius_ranges"]["1-2"] += 1
-                elif radius <= 5:
-                    stats["radius_ranges"]["2-5"] += 1
-                elif radius <= 10:
-                    stats["radius_ranges"]["5-10"] += 1
-                else:
-                    stats["radius_ranges"]["10+"] += 1
+                self._update_range_stats(exoplanet.pl_radius.value, stats["radius_ranges"])
 
         logger.info("Statistics generation for exoplanets complete.")
         return stats

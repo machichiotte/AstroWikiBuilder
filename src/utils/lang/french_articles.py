@@ -21,6 +21,34 @@ def guess_grammatical_gender(type_description: str) -> str:
     return "?"  # inconnu
 
 
+def _get_indefinite_article(gender: str) -> str:
+    if gender == "f":
+        return "une"
+    elif gender == "m":
+        return "un"
+    return "un(e)"
+
+
+def _get_preposition_de_article(gender: str, elision: bool) -> str:
+    if elision:
+        return "de l'"
+    elif gender == "f":
+        return "de la"
+    elif gender == "m":
+        return "du"
+    return "de"
+
+
+def _get_preposition_dans_article(gender: str, elision: bool) -> str:
+    if elision:
+        return "dans l'"
+    elif gender == "f":
+        return "dans la"
+    elif gender == "m":
+        return "dans le"
+    return "dans la"
+
+
 def get_french_article(
     gender: str,
     definite: bool = True,
@@ -37,32 +65,13 @@ def get_french_article(
         elision = starts_with_vowel_or_silent_h(noun)
 
     if not definite:
-        if gender == "f":
-            return "une"
-        elif gender == "m":
-            return "un"
-        else:
-            return "un(e)"
+        return _get_indefinite_article(gender)
 
     if preposition == "de":
-        if elision:
-            return "de l'"
-        elif gender == "f":
-            return "de la"
-        elif gender == "m":
-            return "du"
-        else:
-            return "de"
+        return _get_preposition_de_article(gender, elision)
 
     if preposition == "dans":
-        if elision:
-            return "dans l'"
-        elif gender == "f":
-            return "dans la"
-        elif gender == "m":
-            return "dans le"
-        else:
-            return "dans la"
+        return _get_preposition_dans_article(gender, elision)
 
     return f"{preposition}"
 

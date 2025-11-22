@@ -46,6 +46,30 @@ class StarContentGenerator:
     # ============================================================================
 
     # --- CARACTÉRISTIQUES PHYSIQUES ---
+    def _add_spectral_type(self, star: Star, content: list[str]) -> None:
+        if star.st_spectral_type:
+            content.append(f"Cette étoile est de type spectral {star.st_spectral_type}.")
+
+    def _add_temperature(self, star: Star, content: list[str]) -> None:
+        if star.st_temperature and star.st_temperature.value:
+            temp: str = self.article_util.format_number_as_french_string(star.st_temperature.value)
+            content.append(f"Sa température effective est d'environ {temp} [[kelvin|K]].")
+
+    def _add_mass(self, star: Star, content: list[str]) -> None:
+        if star.st_mass and star.st_mass.value:
+            mass: str = self.article_util.format_number_as_french_string(star.st_mass.value)
+            content.append(f"Sa masse est estimée à {mass} fois celle du [[Soleil]].")
+
+    def _add_radius(self, star: Star, content: list[str]) -> None:
+        if star.st_radius and star.st_radius.value:
+            radius: str = self.article_util.format_number_as_french_string(star.st_radius.value)
+            content.append(f"Son rayon est d'environ {radius} fois celui du Soleil.")
+
+    def _add_luminosity(self, star: Star, content: list[str]) -> None:
+        if star.st_luminosity and star.st_luminosity.value:
+            lum: str = self.article_util.format_number_as_french_string(star.st_luminosity.value)
+            content.append(f"Sa luminosité est d'environ {lum} fois celle du Soleil.")
+
     def build_physical_section(self, star: Star) -> str:
         """
         Génère la section des caractéristiques physiques de l'étoile.
@@ -63,24 +87,11 @@ class StarContentGenerator:
 
         content: list[str] = ["== Caractéristiques physiques ==\n"]
 
-        if star.st_spectral_type and star.st_spectral_type:
-            content.append(f"Cette étoile est de type spectral {star.st_spectral_type}.")
-
-        if star.st_temperature and star.st_temperature.value:
-            temp: str = self.article_util.format_number_as_french_string(star.st_temperature.value)
-            content.append(f"Sa température effective est d'environ {temp} [[kelvin|K]].")
-
-        if star.st_mass and star.st_mass.value:
-            mass: str = self.article_util.format_number_as_french_string(star.st_mass.value)
-            content.append(f"Sa masse est estimée à {mass} fois celle du [[Soleil]].")
-
-        if star.st_radius and star.st_radius.value:
-            radius: str = self.article_util.format_number_as_french_string(star.st_radius.value)
-            content.append(f"Son rayon est d'environ {radius} fois celui du Soleil.")
-
-        if star.st_luminosity and star.st_luminosity.value:
-            lum: str = self.article_util.format_number_as_french_string(star.st_luminosity.value)
-            content.append(f"Sa luminosité est d'environ {lum} fois celle du Soleil.")
+        self._add_spectral_type(star, content)
+        self._add_temperature(star, content)
+        self._add_mass(star, content)
+        self._add_radius(star, content)
+        self._add_luminosity(star, content)
 
         return "\n".join(content)
 

@@ -93,22 +93,16 @@ class ExoplanetComparisonUtil:
 
         return ""
 
-    def describe_orbit_vs_solar_system(self, exoplanet: Exoplanet) -> str:
-        """
-        Génère une comparaison de l'orbite de l'exoplanète avec les planètes du système solaire.
-        La distance est supposée être en Unités Astronomiques (UA).
-        """
+    def _get_sma_value(self, exoplanet: Exoplanet) -> float | None:
         sma: ValueWithUncertainty | None = exoplanet.pl_semi_major_axis
         if hasattr(sma, "value"):
             sma = sma.value
         try:
-            sma = float(sma)
+            return float(sma)
         except (TypeError, ValueError):
-            return ""  # ou une valeur par défaut
+            return None
 
-        # Maintenant, sma est bien un float pour la comparaison
-        margin: float = self.SIMILARITY_MARGIN
-
+    def _compare_inner_planets(self, sma: float, margin: float) -> str | None:
         if sma < self.mercury_orbit_au * (1 - margin):
             return "Son orbite est significativement plus proche de son étoile que la distance orbitale de [[Mercure (planète)|Mercure]] dans notre [[système solaire]]."
         elif self.mercury_orbit_au * (1 - margin) <= sma <= self.mercury_orbit_au * (1 + margin):
@@ -127,8 +121,10 @@ class ExoplanetComparisonUtil:
             return "Sa distance orbitale est comparable à la région entre la [[Terre]] et [[Mars (planète)|Mars]] dans notre [[système solaire]]."
         elif self.mars_orbit_au * (1 - margin) <= sma <= self.mars_orbit_au * (1 + margin):
             return "Son orbite est comparable à celle de [[Mars (planète)|Mars]] dans notre [[système solaire]]."
-        elif sma < self.jupiter_orbit_au * (1 - margin):
-            # This range is where the asteroid belt is located
+        return None
+
+    def _compare_outer_planets(self, sma: float, margin: float) -> str:
+        if sma < self.jupiter_orbit_au * (1 - margin):
             return "Sa distance orbitale est comparable à la région entre [[Mars (planète)|Mars]] et [[Jupiter (planète)|Jupiter]], similaire à la [[ceinture d'astéroïdes]] dans notre [[système solaire]]."
         elif self.jupiter_orbit_au * (1 - margin) <= sma <= self.jupiter_orbit_au * (1 + margin):
             return "Son orbite est comparable à celle de [[Jupiter (planète)|Jupiter]] dans notre [[système solaire]]."
@@ -146,3 +142,20 @@ class ExoplanetComparisonUtil:
             return "Son orbite est comparable à celle de [[Neptune (planète)|Neptune]] dans notre [[système solaire]]."
         else:
             return "Son orbite est significativement plus éloignée de son étoile que la distance orbitale de [[Neptune (planète)|Neptune]] dans notre [[système solaire]]."
+
+    def describe_orbit_vs_solar_system(self, exoplanet: Exoplanet) -> str:
+        """
+        Génère une comparaison de l'orbite de l'exoplanète avec les planètes du système solaire.
+        La distance est supposée être en Unités Astronomiques (UA).
+        """
+        sma = self._get_sma_value(exoplanet)
+        if sma is None:
+            return ""
+
+        margin: float = self.SIMILARITY_MARGIN
+
+        inner_comparison = self._compare_inner_planets(sma, margin)
+        if inner_comparison:
+            return inner_comparison
+
+        return self._compare_outer_planets(sma, margin)

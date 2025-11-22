@@ -121,6 +121,69 @@ class WikipediaChecker:
 
         return normalized_map, redirect_map, resolved_to_queried
 
+    def _find_original_title(
+        self,
+        api_title: str,
+        resolved_to_queried: dict[str, str],
+        redirect_map: dict[str, str],
+        normalized_map: dict[str, str],
+        results: dict[str, WikiArticleInfo],
+    ) -> str | None:
+        original = resolved_to_queried.get(api_title)
+        if original:
+            return original
+
+        for r_from, r_to in redirect_map.items():
+            if r_to == api_title:
+                candidate = normalized_map.get(r_from, r_from)
+                if candidate in results:
+                    return candidate
+        return None
+
+    def _create_wiki_article_info(
+        self,
+        original: str,
+        api_title: str,
+        page: dict[str, Any],
+        redirect_map: dict[str, str],
+        exoplanet_context: dict[str, dict[str, Any]] | None,
+    ) -> WikiArticleInfo:
+        page_id = str(page.get("pageid", "-1"))
+        if "missing" in page or page_id == "-1":
+            return WikiArticleInfo(
+                exists=False,
+                title=api_title,
+                queried_title=original,
+            )
+
+        is_redirect: bool = original in redirect_map
+        redirect_target: str | None = redirect_map.get(original) if is_redirect else None
+        host_star: Any | None = (
+            exoplanet_context.get(original, {}).get("st_name") if exoplanet_context else None
+        )
+
+        # Check for host star conflict
+        if host_star and self._normalize_title(api_title) == self._normalize_title(host_star):
+            return WikiArticleInfo(
+                exists=False,
+                title=api_title,
+                queried_title=original,
+                is_redirect=is_redirect,
+                redirect_target=redirect_target,
+                url=page.get("fullurl"),
+                host_star=host_star,
+            )
+
+        return WikiArticleInfo(
+            exists=True,
+            title=api_title,
+            queried_title=original,
+            is_redirect=is_redirect,
+            redirect_target=redirect_target,
+            url=page.get("fullurl"),
+            host_star=host_star,
+        )
+
     def resolve_article_existence_from_pages(
         self,
         data: dict[str, Any],
@@ -130,52 +193,16 @@ class WikipediaChecker:
         results: dict[str, WikiArticleInfo],
         exoplanet_context: dict[str, dict[str, Any]] | None,
     ) -> None:
-        for page_id, page in data.get("pages", {}).items():
+        for page in data.get("pages", {}).values():
             api_title = page.get("title")
-            original: str | None = resolved_to_queried.get(api_title)
-
-            if not original:
-                for r_from, r_to in redirect_map.items():
-                    if r_to == api_title:
-                        original = normalized_map.get(r_from, r_from)
-                        if original in results:
-                            break
-                if not original:
-                    logger.warning(f"Pas de correspondance trouvée pour {api_title}")
-                    continue
-
-            if "missing" in page or page_id == "-1":
-                results[original] = WikiArticleInfo(
-                    exists=False,
-                    title=api_title,
-                    queried_title=original,
-                )
-                continue
-
-            is_redirect: bool = original in redirect_map
-            redirect_target: str | None = redirect_map.get(original) if is_redirect else None
-            host_star: Any | None = (
-                exoplanet_context.get(original, {}).get("st_name") if exoplanet_context else None
+            original = self._find_original_title(
+                api_title, resolved_to_queried, redirect_map, normalized_map, results
             )
 
-            if host_star and self._normalize_title(api_title) == self._normalize_title(host_star):
-                results[original] = WikiArticleInfo(
-                    exists=False,
-                    title=api_title,
-                    queried_title=original,
-                    is_redirect=is_redirect,
-                    redirect_target=redirect_target,
-                    url=page.get("fullurl"),
-                    host_star=host_star,
-                )
+            if not original:
+                logger.warning(f"Pas de correspondance trouvée pour {api_title}")
                 continue
 
-            results[original] = WikiArticleInfo(
-                exists=True,
-                title=api_title,
-                queried_title=original,
-                is_redirect=is_redirect,
-                redirect_target=redirect_target,
-                url=page.get("fullurl"),
-                host_star=host_star,
+            results[original] = self._create_wiki_article_info(
+                original, api_title, page, redirect_map, exoplanet_context
             )
