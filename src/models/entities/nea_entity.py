@@ -756,6 +756,9 @@ NEA_TO_EXOPLANET_MAPPING = {
     "discoverymethod": "disc_method",
     "disc_year": "disc_year",
     "disc_facility": "disc_facility",
+    "st_mass": "st_mass",
+    "st_met": "st_metallicity",
+    "st_age": "st_age",
 }
 
 # Unités par défaut pour certains champs NEA

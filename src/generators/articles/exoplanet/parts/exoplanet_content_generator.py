@@ -32,10 +32,12 @@ class ExoplanetContentGenerator:
         Génère l'ensemble du contenu de l'article pour une étoile.
         """
         sections: list[str] = [
+            self.build_nomenclature_section(exoplanet),
+            self.build_host_star_section(exoplanet),
             self.build_physical_characteristics_section(exoplanet),
             self.build_orbit_section(exoplanet),
             self.build_discovery_section(exoplanet),
-            # self.build_habitability_section(exoplanet)
+            self.build_habitability_section(exoplanet),
         ]
 
         # Filtrer les sections vides et les combiner
@@ -251,8 +253,111 @@ class ExoplanetContentGenerator:
 
     def build_habitability_section(self, exoplanet: Exoplanet) -> str:
         """
-        Génère la section sur l'habitabilité de l'exoplanète
+        Génère la section sur l'habitabilité de l'exoplanète en se basant sur la température d'équilibre.
         """
         section = "== Habitabilité ==\n"
-        section += "Les conditions d'habitabilité de cette exoplanète ne sont pas déterminées ou ne sont pas connues.\n"
+
+        temp = self._get_value_or_none_if_nan(exoplanet.pl_temperature)
+
+        if temp is None:
+            section += "Les conditions d'habitabilité de cette exoplanète ne sont pas déterminées ou ne sont pas connues.\n"
+            return section
+
+        try:
+            temp_val = float(temp)
+        except (ValueError, TypeError):
+            section += "Les conditions d'habitabilité de cette exoplanète ne sont pas déterminées ou ne sont pas connues.\n"
+            return section
+
+        # Estimation basique basée sur la température d'équilibre
+        # Zone habitable approximative (très simplifiée) : 180K - 395K
+        # Note: C'est une estimation purement thermique sans tenir compte de l'atmosphère
+
+        temp_str = self.article_util.format_uncertain_value_for_article(exoplanet.pl_temperature)
+
+        if temp_val > 395:
+            section += (
+                f"Avec une température d'équilibre estimée à {temp_str} [[Kelvin|K]], "
+                "cette exoplanète est considérée comme trop chaude pour abriter de l'eau liquide en surface.\n"
+            )
+        elif temp_val < 180:
+            section += (
+                f"Avec une température d'équilibre estimée à {temp_str} [[Kelvin|K]], "
+                "cette exoplanète est considérée comme trop froide pour abriter de l'eau liquide en surface.\n"
+            )
+        else:
+            section += (
+                f"Avec une température d'équilibre estimée à {temp_str} [[Kelvin|K]], "
+                "cette exoplanète se situe théoriquement dans la zone habitable de son étoile, "
+                "permettant potentiellement la présence d'eau liquide en surface sous réserve d'une atmosphère adéquate.\n"
+            )
+
         return section
+
+    def build_nomenclature_section(self, exoplanet: Exoplanet) -> str:
+        """
+        Génère un paragraphe standard expliquant la convention de nommage.
+        """
+        if not exoplanet.pl_name:
+            return ""
+
+        content = "== Nomenclature ==\n"
+        content += (
+            "La convention de l'[[Union astronomique internationale]] (UAI) pour la désignation des exoplanètes "
+            "consiste à ajouter une lettre minuscule à la suite du nom de l'étoile hôte, en commençant par la lettre « b » "
+            "pour la première planète découverte dans le système (la lettre « a » désignant l'étoile elle-même). "
+            "Les planètes suivantes reçoivent les lettres « c », « d », etc., dans l'ordre de leur découverte.\n"
+        )
+
+        return content
+
+    def build_host_star_section(self, exoplanet: Exoplanet) -> str:
+        """
+        Génère la section résumant les caractéristiques de l'étoile hôte.
+        """
+        if not exoplanet.st_name:
+            return ""
+
+        content = "== Étoile hôte ==\n"
+
+        # Introduction avec le nom de l'étoile
+        content += f"L'exoplanète orbite autour de [[{exoplanet.st_name}]], "
+
+        characteristics = []
+
+        # Type spectral
+        if exoplanet.st_spectral_type:
+            characteristics.append(f"une étoile de type spectral {exoplanet.st_spectral_type}")
+
+        # Masse
+        if exoplanet.st_mass and exoplanet.st_mass.value:
+            mass_str = self.article_util.format_uncertain_value_for_article(exoplanet.st_mass)
+            if mass_str:
+                characteristics.append(
+                    f"d'une masse de {mass_str} [[Masse solaire|''M''{{{{ind|☉}}}}]]"
+                )
+
+        # Métallicité
+        if exoplanet.st_metallicity and exoplanet.st_metallicity.value:
+            met_str = self.article_util.format_uncertain_value_for_article(exoplanet.st_metallicity)
+            if met_str:
+                characteristics.append(f"d'une métallicité de {met_str} [Fe/H]")
+
+        # Âge
+        if exoplanet.st_age and exoplanet.st_age.value:
+            age_str = self.article_util.format_uncertain_value_for_article(exoplanet.st_age)
+            if age_str:
+                characteristics.append(f"âgée de {age_str} [[milliard]]s d'années")
+
+        if not characteristics:
+            # Si on a juste le nom mais aucune info, on fait une phrase simple
+            content = f"== Étoile hôte ==\nL'exoplanète orbite autour de l'étoile [[{exoplanet.st_name}]].\n"
+            return content
+
+        # Assemblage de la phrase
+        if len(characteristics) == 1:
+            content += f"{characteristics[0]}.\n"
+        else:
+            content += f"{', '.join(characteristics[:-1])} et {characteristics[-1]}.\n"
+
+        return content

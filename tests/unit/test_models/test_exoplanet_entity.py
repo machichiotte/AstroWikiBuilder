@@ -5,12 +5,33 @@ Tests pour le modèle Exoplanet.
 
 from datetime import datetime
 
+import pytest
+
 from src.models.entities.exoplanet_entity import Exoplanet, ValueWithUncertainty
 from src.models.references.reference import Reference, SourceType
 
 
 class TestExoplanet:
     """Tests du modèle Exoplanet."""
+
+    @pytest.fixture
+    def sample_exoplanet(self):
+        reference = Reference(
+            source=SourceType.NEA,
+            update_date=datetime.now(),
+            consultation_date=datetime.now(),
+            planet_id="HD 209458 b",
+        )
+        return Exoplanet(
+            pl_name="HD 209458 b",
+            pl_mass=ValueWithUncertainty(value=0.69, error_positive=0.05, error_negative=0.05),
+            pl_radius=ValueWithUncertainty(value=1.35, error_positive=0.05, error_negative=0.05),
+            pl_orbital_period=ValueWithUncertainty(value=3.5247),
+            disc_method="Transit",
+            disc_year=1999,
+            st_name="HD 209458",
+            reference=reference,
+        )
 
     def test_create_exoplanet_with_all_fields(self, sample_exoplanet):
         """Test de création d'une exoplanète avec tous les champs."""
@@ -24,6 +45,22 @@ class TestExoplanet:
         assert exo.disc_year == 1999
         assert exo.st_name == "HD 209458"
         assert exo.reference.source == SourceType.NEA
+
+    def test_exoplanet_initialization_with_host_star_info(self):
+        """Test de l'initialisation avec les infos de l'étoile hôte."""
+        exoplanet = Exoplanet(
+            pl_name="Test Planet b",
+            st_name="Test Star",
+            pl_mass=ValueWithUncertainty(value=1.5),
+            st_metallicity=ValueWithUncertainty(value=0.1),
+            st_age=ValueWithUncertainty(value=4.5),
+        )
+
+        assert exoplanet.pl_name == "Test Planet b"
+        assert exoplanet.st_name == "Test Star"
+        assert exoplanet.pl_mass.value == 1.5
+        assert exoplanet.st_metallicity.value == 0.1
+        assert exoplanet.st_age.value == 4.5
 
     def test_exoplanet_with_minimal_fields(self):
         """Test avec champs minimaux."""

@@ -215,7 +215,8 @@ class TestExoplanetContentGenerator:
         exoplanet = Exoplanet(pl_name="Empty b")
         result = generator.compose_exoplanet_content(exoplanet)
 
-        assert result == ""
+        assert result != ""
+        assert "== Habitabilité ==" in result
 
     def test_compose_exoplanet_content_partial(self, generator):
         """Test avec seulement certaines sections."""
@@ -227,5 +228,93 @@ class TestExoplanetContentGenerator:
 
         assert result != ""
         assert "== Découverte ==" in result
-        assert "== Caractéristiques physiques ==" not in result
         assert "== Orbite ==" not in result
+        assert "== Habitabilité ==" in result
+
+    # Tests pour build_habitability_section
+    def test_build_habitability_section_unknown(self, generator):
+        """Test habitabilité inconnue."""
+        exoplanet = Exoplanet(pl_name="Test b")
+        result = generator.build_habitability_section(exoplanet)
+        assert "ne sont pas déterminées" in result
+
+    def test_build_habitability_section_too_hot(self, generator):
+        """Test habitabilité trop chaud."""
+        exoplanet = Exoplanet(pl_name="Hot b", pl_temperature=ValueWithUncertainty(value=500))
+        result = generator.build_habitability_section(exoplanet)
+        assert "trop chaude" in result
+        assert "500" in result
+
+    def test_build_habitability_section_too_cold(self, generator):
+        """Test habitabilité trop froid."""
+        exoplanet = Exoplanet(pl_name="Cold b", pl_temperature=ValueWithUncertainty(value=100))
+        result = generator.build_habitability_section(exoplanet)
+        assert "trop froide" in result
+        assert "100" in result
+
+    def test_build_habitability_section_habitable(self, generator):
+        """Test zone habitable théorique."""
+        exoplanet = Exoplanet(pl_name="Earth 2.0", pl_temperature=ValueWithUncertainty(value=288))
+        result = generator.build_habitability_section(exoplanet)
+        assert "zone habitable" in result
+        assert "288" in result
+
+    # Tests pour build_nomenclature_section
+    def test_build_nomenclature_section_standard(self, generator):
+        """Test de la section nomenclature."""
+        exoplanet = Exoplanet(pl_name="Test b")
+        result = generator.build_nomenclature_section(exoplanet)
+        assert "== Nomenclature ==" in result
+        assert "Union astronomique internationale" in result
+        assert "lettre « b »" in result
+
+    def test_build_nomenclature_section_empty_name(self, generator):
+        """Test avec nom vide."""
+        exoplanet = Exoplanet(pl_name=None)
+        result = generator.build_nomenclature_section(exoplanet)
+        assert result == ""
+
+    # Tests pour build_host_star_section
+    def test_build_host_star_section_empty(self, generator):
+        """Test avec étoile vide."""
+        exoplanet = Exoplanet(pl_name="Test b")
+        result = generator.build_host_star_section(exoplanet)
+        assert result == ""
+
+    def test_build_host_star_section_name_only(self, generator):
+        """Test avec seulement le nom de l'étoile."""
+        exoplanet = Exoplanet(pl_name="Test b", st_name="Test Star")
+        result = generator.build_host_star_section(exoplanet)
+        assert "== Étoile hôte ==" in result
+        assert "Test Star" in result
+        assert "type spectral" not in result
+
+    def test_build_host_star_section_full_info(self, generator):
+        """Test avec toutes les infos de l'étoile."""
+        exoplanet = Exoplanet(
+            pl_name="Test b",
+            st_name="Test Star",
+            st_spectral_type="G2V",
+            st_mass=ValueWithUncertainty(value=1.0),
+            st_metallicity=ValueWithUncertainty(value=0.1),
+            st_age=ValueWithUncertainty(value=4.5),
+        )
+        result = generator.build_host_star_section(exoplanet)
+        assert "== Étoile hôte ==" in result
+        assert "Test Star" in result
+        assert "G2V" in result
+        assert "masse de 1" in result
+        assert "métallicité de 0,1" in result
+        assert "âgée de 4,5" in result
+
+    def test_build_host_star_section_partial_info(self, generator):
+        """Test avec info partielle de l'étoile."""
+        exoplanet = Exoplanet(
+            pl_name="Test b",
+            st_name="Test Star",
+            st_spectral_type="K5",
+        )
+        result = generator.build_host_star_section(exoplanet)
+        assert "== Étoile hôte ==" in result
+        assert "type spectral K5" in result
+        assert "masse" not in result

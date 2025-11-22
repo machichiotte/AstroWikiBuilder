@@ -156,3 +156,4 @@ class Exoplanet:
     st_radius: ValueWithUncertainty | None = None
     st_variability: ValueWithUncertainty | None = None
     st_metallicity: ValueWithUncertainty | None = None
+    st_age: ValueWithUncertainty | None = None

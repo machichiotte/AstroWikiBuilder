@@ -8,7 +8,6 @@ Responsabilité :
 - Persister les brouillons sur le disque
 """
 
-
 from src.core.config import logger
 from src.models.entities.exoplanet_entity import Exoplanet
 from src.models.entities.star_entity import Star

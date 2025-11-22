@@ -172,7 +172,8 @@ class TestWikipediaService:
         }
 
         result = service.format_article_links_for_export(
-            [], articles_info  # Liste vide d'exoplanètes
+            [],
+            articles_info,  # Liste vide d'exoplanètes
         )
 
         assert len(result) == 0
