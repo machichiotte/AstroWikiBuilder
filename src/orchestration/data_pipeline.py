@@ -117,39 +117,52 @@ def _log_statistics(stats: dict[str, Any]) -> None:
         stats: Dictionnaire des statistiques
     """
     # Statistiques des exoplanètes
+    exo_stats = stats.get("exoplanet", {})
+    total_exo = exo_stats.get("total", 0)
+
     logger.info("Statistiques des exoplanètes collectées :")
-    logger.info(f"  Total : {stats.get('exoplanet', {}).get('total', 0)}")
+    logger.info(f"  Total : {total_exo}")
 
     logger.info("  Par méthode de découverte :")
-    for method, count in stats.get("exoplanet", {}).get("discovery_methods", {}).items():
-        logger.info(f"    - {method} : {count}")
+    for method, count in exo_stats.get("discovery_methods", {}).items():
+        percentage = (count / total_exo * 100) if total_exo > 0 else 0
+        logger.info(f"    - {method} : {count} ({percentage:.1f}%)")
 
     logger.info("  Par année de découverte :")
     for year, count in sorted(
-        stats.get("exoplanet", {}).get("discovery_years", {}).items(),
+        exo_stats.get("discovery_years", {}).items(),
         key=lambda x: str(x[0]),
     ):
         logger.info(f"    - {year} : {count}")
 
     logger.info("  Par plage de masse (MJ) :")
-    for range_name, count in stats.get("exoplanet", {}).get("mass_ranges", {}).items():
-        logger.info(f"    - {range_name} : {count}")
+    for range_name, count in exo_stats.get("mass_ranges", {}).items():
+        percentage = (count / total_exo * 100) if total_exo > 0 else 0
+        logger.info(f"    - {range_name} : {count} ({percentage:.1f}%)")
 
     logger.info("  Par plage de rayon (RJ) :")
-    for range_name, count in stats.get("exoplanet", {}).get("radius_ranges", {}).items():
-        logger.info(f"    - {range_name} : {count}")
+    for range_name, count in exo_stats.get("radius_ranges", {}).items():
+        percentage = (count / total_exo * 100) if total_exo > 0 else 0
+        logger.info(f"    - {range_name} : {count} ({percentage:.1f}%)")
 
     # Statistiques des étoiles
+    star_stats = stats.get("star", {})
+    total_stars = star_stats.get("total_stars", 0)
+
     logger.info("\nStatistiques des étoiles collectées :")
-    logger.info(f"  Total : {stats.get('star', {}).get('total_stars', 0)}")
+    logger.info(f"  Total : {total_stars}")
 
     logger.info("  Par type spectral :")
-    for spectral_type, count in stats.get("star", {}).get("spectral_types", {}).items():
-        logger.info(f"    - {spectral_type} : {count}")
+    for spectral_type, count in star_stats.get("spectral_types", {}).items():
+        percentage = (count / total_stars * 100) if total_stars > 0 else 0
+        logger.info(f"    - {spectral_type} : {count} ({percentage:.1f}%)")
 
-    logger.info("  Par source de données :")
-    for source, count in stats.get("star", {}).get("data_points_by_source", {}).items():
-        logger.info(f"    - {source} : {count}")
+    logger.info("  Par année de découverte :")
+    for year, count in sorted(
+        star_stats.get("discovery_years", {}).items(),
+        key=lambda x: str(x[0]),
+    ):
+        logger.info(f"    - {year} : {count}")
 
 
 def _export_statistics_json(stats: dict[str, Any], output_dir: str, timestamp: str) -> None:
