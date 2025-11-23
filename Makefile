@@ -9,30 +9,30 @@ install: ## Installe les dépendances de développement
 	pre-commit install
 
 test: ## Lance les tests unitaires et d'intégration
-	pytest
+	poetry run pytest
 
 cov: ## Lance les tests avec rapport de couverture
-	pytest --cov=src --cov-report=term-missing --cov-report=html --cov-report=json
+	poetry run pytest --cov=src --cov-report=term-missing --cov-report=html --cov-report=json
 
 lint: ## Vérifie le style et la sécurité (Ruff, Bandit)
-	ruff check .
-	bandit -c pyproject.toml -r src/
+	poetry run ruff check .
+	poetry run bandit -c pyproject.toml -r src/
 
 audit: ## Audit de sécurité approfondi avec Bandit
-	bandit -c pyproject.toml -r src/ -f screen
+	poetry run bandit -c pyproject.toml -r src/ -f screen
 
 stats: ## Compte les lignes de code avec cloc
 	@powershell -Command "if (Get-Command cloc -ErrorAction SilentlyContinue) { cloc src/ tests/ --exclude-dir=build,dist,venv,.mypy_cache } else { Write-Host 'cloc non trouvé. Redémarrez votre terminal ou installez avec: winget install AlDanial.Cloc' }"
 
 complexity: ## Analyse la complexité cyclomatique avec Radon
 	@echo "\n=== Complexité Cyclomatique (Radon) ==="
-	radon cc src/ -a -nc
+	poetry run radon cc src/ -a -nc
 	@echo "\n=== Indice de Maintenabilité (Radon) ==="
-	radon mi src/
+	poetry run radon mi src/
 
 format: ## Formate le code automatiquement
-	ruff check --fix .
-	ruff format .
+	poetry run ruff check --fix .
+	poetry run ruff format .
 
 clean: ## Nettoie les fichiers temporaires
 	rm -rf build/

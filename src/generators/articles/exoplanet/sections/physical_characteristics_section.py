@@ -71,7 +71,7 @@ class PhysicalCharacteristicsSection:
         except Exception:
             return None
 
-        if isinstance(temp, (int, float)):
+        if isinstance(temp, int | float):
             temp_value = f"{float(temp):.5f}".rstrip("0").rstrip(".")
         else:
             temp_value = str(temp)

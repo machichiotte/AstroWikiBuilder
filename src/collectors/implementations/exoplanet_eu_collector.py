@@ -70,12 +70,12 @@ class ExoplanetEUCollector(BaseCollector):
             if pd.notna(value):
                 processed_value: float | None | str = (
                     self.convert_to_float_if_possible(value)
-                    if isinstance(value, (int, float, str))
+                    if isinstance(value, int | float | str)
                     and str(value).replace(".", "", 1).isdigit()
                     else str(value).strip()
                 )
                 if processed_value is not None:
-                    if isinstance(processed_value, (int, float)):
+                    if isinstance(processed_value, int | float):
                         setattr(
                             exoplanet,
                             field,
