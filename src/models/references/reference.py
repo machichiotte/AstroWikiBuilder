@@ -60,11 +60,15 @@ class Reference:
             star_id: str = slugify(self.star_id or "")
             planet_id: str = slugify(self.planet_id or "")
             if not star_id and not planet_id:
-                raise ValueError("Both star name and planet identifier are required for NEA")
+                raise ValueError(
+                    "Both star name and planet identifier are required for NEA"
+                )
             elif not planet_id:
                 return details["url_pattern_star"].format(star_id=star_id)
 
-            return details["url_pattern_exo"].format(star_id=star_id, planet_id=planet_id)
+            return details["url_pattern_exo"].format(
+                star_id=star_id, planet_id=planet_id
+            )
 
         if not planet_id:
             raise ValueError("Identifier is required for generating the URL")

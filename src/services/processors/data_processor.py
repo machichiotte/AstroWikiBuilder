@@ -43,7 +43,9 @@ class DataProcessor:
     # INGESTION DES DONNÉES DEPUIS LES SOURCES EXTERNES
     # ============================================================================
 
-    def ingest_exoplanets_from_source(self, exoplanets: list[Exoplanet], source_name: str) -> None:
+    def ingest_exoplanets_from_source(
+        self, exoplanets: list[Exoplanet], source_name: str
+    ) -> None:
         """Ajoute ou fusionne les exoplanètes dans le référentiel."""
         self.exoplanet_repository.add_exoplanets(exoplanets, source_name)
 
@@ -89,11 +91,15 @@ class DataProcessor:
 
     def resolve_wikipedia_status_for_exoplanets(
         self,
-    ) -> tuple[dict[str, dict[str, WikiArticleInfo]], dict[str, dict[str, WikiArticleInfo]]]:
+    ) -> tuple[
+        dict[str, dict[str, WikiArticleInfo]], dict[str, dict[str, WikiArticleInfo]]
+    ]:
         """
         Récupère les informations des articles Wikipedia et les sépare en existants et manquants.
         """
-        logger.info("Starting process to get and separate Wikipedia articles by status.")
+        logger.info(
+            "Starting process to get and separate Wikipedia articles by status."
+        )
         all_articles_info: dict[str, dict[str, WikiArticleInfo]] = (
             self.fetch_wikipedia_articles_for_exoplanets()
         )
@@ -101,8 +107,8 @@ class DataProcessor:
             logger.warning("No Wikipedia article information was retrieved.")
             return {}, {}
 
-        existing_articles, missing_articles = self.wiki_service.split_by_article_existence(
-            all_articles_info
+        existing_articles, missing_articles = (
+            self.wiki_service.split_by_article_existence(all_articles_info)
         )
         logger.info(
             f"Separation complete: {len(existing_articles)} exoplanets with existing articles, "
@@ -118,7 +124,9 @@ class DataProcessor:
         """
         all_exoplanets: list[Exoplanet] = self.exoplanet_repository.get_all_exoplanets()
         if not all_exoplanets:
-            logger.warning("No exoplanets in exoplanet_repository to check Wikipedia for.")
+            logger.warning(
+                "No exoplanets in exoplanet_repository to check Wikipedia for."
+            )
             return {}
         return self.wiki_service.fetch_articles_for_exoplanet_batch(all_exoplanets)
 
@@ -161,13 +169,17 @@ class DataProcessor:
             return
 
         if not wiki_data_map_to_export:
-            logger.info(f"No data to export for status '{status_description_for_filename}'.")
+            logger.info(
+                f"No data to export for status '{status_description_for_filename}'."
+            )
             return
 
         # data_to_format is now directly wiki_data_map_to_export
-        formatted_list: list[dict[str, Any]] = self.wiki_service.format_article_links_for_export(
-            all_exoplanets_from_repo,  # Pass all exoplanets for context
-            wiki_data_map_to_export,  # Pass the already filtered map
+        formatted_list: list[dict[str, Any]] = (
+            self.wiki_service.format_article_links_for_export(
+                all_exoplanets_from_repo,  # Pass all exoplanets for context
+                wiki_data_map_to_export,  # Pass the already filtered map
+            )
         )
 
         if not formatted_list:
@@ -176,8 +188,12 @@ class DataProcessor:
             )
             return
 
-        csv_filename: str = f"{filename_base}_{status_description_for_filename}_wiki_links.csv"
-        json_filename: str = f"{filename_base}_{status_description_for_filename}_wiki_links.json"
+        csv_filename: str = (
+            f"{filename_base}_{status_description_for_filename}_wiki_links.csv"
+        )
+        json_filename: str = (
+            f"{filename_base}_{status_description_for_filename}_wiki_links.json"
+        )
 
         # Define headers for CSV for consistent output
         headers: list[str] = [
@@ -193,7 +209,9 @@ class DataProcessor:
         self.export_service.export_generic_list_of_dicts_to_csv(
             csv_filename, formatted_list, headers=headers
         )
-        self.export_service.export_generic_list_of_dicts_to_json(json_filename, formatted_list)
+        self.export_service.export_generic_list_of_dicts_to_json(
+            json_filename, formatted_list
+        )
         logger.info(
             f"Wikipedia links data for '{status_description_for_filename}' exported to {csv_filename} and {json_filename}"
         )

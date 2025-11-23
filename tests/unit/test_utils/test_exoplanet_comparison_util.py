@@ -27,7 +27,9 @@ class TestExoplanetComparisonUtil:
     def create_exoplanet(self):
         """Fixture factory pour créer des exoplanètes de test."""
 
-        def _create(pl_name="Test b", pl_radius=None, pl_mass=None, pl_semi_major_axis=None):
+        def _create(
+            pl_name="Test b", pl_radius=None, pl_mass=None, pl_semi_major_axis=None
+        ):
             ref = Reference(
                 source=SourceType.NEA,
                 star_id="Test",
@@ -54,13 +56,17 @@ class TestExoplanetComparisonUtil:
         result = comparison_util.describe_radius_vs_known_planets(exo)
         assert result == ""
 
-    def test_describe_radius_similar_to_jupiter(self, comparison_util, create_exoplanet):
+    def test_describe_radius_similar_to_jupiter(
+        self, comparison_util, create_exoplanet
+    ):
         """Test rayon similaire à Jupiter."""
         exo = create_exoplanet(pl_radius=ValueWithUncertainty(value=1.0))
         result = comparison_util.describe_radius_vs_known_planets(exo)
         assert "similaire à celui de [[Jupiter" in result
 
-    def test_describe_radius_larger_than_jupiter(self, comparison_util, create_exoplanet):
+    def test_describe_radius_larger_than_jupiter(
+        self, comparison_util, create_exoplanet
+    ):
         """Test rayon plus grand que Jupiter."""
         exo = create_exoplanet(pl_radius=ValueWithUncertainty(value=2.0))
         result = comparison_util.describe_radius_vs_known_planets(exo)
@@ -80,7 +86,9 @@ class TestExoplanetComparisonUtil:
         result = comparison_util.describe_radius_vs_known_planets(exo)
         assert "fois celui de la [[Terre]]" in result
 
-    def test_describe_radius_smaller_than_earth(self, comparison_util, create_exoplanet):
+    def test_describe_radius_smaller_than_earth(
+        self, comparison_util, create_exoplanet
+    ):
         """Test rayon plus petit que la Terre."""
         exo = create_exoplanet(pl_radius=ValueWithUncertainty(value=0.05))
         result = comparison_util.describe_radius_vs_known_planets(exo)
@@ -134,7 +142,9 @@ class TestExoplanetComparisonUtil:
         result = comparison_util.describe_orbit_vs_solar_system(exo)
         assert result == ""
 
-    def test_describe_orbit_closer_than_mercury(self, comparison_util, create_exoplanet):
+    def test_describe_orbit_closer_than_mercury(
+        self, comparison_util, create_exoplanet
+    ):
         """Test orbite plus proche que Mercure."""
         exo = create_exoplanet(pl_semi_major_axis=ValueWithUncertainty(value=0.1))
         result = comparison_util.describe_orbit_vs_solar_system(exo)
@@ -147,7 +157,9 @@ class TestExoplanetComparisonUtil:
         result = comparison_util.describe_orbit_vs_solar_system(exo)
         assert "comparable à celle de [[Mercure" in result
 
-    def test_describe_orbit_between_mercury_and_venus(self, comparison_util, create_exoplanet):
+    def test_describe_orbit_between_mercury_and_venus(
+        self, comparison_util, create_exoplanet
+    ):
         """Test orbite entre Mercure et Vénus."""
         exo = create_exoplanet(pl_semi_major_axis=ValueWithUncertainty(value=0.5))
         result = comparison_util.describe_orbit_vs_solar_system(exo)
@@ -202,7 +214,9 @@ class TestExoplanetComparisonUtil:
         result = comparison_util.describe_orbit_vs_solar_system(exo)
         assert "comparable à celle de [[Neptune" in result
 
-    def test_describe_orbit_farther_than_neptune(self, comparison_util, create_exoplanet):
+    def test_describe_orbit_farther_than_neptune(
+        self, comparison_util, create_exoplanet
+    ):
         """Test orbite plus loin que Neptune."""
         exo = create_exoplanet(pl_semi_major_axis=ValueWithUncertainty(value=50.0))
         result = comparison_util.describe_orbit_vs_solar_system(exo)

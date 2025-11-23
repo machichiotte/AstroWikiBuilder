@@ -93,7 +93,9 @@ class TestBuildArticleDrafts:
         assert isinstance(result, str)
         assert len(result) > 0
 
-    def test_build_star_article_draft_with_exoplanets(self, sample_star, sample_exoplanet):
+    def test_build_star_article_draft_with_exoplanets(
+        self, sample_star, sample_exoplanet
+    ):
         """Test de génération de brouillon d'étoile avec exoplanètes."""
         result = build_star_article_draft(sample_star, exoplanets=[sample_exoplanet])
         assert isinstance(result, str)

@@ -102,13 +102,17 @@ class TestExportService:
         result = export_service._exoplanet_to_dict_flat(exo)
         assert result["pl_altname"] == "Alt1, Alt2"
 
-    def test_exoplanet_to_dict_flat_without_altnames(self, export_service, sample_exoplanet):
+    def test_exoplanet_to_dict_flat_without_altnames(
+        self, export_service, sample_exoplanet
+    ):
         """Test de conversion sans noms alternatifs."""
         result = export_service._exoplanet_to_dict_flat(sample_exoplanet)
         assert result["pl_altname"] is None
 
     @patch("builtins.open", new_callable=mock_open)
-    def test_export_exoplanets_to_csv(self, mock_file, export_service, sample_exoplanets, tmp_path):
+    def test_export_exoplanets_to_csv(
+        self, mock_file, export_service, sample_exoplanets, tmp_path
+    ):
         """Test d'export vers CSV."""
         filename = str(tmp_path / "test_export.csv")
         export_service.export_exoplanets_to_csv(filename, sample_exoplanets)
@@ -144,7 +148,9 @@ class TestExportService:
         assert not os.path.exists(filename)
 
     @patch("builtins.open", new_callable=mock_open)
-    def test_export_generic_list_of_dicts_to_csv(self, mock_file, export_service, tmp_path):
+    def test_export_generic_list_of_dicts_to_csv(
+        self, mock_file, export_service, tmp_path
+    ):
         """Test d'export générique vers CSV."""
         filename = str(tmp_path / "test_generic.csv")
         data = [
@@ -174,7 +180,9 @@ class TestExportService:
         # Vérifier que le fichier a été ouvert en écriture
         mock_file.assert_called_once_with(filename, "w", newline="", encoding="utf-8")
 
-    def test_export_generic_list_of_dicts_to_csv_empty_list(self, export_service, tmp_path):
+    def test_export_generic_list_of_dicts_to_csv_empty_list(
+        self, export_service, tmp_path
+    ):
         """Test d'export générique CSV avec liste vide."""
         filename = str(tmp_path / "test_generic_empty.csv")
         export_service.export_generic_list_of_dicts_to_csv(filename, [])
@@ -183,7 +191,9 @@ class TestExportService:
         assert not os.path.exists(filename)
 
     @patch("builtins.open", new_callable=mock_open)
-    def test_export_generic_list_of_dicts_to_json(self, mock_file, export_service, tmp_path):
+    def test_export_generic_list_of_dicts_to_json(
+        self, mock_file, export_service, tmp_path
+    ):
         """Test d'export générique vers JSON."""
         filename = str(tmp_path / "test_generic.json")
         data = [
@@ -196,7 +206,9 @@ class TestExportService:
         # Vérifier que le fichier a été ouvert en écriture
         mock_file.assert_called_once_with(filename, "w", encoding="utf-8")
 
-    def test_export_generic_list_of_dicts_to_json_empty_list(self, export_service, tmp_path):
+    def test_export_generic_list_of_dicts_to_json_empty_list(
+        self, export_service, tmp_path
+    ):
         """Test d'export générique JSON avec liste vide."""
         filename = str(tmp_path / "test_generic_empty.json")
         export_service.export_generic_list_of_dicts_to_json(filename, [])

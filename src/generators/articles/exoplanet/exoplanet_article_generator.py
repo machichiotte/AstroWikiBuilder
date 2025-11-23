@@ -49,7 +49,9 @@ class ExoplanetWikipediaArticleGenerator(BaseWikipediaArticleGenerator):
         self.infobox_section = InfoboxSection(self.reference_manager)
 
         # Create shared utilities for sections
-        from src.utils.astro.classification.exoplanet_comparison_util import ExoplanetComparisonUtil
+        from src.utils.astro.classification.exoplanet_comparison_util import (
+            ExoplanetComparisonUtil,
+        )
         from src.utils.formatters.article_formatter import ArticleFormatter
 
         article_util = ArticleFormatter()
@@ -59,7 +61,9 @@ class ExoplanetWikipediaArticleGenerator(BaseWikipediaArticleGenerator):
         self.introduction_section = IntroductionSection(comparison_util, article_util)
         self.host_star_section = HostStarSection(article_util)
         self.discovery_section = DiscoverySection(article_util)
-        self.physical_characteristics_section = PhysicalCharacteristicsSection(article_util)
+        self.physical_characteristics_section = PhysicalCharacteristicsSection(
+            article_util
+        )
         self.composition_section = CompositionSection(article_util)
         self.orbit_section = OrbitSection(article_util)
         self.insolation_section = InsolationSection(article_util)
@@ -70,13 +74,15 @@ class ExoplanetWikipediaArticleGenerator(BaseWikipediaArticleGenerator):
         self.formation_mechanism_section = FormationMechanismSection(article_util)
         self.see_also_section = SeeAlsoSection()
 
-    def compose_wikipedia_article_content(self, exoplanet: Exoplanet) -> str:
+    def compose_wikipedia_article_content(
+        self, exoplanet: Exoplanet, system_planets: list[Exoplanet] = None
+    ) -> str:
         """
         Assemble tout le contenu structuré de l'article Wikipédia pour l'exoplanète.
         """
         parts = [
             self._build_top_content(exoplanet),
-            self._compose_main_content(exoplanet),
+            self._compose_main_content(exoplanet, system_planets),
             self._build_bottom_content(exoplanet),
         ]
 
@@ -94,7 +100,9 @@ class ExoplanetWikipediaArticleGenerator(BaseWikipediaArticleGenerator):
         ]
         return "\n\n".join(filter(None, parts))
 
-    def _compose_main_content(self, exoplanet: Exoplanet) -> str:
+    def _compose_main_content(
+        self, exoplanet: Exoplanet, system_planets: list[Exoplanet] = None
+    ) -> str:
         """
         Compose le contenu principal de l'article en appelant toutes les sections de contenu.
         """
@@ -107,7 +115,7 @@ class ExoplanetWikipediaArticleGenerator(BaseWikipediaArticleGenerator):
             self.insolation_section.generate(exoplanet),
             self.tidal_locking_section.generate(exoplanet),
             self.habitability_section.generate(exoplanet),
-            self.system_architecture_section.generate(exoplanet),
+            self.system_architecture_section.generate(exoplanet, system_planets),
             self.observation_potential_section.generate(exoplanet),
             self.formation_mechanism_section.generate(exoplanet),
         ]
@@ -134,7 +142,9 @@ class ExoplanetWikipediaArticleGenerator(BaseWikipediaArticleGenerator):
         """
         return self.category_section.generate(exoplanet)
 
-    def replace_first_reference_with_full(self, content: str, exoplanet: Exoplanet) -> str:
+    def replace_first_reference_with_full(
+        self, content: str, exoplanet: Exoplanet
+    ) -> str:
         """
         Remplace uniquement la première référence courte par sa version complète.
         """

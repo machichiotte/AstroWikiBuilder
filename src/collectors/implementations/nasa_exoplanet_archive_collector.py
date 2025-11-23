@@ -69,7 +69,9 @@ class NasaExoplanetArchiveCollector(BaseCollector):
                 return None
 
             # Déléguer toute la logique de mappage et de création de l'objet au mapper.
-            exoplanet: Exoplanet = self.mapper.map_exoplanet_from_nea_record(nea_data_dict)
+            exoplanet: Exoplanet = self.mapper.map_exoplanet_from_nea_record(
+                nea_data_dict
+            )
             return exoplanet
         except Exception as e:
             logger.error(

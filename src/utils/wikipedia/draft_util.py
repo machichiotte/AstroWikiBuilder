@@ -47,12 +47,16 @@ def sanitize_draft_filename(filename: str) -> str:
 # ============================================================================
 
 
-def build_exoplanet_article_draft(exoplanet: Exoplanet) -> str:
+def build_exoplanet_article_draft(
+    exoplanet: Exoplanet, system_planets: list[Exoplanet] = None
+) -> str:
     """
     Génère le contenu d'un brouillon d'article pour une exoplanète.
     """
     generator = ExoplanetWikipediaArticleGenerator()
-    content: str = generator.compose_wikipedia_article_content(exoplanet)
+    content: str = generator.compose_wikipedia_article_content(
+        exoplanet, system_planets=system_planets
+    )
     return content
 
 
@@ -62,7 +66,9 @@ def build_star_article_draft(star: Star, exoplanets: list[Exoplanet] = None) -> 
     Si une liste d'exoplanètes est fournie, elle sera intégrée dans le contenu.
     """
     generator = StarWikipediaArticleGenerator()
-    content: str = generator.compose_wikipedia_article_content(star, exoplanets=exoplanets)
+    content: str = generator.compose_wikipedia_article_content(
+        star, exoplanets=exoplanets
+    )
     return content
 
 

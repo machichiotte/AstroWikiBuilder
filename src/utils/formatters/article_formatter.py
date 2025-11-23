@@ -20,7 +20,9 @@ class ArticleFormatter:
             except locale.Error:
                 continue
 
-    def format_number_as_french_string(self, value: float | None, precision: int = 2) -> str:
+    def format_number_as_french_string(
+        self, value: float | None, precision: int = 2
+    ) -> str:
         """
         Formate une valeur numérique avec le format français, sans décimale inutile.
         """
@@ -78,18 +80,17 @@ class ArticleFormatter:
             value_str = str(value_with_uncertainty.value)
 
         # Ajouter les incertitudes si présentes
-        if value_with_uncertainty.error_positive or value_with_uncertainty.error_negative:
+        if (
+            value_with_uncertainty.error_positive
+            or value_with_uncertainty.error_negative
+        ):
             # CORRECTION ICI : Initialisation à une chaîne vide au lieu de None
             error_str: str = ""
 
             if value_with_uncertainty.error_positive:
-                error_str += (
-                    f"+{self.format_number_as_french_string(value_with_uncertainty.error_positive)}"
-                )
+                error_str += f"+{self.format_number_as_french_string(value_with_uncertainty.error_positive)}"
             if value_with_uncertainty.error_negative:
-                error_str += (
-                    f"-{self.format_number_as_french_string(value_with_uncertainty.error_negative)}"
-                )
+                error_str += f"-{self.format_number_as_french_string(value_with_uncertainty.error_negative)}"
 
             # On n'ajoute l'espace que si error_str n'est pas vide
             if error_str:

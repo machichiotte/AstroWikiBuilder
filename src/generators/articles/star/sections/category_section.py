@@ -78,8 +78,12 @@ class CategorySection:
             for prefix, category in catalog_mappings.items():
                 if name.startswith(prefix):
                     key = extract_key(name, prefix)
-                    formatted = f"{category}|{key}]]"  # Catégorie déjà incluse dans YAML
-                    formatted = formatted.replace("]]", "")  # nettoyer pour éviter ]] de trop
+                    formatted = (
+                        f"{category}|{key}]]"  # Catégorie déjà incluse dans YAML
+                    )
+                    formatted = formatted.replace(
+                        "]]", ""
+                    )  # nettoyer pour éviter ]] de trop
                     categories.add(f"{formatted}]]")
 
         # Nom principal
@@ -97,7 +101,9 @@ class CategorySection:
         """
         Catégorie basée sur la lettre principale du type spectral.
         """
-        spectral_class: str | None = self.star_type_util.extract_spectral_class_from_star(star)
+        spectral_class: str | None = (
+            self.star_type_util.extract_spectral_class_from_star(star)
+        )
         if spectral_class:
             mapping = (
                 self._category_rules_manager.rules.get("star", {})
@@ -115,7 +121,9 @@ class CategorySection:
         """
         Catégorie basée sur la classe de luminosité (V, IV, III, etc.)
         """
-        luminosity: str | None = self.star_type_util.extract_luminosity_class_from_star(star)
+        luminosity: str | None = self.star_type_util.extract_luminosity_class_from_star(
+            star
+        )
         if luminosity:
             mapping = (
                 self._category_rules_manager.rules.get("star", {})
@@ -132,7 +140,9 @@ class CategorySection:
         """
         Règle personnalisée pour déterminer la catégorie de type d'étoile.
         """
-        star_types: list[str] = self.star_type_util.determine_star_types_from_properties(star)
+        star_types: list[str] = (
+            self.star_type_util.determine_star_types_from_properties(star)
+        )
         if not star_types:
             return None
 

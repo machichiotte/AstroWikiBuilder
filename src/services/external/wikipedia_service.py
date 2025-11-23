@@ -20,7 +20,9 @@ class WikipediaService:
         Vérifie l'existence des articles Wikipedia pour les exoplanètes.
         Returns a dictionary mapping Exoplanet name to a dictionary of its article infos (name/alias -> info dict).
         """
-        logger.info(f"Starting Wikipedia article check for {len(exoplanets)} exoplanets.")
+        logger.info(
+            f"Starting Wikipedia article check for {len(exoplanets)} exoplanets."
+        )
 
         all_results = {}
         titles_to_check = []
@@ -59,7 +61,9 @@ class WikipediaService:
 
             # Now, map these flat results back to the per-exoplanet structure
             for queried_title, wiki_info in batch_results.items():
-                exoplanet_name_origin = context_for_titles[queried_title]["exoplanet_name"]
+                exoplanet_name_origin = context_for_titles[queried_title][
+                    "exoplanet_name"
+                ]
                 if exoplanet_name_origin in all_results:
                     all_results[exoplanet_name_origin][queried_title] = wiki_info
                 else:
@@ -95,7 +99,9 @@ class WikipediaService:
 
         has_any_existing_article: bool = any(info.exists for info in articles.values())
 
-        if self._should_exclude_links(only_existing, only_missing, has_any_existing_article):
+        if self._should_exclude_links(
+            only_existing, only_missing, has_any_existing_article
+        ):
             return []
 
         results = []

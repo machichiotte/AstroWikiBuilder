@@ -14,7 +14,9 @@ class ObservationSection:
         """
         Génère le contenu de la section.
         """
-        if not any([star.st_apparent_magnitude, star.st_right_ascension, star.st_declination]):
+        if not any(
+            [star.st_apparent_magnitude, star.st_right_ascension, star.st_declination]
+        ):
             return ""
 
         content: list[str] = ["== Observation ==\n"]

@@ -92,9 +92,9 @@ class TestDataProcessor:
         exoplanets = [sample_exoplanet]
         data_processor.ingest_exoplanets_from_source(exoplanets, "NEA")
 
-        mock_repositories_and_services["exoplanet_repo"].add_exoplanets.assert_called_once_with(
-            exoplanets, "NEA"
-        )
+        mock_repositories_and_services[
+            "exoplanet_repo"
+        ].add_exoplanets.assert_called_once_with(exoplanets, "NEA")
 
     def test_ingest_stars_from_source(
         self, data_processor, mock_repositories_and_services, sample_star
@@ -103,24 +103,32 @@ class TestDataProcessor:
         stars = [sample_star]
         data_processor.ingest_stars_from_source(stars, "NEA")
 
-        mock_repositories_and_services["star_repo"].add_stars.assert_called_once_with(stars, "NEA")
+        mock_repositories_and_services["star_repo"].add_stars.assert_called_once_with(
+            stars, "NEA"
+        )
 
     def test_collect_all_exoplanets(
         self, data_processor, mock_repositories_and_services, sample_exoplanet
     ):
         """Test de collecte de toutes les exoplanètes."""
-        mock_repositories_and_services["exoplanet_repo"].get_all_exoplanets.return_value = [
-            sample_exoplanet
-        ]
+        mock_repositories_and_services[
+            "exoplanet_repo"
+        ].get_all_exoplanets.return_value = [sample_exoplanet]
 
         result = data_processor.collect_all_exoplanets()
 
         assert result == [sample_exoplanet]
-        mock_repositories_and_services["exoplanet_repo"].get_all_exoplanets.assert_called_once()
+        mock_repositories_and_services[
+            "exoplanet_repo"
+        ].get_all_exoplanets.assert_called_once()
 
-    def test_collect_all_stars(self, data_processor, mock_repositories_and_services, sample_star):
+    def test_collect_all_stars(
+        self, data_processor, mock_repositories_and_services, sample_star
+    ):
         """Test de collecte de toutes les étoiles."""
-        mock_repositories_and_services["star_repo"].get_all_stars.return_value = [sample_star]
+        mock_repositories_and_services["star_repo"].get_all_stars.return_value = [
+            sample_star
+        ]
 
         result = data_processor.collect_all_stars()
 
@@ -131,9 +139,9 @@ class TestDataProcessor:
         self, data_processor, mock_repositories_and_services, sample_exoplanet
     ):
         """Test de calcul des statistiques d'exoplanètes."""
-        mock_repositories_and_services["exoplanet_repo"].get_all_exoplanets.return_value = [
-            sample_exoplanet
-        ]
+        mock_repositories_and_services[
+            "exoplanet_repo"
+        ].get_all_exoplanets.return_value = [sample_exoplanet]
         mock_repositories_and_services[
             "stat_service"
         ].generate_statistics_exoplanet.return_value = {"total": 1}
@@ -149,10 +157,12 @@ class TestDataProcessor:
         self, data_processor, mock_repositories_and_services, sample_star
     ):
         """Test de calcul des statistiques d'étoiles."""
-        mock_repositories_and_services["star_repo"].get_all_stars.return_value = [sample_star]
-        mock_repositories_and_services["stat_service"].generate_statistics_star.return_value = {
-            "total_stars": 1
-        }
+        mock_repositories_and_services["star_repo"].get_all_stars.return_value = [
+            sample_star
+        ]
+        mock_repositories_and_services[
+            "stat_service"
+        ].generate_statistics_star.return_value = {"total_stars": 1}
 
         result = data_processor.compute_star_statistics()
 
@@ -162,19 +172,25 @@ class TestDataProcessor:
         ].generate_statistics_star.assert_called_once_with([sample_star])
 
     def test_generate_data_statistics(
-        self, data_processor, mock_repositories_and_services, sample_exoplanet, sample_star
+        self,
+        data_processor,
+        mock_repositories_and_services,
+        sample_exoplanet,
+        sample_star,
     ):
         """Test de génération de toutes les statistiques."""
-        mock_repositories_and_services["exoplanet_repo"].get_all_exoplanets.return_value = [
-            sample_exoplanet
+        mock_repositories_and_services[
+            "exoplanet_repo"
+        ].get_all_exoplanets.return_value = [sample_exoplanet]
+        mock_repositories_and_services["star_repo"].get_all_stars.return_value = [
+            sample_star
         ]
-        mock_repositories_and_services["star_repo"].get_all_stars.return_value = [sample_star]
         mock_repositories_and_services[
             "stat_service"
         ].generate_statistics_exoplanet.return_value = {"total": 1}
-        mock_repositories_and_services["stat_service"].generate_statistics_star.return_value = {
-            "total_stars": 1
-        }
+        mock_repositories_and_services[
+            "stat_service"
+        ].generate_statistics_star.return_value = {"total_stars": 1}
 
         result = data_processor.generate_data_statistics()
 
@@ -187,9 +203,9 @@ class TestDataProcessor:
         self, data_processor, mock_repositories_and_services, sample_exoplanet
     ):
         """Test de récupération des articles Wikipedia."""
-        mock_repositories_and_services["exoplanet_repo"].get_all_exoplanets.return_value = [
-            sample_exoplanet
-        ]
+        mock_repositories_and_services[
+            "exoplanet_repo"
+        ].get_all_exoplanets.return_value = [sample_exoplanet]
         mock_repositories_and_services[
             "wiki_service"
         ].fetch_articles_for_exoplanet_batch.return_value = {"Test b": {}}
@@ -205,7 +221,9 @@ class TestDataProcessor:
         self, data_processor, mock_repositories_and_services
     ):
         """Test de récupération avec aucune exoplanète."""
-        mock_repositories_and_services["exoplanet_repo"].get_all_exoplanets.return_value = []
+        mock_repositories_and_services[
+            "exoplanet_repo"
+        ].get_all_exoplanets.return_value = []
 
         result = data_processor.fetch_wikipedia_articles_for_exoplanets()
 
@@ -215,9 +233,9 @@ class TestDataProcessor:
         self, data_processor, mock_repositories_and_services, sample_exoplanet
     ):
         """Test de résolution du statut Wikipedia."""
-        mock_repositories_and_services["exoplanet_repo"].get_all_exoplanets.return_value = [
-            sample_exoplanet
-        ]
+        mock_repositories_and_services[
+            "exoplanet_repo"
+        ].get_all_exoplanets.return_value = [sample_exoplanet]
         mock_repositories_and_services[
             "wiki_service"
         ].fetch_articles_for_exoplanet_batch.return_value = {
@@ -230,7 +248,9 @@ class TestDataProcessor:
                 )
             }
         }
-        mock_repositories_and_services["wiki_service"].split_by_article_existence.return_value = (
+        mock_repositories_and_services[
+            "wiki_service"
+        ].split_by_article_existence.return_value = (
             {"Test b": {}},
             {},
         )
@@ -244,7 +264,9 @@ class TestDataProcessor:
         self, data_processor, mock_repositories_and_services
     ):
         """Test de résolution avec aucun article."""
-        mock_repositories_and_services["exoplanet_repo"].get_all_exoplanets.return_value = []
+        mock_repositories_and_services[
+            "exoplanet_repo"
+        ].get_all_exoplanets.return_value = []
 
         existing, missing = data_processor.resolve_wikipedia_status_for_exoplanets()
 
@@ -255,37 +277,41 @@ class TestDataProcessor:
         self, data_processor, mock_repositories_and_services, sample_exoplanet
     ):
         """Test d'export CSV."""
-        mock_repositories_and_services["exoplanet_repo"].get_all_exoplanets.return_value = [
-            sample_exoplanet
-        ]
+        mock_repositories_and_services[
+            "exoplanet_repo"
+        ].get_all_exoplanets.return_value = [sample_exoplanet]
 
         data_processor.export_all_exoplanets("csv", "test.csv")
 
         mock_repositories_and_services[
             "export_service"
-        ].export_exoplanets_to_csv.assert_called_once_with("test.csv", [sample_exoplanet])
+        ].export_exoplanets_to_csv.assert_called_once_with(
+            "test.csv", [sample_exoplanet]
+        )
 
     def test_export_all_exoplanets_json(
         self, data_processor, mock_repositories_and_services, sample_exoplanet
     ):
         """Test d'export JSON."""
-        mock_repositories_and_services["exoplanet_repo"].get_all_exoplanets.return_value = [
-            sample_exoplanet
-        ]
+        mock_repositories_and_services[
+            "exoplanet_repo"
+        ].get_all_exoplanets.return_value = [sample_exoplanet]
 
         data_processor.export_all_exoplanets("json", "test.json")
 
         mock_repositories_and_services[
             "export_service"
-        ].export_exoplanets_to_json.assert_called_once_with("test.json", [sample_exoplanet])
+        ].export_exoplanets_to_json.assert_called_once_with(
+            "test.json", [sample_exoplanet]
+        )
 
     def test_export_all_exoplanets_invalid_format(
         self, data_processor, mock_repositories_and_services, sample_exoplanet
     ):
         """Test d'export avec format invalide."""
-        mock_repositories_and_services["exoplanet_repo"].get_all_exoplanets.return_value = [
-            sample_exoplanet
-        ]
+        mock_repositories_and_services[
+            "exoplanet_repo"
+        ].get_all_exoplanets.return_value = [sample_exoplanet]
 
         with pytest.raises(ValueError, match="Unsupported export format"):
             data_processor.export_all_exoplanets("xml", "test.xml")
@@ -294,12 +320,14 @@ class TestDataProcessor:
         self, data_processor, mock_repositories_and_services, sample_exoplanet
     ):
         """Test d'export des liens Wikipedia."""
-        mock_repositories_and_services["exoplanet_repo"].get_all_exoplanets.return_value = [
-            sample_exoplanet
-        ]
+        mock_repositories_and_services[
+            "exoplanet_repo"
+        ].get_all_exoplanets.return_value = [sample_exoplanet]
         mock_repositories_and_services[
             "wiki_service"
-        ].format_article_links_for_export.return_value = [{"exoplanet_primary_name": "Test b"}]
+        ].format_article_links_for_export.return_value = [
+            {"exoplanet_primary_name": "Test b"}
+        ]
 
         wiki_data = {"Test b": {}}
         data_processor.export_exoplanet_wikipedia_links_by_status(
@@ -317,7 +345,9 @@ class TestDataProcessor:
         self, data_processor, mock_repositories_and_services
     ):
         """Test d'export avec repo vide."""
-        mock_repositories_and_services["exoplanet_repo"].get_all_exoplanets.return_value = []
+        mock_repositories_and_services[
+            "exoplanet_repo"
+        ].get_all_exoplanets.return_value = []
 
         wiki_data = {"Test b": {}}
         data_processor.export_exoplanet_wikipedia_links_by_status(
@@ -332,11 +362,13 @@ class TestDataProcessor:
         self, data_processor, mock_repositories_and_services, sample_exoplanet
     ):
         """Test d'export avec données vides."""
-        mock_repositories_and_services["exoplanet_repo"].get_all_exoplanets.return_value = [
-            sample_exoplanet
-        ]
+        mock_repositories_and_services[
+            "exoplanet_repo"
+        ].get_all_exoplanets.return_value = [sample_exoplanet]
 
-        data_processor.export_exoplanet_wikipedia_links_by_status("output/test", {}, "existing")
+        data_processor.export_exoplanet_wikipedia_links_by_status(
+            "output/test", {}, "existing"
+        )
 
         mock_repositories_and_services[
             "export_service"
@@ -346,9 +378,9 @@ class TestDataProcessor:
         self, data_processor, mock_repositories_and_services, sample_exoplanet
     ):
         """Test d'export avec données formatées vides."""
-        mock_repositories_and_services["exoplanet_repo"].get_all_exoplanets.return_value = [
-            sample_exoplanet
-        ]
+        mock_repositories_and_services[
+            "exoplanet_repo"
+        ].get_all_exoplanets.return_value = [sample_exoplanet]
         mock_repositories_and_services[
             "wiki_service"
         ].format_article_links_for_export.return_value = []

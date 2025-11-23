@@ -55,7 +55,9 @@ class TestFetchAndIngestData:
         )
         return Star(st_name="Test", reference=ref)
 
-    def test_fetch_and_ingest_data_success(self, mock_processor, sample_exoplanet, sample_star):
+    def test_fetch_and_ingest_data_success(
+        self, mock_processor, sample_exoplanet, sample_star
+    ):
         """Test de collecte et ingestion réussie."""
         mock_collector = Mock()
         mock_collector.collect_entities_from_source.return_value = (
@@ -71,7 +73,9 @@ class TestFetchAndIngestData:
         mock_processor.ingest_exoplanets_from_source.assert_called_once_with(
             [sample_exoplanet], "NEA"
         )
-        mock_processor.ingest_stars_from_source.assert_called_once_with([sample_star], "NEA")
+        mock_processor.ingest_stars_from_source.assert_called_once_with(
+            [sample_star], "NEA"
+        )
 
     def test_fetch_and_ingest_data_empty_results(self, mock_processor):
         """Test avec résultats vides."""
@@ -99,7 +103,9 @@ class TestFetchAndIngestData:
         # Vérifier que l'ingestion n'a pas été appelée
         mock_processor.ingest_exoplanets_from_source.assert_not_called()
 
-    def test_fetch_and_ingest_data_invalid_type_stars(self, mock_processor, sample_exoplanet):
+    def test_fetch_and_ingest_data_invalid_type_stars(
+        self, mock_processor, sample_exoplanet
+    ):
         """Test avec type invalide pour stars."""
         mock_collector = Mock()
         mock_collector.collect_entities_from_source.return_value = (
@@ -119,7 +125,9 @@ class TestFetchAndIngestData:
     def test_fetch_and_ingest_data_collector_exception(self, mock_processor):
         """Test avec exception levée par le collecteur."""
         mock_collector = Mock()
-        mock_collector.collect_entities_from_source.side_effect = Exception("Test error")
+        mock_collector.collect_entities_from_source.side_effect = Exception(
+            "Test error"
+        )
 
         collectors = {"NEA": mock_collector}
 
@@ -172,8 +180,12 @@ class TestExportConsolidatedData:
         export_consolidated_data(mock_processor, output_dir, timestamp)
 
         # Vérifier que l'export a été appelé
-        expected_path = f"{output_dir}/consolidated/exoplanets_consolidated_{timestamp}.csv"
-        mock_processor.export_all_exoplanets.assert_called_once_with("csv", expected_path)
+        expected_path = (
+            f"{output_dir}/consolidated/exoplanets_consolidated_{timestamp}.csv"
+        )
+        mock_processor.export_all_exoplanets.assert_called_once_with(
+            "csv", expected_path
+        )
 
     def test_export_consolidated_data_exception(self, mock_processor, tmp_path):
         """Test avec exception lors de l'export."""

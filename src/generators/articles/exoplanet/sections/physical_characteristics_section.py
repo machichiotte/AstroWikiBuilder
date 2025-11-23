@@ -29,7 +29,9 @@ class PhysicalCharacteristicsSection:
             return None
 
         precision = 3 if mass_f < 0.1 else (2 if mass_f < 1 else 1)
-        mass_value = self.article_util.format_number_as_french_string(mass, precision=precision)
+        mass_value = self.article_util.format_number_as_french_string(
+            mass, precision=precision
+        )
 
         if mass_f < 0.1:
             label = "faible"
@@ -48,7 +50,9 @@ class PhysicalCharacteristicsSection:
             return None
 
         precision = 3 if radius_f < 0.1 else (2 if radius_f < 1 else 1)
-        radius_value = self.article_util.format_number_as_french_string(radius, precision=precision)
+        radius_value = self.article_util.format_number_as_french_string(
+            radius, precision=precision
+        )
 
         if radius_f < 0.5:
             label = "compact"

@@ -98,7 +98,11 @@ def initialize_collectors(args: argparse.Namespace) -> dict[str, Any]:
     mock_sources = args.use_mock
 
     # Sources de données disponibles
-    data_sources = ["nasa_exoplanet_archive", "exoplanet_eu", "open_exoplanet_catalogue"]
+    data_sources = [
+        "nasa_exoplanet_archive",
+        "exoplanet_eu",
+        "open_exoplanet_catalogue",
+    ]
 
     for source in data_sources:
         if source in args.sources:
@@ -135,7 +139,9 @@ def _get_collector_instance(source: str, use_mock: bool, cache_path: str) -> Any
     elif source == "exoplanet_eu":
         return ExoplanetEUCollector(cache_dir=cache_path, use_mock_data=use_mock)
     elif source == "open_exoplanet":
-        return OpenExoplanetCatalogueCollector(cache_dir=cache_path, use_mock_data=use_mock)
+        return OpenExoplanetCatalogueCollector(
+            cache_dir=cache_path, use_mock_data=use_mock
+        )
     else:
         raise ValueError(f"Source inconnue : {source}")
 

@@ -133,7 +133,10 @@ class TestNasaExoplanetArchiveMapper:
 
     def test_is_composite_formatted_string(self, mapper):
         """Test de détection de chaîne composite."""
-        assert mapper.is_composite_formatted_string("\u003cspan\u003e123\u003c/span\u003e") is True
+        assert (
+            mapper.is_composite_formatted_string("\u003cspan\u003e123\u003c/span\u003e")
+            is True
+        )
         assert mapper.is_composite_formatted_string("123\u0026plusmn0.5") is True
         assert mapper.is_composite_formatted_string("\u0026gt123") is True
         assert mapper.is_composite_formatted_string("\u0026lt456") is True
@@ -218,7 +221,9 @@ class TestNasaExoplanetArchiveMapper:
         assert obj.sy_constellation == "Cygnus"
 
     @patch("src.mappers.nasa_exoplanet_archive_mapper.ConstellationUtil")
-    def test_map_exoplanet_from_nea_record(self, mock_constellation_util, mapper, sample_nea_data):
+    def test_map_exoplanet_from_nea_record(
+        self, mock_constellation_util, mapper, sample_nea_data
+    ):
         """Test de mapping complet d'une exoplanète."""
         mock_util_instance = Mock()
         mock_util_instance.get_constellation_name.return_value = "Cygnus"
@@ -234,7 +239,9 @@ class TestNasaExoplanetArchiveMapper:
         assert exoplanet.sy_constellation == "Cygnus"
 
     @patch("src.mappers.nasa_exoplanet_archive_mapper.ConstellationUtil")
-    def test_map_star_from_nea_record(self, mock_constellation_util, mapper, sample_nea_data):
+    def test_map_star_from_nea_record(
+        self, mock_constellation_util, mapper, sample_nea_data
+    ):
         """Test de mapping complet d'une étoile."""
         mock_util_instance = Mock()
         mock_util_instance.get_constellation_name.return_value = "Cygnus"

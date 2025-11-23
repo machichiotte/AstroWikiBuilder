@@ -20,7 +20,9 @@ class TestStarSections:
     @pytest.fixture
     def article_util(self):
         util = MagicMock(spec=ArticleFormatter)
-        util.format_number_as_french_string.side_effect = lambda x: f"{x}".replace(".", ",")
+        util.format_number_as_french_string.side_effect = lambda x: f"{x}".replace(
+            ".", ","
+        )
         return util
 
     @pytest.fixture
@@ -79,7 +81,9 @@ class TestStarSections:
         section = EnvironmentSection()
         assert section.generate(mock_star) == ""
 
-    @patch("src.generators.articles.star.sections.environment_section.phrase_dans_constellation")
+    @patch(
+        "src.generators.articles.star.sections.environment_section.phrase_dans_constellation"
+    )
     def test_environment_full(self, mock_phrase, mock_star):
         mock_star.sy_constellation = "Cygne"
         mock_star.st_distance = ValueWithUncertainty(value=150.5)
@@ -133,14 +137,20 @@ class TestStarSections:
         assert "{{Système planétaire fin}}" in content
 
     def test_map_constellation_to_category(self, mock_star):
-        from src.generators.articles.star.sections.category_section import CategorySection
+        from src.generators.articles.star.sections.category_section import (
+            CategorySection,
+        )
 
         # Mock the rules manager to return a known mapping
         section = CategorySection()
         section._category_rules_manager = MagicMock()
         section._category_rules_manager.rules = {
             "common": {
-                "mapped": {"sy_constellation": {"Cygne": "[[Catégorie:Constellation du Cygne]]"}}
+                "mapped": {
+                    "sy_constellation": {
+                        "Cygne": "[[Catégorie:Constellation du Cygne]]"
+                    }
+                }
             }
         }
 

@@ -84,7 +84,9 @@ def execute_pipeline(args: argparse.Namespace) -> None:
     else:
         # Mode production : générer uniquement les drafts pour les articles non-existants
         logger.info("Vérification de l'existence des articles Wikipedia...")
-        existing_articles, missing_articles = processor.resolve_wikipedia_status_for_exoplanets()
+        existing_articles, missing_articles = (
+            processor.resolve_wikipedia_status_for_exoplanets()
+        )
 
         logger.info(
             f"Résultats de la vérification : {len(existing_articles)} exoplanètes avec articles existants, "
@@ -97,7 +99,9 @@ def execute_pipeline(args: argparse.Namespace) -> None:
             )
             # Filtrer les exoplanètes pour ne garder que celles sans articles
             all_exoplanets = processor.collect_all_exoplanets()
-            exoplanets_to_draft = [exo for exo in all_exoplanets if exo.pl_name in missing_articles]
+            exoplanets_to_draft = [
+                exo for exo in all_exoplanets if exo.pl_name in missing_articles
+            ]
 
             # Générer les drafts uniquement pour les exoplanètes sans articles
             from src.utils.wikipedia.draft_util import (
@@ -107,15 +111,23 @@ def execute_pipeline(args: argparse.Namespace) -> None:
 
             exoplanet_drafts = {}
             for exoplanet in exoplanets_to_draft:
-                exoplanet_drafts[exoplanet.pl_name] = build_exoplanet_article_draft(exoplanet)
+                exoplanet_drafts[exoplanet.pl_name] = build_exoplanet_article_draft(
+                    exoplanet
+                )
 
-            persist_drafts_by_entity_type(exoplanet_drafts, {}, args.drafts_dir, "exoplanet")
+            persist_drafts_by_entity_type(
+                exoplanet_drafts, {}, args.drafts_dir, "exoplanet"
+            )
             logger.info(f"Brouillons d'exoplanètes générés : {len(exoplanet_drafts)}")
 
             # Générer les drafts pour les étoiles correspondantes
-            generate_and_persist_star_drafts(processor, args.drafts_dir, exoplanets_to_draft)
+            generate_and_persist_star_drafts(
+                processor, args.drafts_dir, exoplanets_to_draft
+            )
         else:
-            logger.info("Aucun brouillon à générer : tous les articles existent déjà sur Wikipedia")
+            logger.info(
+                "Aucun brouillon à générer : tous les articles existent déjà sur Wikipedia"
+            )
 
     logger.info("Pipeline terminé avec succès !")
 

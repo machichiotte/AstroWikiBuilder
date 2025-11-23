@@ -99,7 +99,9 @@ class TestExoplanetEUCollector:
 
         assert result is None
 
-    @patch("src.services.processors.reference_manager.ReferenceManager.create_reference")
+    @patch(
+        "src.services.processors.reference_manager.ReferenceManager.create_reference"
+    )
     def test_transform_row_to_exoplanet_with_complete_data(self, mock_create_ref):
         """Test de transformation avec données complètes."""
         from unittest.mock import Mock
@@ -140,7 +142,9 @@ class TestExoplanetEUCollector:
         assert exoplanet.st_name == "51 Peg"
         assert len(exoplanet.pl_altname) == 2
 
-    @patch("src.services.processors.reference_manager.ReferenceManager.create_reference")
+    @patch(
+        "src.services.processors.reference_manager.ReferenceManager.create_reference"
+    )
     def test_transform_row_to_exoplanet_with_partial_data(self, mock_create_ref):
         """Test de transformation avec données partielles."""
         from unittest.mock import Mock
@@ -179,8 +183,12 @@ class TestExoplanetEUCollector:
         result = collector.transform_row_to_exoplanet(mock_row)
         assert result is None
 
-    @patch("src.services.processors.reference_manager.ReferenceManager.create_reference")
-    def test_transform_row_to_exoplanet_with_numeric_string_values(self, mock_create_ref):
+    @patch(
+        "src.services.processors.reference_manager.ReferenceManager.create_reference"
+    )
+    def test_transform_row_to_exoplanet_with_numeric_string_values(
+        self, mock_create_ref
+    ):
         """Test de transformation avec valeurs numériques en string."""
         from unittest.mock import Mock
 
@@ -203,7 +211,9 @@ class TestExoplanetEUCollector:
 
         assert exoplanet is not None
 
-    @patch("src.services.processors.reference_manager.ReferenceManager.create_reference")
+    @patch(
+        "src.services.processors.reference_manager.ReferenceManager.create_reference"
+    )
     def test_transform_row_to_exoplanet_with_alt_names(self, mock_create_ref):
         """Test de transformation avec noms alternatifs."""
         from unittest.mock import Mock
@@ -237,7 +247,9 @@ class TestExoplanetEUCollector:
 
         # Simuler une exception dans reference_manager
         with patch.object(
-            collector.reference_manager, "create_reference", side_effect=Exception("Test error")
+            collector.reference_manager,
+            "create_reference",
+            side_effect=Exception("Test error"),
         ):
             result = collector.transform_row_to_exoplanet(mock_row)
             assert result is None

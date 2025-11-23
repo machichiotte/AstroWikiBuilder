@@ -25,7 +25,9 @@ class InfoboxSection:
         """Génère le code wiki de l'infobox."""
         lines = ["{{Infobox Exoplanète"]
 
-        wiki_reference = exoplanet.reference.to_wiki_ref() if exoplanet.reference else None
+        wiki_reference = (
+            exoplanet.reference.to_wiki_ref() if exoplanet.reference else None
+        )
 
         # Récupération des mappings spécifiques aux exoplanètes
         mappings = InfoboxMapper.convert_exoplanet_to_infobox()

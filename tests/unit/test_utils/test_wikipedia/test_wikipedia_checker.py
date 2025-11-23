@@ -104,21 +104,23 @@ class TestWikipediaChecker:
         data = {}
         titles = ["Article1"]
 
-        normalized, redirect, resolved = checker.build_title_normalization_and_redirect_maps(
-            data, titles
+        normalized, redirect, resolved = (
+            checker.build_title_normalization_and_redirect_maps(data, titles)
         )
 
         assert normalized == {}
         assert redirect == {}
         assert "Article1" in resolved
 
-    def test_build_title_normalization_and_redirect_maps_with_normalization(self, checker):
+    def test_build_title_normalization_and_redirect_maps_with_normalization(
+        self, checker
+    ):
         """Test de construction des maps avec normalisation."""
         data = {"normalized": [{"from": "article 1", "to": "Article 1"}]}
         titles = ["article 1"]
 
-        normalized, redirect, resolved = checker.build_title_normalization_and_redirect_maps(
-            data, titles
+        normalized, redirect, resolved = (
+            checker.build_title_normalization_and_redirect_maps(data, titles)
         )
 
         assert normalized["article 1"] == "Article 1"
@@ -129,8 +131,8 @@ class TestWikipediaChecker:
         data = {"redirects": [{"from": "Old Name", "to": "New Name"}]}
         titles = ["Old Name"]
 
-        normalized, redirect, resolved = checker.build_title_normalization_and_redirect_maps(
-            data, titles
+        normalized, redirect, resolved = (
+            checker.build_title_normalization_and_redirect_maps(data, titles)
         )
 
         assert redirect["Old Name"] == "New Name"
@@ -180,7 +182,10 @@ class TestWikipediaChecker:
         )
 
         assert results["Existing Article"].exists is True
-        assert results["Existing Article"].url == "https://fr.wikipedia.org/wiki/Existing_Article"
+        assert (
+            results["Existing Article"].url
+            == "https://fr.wikipedia.org/wiki/Existing_Article"
+        )
 
     def test_resolve_article_existence_with_redirect(self, checker):
         """Test de résolution avec redirection."""
@@ -271,4 +276,6 @@ class TestWikipediaChecker:
 
         assert "Test Article" in results
         assert results["Test Article"].exists is True
-        assert results["Test Article"].url == "https://fr.wikipedia.org/wiki/Test_Article"
+        assert (
+            results["Test Article"].url == "https://fr.wikipedia.org/wiki/Test_Article"
+        )

@@ -139,7 +139,10 @@ class TestExecutePipeline:
             # If we want it called, we need to return some missing articles.
 
             # Let's adjust the mock to return some missing articles
-            mock_processor.resolve_wikipedia_status_for_exoplanets.return_value = ([], ["Planet B"])
+            mock_processor.resolve_wikipedia_status_for_exoplanets.return_value = (
+                [],
+                ["Planet B"],
+            )
             # And we also need to mock collect_all_exoplanets to return objects with pl_name "Planet B"
             mock_planet = Mock()
             mock_planet.pl_name = "Planet B"

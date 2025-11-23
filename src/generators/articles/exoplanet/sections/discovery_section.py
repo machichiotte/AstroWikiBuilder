@@ -49,9 +49,13 @@ class DiscoverySection:
             date_value = date_value.value
 
         if hasattr(date_value, "year"):
-            date_str: str = f"en {self.article_util.format_year_without_decimals(date_value.year)}"
+            date_str: str = (
+                f"en {self.article_util.format_year_without_decimals(date_value.year)}"
+            )
         else:
-            date_str: str = f"en {str(self.article_util.format_year_without_decimals(date_value))}"
+            date_str: str = (
+                f"en {str(self.article_util.format_year_without_decimals(date_value))}"
+            )
 
         if disc_method:
             section += f"L'exoplanète a été découverte par la méthode {disc_method} {date_str}.\n"

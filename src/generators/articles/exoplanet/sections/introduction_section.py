@@ -18,7 +18,9 @@ from src.utils.lang.phrase.constellation import phrase_dans_constellation
 class IntroductionSection:
     """Génère la section introduction pour les articles d'exoplanètes."""
 
-    def __init__(self, comparison_util: ExoplanetComparisonUtil, article_util: ArticleFormatter):
+    def __init__(
+        self, comparison_util: ExoplanetComparisonUtil, article_util: ArticleFormatter
+    ):
         self.comparison_util = comparison_util
         self.article_util = article_util
         self.planet_type_util = ExoplanetTypeUtil()
@@ -53,10 +55,12 @@ class IntroductionSection:
 
         try:
             distance_pc = float(exoplanet.st_distance.value)
-            distance_ly: float = self.article_util.convert_parsecs_to_lightyears(distance_pc)
+            distance_ly: float = self.article_util.convert_parsecs_to_lightyears(
+                distance_pc
+            )
             if distance_ly is not None:
-                formatted_distance_ly = self.article_util.format_number_as_french_string(
-                    distance_ly
+                formatted_distance_ly = (
+                    self.article_util.format_number_as_french_string(distance_ly)
                 )
                 return f", située à environ {formatted_distance_ly} [[année-lumière|années-lumière]] de la [[Terre]]"
         except (ValueError, TypeError):
@@ -77,11 +81,15 @@ class IntroductionSection:
 
     def generate(self, exoplanet: Exoplanet) -> str:
         """Génère l'introduction pour une exoplanète."""
-        planet_type = self.planet_type_util.determine_exoplanet_classification(exoplanet)
+        planet_type = self.planet_type_util.determine_exoplanet_classification(
+            exoplanet
+        )
         planet_name_str = exoplanet.pl_name or "Nom inconnu"
         planet_type = planet_type[0].lower() + planet_type[1:]
 
-        base_intro = f"'''{planet_name_str}''' est une exoplanète de type [[{planet_type}]]"
+        base_intro = (
+            f"'''{planet_name_str}''' est une exoplanète de type [[{planet_type}]]"
+        )
 
         parts = [base_intro]
 

@@ -58,7 +58,10 @@ class PlanetarySystemSection:
 
         # Période
         period_str = ""
-        if exoplanet.pl_orbital_period and exoplanet.pl_orbital_period.value is not None:
+        if (
+            exoplanet.pl_orbital_period
+            and exoplanet.pl_orbital_period.value is not None
+        ):
             try:
                 period = float(exoplanet.pl_orbital_period.value)
                 if period.is_integer():

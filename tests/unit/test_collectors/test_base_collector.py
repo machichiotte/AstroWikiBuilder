@@ -203,7 +203,11 @@ class TestBaseCollector:
     def test_extract_entities_from_dataframe_success(self, collector):
         """Test d'extraction d'entités réussie."""
         df = pd.DataFrame(
-            {"name": ["Planet1", "Planet2"], "hostname": ["Star1", "Star2"], "mass": [1.0, 2.0]}
+            {
+                "name": ["Planet1", "Planet2"],
+                "hostname": ["Star1", "Star2"],
+                "mass": [1.0, 2.0],
+            }
         )
 
         exoplanets, stars = collector.extract_entities_from_dataframe(df)

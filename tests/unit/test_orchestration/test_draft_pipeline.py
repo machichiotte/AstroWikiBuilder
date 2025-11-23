@@ -63,7 +63,10 @@ class TestDraftPipeline:
         generate_and_persist_exoplanet_drafts(mock_processor, "drafts")
 
         mock_processor.collect_all_exoplanets.assert_called_once()
-        mock_build.assert_called_once_with(sample_exoplanets[0])
+        # Vérifier que build_exoplanet_article_draft est appelé avec system_planets
+        call_args = mock_build.call_args
+        assert call_args[0][0] == sample_exoplanets[0]  # Premier argument positionnel
+        assert "system_planets" in call_args.kwargs  # Argument nommé system_planets
         mock_persist.assert_called_once()
 
     @patch("src.orchestration.draft_pipeline.persist_drafts_by_entity_type")
@@ -100,7 +103,9 @@ class TestDraftPipeline:
 
     @patch("src.orchestration.draft_pipeline.persist_drafts_by_entity_type")
     @patch("src.orchestration.draft_pipeline.build_exoplanet_article_draft")
-    def test_generate_exoplanet_drafts_empty_list(self, mock_build, mock_persist, mock_processor):
+    def test_generate_exoplanet_drafts_empty_list(
+        self, mock_build, mock_persist, mock_processor
+    ):
         """Test avec liste vide d'exoplanètes."""
         mock_processor.collect_all_exoplanets.return_value = []
 
@@ -111,7 +116,9 @@ class TestDraftPipeline:
 
     @patch("src.orchestration.draft_pipeline.persist_drafts_by_entity_type")
     @patch("src.orchestration.draft_pipeline.build_star_article_draft")
-    def test_generate_star_drafts_empty_list(self, mock_build, mock_persist, mock_processor):
+    def test_generate_star_drafts_empty_list(
+        self, mock_build, mock_persist, mock_processor
+    ):
         """Test avec liste vide d'étoiles."""
         mock_processor.collect_all_stars.return_value = []
 

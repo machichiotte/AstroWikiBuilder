@@ -32,6 +32,8 @@ def create_output_directories(
 
     if consolidated_dir:
         os.makedirs(consolidated_dir, exist_ok=True)
-        logger.info(f"Répertoires de sortie créés : {output_dir}, {drafts_dir}, {consolidated_dir}")
+        logger.info(
+            f"Répertoires de sortie créés : {output_dir}, {drafts_dir}, {consolidated_dir}"
+        )
     else:
         logger.info(f"Répertoires de sortie créés : {output_dir}, {drafts_dir}")
