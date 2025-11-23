@@ -104,3 +104,175 @@ class TestNasaExoplanetArchiveCollector:
         assert df is not None
         assert len(df) == 1
         mock_read_csv.assert_called_once()
+
+    def test_transform_row_to_exoplanet_success(self):
+        """Test de transformation réussie d'une ligne en Exoplanet."""
+        from src.models.entities.exoplanet_entity import Exoplanet
+
+        collector = NasaExoplanetArchiveCollector(use_mock_data=True)
+
+        # Créer une ligne de données valide
+        row = pd.Series(
+            {
+                "pl_name": "Kepler-186 f",
+                "hostname": "Kepler-186",
+                "discoverymethod": "Transit",
+                "disc_year": 2014,
+                "pl_orbper": 129.9,
+                "pl_rade": 1.17,
+            }
+        )
+
+        # Mocker le mapper pour retourner un objet Exoplanet valide
+        mock_exoplanet = Exoplanet(pl_name="Kepler-186 f", st_name="Kepler-186")
+        with patch.object(
+            collector.mapper,
+            "map_exoplanet_from_nea_record",
+            return_value=mock_exoplanet,
+        ):
+            result = collector.transform_row_to_exoplanet(row)
+
+            assert result is not None
+            assert result.pl_name == "Kepler-186 f"
+            assert result.st_name == "Kepler-186"
+
+    def test_transform_row_to_exoplanet_missing_name(self):
+        """Test de transformation avec nom manquant."""
+        collector = NasaExoplanetArchiveCollector(use_mock_data=True)
+
+        # Créer une ligne sans pl_name
+        row = pd.Series(
+            {
+                "pl_name": None,
+                "hostname": "Kepler-186",
+                "discoverymethod": "Transit",
+                "disc_year": 2014,
+            }
+        )
+
+        result = collector.transform_row_to_exoplanet(row)
+
+        assert result is None
+
+    def test_transform_row_to_exoplanet_empty_name(self):
+        """Test de transformation avec nom vide."""
+        collector = NasaExoplanetArchiveCollector(use_mock_data=True)
+
+        # Créer une ligne avec pl_name vide
+        row = pd.Series(
+            {
+                "pl_name": "",
+                "hostname": "Kepler-186",
+                "discoverymethod": "Transit",
+                "disc_year": 2014,
+            }
+        )
+
+        result = collector.transform_row_to_exoplanet(row)
+
+        assert result is None
+
+    def test_transform_row_to_exoplanet_mapper_exception(self):
+        """Test de gestion d'exception du mapper."""
+        collector = NasaExoplanetArchiveCollector(use_mock_data=True)
+
+        row = pd.Series(
+            {
+                "pl_name": "Test b",
+                "hostname": "Test",
+                "discoverymethod": "Transit",
+                "disc_year": 2014,
+            }
+        )
+
+        # Simuler une exception dans le mapper
+        with patch.object(
+            collector.mapper,
+            "map_exoplanet_from_nea_record",
+            side_effect=Exception("Mapper error"),
+        ):
+            result = collector.transform_row_to_exoplanet(row)
+            assert result is None
+
+    def test_transform_row_to_star_success(self):
+        """Test de transformation réussie d'une ligne en Star."""
+        from src.models.entities.star_entity import Star
+
+        collector = NasaExoplanetArchiveCollector(use_mock_data=True)
+
+        # Créer une ligne de données valide
+        row = pd.Series(
+            {
+                "hostname": "Kepler-186",
+                "st_teff": 3755,
+                "st_rad": 0.47,
+                "st_mass": 0.48,
+            }
+        )
+
+        # Mocker le mapper pour retourner un objet Star valide
+        mock_star = Star(st_name="Kepler-186")
+        with patch.object(
+            collector.mapper,
+            "map_star_from_nea_record",
+            return_value=mock_star,
+        ):
+            result = collector.transform_row_to_star(row)
+
+            assert result is not None
+            assert result.st_name == "Kepler-186"
+
+    def test_transform_row_to_star_missing_hostname(self):
+        """Test de transformation avec hostname manquant."""
+        collector = NasaExoplanetArchiveCollector(use_mock_data=True)
+
+        # Créer une ligne sans hostname
+        row = pd.Series(
+            {
+                "hostname": None,
+                "st_teff": 3755,
+                "st_rad": 0.47,
+            }
+        )
+
+        result = collector.transform_row_to_star(row)
+
+        assert result is None
+
+    def test_transform_row_to_star_empty_hostname(self):
+        """Test de transformation avec hostname vide."""
+        collector = NasaExoplanetArchiveCollector(use_mock_data=True)
+
+        # Créer une ligne avec hostname vide
+        row = pd.Series(
+            {
+                "hostname": "",
+                "st_teff": 3755,
+                "st_rad": 0.47,
+            }
+        )
+
+        result = collector.transform_row_to_star(row)
+
+        assert result is None
+
+    def test_transform_row_to_star_mapper_exception(self):
+        """Test de gestion d'exception du mapper pour Star."""
+        collector = NasaExoplanetArchiveCollector(use_mock_data=True)
+
+        row = pd.Series(
+            {
+                "hostname": "Test",
+                "st_teff": 3755,
+                "st_rad": 0.47,
+            }
+        )
+
+        # Simuler une exception dans le mapper
+        with patch.object(
+            collector.mapper,
+            "map_star_from_nea_record",
+            side_effect=Exception("Mapper error"),
+        ):
+            result = collector.transform_row_to_star(row)
+            assert result is None

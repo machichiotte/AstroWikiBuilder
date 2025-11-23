@@ -223,3 +223,109 @@ class TestBaseCollector:
 
         assert exoplanets == []
         assert stars == []
+
+    def test_read_csv_file_generic_exception(self, collector, temp_cache_dir):
+        """Test de gestion d'exception générique lors de la lecture CSV."""
+        csv_path = os.path.join(temp_cache_dir, "corrupt.csv")
+        # Créer un fichier corrompu qui causera une exception
+        with open(csv_path, "w") as f:
+            f.write("invalid,csv,content\n")
+            f.write("with,mismatched\n")  # Nombre de colonnes incorrect
+
+        with patch("pandas.read_csv", side_effect=Exception("Generic error")):
+            result = collector.read_csv_file(csv_path)
+            assert result is None
+
+    @patch("requests.get")
+    def test_fetch_and_cache_csv_data_write_error(self, mock_get, collector):
+        """Test de gestion d'erreur d'écriture du cache."""
+        mock_response = Mock()
+        mock_response.text = "name,mass\\ntest,1.0"
+        mock_response.raise_for_status = Mock()
+        mock_get.return_value = mock_response
+
+        # Simuler une erreur d'écriture
+        with patch("builtins.open", side_effect=OSError("Write error")):
+            result = collector.fetch_and_cache_csv_data()
+            assert result is None
+
+    def test_load_source_dataframe_mock_file_empty(self, collector, temp_cache_dir):
+        """Test de chargement avec mock_data mais fichier vide/non lisible."""
+        collector.use_mock_data = True
+        csv_path = collector.cache_path
+
+        # Créer un fichier vide
+        Path(csv_path).touch()
+
+        result = collector.load_source_dataframe()
+        assert result is None
+
+    @patch("requests.get")
+    def test_load_source_dataframe_cache_read_failure_then_download(
+        self, mock_get, collector, temp_cache_dir
+    ):
+        """Test de téléchargement après échec de lecture du cache."""
+        csv_path = collector.cache_path
+        # Créer un fichier cache corrompu
+        with open(csv_path, "w") as f:
+            f.write("corrupted data")
+
+        mock_response = Mock()
+        mock_response.text = "name,mass\\ntest,1.0"
+        mock_response.raise_for_status = Mock()
+        mock_get.return_value = mock_response
+
+        # Le cache existe mais est corrompu, donc on télécharge
+        with patch.object(collector, "read_csv_file", return_value=None):
+            result = collector.load_source_dataframe()
+            # Le résultat sera None car read_csv_file retourne None
+            assert result is None
+
+    @patch("requests.get")
+    def test_load_source_dataframe_fallback_to_cache_after_download_failure(
+        self, mock_get, collector, temp_cache_dir
+    ):
+        """Test de relecture du cache après échec du téléchargement."""
+        csv_path = collector.cache_path
+        df = pd.DataFrame({"name": ["test"], "mass": [1.0]})
+        df.to_csv(csv_path, index=False)
+
+        # Simuler un échec de téléchargement
+        mock_get.side_effect = requests.exceptions.RequestException("Network error")
+
+        # Le cache existe, donc on devrait le relire après l'échec
+        result = collector.load_source_dataframe()
+        assert result is not None
+        assert len(result) == 1
+
+    def test_extract_entities_from_dataframe_with_exception(self, collector):
+        """Test de gestion d'exception lors de l'extraction d'entités."""
+        df = pd.DataFrame(
+            {
+                "name": ["Planet1", "Planet2"],
+                "hostname": ["Star1", "Star2"],
+                "mass": [1.0, 2.0],
+            }
+        )
+
+        # Simuler une exception dans transform_row_to_exoplanet
+        with patch.object(
+            collector,
+            "transform_row_to_exoplanet",
+            side_effect=[Exception("Transform error"), None],
+        ):
+            exoplanets, stars = collector.extract_entities_from_dataframe(df)
+            # La première ligne échoue, la deuxième retourne None
+            assert len(exoplanets) == 0
+
+    def test_collect_entities_from_source_invalid_columns(self, collector, temp_cache_dir):
+        """Test de collecte avec colonnes invalides."""
+        csv_path = collector.cache_path
+        # Créer un CSV sans les colonnes requises
+        df = pd.DataFrame({"wrong_column": ["test"]})
+        df.to_csv(csv_path, index=False)
+
+        exoplanets, stars = collector.collect_entities_from_source()
+
+        assert exoplanets == []
+        assert stars == []

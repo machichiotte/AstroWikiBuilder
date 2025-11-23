@@ -62,7 +62,8 @@ class NasaExoplanetArchiveCollector(BaseCollector):
         try:
             nea_data_dict = row.to_dict()
             # S'assurer que les données essentielles sont présentes avant d'appeler le mapper.
-            if not nea_data_dict.get("pl_name"):
+            pl_name = nea_data_dict.get("pl_name")
+            if pd.isna(pl_name) or not pl_name:
                 logger.warning(
                     f"Exoplanet name (pl_name) is missing or empty for a row. Skipping exoplanet creation. Row data: {nea_data_dict}"
                 )
@@ -86,7 +87,8 @@ class NasaExoplanetArchiveCollector(BaseCollector):
         try:
             nea_data_dict = row.to_dict()
             # S'assurer que les données essentielles sont présentes avant d'appeler le mapper.
-            if not nea_data_dict.get("hostname"):
+            hostname = nea_data_dict.get("hostname")
+            if pd.isna(hostname) or not hostname:
                 logger.warning(
                     f"Star name (hostname) is missing or empty for a row. Skipping star creation. Row data: {nea_data_dict}"
                 )

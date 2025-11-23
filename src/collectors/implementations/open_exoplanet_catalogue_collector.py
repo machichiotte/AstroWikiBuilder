@@ -35,12 +35,12 @@ class OpenExoplanetCatalogueCollector(BaseCollector):
 
     def _set_orbital_characteristics(self, exoplanet: Exoplanet, row: pd.Series) -> None:
         for field, csv_field in [
-            ("semi_major_axis", "semimajoraxis"),
-            ("eccentricity", "eccentricity"),
-            ("orbital_period", "period"),
-            ("inclination", "inclination"),
-            ("argument_of_periastron", "longitudeofperiastron"),
-            ("periastron_time", "periastrontime"),
+            ("pl_semi_major_axis", "semimajoraxis"),
+            ("pl_eccentricity", "eccentricity"),
+            ("pl_orbital_period", "period"),
+            ("pl_inclination", "inclination"),
+            ("pl_argument_of_periastron", "longitudeofperiastron"),
+            ("pl_periastron_time", "periastrontime"),
         ]:
             value: float | None = self.convert_to_float_if_possible(row.get(csv_field))
             if value is not None:
@@ -48,9 +48,9 @@ class OpenExoplanetCatalogueCollector(BaseCollector):
 
     def _set_physical_characteristics(self, exoplanet: Exoplanet, row: pd.Series) -> None:
         for field, csv_field in [
-            ("mass", "mass"),
-            ("radius", "radius"),
-            ("temperature", "temperature"),
+            ("pl_mass", "mass"),
+            ("pl_radius", "radius"),
+            ("pl_temperature", "temperature"),
         ]:
             value = self.convert_to_float_if_possible(row.get(csv_field))
             if value is not None:
@@ -58,12 +58,12 @@ class OpenExoplanetCatalogueCollector(BaseCollector):
 
     def _set_star_info(self, exoplanet: Exoplanet, row: pd.Series) -> None:
         for field, csv_field in [
-            ("spectral_type", "spectraltype"),
-            ("star_temperature", "star_temperature"),
-            ("star_radius", "star_radius"),
-            ("star_mass", "star_mass"),
-            ("distance", "distance"),
-            ("apparent_magnitude", "apparentmagnitude"),
+            ("st_spectral_type", "spectraltype"),
+            ("st_temperature", "star_temperature"),
+            ("st_radius", "star_radius"),
+            ("st_mass", "star_mass"),
+            ("st_distance", "distance"),
+            ("st_apparent_magnitude", "apparentmagnitude"),
         ]:
             value = row.get(csv_field)
             if pd.notna(value):
