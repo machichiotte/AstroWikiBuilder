@@ -33,7 +33,7 @@ repos:
     hooks:
       - id: pytest-before-push
         name: Run pytest before pushing
-        entry: pytest
+        entry: poetry run pytest
         language: system
         pass_filenames: false
         stages: [pre-push]
