@@ -1,83 +1,90 @@
 # src/generators/articles/exoplanet/sections/formation_mechanism_section.py
 
+from collections.abc import Callable
+
 from src.models.entities.exoplanet_entity import Exoplanet
 from src.utils.formatters.article_formatter import ArticleFormatter
 
 
 class FormationMechanismSection:
-    """Génère la section mécanismes de formation pour les articles d'exoplanètes."""
-
     def __init__(self, article_util: ArticleFormatter):
         self.article_util = article_util
+        self.rules: dict[str, Callable[[Exoplanet], bool]] = {
+            "hot_jupiter": self._is_hot_jupiter,
+            "red_dwarf": self._is_red_dwarf_system,
+            "super_earth": self._is_super_earth_or_mini_neptune,
+            "eccentric": self._has_eccentric_orbit,
+        }
+
+        self.templates: dict[str, str] = {
+            "hot_jupiter": (
+                "Les modèles de formation planétaire suggèrent que cette exoplanète, "
+                "de par sa nature gazeuse et sa proximité extrême avec son étoile, ne "
+                "s'est probablement pas formée à sa position actuelle. Les théories de "
+                "[[migration planétaire]] proposent qu'elle se soit formée dans les "
+                "régions externes du système, avant de migrer vers l'intérieur par interaction "
+                "gravitationnelle avec le [[Disque protoplanétaire|disque protoplanétaire]].\n"
+            ),
+            "red_dwarf": (
+                "L'évolution de cette planète autour de [[{star}]], une [[naine rouge]], "
+                "présente des défis particuliers. L'[[activité stellaire]] intense, notamment "
+                "les [[éruption stellaire|éruptions]] fréquentes, peut éroder l'atmosphère "
+                "primitive. La [[zone habitable]] très proche induit un fort "
+                "[[verrouillage gravitationnel]].\n"
+            ),
+            "eccentric": (
+                "L'excentricité orbitale élevée de cette planète suggère des perturbations "
+                "gravitationnelles importantes. Ces orbites peuvent résulter d'interactions "
+                "dynamiques avec d'autres planètes, d'une migration induite par le disque, "
+                "ou de rencontres stellaires dans l'environnement de formation.\n"
+            ),
+            "super_earth": (
+                "Cette planète, classée parmi les [[super-Terre]]s ou [[mini-Neptune]]s, "
+                "soulève des questions sur les processus de formation. Elle pourrait être "
+                "un noyau rocheux massif avec une atmosphère épaisse, ou une planète riche "
+                "en volatils.\n"
+            ),
+        }
+
+    def _safe_float(self, value: object) -> float:
+        try:
+            return float(value)
+        except (ValueError, TypeError):
+            return 0.0
 
     def _is_hot_jupiter(self, exoplanet: Exoplanet) -> bool:
-        """Détermine si c'est un Hot Jupiter."""
-        is_massive = False
-        if exoplanet.pl_mass and exoplanet.pl_mass.value:
-            try:
-                mass_earth = float(exoplanet.pl_mass.value) * 318
-                is_massive = mass_earth > 30
-            except (ValueError, TypeError):
-                pass
-        is_large = False
-        if exoplanet.pl_radius and exoplanet.pl_radius.value:
-            try:
-                is_large = float(exoplanet.pl_radius.value) > 0.8
-            except (ValueError, TypeError):
-                pass
-        is_close = False
-        if exoplanet.pl_orbital_period and exoplanet.pl_orbital_period.value:
-            try:
-                is_close = float(exoplanet.pl_orbital_period.value) < 10
-            except (ValueError, TypeError):
-                pass
-        return (is_massive or is_large) and is_close
+        mass = self._safe_float(getattr(getattr(exoplanet, "pl_mass", None), "value", None)) * 318
+        radius = self._safe_float(getattr(getattr(exoplanet, "pl_radius", None), "value", None))
+        period = self._safe_float(
+            getattr(getattr(exoplanet, "pl_orbital_period", None), "value", None)
+        )
+
+        return ((mass > 30) or (radius > 0.8)) and period < 10
 
     def _is_red_dwarf_system(self, exoplanet: Exoplanet) -> bool:
-        """Détermine si l'étoile est une naine rouge."""
         if exoplanet.st_spectral_type and exoplanet.st_spectral_type.startswith("M"):
             return True
-        if exoplanet.st_mass and hasattr(exoplanet.st_mass, "value"):
-            try:
-                return float(exoplanet.st_mass.value) < 0.5
-            except (ValueError, TypeError):
-                pass
-        return False
+
+        mass = self._safe_float(getattr(getattr(exoplanet, "st_mass", None), "value", None))
+        return mass < 0.5
 
     def _is_super_earth_or_mini_neptune(self, exoplanet: Exoplanet) -> bool:
-        """Détermine si c'est une super-Terre ou mini-Neptune."""
-        if not exoplanet.pl_radius or not exoplanet.pl_radius.value:
-            return False
-        try:
-            radius_earth = float(exoplanet.pl_radius.value)
-            return 1.5 < radius_earth < 4.0
-        except (ValueError, TypeError):
-            return False
+        radius = self._safe_float(getattr(getattr(exoplanet, "pl_radius", None), "value", None))
+        return 1.5 < radius < 4.0
 
     def _has_eccentric_orbit(self, exoplanet: Exoplanet) -> bool:
-        """Détermine si l'orbite est fortement excentrique."""
-        if not exoplanet.pl_eccentricity or not exoplanet.pl_eccentricity.value:
-            return False
-        try:
-            return float(exoplanet.pl_eccentricity.value) > 0.3
-        except (ValueError, TypeError):
-            return False
+        eccentricity = self._safe_float(
+            getattr(getattr(exoplanet, "pl_eccentricity", None), "value", None)
+        )
+        return eccentricity > 0.3
 
     def generate(self, exoplanet: Exoplanet) -> str:
-        """Génère une section sur les mécanismes de formation (spéculatif)."""
-        is_hot_jupiter = self._is_hot_jupiter(exoplanet)
-        is_red_dwarf = self._is_red_dwarf_system(exoplanet)
-        is_super_earth = self._is_super_earth_or_mini_neptune(exoplanet)
-        is_eccentric = self._has_eccentric_orbit(exoplanet)
-        if not any([is_hot_jupiter, is_red_dwarf, is_super_earth, is_eccentric]):
+        matched_key = next((key for key, rule in self.rules.items() if rule(exoplanet)), None)
+        if not matched_key:
             return ""
-        section = "== Mécanismes de formation ==\n"
-        if is_hot_jupiter:
-            section += "Les modèles de formation planétaire suggèrent que cette exoplanète, de par sa nature gazeuse et sa proximité extrême avec son étoile, ne s'est probablement pas formée à sa position actuelle. Les théories de [[migration planétaire]] proposent qu'elle se soit formée dans les régions externes du système, où les températures permettent l'accumulation de gaz, avant de migrer vers l'intérieur par interaction gravitationnelle avec le [[Disque protoplanétaire|disque protoplanétaire]].\n"
-        elif is_red_dwarf:
-            section += f"L'évolution de cette planète autour de [[{exoplanet.st_name}]], une [[naine rouge]], présente des défis particuliers. L'[[activité stellaire]] intense des naines rouges, notamment les [[éruption stellaire|éruptions]] fréquentes, peut éroder l'atmosphère planétaire primitive. De plus, la [[zone habitable]] très proche de ces étoiles implique un fort [[verrouillage gravitationnel]], avec des conséquences importantes sur la circulation atmosphérique et le climat.\n"
-        elif is_eccentric:
-            section += "L'excentricité orbitale élevée de cette planète suggère qu'elle a subi des perturbations gravitationnelles importantes. De telles orbites excentriques peuvent résulter d'interactions dynamiques avec d'autres planètes du système, d'une migration induite par le disque, ou de rencontres stellaires dans l'environnement de formation.\n"
-        elif is_super_earth:
-            section += "La nature exacte de cette planète, située dans la catégorie des [[super-Terre]]s ou [[mini-Neptune]]s, reste débattue. Cette classe d'exoplanètes, rare dans notre Système solaire, soulève des questions sur les processus de formation. Il pourrait s'agir soit d'un noyau rocheux massif avec une atmosphère épaisse, soit d'une planète majoritairement composée de volatils.\n"
-        return section
+
+        template = self.templates[matched_key]
+
+        return "== Mécanismes de formation ==\n" + template.format(
+            star=exoplanet.st_name or "l'étoile hôte"
+        )
