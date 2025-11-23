@@ -122,3 +122,41 @@ class TestDraftPipeline:
 
         mock_build.assert_not_called()
         mock_persist.assert_called_once()
+
+    @patch("src.orchestration.draft_pipeline.logger")
+    @patch("src.orchestration.draft_pipeline.persist_drafts_by_entity_type")
+    @patch("src.orchestration.draft_pipeline.build_exoplanet_article_draft")
+    def test_generate_and_persist_exoplanet_drafts_invalid_object(
+        self, mock_build, mock_persist, mock_logger, mock_processor
+    ):
+        """Test avec un objet invalide dans la liste des exoplanètes (ligne 66)."""
+        # Objet qui a pl_name mais n'est pas une instance de Exoplanet
+        invalid_obj = Mock(spec=[])
+        invalid_obj.pl_name = "Invalid Object"
+        mock_processor.collect_all_exoplanets.return_value = [invalid_obj]
+
+        generate_and_persist_exoplanet_drafts(mock_processor, "drafts")
+
+        mock_build.assert_not_called()
+        mock_logger.warning.assert_called_once()
+        assert "Objet ignoré" in mock_logger.warning.call_args[0][0]
+        mock_persist.assert_called_once()
+
+    @patch("src.orchestration.draft_pipeline.logger")
+    @patch("src.orchestration.draft_pipeline.persist_drafts_by_entity_type")
+    @patch("src.orchestration.draft_pipeline.build_star_article_draft")
+    def test_generate_and_persist_star_drafts_invalid_object(
+        self, mock_build, mock_persist, mock_logger, mock_processor
+    ):
+        """Test avec un objet invalide dans la liste des étoiles (ligne 122)."""
+        # Objet qui a st_name mais n'est pas une instance de Star
+        invalid_obj = Mock(spec=[])
+        invalid_obj.st_name = "Invalid Star"
+        mock_processor.collect_all_stars.return_value = [invalid_obj]
+
+        generate_and_persist_star_drafts(mock_processor, "drafts")
+
+        mock_build.assert_not_called()
+        mock_logger.warning.assert_called_once()
+        assert "Objet ignoré" in mock_logger.warning.call_args[0][0]
+        mock_persist.assert_called_once()

@@ -101,7 +101,7 @@ def initialize_collectors(args: argparse.Namespace) -> dict[str, Any]:
     data_sources = [
         "nasa_exoplanet_archive",
         "exoplanet_eu",
-        "open_exoplanet_catalogue",
+        "open_exoplanet",
     ]
 
     for source in data_sources:
