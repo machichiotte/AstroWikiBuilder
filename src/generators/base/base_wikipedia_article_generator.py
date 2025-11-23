@@ -12,9 +12,7 @@ class BaseWikipediaArticleGenerator:
     Les sous-classes doivent se spécialiser pour un type d'objet (exoplanète, étoile, etc.).
     """
 
-    def __init__(
-        self, reference_manager, category_generator, stub_type: str, portals: list[str]
-    ):
+    def __init__(self, reference_manager, category_generator, stub_type: str, portals: list[str]):
         self.reference_manager = reference_manager
         self.category_generator = category_generator
         self.stub_type = stub_type

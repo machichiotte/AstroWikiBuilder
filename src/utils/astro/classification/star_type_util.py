@@ -146,9 +146,7 @@ class StarTypeUtil:
         types += StarTypeUtil._get_evolutionary_stages(spectral_class, luminosity)
         types += StarTypeUtil._get_variability_type(obj)
         types += StarTypeUtil._get_metallicity_type(obj)
-        types += StarTypeUtil._get_raw_spectral_type(
-            spectral_class, subtype, luminosity
-        )
+        types += StarTypeUtil._get_raw_spectral_type(spectral_class, subtype, luminosity)
         return types
 
     @staticmethod
@@ -164,18 +162,14 @@ class StarTypeUtil:
         return []
 
     @staticmethod
-    def _get_evolutionary_stages(
-        spectral_class: str, luminosity: str | None
-    ) -> list[str]:
+    def _get_evolutionary_stages(spectral_class: str, luminosity: str | None) -> list[str]:
         stages = []
         stage1 = StarTypeUtil.infer_evolutionary_stage_from_spectral_data(
             spectral_class, luminosity
         )
         if stage1:
             stages.append(stage1)
-        stage2 = StarTypeUtil.infer_evolutionary_stage_from_spectral_class(
-            spectral_class
-        )
+        stage2 = StarTypeUtil.infer_evolutionary_stage_from_spectral_class(spectral_class)
         if stage2:
             stages.append(stage2)
         return stages
@@ -237,9 +231,7 @@ class StarTypeUtil:
         )
         # Cas des naines blanches
         if class_letter in ["DC", "DQ", "DA", "DB", "WD", "DO", "DZ"]:
-            return STELLAR_EVOLUTION_MAP.get("VII", {}).get(
-                class_letter, "Naine blanche"
-            )
+            return STELLAR_EVOLUTION_MAP.get("VII", {}).get(class_letter, "Naine blanche")
         # Recherche progressive
         for lum_class, class_map in STELLAR_EVOLUTION_MAP.items():
             if lum_key.startswith(lum_class):

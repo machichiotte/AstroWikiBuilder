@@ -26,30 +26,22 @@ class HostStarSection:
         characteristics = []
 
         if exoplanet.st_spectral_type:
-            characteristics.append(
-                f"une étoile de type spectral {exoplanet.st_spectral_type}"
-            )
+            characteristics.append(f"une étoile de type spectral {exoplanet.st_spectral_type}")
 
         if exoplanet.st_mass and exoplanet.st_mass.value:
-            mass_str = self.article_util.format_uncertain_value_for_article(
-                exoplanet.st_mass
-            )
+            mass_str = self.article_util.format_uncertain_value_for_article(exoplanet.st_mass)
             if mass_str:
                 characteristics.append(
                     f"d'une masse de {mass_str} [[Masse solaire|''M''{{{{ind|☉}}}}]]"
                 )
 
         if exoplanet.st_metallicity and exoplanet.st_metallicity.value:
-            met_str = self.article_util.format_uncertain_value_for_article(
-                exoplanet.st_metallicity
-            )
+            met_str = self.article_util.format_uncertain_value_for_article(exoplanet.st_metallicity)
             if met_str:
                 characteristics.append(f"d'une métallicité de {met_str} [Fe/H]")
 
         if exoplanet.st_age and exoplanet.st_age.value:
-            age_str = self.article_util.format_uncertain_value_for_article(
-                exoplanet.st_age
-            )
+            age_str = self.article_util.format_uncertain_value_for_article(exoplanet.st_age)
             if age_str:
                 characteristics.append(f"âgée de {age_str} [[milliard]]s d'années")
 

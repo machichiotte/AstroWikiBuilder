@@ -60,9 +60,7 @@ class ExoplanetTypeUtil:
         insolation: float = self.compute_stellar_insolation(exoplanet)
 
         if m is not None and r is not None:
-            return self.classify_based_on_mass_radius_density(
-                m, r, d, exoplanet, insolation
-            )
+            return self.classify_based_on_mass_radius_density(m, r, d, exoplanet, insolation)
 
         if m is not None:
             return self.classify_planet_type_by_mass_only(m)
@@ -95,15 +93,11 @@ class ExoplanetTypeUtil:
             m >= self.CLASSIFICATION_LIMITS["mass"]["gas_giant_min"]
             or r >= self.CLASSIFICATION_LIMITS["radius"]["super_puff_min"]
         ):
-            return self.classify_giant_planet_by_temperature_or_insolation(
-                m, p, insolation
-            )
+            return self.classify_giant_planet_by_temperature_or_insolation(m, p, insolation)
 
         # Masse modérée mais faible densité → tendance gazeuse
         if d is not None and d < 2.0 and r > 1.5:
-            return self.classify_giant_planet_by_temperature_or_insolation(
-                m, p, insolation
-            )
+            return self.classify_giant_planet_by_temperature_or_insolation(m, p, insolation)
 
         # Masse modérée et densité moyenne ou élevée → tendance terrestre
         return self.classify_terrestrial_type_by_mass_and_radius(m, r)
@@ -115,10 +109,7 @@ class ExoplanetTypeUtil:
         semi_major_axis: float | None,
     ) -> str:
         """Classifie un Jupiter par température/insolation."""
-        if (
-            insolation
-            and insolation >= self.CLASSIFICATION_LIMITS["insolation"]["high"]
-        ):
+        if insolation and insolation >= self.CLASSIFICATION_LIMITS["insolation"]["high"]:
             return "Jupiter ultra-chaud"
 
         if temperature:

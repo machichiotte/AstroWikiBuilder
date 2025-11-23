@@ -10,9 +10,7 @@ class SystemArchitectureSection:
     def __init__(self, article_util: ArticleFormatter):
         self.article_util = article_util
 
-    def generate(
-        self, exoplanet: Exoplanet, system_planets: list[Exoplanet] = None
-    ) -> str:
+    def generate(self, exoplanet: Exoplanet, system_planets: list[Exoplanet] = None) -> str:
         """Génère la section sur l'architecture du système planétaire."""
         # Si on a la liste des planètes du système, on l'utilise pour enrichir le contenu
         if system_planets and len(system_planets) > 1:
@@ -60,9 +58,7 @@ class SystemArchitectureSection:
 
         # Trouver la position de la planète actuelle
         try:
-            current_index = [p.pl_name for p in sorted_planets].index(
-                current_planet.pl_name
-            )
+            current_index = [p.pl_name for p in sorted_planets].index(current_planet.pl_name)
             position_str = ""
             if current_index == 0:
                 position_str = "la plus interne"
@@ -71,22 +67,20 @@ class SystemArchitectureSection:
             else:
                 position_str = f"la {current_index + 1}e planète en partant de l'étoile"
 
-            section += (
-                f"[[{current_planet.pl_name}]] est {position_str} du système.\n\n"
-            )
+            section += f"[[{current_planet.pl_name}]] est {position_str} du système.\n\n"
         except ValueError:
             section += "\n\n"
 
         # Lister les autres planètes
-        other_planets = [
-            p.pl_name for p in sorted_planets if p.pl_name != current_planet.pl_name
-        ]
+        other_planets = [p.pl_name for p in sorted_planets if p.pl_name != current_planet.pl_name]
         if other_planets:
             others_links = [f"[[{name}]]" for name in other_planets]
             if len(others_links) == 1:
                 section += f"L'autre planète connue du système est {others_links[0]}.\n"
             else:
                 last = others_links.pop()
-                section += f"Les autres planètes du système sont {', '.join(others_links)} et {last}.\n"
+                section += (
+                    f"Les autres planètes du système sont {', '.join(others_links)} et {last}.\n"
+                )
 
         return section

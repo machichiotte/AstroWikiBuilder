@@ -28,9 +28,7 @@ class SeeAlsoSection:
         links = []
 
         if exoplanet.pl_name and exoplanet.pl_name.startswith("Kepler-"):
-            links.append(
-                "[[Kepler (télescope spatial)|''Kepler'' (télescope spatial)]]"
-            )
+            links.append("[[Kepler (télescope spatial)|''Kepler'' (télescope spatial)]]")
             links.append(
                 "[[Liste des planètes découvertes grâce au télescope spatial Kepler|"
                 "Liste des planètes découvertes grâce au télescope spatial ''Kepler'']]"

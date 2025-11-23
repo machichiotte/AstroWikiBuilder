@@ -21,4 +21,6 @@ def phrase_dans_constellation(name: str, with_bracket: bool = False) -> str:
 
 
 def phrase_situee_dans_constellation(name: str, with_bracket: bool = False) -> str:
-    return f"située dans la constellation {get_constellation_article(name, with_bracket=with_bracket)}"
+    return (
+        f"située dans la constellation {get_constellation_article(name, with_bracket=with_bracket)}"
+    )

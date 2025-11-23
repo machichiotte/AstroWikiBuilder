@@ -66,9 +66,7 @@ def build_star_article_draft(star: Star, exoplanets: list[Exoplanet] = None) -> 
     Si une liste d'exoplanètes est fournie, elle sera intégrée dans le contenu.
     """
     generator = StarWikipediaArticleGenerator()
-    content: str = generator.compose_wikipedia_article_content(
-        star, exoplanets=exoplanets
-    )
+    content: str = generator.compose_wikipedia_article_content(star, exoplanets=exoplanets)
     return content
 
 

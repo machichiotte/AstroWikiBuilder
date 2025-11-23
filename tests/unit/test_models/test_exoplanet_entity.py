@@ -24,12 +24,8 @@ class TestExoplanet:
         )
         return Exoplanet(
             pl_name="HD 209458 b",
-            pl_mass=ValueWithUncertainty(
-                value=0.69, error_positive=0.05, error_negative=0.05
-            ),
-            pl_radius=ValueWithUncertainty(
-                value=1.35, error_positive=0.05, error_negative=0.05
-            ),
+            pl_mass=ValueWithUncertainty(value=0.69, error_positive=0.05, error_negative=0.05),
+            pl_radius=ValueWithUncertainty(value=1.35, error_positive=0.05, error_negative=0.05),
             pl_orbital_period=ValueWithUncertainty(value=3.5247),
             disc_method="Transit",
             disc_year=1999,

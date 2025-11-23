@@ -63,9 +63,7 @@ def generate_and_persist_exoplanet_drafts(
                 exoplanet, system_planets=system_planets
             )
         else:
-            logger.warning(
-                f"Objet ignoré (type: {type(exoplanet)}) pour {exoplanet_name}"
-            )
+            logger.warning(f"Objet ignoré (type: {type(exoplanet)}) pour {exoplanet_name}")
 
     logger.info(f"Nombre total de brouillons générés: {len(exoplanet_drafts)}")
     persist_drafts_by_entity_type(
@@ -108,9 +106,7 @@ def generate_and_persist_star_drafts(
                 star_name = str(exoplanet.st_name)
                 exoplanets_by_star_name.setdefault(star_name, []).append(exoplanet)
 
-        logger.info(
-            f"Index créé pour {len(exoplanets_by_star_name)} étoiles avec exoplanètes"
-        )
+        logger.info(f"Index créé pour {len(exoplanets_by_star_name)} étoiles avec exoplanètes")
 
     star_drafts = {}
     for idx, star in enumerate(stars, 1):
@@ -121,9 +117,7 @@ def generate_and_persist_star_drafts(
                 logger.info(f"Progression: {idx}/{total} étoiles traitées...")
 
             star_exoplanets = exoplanets_by_star_name.get(star_name, [])
-            star_drafts[star_name] = build_star_article_draft(
-                star, exoplanets=star_exoplanets
-            )
+            star_drafts[star_name] = build_star_article_draft(star, exoplanets=star_exoplanets)
         else:
             logger.warning(f"Objet ignoré (type: {type(star)}) pour {star_name}")
 

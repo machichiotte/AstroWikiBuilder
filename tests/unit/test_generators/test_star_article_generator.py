@@ -38,12 +38,8 @@ class TestStarWikipediaArticleGenerator:
         # Mock all sub-generators to return simple strings
         generator.compose_stub_and_source = MagicMock(return_value="STUB")
         generator.infobox_section.generate = MagicMock(return_value="INFOBOX")
-        generator.introduction_section.compose_star_introduction = MagicMock(
-            return_value="INTRO"
-        )
-        generator.physical_characteristics_section.generate = MagicMock(
-            return_value="PHYSICAL"
-        )
+        generator.introduction_section.compose_star_introduction = MagicMock(return_value="INTRO")
+        generator.physical_characteristics_section.generate = MagicMock(return_value="PHYSICAL")
         generator.observation_section.generate = MagicMock(return_value="OBSERVATION")
         generator.environment_section.generate = MagicMock(return_value="ENVIRONMENT")
         generator.history_section.generate = MagicMock(return_value="HISTORY")

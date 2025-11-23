@@ -23,9 +23,7 @@ class BaseCollector(ABC):
         self.use_mock_data = use_mock_data
         self.reference_manager = ReferenceManager()
         self.last_update_date = datetime.now()
-        self.cache_path = os.path.join(
-            self.cache_dir, self.get_default_cache_filename()
-        )
+        self.cache_path = os.path.join(self.cache_dir, self.get_default_cache_filename())
 
     # ============================================================================
     # 🔶 Méthodes abstraites (contrat à implémenter dans les classes concrètes)
@@ -129,13 +127,9 @@ class BaseCollector(ABC):
             if os.path.exists(self.cache_path):
                 df = self.read_csv_file(self.cache_path)
                 if df is not None:
-                    logger.info(
-                        f"Fichier mock chargé: {self.cache_path} ({len(df)} lignes)"
-                    )
+                    logger.info(f"Fichier mock chargé: {self.cache_path} ({len(df)} lignes)")
                 else:
-                    logger.warning(
-                        f"Fichier mock vide ou non lisible: {self.cache_path}"
-                    )
+                    logger.warning(f"Fichier mock vide ou non lisible: {self.cache_path}")
                 return df
             else:
                 logger.error(f"Fichier mock introuvable: {self.cache_path}")

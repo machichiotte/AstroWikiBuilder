@@ -26,9 +26,7 @@ class ExoplanetRepository:
                 logger.warning("Skipping exoplanet with no name.")
                 continue
             if exoplanet.pl_name in self.exoplanets:
-                logger.debug(
-                    f"Merging data for existing exoplanet: {exoplanet.pl_name}"
-                )
+                logger.debug(f"Merging data for existing exoplanet: {exoplanet.pl_name}")
                 merged_count += 1
             else:
                 logger.debug(f"Adding new exoplanet: {exoplanet.pl_name}")

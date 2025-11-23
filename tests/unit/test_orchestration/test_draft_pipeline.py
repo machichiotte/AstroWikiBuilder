@@ -103,9 +103,7 @@ class TestDraftPipeline:
 
     @patch("src.orchestration.draft_pipeline.persist_drafts_by_entity_type")
     @patch("src.orchestration.draft_pipeline.build_exoplanet_article_draft")
-    def test_generate_exoplanet_drafts_empty_list(
-        self, mock_build, mock_persist, mock_processor
-    ):
+    def test_generate_exoplanet_drafts_empty_list(self, mock_build, mock_persist, mock_processor):
         """Test avec liste vide d'exoplanètes."""
         mock_processor.collect_all_exoplanets.return_value = []
 
@@ -116,9 +114,7 @@ class TestDraftPipeline:
 
     @patch("src.orchestration.draft_pipeline.persist_drafts_by_entity_type")
     @patch("src.orchestration.draft_pipeline.build_star_article_draft")
-    def test_generate_star_drafts_empty_list(
-        self, mock_build, mock_persist, mock_processor
-    ):
+    def test_generate_star_drafts_empty_list(self, mock_build, mock_persist, mock_processor):
         """Test avec liste vide d'étoiles."""
         mock_processor.collect_all_stars.return_value = []
 

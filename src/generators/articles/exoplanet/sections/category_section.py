@@ -36,9 +36,7 @@ class CategorySection:
     def map_planet_type_to_category(self, exoplanet: Exoplanet) -> str | None:
         """Règle personnalisée pour déterminer la catégorie de type de planète."""
         try:
-            planet_type: str = self.planet_type_util.determine_exoplanet_classification(
-                exoplanet
-            )
+            planet_type: str = self.planet_type_util.determine_exoplanet_classification(exoplanet)
             if planet_type:
                 mapping = (
                     self._category_rules_manager.rules.get("exoplanet", {})

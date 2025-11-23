@@ -24,12 +24,8 @@ class ObservationPotentialSection:
         if mag_value > 12:
             return ""
         section = "== Potentiel d'observation ==\n"
-        is_transiting = exoplanet.disc_method and "Transit" in str(
-            exoplanet.disc_method
-        )
-        has_transit_depth = (
-            exoplanet.pl_transit_depth and exoplanet.pl_transit_depth.value
-        )
+        is_transiting = exoplanet.disc_method and "Transit" in str(exoplanet.disc_method)
+        has_transit_depth = exoplanet.pl_transit_depth and exoplanet.pl_transit_depth.value
         if is_transiting and has_transit_depth and mag_value < 10:
             section += f"Grâce à la brillance de son étoile hôte (magnitude apparente de {mag_value:.1f}) et à sa méthode de détection par transit, cette exoplanète constitue une cible prometteuse pour la caractérisation atmosphérique par [[spectroscopie de transmission]]. De telles observations peuvent révéler la composition chimique de son atmosphère, notamment avec des instruments comme ceux du [[Télescope spatial James-Webb|JWST]].\n"
         elif mag_value < 10:

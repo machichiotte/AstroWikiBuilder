@@ -19,9 +19,7 @@ class CompositionSection:
         except (ValueError, TypeError):
             return ""
         section = "== Composition ==\n"
-        density_str = self.article_util.format_uncertain_value_for_article(
-            exoplanet.pl_density
-        )
+        density_str = self.article_util.format_uncertain_value_for_article(exoplanet.pl_density)
         if density_value > 5.0:
             section += f"Avec une densité de {density_str} g/cm³, cette exoplanète présente une composition probablement [[Planète tellurique|tellurique]].\n"
         elif density_value > 3.0:

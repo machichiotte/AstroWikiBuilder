@@ -17,9 +17,7 @@ class StarRepository:
         Le paramètre 'source_system' indique le système ou le lot d'où proviennent ces données,
         pas nécessairement la 'SourceType' d'une donnée individuelle.
         """
-        logger.info(
-            f"Attempting to add {len(stars)} stars from source system: {source_system}..."
-        )
+        logger.info(f"Attempting to add {len(stars)} stars from source system: {source_system}...")
         added_count = 0
         merged_count = 0
         for star in stars:

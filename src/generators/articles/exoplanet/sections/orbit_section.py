@@ -34,10 +34,8 @@ class OrbitSection:
                 )
 
         if exoplanet.pl_eccentricity:
-            eccentricity_str: str = (
-                self.article_util.format_uncertain_value_for_article(
-                    exoplanet.pl_eccentricity
-                )
+            eccentricity_str: str = self.article_util.format_uncertain_value_for_article(
+                exoplanet.pl_eccentricity
             )
             if eccentricity_str:
                 content.append(f"L'orbite a une excentricité de {eccentricity_str}.")
@@ -47,9 +45,7 @@ class OrbitSection:
                 exoplanet.pl_orbital_period
             )
             if period_str:
-                content.append(
-                    f"La période orbitale est de {period_str} [[jour|jours]]."
-                )
+                content.append(f"La période orbitale est de {period_str} [[jour|jours]].")
 
         if exoplanet.pl_inclination:
             inclination_str: str = self.article_util.format_uncertain_value_for_article(

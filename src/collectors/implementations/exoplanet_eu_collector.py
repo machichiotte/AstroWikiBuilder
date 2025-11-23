@@ -13,9 +13,7 @@ logger: logging.Logger = logging.getLogger(__name__)
 
 
 class ExoplanetEUCollector(BaseCollector):
-    def __init__(
-        self, cache_dir: str = "data/cache/exoplanet_eu", use_mock_data: bool = False
-    ):
+    def __init__(self, cache_dir: str = "data/cache/exoplanet_eu", use_mock_data: bool = False):
         super().__init__(cache_dir, use_mock_data)
 
     def get_default_cache_filename(self) -> str:
@@ -36,9 +34,7 @@ class ExoplanetEUCollector(BaseCollector):
     def get_csv_reader_options(self) -> dict[str, Any]:
         return {"comment": "#"}
 
-    def _set_orbital_characteristics(
-        self, exoplanet: Exoplanet, row: pd.Series
-    ) -> None:
+    def _set_orbital_characteristics(self, exoplanet: Exoplanet, row: pd.Series) -> None:
         for field, csv_field in [
             ("semi_major_axis", "semi_major_axis"),
             ("eccentricity", "eccentricity"),
@@ -51,9 +47,7 @@ class ExoplanetEUCollector(BaseCollector):
             if value is not None:
                 setattr(exoplanet, field, ValueWithUncertainty(value=value))
 
-    def _set_physical_characteristics(
-        self, exoplanet: Exoplanet, row: pd.Series
-    ) -> None:
+    def _set_physical_characteristics(self, exoplanet: Exoplanet, row: pd.Series) -> None:
         for field, csv_field in [
             ("mass", "mass"),
             ("radius", "radius"),

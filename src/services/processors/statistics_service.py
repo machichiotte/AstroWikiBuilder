@@ -12,18 +12,12 @@ class StatisticsService:
     def __init__(self):
         logger.info("StatisticsService initialized.")
 
-    def _update_discovery_methods_stats(
-        self, exoplanet: Exoplanet, stats: dict[str, Any]
-    ) -> None:
+    def _update_discovery_methods_stats(self, exoplanet: Exoplanet, stats: dict[str, Any]) -> None:
         if exoplanet.disc_method:
             method: str = exoplanet.disc_method
-            stats["discovery_methods"][method] = (
-                stats["discovery_methods"].get(method, 0) + 1
-            )
+            stats["discovery_methods"][method] = stats["discovery_methods"].get(method, 0) + 1
 
-    def _update_discovery_years_stats(
-        self, exoplanet: Exoplanet, stats: dict[str, Any]
-    ) -> None:
+    def _update_discovery_years_stats(self, exoplanet: Exoplanet, stats: dict[str, Any]) -> None:
         if exoplanet.disc_year:
             year: int = int(exoplanet.disc_year)
             stats["discovery_years"][year] = stats["discovery_years"].get(year, 0) + 1
@@ -40,9 +34,7 @@ class StatisticsService:
         else:
             ranges_dict["10+"] += 1
 
-    def generate_statistics_exoplanet(
-        self, exoplanets: list[Exoplanet]
-    ) -> dict[str, Any]:
+    def generate_statistics_exoplanet(self, exoplanets: list[Exoplanet]) -> dict[str, Any]:
         """Génère les statistiques pour les exoplanètes"""
         logger.info(f"Generating statistics for {len(exoplanets)} exoplanets.")
         stats = {
@@ -75,9 +67,7 @@ class StatisticsService:
 
             # Plages de rayon
             if exoplanet.pl_radius and exoplanet.pl_radius.value:
-                self._update_range_stats(
-                    exoplanet.pl_radius.value, stats["radius_ranges"]
-                )
+                self._update_range_stats(exoplanet.pl_radius.value, stats["radius_ranges"])
 
         logger.info("Statistics generation for exoplanets complete.")
         return stats
@@ -106,9 +96,7 @@ class StatisticsService:
             # Statistiques par type spectral
             if star.st_spectral_type:
                 spectral = str(star.st_spectral_type)
-                stats["spectral_types"][spectral] = (
-                    stats["spectral_types"].get(spectral, 0) + 1
-                )
+                stats["spectral_types"][spectral] = stats["spectral_types"].get(spectral, 0) + 1
 
             # Statistiques par année de découverte
             if hasattr(star, "disc_year") and star.disc_year and star.disc_year.value:

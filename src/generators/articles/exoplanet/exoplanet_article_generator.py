@@ -61,9 +61,7 @@ class ExoplanetWikipediaArticleGenerator(BaseWikipediaArticleGenerator):
         self.introduction_section = IntroductionSection(comparison_util, article_util)
         self.host_star_section = HostStarSection(article_util)
         self.discovery_section = DiscoverySection(article_util)
-        self.physical_characteristics_section = PhysicalCharacteristicsSection(
-            article_util
-        )
+        self.physical_characteristics_section = PhysicalCharacteristicsSection(article_util)
         self.composition_section = CompositionSection(article_util)
         self.orbit_section = OrbitSection(article_util)
         self.insolation_section = InsolationSection(article_util)
@@ -142,9 +140,7 @@ class ExoplanetWikipediaArticleGenerator(BaseWikipediaArticleGenerator):
         """
         return self.category_section.generate(exoplanet)
 
-    def replace_first_reference_with_full(
-        self, content: str, exoplanet: Exoplanet
-    ) -> str:
+    def replace_first_reference_with_full(self, content: str, exoplanet: Exoplanet) -> str:
         """
         Remplace uniquement la première référence courte par sa version complète.
         """

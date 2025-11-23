@@ -33,9 +33,7 @@ class OpenExoplanetCatalogueCollector(BaseCollector):
 
     # _get_csv_reader_kwargs n'a pas besoin d'être surchargé si le CSV OEC n'a pas de commentaires spéciaux
 
-    def _set_orbital_characteristics(
-        self, exoplanet: Exoplanet, row: pd.Series
-    ) -> None:
+    def _set_orbital_characteristics(self, exoplanet: Exoplanet, row: pd.Series) -> None:
         for field, csv_field in [
             ("semi_major_axis", "semimajoraxis"),
             ("eccentricity", "eccentricity"),
@@ -48,9 +46,7 @@ class OpenExoplanetCatalogueCollector(BaseCollector):
             if value is not None:
                 setattr(exoplanet, field, ValueWithUncertainty(value=value))
 
-    def _set_physical_characteristics(
-        self, exoplanet: Exoplanet, row: pd.Series
-    ) -> None:
+    def _set_physical_characteristics(self, exoplanet: Exoplanet, row: pd.Series) -> None:
         for field, csv_field in [
             ("mass", "mass"),
             ("radius", "radius"),

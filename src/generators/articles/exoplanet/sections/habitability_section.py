@@ -35,9 +35,7 @@ class HabitabilitySection:
             section += "Les conditions d'habitabilité de cette exoplanète ne sont pas déterminées ou ne sont pas connues.\n"
             return section
 
-        temp_str = self.article_util.format_uncertain_value_for_article(
-            exoplanet.pl_temperature
-        )
+        temp_str = self.article_util.format_uncertain_value_for_article(exoplanet.pl_temperature)
 
         if temp_val > 395:
             section += (

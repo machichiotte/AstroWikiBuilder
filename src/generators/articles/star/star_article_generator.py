@@ -65,9 +65,7 @@ class StarWikipediaArticleGenerator(BaseWikipediaArticleGenerator):
         self.star_type_util = StarTypeUtil()
 
         # Initialize granular sections
-        self.physical_characteristics_section = PhysicalCharacteristicsSection(
-            self.article_util
-        )
+        self.physical_characteristics_section = PhysicalCharacteristicsSection(self.article_util)
         self.observation_section = ObservationSection(self.article_util)
         self.environment_section = EnvironmentSection()
         self.history_section = HistorySection()
@@ -99,9 +97,7 @@ class StarWikipediaArticleGenerator(BaseWikipediaArticleGenerator):
         ]
         return "\n\n".join(filter(None, parts))
 
-    def _compose_main_content(
-        self, star: Star, exoplanets: list[Exoplanet] | None
-    ) -> str:
+    def _compose_main_content(self, star: Star, exoplanets: list[Exoplanet] | None) -> str:
         """
         Compose le contenu principal de l'article en appelant toutes les sections de contenu.
         """
@@ -157,7 +153,5 @@ class StarWikipediaArticleGenerator(BaseWikipediaArticleGenerator):
         if not gender:
             return None
 
-        formatted_constellation = phrase_de_la_constellation(
-            star.sy_constellation.strip()
-        )
+        formatted_constellation = phrase_de_la_constellation(star.sy_constellation.strip())
         return f"{{{{Palette|Étoiles {formatted_constellation}}}}}\n"

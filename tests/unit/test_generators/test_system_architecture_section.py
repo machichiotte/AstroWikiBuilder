@@ -55,9 +55,7 @@ class TestSystemArchitectureSection:
         assert "== Architecture du système ==" in result_c
         assert "compte au moins 3 planètes confirmées" in result_c
         assert "[[Star c]] est la 2e planète en partant de l'étoile" in result_c
-        assert (
-            "Les autres planètes du système sont [[Star b]] et [[Star d]]" in result_c
-        )
+        assert "Les autres planètes du système sont [[Star b]] et [[Star d]]" in result_c
 
     def test_generate_with_siblings_position_first(self, section):
         """Test position 'plus interne'."""

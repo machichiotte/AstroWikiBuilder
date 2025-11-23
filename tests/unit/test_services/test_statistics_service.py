@@ -134,9 +134,7 @@ class TestStatisticsService:
             reference=ref,
         )
 
-        stats = service.generate_statistics_exoplanet(
-            [exo_light, exo_medium, exo_heavy]
-        )
+        stats = service.generate_statistics_exoplanet([exo_light, exo_medium, exo_heavy])
 
         assert "mass_ranges" in stats
         assert stats["mass_ranges"]["0-1"] == 1

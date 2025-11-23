@@ -37,14 +37,10 @@ def fetch_and_ingest_data(collectors: dict[str, Any], processor: DataProcessor) 
 
             # Validation des types
             if not isinstance(exoplanets, list):
-                raise TypeError(
-                    f"Exoplanets doit être une liste, reçu {type(exoplanets)}"
-                )
+                raise TypeError(f"Exoplanets doit être une liste, reçu {type(exoplanets)}")
 
             if stars is not None and not isinstance(stars, list):
-                raise TypeError(
-                    f"Stars doit être une liste ou None, reçu {type(stars)}"
-                )
+                raise TypeError(f"Stars doit être une liste ou None, reçu {type(stars)}")
 
         except Exception as e:
             logger.warning(f"Erreur lors de la collecte depuis {source_name}: {e}")
@@ -62,9 +58,7 @@ def fetch_and_ingest_data(collectors: dict[str, Any], processor: DataProcessor) 
             logger.info(f"Aucune étoile récupérée depuis {source_name}.")
 
 
-def export_consolidated_data(
-    processor: DataProcessor, output_dir: str, timestamp: str
-) -> None:
+def export_consolidated_data(processor: DataProcessor, output_dir: str, timestamp: str) -> None:
     """
     Exporte les données consolidées au format CSV.
 
@@ -75,9 +69,7 @@ def export_consolidated_data(
     """
     logger.info("Export des données consolidées...")
     try:
-        consolidated_path = (
-            f"{output_dir}/consolidated/exoplanets_consolidated_{timestamp}.csv"
-        )
+        consolidated_path = f"{output_dir}/consolidated/exoplanets_consolidated_{timestamp}.csv"
         processor.export_all_exoplanets("csv", consolidated_path)
     except Exception as e:
         logger.error(f"Erreur lors de l'export des données consolidées : {e}")
@@ -103,9 +95,7 @@ def generate_and_export_statistics(
     """
     # Génération des statistiques
     stats = {
-        "exoplanet": stat_service.generate_statistics_exoplanet(
-            processor.collect_all_exoplanets()
-        ),
+        "exoplanet": stat_service.generate_statistics_exoplanet(processor.collect_all_exoplanets()),
         "star": stat_service.generate_statistics_star(processor.collect_all_stars()),
     }
 
@@ -131,9 +121,7 @@ def _log_statistics(stats: dict[str, Any]) -> None:
     logger.info(f"  Total : {stats.get('exoplanet', {}).get('total', 0)}")
 
     logger.info("  Par méthode de découverte :")
-    for method, count in (
-        stats.get("exoplanet", {}).get("discovery_methods", {}).items()
-    ):
+    for method, count in stats.get("exoplanet", {}).get("discovery_methods", {}).items():
         logger.info(f"    - {method} : {count}")
 
     logger.info("  Par année de découverte :")
@@ -148,9 +136,7 @@ def _log_statistics(stats: dict[str, Any]) -> None:
         logger.info(f"    - {range_name} : {count}")
 
     logger.info("  Par plage de rayon (RJ) :")
-    for range_name, count in (
-        stats.get("exoplanet", {}).get("radius_ranges", {}).items()
-    ):
+    for range_name, count in stats.get("exoplanet", {}).get("radius_ranges", {}).items():
         logger.info(f"    - {range_name} : {count}")
 
     # Statistiques des étoiles
@@ -166,9 +152,7 @@ def _log_statistics(stats: dict[str, Any]) -> None:
         logger.info(f"    - {source} : {count}")
 
 
-def _export_statistics_json(
-    stats: dict[str, Any], output_dir: str, timestamp: str
-) -> None:
+def _export_statistics_json(stats: dict[str, Any], output_dir: str, timestamp: str) -> None:
     """
     Sauvegarde les statistiques dans un fichier JSON.
 

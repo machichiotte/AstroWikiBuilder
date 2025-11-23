@@ -141,9 +141,7 @@ class NasaExoplanetArchiveMapper:
     # ============================================================================
     # UTILITAIRES DE MAPPING ET DE FORMATAGE
     # ============================================================================
-    def build_reference_from_nea(
-        self, nea_data: NEA_ENTITY, isPlanet: False
-    ) -> Reference:
+    def build_reference_from_nea(self, nea_data: NEA_ENTITY, isPlanet: False) -> Reference:
         """Crée une référence NEA pour les points de données."""
         return Reference(
             source=SourceType.NEA,
@@ -259,9 +257,7 @@ class NasaExoplanetArchiveMapper:
     def is_composite_formatted_string(self, raw_value: str) -> bool:
         """Heuristique pour détecter si une chaîne contient une valeur composite (HTML, entités HTML, etc.)"""
         raw_value = raw_value.strip()
-        return any(
-            sub in raw_value for sub in ("<span", "<div", "&plusmn", "&gt", "&lt")
-        )
+        return any(sub in raw_value for sub in ("<span", "<div", "&plusmn", "&gt", "&lt"))
 
     def _parse_plusmn_value(self, epoch_str_val: str) -> ValueWithUncertainty | None:
         try:

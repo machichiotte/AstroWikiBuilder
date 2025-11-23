@@ -139,9 +139,7 @@ def _get_collector_instance(source: str, use_mock: bool, cache_path: str) -> Any
     elif source == "exoplanet_eu":
         return ExoplanetEUCollector(cache_dir=cache_path, use_mock_data=use_mock)
     elif source == "open_exoplanet":
-        return OpenExoplanetCatalogueCollector(
-            cache_dir=cache_path, use_mock_data=use_mock
-        )
+        return OpenExoplanetCatalogueCollector(cache_dir=cache_path, use_mock_data=use_mock)
     else:
         raise ValueError(f"Source inconnue : {source}")
 

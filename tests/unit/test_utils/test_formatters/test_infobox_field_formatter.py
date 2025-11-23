@@ -21,9 +21,7 @@ class TestFieldFormatter:
 
     def test_format_error_number_with_both_errors(self):
         """Test de formatage avec erreurs positive et négative."""
-        value = ValueWithUncertainty(
-            value=1.234, error_positive=0.05, error_negative=0.03
-        )
+        value = ValueWithUncertainty(value=1.234, error_positive=0.05, error_negative=0.03)
         result = InboxFieldFormatter._format_error_number(value)
         assert "1.23" in result
         assert "{{±|0.05|0.03}}" in result
@@ -44,9 +42,7 @@ class TestFieldFormatter:
 
     def test_format_error_number_without_errors(self):
         """Test de formatage sans erreurs."""
-        value = ValueWithUncertainty(
-            value=4.5, error_positive=None, error_negative=None
-        )
+        value = ValueWithUncertainty(value=4.5, error_positive=None, error_negative=None)
         result = InboxFieldFormatter._format_error_number(value)
         assert result == "4.50"
 
@@ -179,9 +175,7 @@ class TestFieldFormatter:
         """Test de traitement d'un champ avec référence."""
         mapping = FieldMapping(source_attribute="pl_mass", infobox_field="mass")
         value = ValueWithUncertainty(value=1.5)
-        result = formatter.process_field(
-            value, mapping, ["mass"], wiki_reference="<ref>Test</ref>"
-        )
+        result = formatter.process_field(value, mapping, ["mass"], wiki_reference="<ref>Test</ref>")
         assert "mass" in result
         assert "mass notes" in result
         assert "<ref>Test</ref>" in result

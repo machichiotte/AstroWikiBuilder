@@ -138,16 +138,12 @@ class TestExoplanetSections:
         section = PhysicalCharacteristicsSection(article_formatter)
 
         # Rayon compact
-        exo_compact = Exoplanet(
-            pl_name="Compact", pl_radius=ValueWithUncertainty(value=0.3)
-        )
+        exo_compact = Exoplanet(pl_name="Compact", pl_radius=ValueWithUncertainty(value=0.3))
         result_compact = section.generate(exo_compact)
         assert "compact" in result_compact
 
         # Rayon étendu
-        exo_extended = Exoplanet(
-            pl_name="Extended", pl_radius=ValueWithUncertainty(value=2.0)
-        )
+        exo_extended = Exoplanet(pl_name="Extended", pl_radius=ValueWithUncertainty(value=2.0))
         result_extended = section.generate(exo_extended)
         assert "étendu" in result_extended
 
@@ -156,23 +152,17 @@ class TestExoplanetSections:
         section = PhysicalCharacteristicsSection(article_formatter)
 
         # Température élevée
-        exo_hot = Exoplanet(
-            pl_name="Hot", pl_temperature=ValueWithUncertainty(value=800)
-        )
+        exo_hot = Exoplanet(pl_name="Hot", pl_temperature=ValueWithUncertainty(value=800))
         result_hot = section.generate(exo_hot)
         assert "élevée" in result_hot
 
         # Température extrême
-        exo_extreme = Exoplanet(
-            pl_name="Extreme", pl_temperature=ValueWithUncertainty(value=1500)
-        )
+        exo_extreme = Exoplanet(pl_name="Extreme", pl_temperature=ValueWithUncertainty(value=1500))
         result_extreme = section.generate(exo_extreme)
         assert "extrême" in result_extreme
 
     # Tests pour DiscoverySection
-    def test_discovery_section_complete(
-        self, article_formatter, exoplanet_with_discovery
-    ):
+    def test_discovery_section_complete(self, article_formatter, exoplanet_with_discovery):
         """Test de la section découverte complète."""
         section = DiscoverySection(article_formatter)
         result = section.generate(exoplanet_with_discovery)
@@ -235,9 +225,7 @@ class TestExoplanetSections:
 
     def test_habitability_section_too_hot(self, article_formatter):
         """Test habitabilité trop chaud."""
-        exoplanet = Exoplanet(
-            pl_name="Hot b", pl_temperature=ValueWithUncertainty(value=500)
-        )
+        exoplanet = Exoplanet(pl_name="Hot b", pl_temperature=ValueWithUncertainty(value=500))
         section = HabitabilitySection(article_formatter)
         result = section.generate(exoplanet)
         assert "trop chaude" in result
@@ -245,9 +233,7 @@ class TestExoplanetSections:
 
     def test_habitability_section_too_cold(self, article_formatter):
         """Test habitabilité trop froid."""
-        exoplanet = Exoplanet(
-            pl_name="Cold b", pl_temperature=ValueWithUncertainty(value=100)
-        )
+        exoplanet = Exoplanet(pl_name="Cold b", pl_temperature=ValueWithUncertainty(value=100))
         section = HabitabilitySection(article_formatter)
         result = section.generate(exoplanet)
         assert "trop froide" in result
@@ -255,9 +241,7 @@ class TestExoplanetSections:
 
     def test_habitability_section_habitable(self, article_formatter):
         """Test zone habitable théorique."""
-        exoplanet = Exoplanet(
-            pl_name="Earth 2.0", pl_temperature=ValueWithUncertainty(value=288)
-        )
+        exoplanet = Exoplanet(pl_name="Earth 2.0", pl_temperature=ValueWithUncertainty(value=288))
         section = HabitabilitySection(article_formatter)
         result = section.generate(exoplanet)
         assert "zone habitable" in result
