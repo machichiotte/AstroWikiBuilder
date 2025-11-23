@@ -124,12 +124,13 @@ class TestStarSections:
         assert "{{Système planétaire début" in content
         assert "{{Système planétaire" in content
         assert "Kepler-186 f" in content
-        assert "1.50" in content
-        assert "1.10" in content
-        assert "0.40" in content
-        assert "129.90" in content
-        assert "0.040" in content
-        assert "89.90" in content
+        # French decimal format uses commas
+        assert "1,5" in content  # masse
+        assert "1,1" in content  # rayon
+        assert "0,4" in content  # demi-grand axe
+        assert "129,9" in content  # période
+        assert "0,04" in content  # excentricité
+        assert "89,9" in content  # inclinaison
         assert "{{Système planétaire fin}}" in content
 
     def test_map_constellation_to_category(self, mock_star):

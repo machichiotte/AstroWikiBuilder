@@ -26,11 +26,20 @@ class PlanetarySystemSection:
         section += f"| nom = {star_name}\n"
         section += "}}\n"
 
-        # Templates pour chaque exoplanète
-        # Trier les exoplanètes par nom alphabétique avant de les ajouter à la section
-        exoplanets.sort(key=lambda exoplanet: exoplanet.pl_name)
+        # Trier les exoplanètes par demi-grand axe (distance orbitale)
+        # Si pas de demi-grand axe, utiliser le nom comme clé de tri secondaire
+        def sort_key(exo):
+            if exo.pl_semi_major_axis and exo.pl_semi_major_axis.value:
+                try:
+                    return (0, float(exo.pl_semi_major_axis.value))
+                except (ValueError, TypeError):
+                    pass
+            return (1, exo.pl_name)
 
-        for exoplanet in exoplanets:
+        sorted_exoplanets = sorted(exoplanets, key=sort_key)
+
+        # Templates pour chaque exoplanète
+        for exoplanet in sorted_exoplanets:
             section += self._generate_planet_template(exoplanet)
 
         # Template de fin
@@ -57,26 +66,11 @@ class PlanetarySystemSection:
         template += f"| demi grand axe = {axis_str}\n"
 
         # Période
-        period_str = ""
-        if exoplanet.pl_orbital_period and exoplanet.pl_orbital_period.value is not None:
-            try:
-                period = float(exoplanet.pl_orbital_period.value)
-                if period.is_integer():
-                    period_str = f"{int(period)}"
-                else:
-                    period_str = f"{period:.2f}"
-            except (ValueError, TypeError):
-                pass
+        period_str = self._format_field_with_uncertainty(exoplanet.pl_orbital_period)
         template += f"| période = {period_str}\n"
 
         # Excentricité
-        ecc_str = ""
-        if exoplanet.pl_eccentricity and exoplanet.pl_eccentricity.value is not None:
-            try:
-                ecc = float(exoplanet.pl_eccentricity.value)
-                ecc_str = f"{ecc:.3f}"
-            except (ValueError, TypeError):
-                pass
+        ecc_str = self._format_field_with_uncertainty(exoplanet.pl_eccentricity, precision=3)
         template += f"| excentricité = {ecc_str}\n"
 
         # Inclinaison
@@ -86,8 +80,8 @@ class PlanetarySystemSection:
         template += "}}\n"
         return template
 
-    def _format_field_with_uncertainty(self, value_obj) -> str:
-        """Helper to format a value with its uncertainty."""
+    def _format_field_with_uncertainty(self, value_obj, precision: int = 4) -> str:
+        """Helper to format a value with its uncertainty using French format."""
         if value_obj and value_obj.value is not None:
             try:
                 val = float(value_obj.value)
@@ -95,6 +89,7 @@ class PlanetarySystemSection:
                     val,
                     value_obj.error_positive,
                     value_obj.error_negative,
+                    precision,
                 )
             except (ValueError, TypeError):
                 pass
@@ -105,18 +100,46 @@ class PlanetarySystemSection:
         value: float,
         error_positive: float | None,
         error_negative: float | None,
+        precision: int = 4,
     ) -> str:
         """
-        Formate une valeur avec ses incertitudes selon les cas possibles.
+        Formate une valeur avec ses incertitudes selon les standards Wikipedia français.
+        Utilise le template {{±}} et la virgule comme séparateur décimal.
         """
+        # Formater la valeur principale avec virgule française
+        value_str = self._to_french_decimal(value, precision)
+
         if error_positive is not None and error_negative is not None:
+            err_pos_str = self._to_french_decimal(error_positive, precision)
+            err_neg_str = self._to_french_decimal(error_negative, precision)
+
             if error_positive == error_negative:
-                return f"{value:.2f} ± {error_positive:.2f}"
+                # Utiliser le template {{±|erreur}}
+                return f"{value_str} {{{{±|{err_pos_str}}}}}"
             else:
-                return f"{value:.2f} +{error_positive:.2f} -{error_negative:.2f}"
+                # Utiliser le template {{±|erreur_positive|erreur_négative}}
+                return f"{value_str} {{{{±|{err_pos_str}|{err_neg_str}}}}}"
         elif error_positive is not None:
-            return f"{value:.2f} +{error_positive:.2f}"
+            err_pos_str = self._to_french_decimal(error_positive, precision)
+            return f"{value_str} +{err_pos_str}"
         elif error_negative is not None:
-            return f"{value:.2f} -{error_negative:.2f}"
+            err_neg_str = self._to_french_decimal(error_negative, precision)
+            return f"{value_str} -{err_neg_str}"
         else:
-            return f"{value:.2f}"
+            return value_str
+
+    def _to_french_decimal(self, value: float, precision: int = 4) -> str:
+        """
+        Convertit un nombre en format français (virgule comme séparateur décimal).
+        Supprime les zéros inutiles à droite.
+        """
+        # Formater avec la précision demandée
+        formatted = f"{value:.{precision}f}"
+
+        # Supprimer les zéros inutiles à droite
+        formatted = formatted.rstrip("0").rstrip(".")
+
+        # Remplacer le point par une virgule
+        formatted = formatted.replace(".", ",")
+
+        return formatted
