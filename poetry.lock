@@ -1763,4 +1763,4 @@ requests = ">=2.0.0,<3.0.0"
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.13,<4.0"
-content-hash = "6a462d5e70685a881b87e19780e88ed5f325f3aaf06229653e1f29ad1b9741a5"
+content-hash = "22b6b08ed4c7c375abf33c88f3decfc42eb2e1e20b308876e2bb629b33e78d8f"

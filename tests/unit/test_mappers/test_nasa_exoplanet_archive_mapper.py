@@ -288,3 +288,281 @@ class TestNasaExoplanetArchiveMapper:
         assert isinstance(result, ValueWithUncertainty)
         # 10^(-0.5) ≈ 0.316
         assert 0.3 < result.value < 0.4
+
+
+class TestCompositeValueParsing:
+    """Tests for composite formatted value parsing."""
+
+    @pytest.fixture
+    def mapper(self):
+        """Fixture pour créer un mapper."""
+        return NasaExoplanetArchiveMapper()
+
+    def test_parse_plusmn_value_valid(self, mapper):
+        """Test de parsing d'une valeur avec &plusmn."""
+        result = mapper._parse_plusmn_value("2450000&plusmn100")
+        assert isinstance(result, ValueWithUncertainty)
+        assert result.value == 2450000.0
+        assert result.error_positive == 100.0
+        assert result.error_negative == 100.0
+        assert result.sign == "±"
+
+    def test_parse_plusmn_value_single_value(self, mapper):
+        """Test de parsing d'une valeur sans erreur."""
+        result = mapper._parse_plusmn_value("2450000")
+        assert isinstance(result, ValueWithUncertainty)
+        assert result.value == 2450000.0
+        assert result.error_positive is None
+        assert result.error_negative is None
+
+    def test_parse_plusmn_value_invalid(self, mapper):
+        """Test de parsing d'une valeur invalide."""
+        result = mapper._parse_plusmn_value("invalid&plusmntext")
+        assert result is None
+
+    def test_parse_html_value_with_errors(self, mapper):
+        """Test de parsing d'une valeur HTML avec erreurs."""
+        html_value = (
+            '<div><span class="supersubNumber">2450000</span>'
+            '<span class="superscript">+100</span>'
+            '<span class="subscript">-50</span></div>'
+        )
+        result = mapper._parse_html_value(html_value)
+        assert isinstance(result, ValueWithUncertainty)
+        assert result.value == 2450000.0
+        assert result.error_positive == 100.0
+        assert result.error_negative == 50.0
+        assert result.sign == "±"
+
+    def test_parse_html_value_malformed(self, mapper):
+        """Test de parsing d'une valeur HTML malformée."""
+        result = mapper._parse_html_value("<div>invalid</div>")
+        # HTML malformé retourne un ValueWithUncertainty avec des None
+        # ou None selon le cas
+        assert result is None or (result.value is None)
+
+    def test_parse_gt_lt_value_greater_than(self, mapper):
+        """Test de parsing d'une valeur avec &gt."""
+        result = mapper._parse_gt_lt_value("&gt5.0")
+        assert isinstance(result, ValueWithUncertainty)
+        assert result.value == 5.0
+        assert result.sign == ">"
+
+    def test_parse_gt_lt_value_less_than(self, mapper):
+        """Test de parsing d'une valeur avec &lt."""
+        result = mapper._parse_gt_lt_value("&lt3.5")
+        assert isinstance(result, ValueWithUncertainty)
+        assert result.value == 3.5
+        assert result.sign == "<"
+
+    def test_parse_gt_lt_value_invalid(self, mapper):
+        """Test de parsing d'une valeur sans &gt ou &lt."""
+        result = mapper._parse_gt_lt_value("5.0")
+        assert result is None
+
+    def test_parse_gt_lt_value_invalid_number(self, mapper):
+        """Test de parsing d'une valeur &gt avec nombre invalide."""
+        result = mapper._parse_gt_lt_value("&gtinvalid")
+        assert result is None
+
+    def test_parse_composite_formatted_value_plusmn(self, mapper):
+        """Test du parser composite avec format &plusmn."""
+        result = mapper.parse_composite_formatted_value("2450000&plusmn100")
+        assert isinstance(result, ValueWithUncertainty)
+        assert result.value == 2450000.0
+
+    def test_parse_composite_formatted_value_html(self, mapper):
+        """Test du parser composite avec format HTML."""
+        html_value = (
+            '<div><span class="supersubNumber">2450000</span>'
+            '<span class="superscript">+100</span></div>'
+        )
+        result = mapper.parse_composite_formatted_value(html_value)
+        assert isinstance(result, ValueWithUncertainty)
+        assert result.value == 2450000.0
+
+    def test_parse_composite_formatted_value_gt(self, mapper):
+        """Test du parser composite avec format &gt."""
+        result = mapper.parse_composite_formatted_value("&gt5.0")
+        assert isinstance(result, ValueWithUncertainty)
+        assert result.value == 5.0
+        assert result.sign == ">"
+
+    def test_parse_composite_formatted_value_lt(self, mapper):
+        """Test du parser composite avec format &lt."""
+        result = mapper.parse_composite_formatted_value("&lt3.5")
+        assert isinstance(result, ValueWithUncertainty)
+        assert result.value == 3.5
+        assert result.sign == "<"
+
+    def test_parse_composite_formatted_value_simple_numeric(self, mapper):
+        """Test du parser composite avec valeur numérique simple."""
+        result = mapper.parse_composite_formatted_value("123.45")
+        assert isinstance(result, ValueWithUncertainty)
+        assert result.value == 123.45
+
+    def test_parse_composite_formatted_value_none(self, mapper):
+        """Test du parser composite avec None."""
+        assert mapper.parse_composite_formatted_value(None) is None
+
+    def test_parse_composite_formatted_value_invalid(self, mapper):
+        """Test du parser composite avec valeur invalide."""
+        result = mapper.parse_composite_formatted_value("invalid text")
+        assert result is None
+
+
+class TestCoordinateFallbacks:
+    """Tests for coordinate parsing when string formats unavailable."""
+
+    @pytest.fixture
+    def mapper(self):
+        """Fixture pour créer un mapper."""
+        return NasaExoplanetArchiveMapper()
+
+    @patch("src.mappers.nasa_exoplanet_archive_mapper.ConstellationUtil")
+    def test_set_right_ascension_from_degrees(self, mock_constellation_util, mapper):
+        """Test de définition de l'ascension droite depuis les degrés."""
+        nea_data = {
+            "ra": 298.652708,  # Pas de rastr
+            "dec": 43.951056,
+        }
+        obj = Mock()
+        obj.st_right_ascension = None
+        obj.st_declination = None
+        obj.sy_constellation = None
+
+        ref = Mock()
+        mapper.set_coordinates_and_constellation(obj, nea_data, ref)
+
+        # Devrait utiliser le format en degrés
+        assert obj.st_right_ascension is not None
+        assert obj.st_right_ascension.startswith("19/")
+
+    @patch("src.mappers.nasa_exoplanet_archive_mapper.ConstellationUtil")
+    def test_set_declination_from_degrees(self, mock_constellation_util, mapper):
+        """Test de définition de la déclinaison depuis les degrés."""
+        nea_data = {
+            "ra": 298.652708,
+            "dec": 43.951056,  # Pas de decstr
+        }
+        obj = Mock()
+        obj.st_right_ascension = None
+        obj.st_declination = None
+        obj.sy_constellation = None
+
+        ref = Mock()
+        mapper.set_coordinates_and_constellation(obj, nea_data, ref)
+
+        # Devrait utiliser le format en degrés
+        assert obj.st_declination is not None
+        assert obj.st_declination.startswith("+43/")
+
+    @patch("src.mappers.nasa_exoplanet_archive_mapper.ConstellationUtil")
+    def test_set_coordinates_with_only_degrees(self, mock_constellation_util, mapper):
+        """Test de définition des coordonnées uniquement avec degrés."""
+        mock_util_instance = Mock()
+        mock_util_instance.get_constellation_name.return_value = "Cygnus"
+        mapper.constellation_util = mock_util_instance
+
+        nea_data = {
+            "ra": 298.652708,
+            "dec": 43.951056,
+            # Pas de rastr ni decstr
+        }
+        obj = Mock()
+        obj.st_right_ascension = None
+        obj.st_declination = None
+        obj.sy_constellation = None
+
+        ref = Mock()
+        mapper.set_coordinates_and_constellation(obj, nea_data, ref)
+
+        # Devrait utiliser les formats en degrés
+        assert obj.st_right_ascension is not None
+        assert obj.st_declination is not None
+        assert obj.sy_constellation == "Cygnus"
+
+
+class TestSpecialFieldParsing:
+    """Tests for special field parsing logic."""
+
+    @pytest.fixture
+    def mapper(self):
+        """Fixture pour créer un mapper."""
+        return NasaExoplanetArchiveMapper()
+
+    def test_parse_field_disc_year_as_integer(self, mapper):
+        """Test de parsing de disc_year comme entier."""
+        nea_data = {"disc_year": 2014.0}
+        result = mapper._parse_field(
+            raw_value=2014.0,
+            nea_data=nea_data,
+            nea_field="disc_year",
+            attribute="disc_year",
+        )
+        assert result == 2014
+        assert isinstance(result, int)
+
+    def test_parse_field_with_composite_formatted_string(self, mapper):
+        """Test de parsing d'un champ avec chaîne composite."""
+        nea_data = {"pl_tranmid": "2450000&plusmn100"}
+        result = mapper._parse_field(
+            raw_value="2450000&plusmn100",
+            nea_data=nea_data,
+            nea_field="pl_tranmid",
+            attribute="pl_transit_midpoint",
+        )
+        assert isinstance(result, ValueWithUncertainty)
+        assert result.value == 2450000.0
+        assert result.error_positive == 100.0
+
+    def test_format_trimmed_numeric_string(self, mapper):
+        """Test de formatage d'une chaîne numérique."""
+        assert mapper.format_trimmed_numeric_string(123.45000) == "123.45"
+        assert mapper.format_trimmed_numeric_string(100.0) == "100"
+        assert mapper.format_trimmed_numeric_string(0.00100) == "0.001"
+        assert mapper.format_trimmed_numeric_string("invalid") == "invalid"
+
+
+class TestEdgeCases:
+    """Tests for edge cases and error handling."""
+
+    @pytest.fixture
+    def mapper(self):
+        """Fixture pour créer un mapper."""
+        return NasaExoplanetArchiveMapper()
+
+    def test_is_invalid_raw_value_exception_handling(self):
+        """Test de gestion des exceptions dans is_invalid_raw_value."""
+
+        # Créer un objet qui lève une exception lors de la conversion en string
+        class BadObject:
+            def __str__(self):
+                raise RuntimeError("Cannot convert to string")
+
+        bad_obj = BadObject()
+        result = is_invalid_raw_value(bad_obj)
+        assert result is True
+
+    @patch("src.mappers.nasa_exoplanet_archive_mapper.ConstellationUtil")
+    def test_map_from_nea_record_skips_invalid_values(self, mock_constellation_util, mapper):
+        """Test que le mapping saute les valeurs invalides."""
+        mock_util_instance = Mock()
+        mock_util_instance.get_constellation_name.return_value = None
+        mapper.constellation_util = mock_util_instance
+
+        nea_data = {
+            "pl_name": "Test Planet",
+            "hostname": "Test Star",
+            "pl_bmasse": "nan",  # Valeur invalide
+            "pl_radj": 1.5,  # Valeur valide (pl_radj maps to pl_radius)
+            "pl_orbper": None,  # Valeur invalide
+        }
+
+        exoplanet = mapper.map_exoplanet_from_nea_record(nea_data)
+
+        # pl_bmasse ne devrait pas être défini (valeur invalide)
+        # Note: The mapper creates ValueWithUncertainty objects, so we check the value
+        # pl_radj maps to pl_radius and should be set with value 1.5
+        assert exoplanet.pl_radius is not None
+        assert exoplanet.pl_radius.value == 1.5
