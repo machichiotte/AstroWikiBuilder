@@ -66,9 +66,9 @@ class Reference:
 
             return details["url_pattern_exo"].format(star_id=star_id, planet_id=planet_id)
 
-        if not planet_id:
+        if not self.planet_id:
             raise ValueError("Identifier is required for generating the URL")
-        return details["url_pattern"].format(planet_id=planet_id)
+        return details["url_pattern"].format(planet_id=slugify(self.planet_id))
 
     def to_wiki_ref(self, is_short: bool = True) -> str:
         """Convertit la référence en format wiki, avec option pour version courte"""

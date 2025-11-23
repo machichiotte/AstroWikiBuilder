@@ -223,3 +223,23 @@ class TestExportService:
 
         # Ne doit pas lever d'exception, juste logger l'erreur
         export_service.export_exoplanets_to_json(filename, sample_exoplanets)
+
+    @patch("json.dump", side_effect=TypeError("Object not serializable"))
+    @patch("builtins.open", new_callable=mock_open)
+    def test_export_exoplanets_to_json_serialization_error(
+        self, mock_file, mock_json_dump, export_service, sample_exoplanets, tmp_path
+    ):
+        """Test de gestion d'erreur de sérialisation JSON."""
+        filename = str(tmp_path / "test_error.json")
+
+        # Ne doit pas lever d'exception, juste logger l'erreur
+        export_service.export_exoplanets_to_json(filename, sample_exoplanets)
+
+    @patch("builtins.open", side_effect=OSError("Permission denied"))
+    def test_export_generic_list_of_dicts_to_json_error(self, mock_file, export_service, tmp_path):
+        """Test de gestion d'erreur lors de l'export JSON générique."""
+        filename = str(tmp_path / "test_error.json")
+        data = [{"name": "Item1", "value": 10}]
+
+        # Ne doit pas lever d'exception, juste logger l'erreur
+        export_service.export_generic_list_of_dicts_to_json(filename, data)

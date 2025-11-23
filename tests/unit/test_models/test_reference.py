@@ -5,6 +5,8 @@ Tests pour le modèle Reference.
 
 from datetime import datetime
 
+import pytest
+
 from src.models.references.reference import Reference, SourceType
 
 
@@ -56,3 +58,88 @@ class TestReference:
 
         str_repr = str(ref)
         assert "NEA" in str_repr
+
+    def test_to_url_with_unknown_source(self):
+        """Test de to_url() avec une source inconnue."""
+        from unittest.mock import Mock
+
+        # Créer une source mockée
+        unknown_source = Mock(spec=SourceType)
+        unknown_source.value = "UNKNOWN"
+
+        ref = Reference(
+            source=unknown_source,
+            update_date=datetime(2025, 1, 1),
+            consultation_date=datetime(2025, 1, 15),
+            planet_id="Test b",
+        )
+
+        # SOURCE_DETAILS ne contient pas cette source
+        with pytest.raises(ValueError, match="Unknown source"):
+            ref.to_url()
+
+    def test_to_url_nea_without_identifiers(self):
+        """Test de to_url() pour NEA sans star_id ni planet_id."""
+        ref = Reference(
+            source=SourceType.NEA,
+            update_date=datetime(2025, 1, 1),
+            consultation_date=datetime(2025, 1, 15),
+        )
+
+        with pytest.raises(ValueError, match="Both star name and planet identifier are required"):
+            ref.to_url()
+
+    def test_to_url_nea_with_only_star_id(self):
+        """Test de to_url() pour NEA avec seulement star_id."""
+        ref = Reference(
+            source=SourceType.NEA,
+            update_date=datetime(2025, 1, 1),
+            consultation_date=datetime(2025, 1, 15),
+            star_id="HD 209458",
+        )
+
+        url = ref.to_url()
+        assert "hd-209458" in url
+        assert "overview" in url
+
+    def test_to_url_epe_without_planet_id(self):
+        """Test de to_url() pour EPE sans planet_id."""
+        ref = Reference(
+            source=SourceType.EPE,
+            update_date=datetime(2025, 1, 1),
+            consultation_date=datetime(2025, 1, 15),
+        )
+
+        with pytest.raises(ValueError, match="Identifier is required"):
+            ref.to_url()
+
+    def test_to_url_oec_without_planet_id(self):
+        """Test de to_url() pour OEC sans planet_id."""
+        ref = Reference(
+            source=SourceType.OEC,
+            update_date=datetime(2025, 1, 1),
+            consultation_date=datetime(2025, 1, 15),
+        )
+
+        with pytest.raises(ValueError, match="Identifier is required"):
+            ref.to_url()
+
+    def test_to_wiki_ref_with_unknown_source(self):
+        """Test de to_wiki_ref() avec une source inconnue."""
+        from unittest.mock import Mock
+
+        # Créer une source mockée
+        unknown_source = Mock(spec=SourceType)
+        unknown_source.value = "UNKNOWN"
+
+        ref = Reference(
+            source=unknown_source,
+            update_date=datetime(2025, 1, 1),
+            consultation_date=datetime(2025, 1, 15),
+            planet_id="Test b",
+        )
+
+        # SOURCE_DETAILS ne contient pas cette source
+        result = ref.to_wiki_ref()
+        assert "Unknown source" in result
+        assert "UNKNOWN" in result

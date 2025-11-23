@@ -122,3 +122,38 @@ class TestValueWithUncertainty:
 
         assert value.error_positive == 0.5
         assert value.error_negative == 0.3
+
+    def test_value_with_uncertainty_hash(self):
+        """Test de la méthode __hash__ pour utilisation dans des sets/dicts."""
+        value1 = ValueWithUncertainty(value=1.5, error_positive=0.1, error_negative=0.1)
+        value2 = ValueWithUncertainty(value=1.5, error_positive=0.1, error_negative=0.1)
+        value3 = ValueWithUncertainty(value=2.0, error_positive=0.1, error_negative=0.1)
+
+        # Deux valeurs identiques doivent avoir le même hash
+        assert hash(value1) == hash(value2)
+        # Deux valeurs différentes doivent avoir des hash différents
+        assert hash(value1) != hash(value3)
+
+        # Test d'utilisation dans un set
+        value_set = {value1, value2, value3}
+        assert len(value_set) == 2  # value1 et value2 sont identiques
+
+    def test_value_with_uncertainty_equality(self):
+        """Test de la méthode __eq__ pour comparaison."""
+        value1 = ValueWithUncertainty(value=1.5, error_positive=0.1, error_negative=0.1)
+        value2 = ValueWithUncertainty(value=1.5, error_positive=0.1, error_negative=0.1)
+        value3 = ValueWithUncertainty(value=2.0, error_positive=0.1, error_negative=0.1)
+
+        # Test d'égalité
+        assert value1 == value2
+        assert value1 != value3
+
+    def test_value_with_uncertainty_equality_with_non_value(self):
+        """Test de __eq__ avec un objet qui n'est pas ValueWithUncertainty."""
+        value = ValueWithUncertainty(value=1.5, error_positive=0.1, error_negative=0.1)
+
+        # Comparaison avec un objet d'un autre type
+        assert value != "not a value"
+        assert value != 1.5
+        assert value is not None
+        assert value != {"value": 1.5}
