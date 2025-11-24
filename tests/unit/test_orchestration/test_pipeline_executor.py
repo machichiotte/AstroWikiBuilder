@@ -300,3 +300,167 @@ class TestExecutePipeline:
         mock_ingest.assert_called_once()
         mock_export.assert_called_once()
         mock_stats.assert_called_once()
+
+    @patch("src.orchestration.pipeline_executor.create_output_directories")
+    @patch("src.orchestration.pipeline_executor.initialize_services")
+    @patch("src.orchestration.pipeline_executor.initialize_collectors")
+    @patch("src.orchestration.pipeline_executor.fetch_and_ingest_data")
+    @patch("src.orchestration.pipeline_executor.export_consolidated_data")
+    @patch("src.orchestration.pipeline_executor.generate_and_export_statistics")
+    @patch("src.utils.wikipedia.draft_util.build_exoplanet_article_draft")
+    @patch("src.utils.wikipedia.draft_util.persist_drafts_by_entity_type")
+    @patch("src.orchestration.pipeline_executor.generate_and_persist_star_drafts")
+    def test_execute_pipeline_with_missing_articles(
+        self,
+        mock_star_drafts,
+        mock_persist,
+        mock_build_draft,
+        mock_stats,
+        mock_export,
+        mock_ingest,
+        mock_collectors,
+        mock_services,
+        mock_create_dirs,
+        mock_args,
+    ):
+        """Test du pipeline avec des articles manquants sur Wikipedia."""
+        # Configuration
+        mock_args.skip_wikipedia_check = False
+
+        exo_repo = Mock()
+        star_repo = Mock()
+        stat_service = Mock()
+        wiki_service = Mock()
+        export_service = Mock()
+
+        mock_services.return_value = (
+            exo_repo,
+            star_repo,
+            stat_service,
+            wiki_service,
+            export_service,
+        )
+        mock_collectors.return_value = [Mock()]
+
+        # Mock processor
+        mock_processor = Mock()
+
+        # Mock exoplanets
+        mock_planet1 = Mock()
+        mock_planet1.pl_name = "Planet A"
+        mock_planet2 = Mock()
+        mock_planet2.pl_name = "Planet B"
+        mock_planet3 = Mock()
+        mock_planet3.pl_name = "Planet C"
+
+        # Configure resolve_wikipedia_status_for_exoplanets to return some missing articles
+        mock_processor.resolve_wikipedia_status_for_exoplanets.return_value = (
+            ["Planet A"],  # existing articles
+            ["Planet B", "Planet C"],  # missing articles
+        )
+
+        # Mock collect_all_exoplanets to return all planets
+        mock_processor.collect_all_exoplanets.return_value = [
+            mock_planet1,
+            mock_planet2,
+            mock_planet3,
+        ]
+
+        # Mock draft generation
+        mock_build_draft.side_effect = lambda exo: f"Draft for {exo.pl_name}"
+
+        with patch(
+            "src.orchestration.pipeline_executor._initialize_data_processor",
+            return_value=mock_processor,
+        ):
+            # Exécution
+            execute_pipeline(mock_args)
+
+        # Vérifications
+        mock_create_dirs.assert_called_once()
+        mock_services.assert_called_once()
+        mock_collectors.assert_called_once()
+        mock_ingest.assert_called_once()
+        mock_export.assert_called_once()
+        mock_stats.assert_called_once()
+
+        # Vérifier que resolve_wikipedia_status_for_exoplanets a été appelé
+        mock_processor.resolve_wikipedia_status_for_exoplanets.assert_called_once()
+
+        # Vérifier que collect_all_exoplanets a été appelé
+        mock_processor.collect_all_exoplanets.assert_called_once()
+
+        # Vérifier que build_exoplanet_article_draft a été appelé 2 fois (pour Planet B et C)
+        assert mock_build_draft.call_count == 2
+
+        # Vérifier que persist_drafts_by_entity_type a été appelé
+        mock_persist.assert_called_once()
+
+        # Vérifier que generate_and_persist_star_drafts a été appelé avec les exoplanètes filtrées
+        mock_star_drafts.assert_called_once()
+        call_args = mock_star_drafts.call_args
+        exoplanets_arg = call_args[0][2]  # Third argument
+        assert len(exoplanets_arg) == 2
+        assert all(exo.pl_name in ["Planet B", "Planet C"] for exo in exoplanets_arg)
+
+    @patch("src.orchestration.pipeline_executor.create_output_directories")
+    @patch("src.orchestration.pipeline_executor.initialize_services")
+    @patch("src.orchestration.pipeline_executor.initialize_collectors")
+    @patch("src.orchestration.pipeline_executor.fetch_and_ingest_data")
+    @patch("src.orchestration.pipeline_executor.export_consolidated_data")
+    @patch("src.orchestration.pipeline_executor.generate_and_export_statistics")
+    def test_execute_pipeline_no_missing_articles(
+        self,
+        mock_stats,
+        mock_export,
+        mock_ingest,
+        mock_collectors,
+        mock_services,
+        mock_create_dirs,
+        mock_args,
+    ):
+        """Test du pipeline sans articles manquants sur Wikipedia."""
+        # Configuration
+        mock_args.skip_wikipedia_check = False
+
+        exo_repo = Mock()
+        star_repo = Mock()
+        stat_service = Mock()
+        wiki_service = Mock()
+        export_service = Mock()
+
+        mock_services.return_value = (
+            exo_repo,
+            star_repo,
+            stat_service,
+            wiki_service,
+            export_service,
+        )
+        mock_collectors.return_value = [Mock()]
+
+        # Mock processor
+        mock_processor = Mock()
+
+        # Configure resolve_wikipedia_status_for_exoplanets to return no missing articles
+        mock_processor.resolve_wikipedia_status_for_exoplanets.return_value = (
+            ["Planet A", "Planet B"],  # all existing
+            [],  # no missing articles
+        )
+
+        with patch(
+            "src.orchestration.pipeline_executor._initialize_data_processor",
+            return_value=mock_processor,
+        ):
+            # Exécution
+            execute_pipeline(mock_args)
+
+        # Vérifications
+        mock_create_dirs.assert_called_once()
+        mock_services.assert_called_once()
+        mock_collectors.assert_called_once()
+        mock_ingest.assert_called_once()
+        mock_export.assert_called_once()
+        mock_stats.assert_called_once()
+
+        # Vérifier que resolve_wikipedia_status_for_exoplanets a été appelé
+        mock_processor.resolve_wikipedia_status_for_exoplanets.assert_called_once()
