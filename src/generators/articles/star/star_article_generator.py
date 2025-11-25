@@ -2,6 +2,9 @@ import locale
 import re
 
 from src.constants.wikipedia_field_config import CONSTELLATION_GENDER_FR
+from src.generators.articles.star.sections.astrometry_section import (
+    AstrometrySection,
+)
 from src.generators.articles.star.sections.category_section import (
     CategorySection,
 )
@@ -74,6 +77,7 @@ class StarWikipediaArticleGenerator(BaseWikipediaArticleGenerator):
         self.physical_characteristics_section = PhysicalCharacteristicsSection(self.article_util)
         self.rotation_activity_section = RotationActivitySection(self.article_util)
         self.photometry_section = PhotometrySection(self.article_util)
+        self.astrometry_section = AstrometrySection(self.article_util)
         self.observation_section = ObservationSection(self.article_util)
         self.environment_section = EnvironmentSection()
         self.history_section = HistorySection()
@@ -113,6 +117,7 @@ class StarWikipediaArticleGenerator(BaseWikipediaArticleGenerator):
             self.physical_characteristics_section.generate(star),
             self.rotation_activity_section.generate(star),
             self.photometry_section.generate(star),
+            self.astrometry_section.generate(star),
             self.observation_section.generate(star),
             self.environment_section.generate(star),
             self.history_section.generate(star),

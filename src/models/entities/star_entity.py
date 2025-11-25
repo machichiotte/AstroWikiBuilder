@@ -115,6 +115,8 @@ class Star:
     st_distance_light_years_2: ValueWithUncertainty | None = None
     st_distance: ValueWithUncertainty | None = None
     st_distance_2: ValueWithUncertainty | None = None
+    glon: ValueWithUncertainty | None = None
+    glat: ValueWithUncertainty | None = None
 
     # Caractéristiques spectroscopiques
     st_spectral_type: str | None = None
