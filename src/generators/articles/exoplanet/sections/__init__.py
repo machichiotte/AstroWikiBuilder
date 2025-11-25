@@ -2,6 +2,7 @@
 
 from .category_section import CategorySection
 from .composition_section import CompositionSection
+from .detection_observations_section import DetectionObservationsSection
 from .discovery_section import DiscoverySection
 from .formation_mechanism_section import FormationMechanismSection
 from .habitability_section import HabitabilitySection
@@ -20,6 +21,7 @@ from .tidal_locking_section import TidalLockingSection
 __all__ = [
     "CategorySection",
     "CompositionSection",
+    "DetectionObservationsSection",
     "DiscoverySection",
     "FormationMechanismSection",
     "HabitabilitySection",

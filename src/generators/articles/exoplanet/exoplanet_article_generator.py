@@ -6,6 +6,7 @@ import re
 from src.generators.articles.exoplanet.sections import (
     CategorySection,
     CompositionSection,
+    DetectionObservationsSection,
     DiscoverySection,
     FormationMechanismSection,
     HabitabilitySection,
@@ -71,6 +72,7 @@ class ExoplanetWikipediaArticleGenerator(BaseWikipediaArticleGenerator):
         self.system_architecture_section = SystemArchitectureSection(article_util)
         self.observation_potential_section = ObservationPotentialSection(article_util)
         self.spectroscopy_section = SpectroscopySection(article_util)
+        self.detection_observations_section = DetectionObservationsSection(article_util)
         self.formation_mechanism_section = FormationMechanismSection(article_util)
         self.see_also_section = SeeAlsoSection()
 
@@ -118,6 +120,7 @@ class ExoplanetWikipediaArticleGenerator(BaseWikipediaArticleGenerator):
             self.system_architecture_section.generate(exoplanet, system_planets),
             self.observation_potential_section.generate(exoplanet),
             self.spectroscopy_section.generate(exoplanet),
+            self.detection_observations_section.generate(exoplanet),
             self.formation_mechanism_section.generate(exoplanet),
         ]
 

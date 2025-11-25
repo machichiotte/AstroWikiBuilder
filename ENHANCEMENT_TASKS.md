@@ -137,6 +137,7 @@
   - [x] Commit
 
 - [x] **2.15 - Créer `spectroscopy_section.py`** ✅ **Complété**
+
   - [x] Vérifier disponibilité spectres transmission (`pl_ntranspec`)
   - [x] Vérifier disponibilité spectres éclipse (`pl_nespec`)
   - [x] Vérifier disponibilité spectres imagerie directe (`pl_ndispec`)
@@ -145,13 +146,15 @@
   - [x] Tests unitaires (6 tests passent)
   - [x] Commit
 
-- [ ] **2.16 - Créer `detection_observations_section.py`**
-  - [ ] Lister méthodes de détection multiples (flags)
-  - [ ] Mentionner facilités d'observation
-  - [ ] Indiquer nombre de mesures disponibles
-  - [ ] Intégrer dans `exoplanet_article_generator.py`
-  - [ ] Tests unitaires
-  - [ ] Commit
+- [x] **2.16 - Créer `detection_observations_section.py`** ✅ **Complété**
+  - [x] Lister méthodes de détection multiples (flags)
+  - [x] Mentionner facilités d'observation
+  - [x] Indiquer nombre de mesures disponibles
+  - [x] Intégrer dans `exoplanet_article_generator.py`
+  - [x] Tests unitaires
+  - [x] Ne lance pas de tests unitaires ni de commit
+  - [x] Donne moi la ligne de commande pour effectuer les tests unitaires
+  - [x] Donne moi le commit detaillé (ex: git commit -m "feat: Add detection observations section")
 
 ### Étoiles
 
@@ -160,7 +163,9 @@
   - [ ] Ajouter flag circumbinaire (`cb_flag`)
   - [ ] Ajouter nombre de lunes (`sy_mnum`)
   - [ ] Tests unitaires
-  - [ ] Commit
+  - [ ] Ne lance pas de tests unitaires ni de commit
+  - [ ] Donne moi la ligne de commande pour effectuer les tests unitaires
+  - [ ] Donne moi le commit detaillé (ex: git commit -m "feat: Add detection observations section")
 
 ## 📊 Phase 3 : Basse Priorité (Nouvelles Sections Avancées)
 
@@ -169,14 +174,18 @@
   - [ ] Tableau complet des magnitudes (Johnson, 2MASS, Sloan, WISE, Gaia, TESS, Kepler)
   - [ ] Formatage Wikipedia tableau
   - [ ] Tests unitaires
-  - [ ] Commit
+  - [ ] Ne lance pas de tests unitaires ni de commit
+  - [ ] Donne moi la ligne de commande pour effectuer les tests unitaires
+  - [ ] Donne moi le commit detaillé (ex: git commit -m "feat: Add detection observations section")
 
 - [ ] **3.2 - Créer `astrometry_section.py` (Étoiles)**
   - [ ] Mouvement propre (`sy_pm`, `sy_pmra`, `sy_pmdec`)
   - [ ] Parallaxe et distance (`sy_plx`, `sy_dist`)
   - [ ] Position galactique (`glat`, `glon`)
   - [ ] Tests unitaires
-  - [ ] Commit
+  - [ ] Ne lance pas de tests unitaires ni de commit
+  - [ ] Donne moi la ligne de commande pour effectuer les tests unitaires
+  - [ ] Donne moi le commit detaillé (ex: git commit -m "feat: Add detection observations section")
 
 ## 🔄 Tâches Transverses
 
@@ -186,14 +195,18 @@
   - [x] ~~Ajouter `st_age`~~ ✅ Déjà présent
   - [ ] Vérifier et ajouter tous les champs manquants de NEA
   - [ ] Mettre à jour les dataclasses
-  - [ ] Commit
+  - [ ] Ne lance pas de tests unitaires ni de commit
+  - [ ] Donne moi la ligne de commande pour effectuer les tests unitaires
+  - [ ] Donne moi le commit detaillé (ex: git commit -m "feat: Add detection observations section")
 
 - [ ] **Mettre à jour `nasa_exoplanet_archive_mapper.py`**
 
   - [ ] Mapper tous les nouveaux champs
   - [ ] Gérer les valeurs manquantes
   - [ ] Tests unitaires
-  - [ ] Commit
+  - [ ] Ne lance pas de tests unitaires ni de commit
+  - [ ] Donne moi la ligne de commande pour effectuer les tests unitaires
+  - [ ] Donne moi le commit detaillé (ex: git commit -m "feat: Add detection observations section")
 
 - [x] **Mettre à jour la couverture de tests** ✅ **96% ATTEINT**
 

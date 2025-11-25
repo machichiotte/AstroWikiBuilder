@@ -164,6 +164,12 @@ class Exoplanet:
     disc_instrument: str | None = None
     disc_pubdate: str | None = None
     pl_controv_flag: str | None = None
+    tran_flag: int | None = None
+    rv_flag: int | None = None
+    ttv_flag: int | None = None
+    ast_flag: int | None = None
+    micro_flag: int | None = None
+    pul_flag: int | None = None
     pre_discovery: str | None = None
     detection_type: str | None = None
     status: str | None = None
