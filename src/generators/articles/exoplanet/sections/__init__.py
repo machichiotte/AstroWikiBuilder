@@ -13,6 +13,7 @@ from .observation_potential_section import ObservationPotentialSection
 from .orbit_section import OrbitSection
 from .physical_characteristics_section import PhysicalCharacteristicsSection
 from .see_also_section import SeeAlsoSection
+from .spectroscopy_section import SpectroscopySection
 from .system_architecture_section import SystemArchitectureSection
 from .tidal_locking_section import TidalLockingSection
 
@@ -30,6 +31,7 @@ __all__ = [
     "OrbitSection",
     "PhysicalCharacteristicsSection",
     "SeeAlsoSection",
+    "SpectroscopySection",
     "SystemArchitectureSection",
     "TidalLockingSection",
 ]

@@ -150,6 +150,9 @@ class Exoplanet:
     pl_pressure: float | None = None
     pl_composition: str | None = None
     pl_wind_speed: float | None = None
+    pl_ntranspec: int | None = None
+    pl_nespec: int | None = None
+    pl_ndispec: int | None = None
 
     # Découverte
     disc_by: str | None = None

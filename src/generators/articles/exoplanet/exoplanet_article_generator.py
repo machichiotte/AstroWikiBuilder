@@ -17,6 +17,7 @@ from src.generators.articles.exoplanet.sections import (
     OrbitSection,
     PhysicalCharacteristicsSection,
     SeeAlsoSection,
+    SpectroscopySection,
     SystemArchitectureSection,
     TidalLockingSection,
 )
@@ -57,7 +58,7 @@ class ExoplanetWikipediaArticleGenerator(BaseWikipediaArticleGenerator):
         article_util = ArticleFormatter()
         comparison_util = ExoplanetComparisonUtil()
 
-        # Initialize all 14 section generators (13 sections + intro which needs both utils)
+        # Initialize all section generators
         self.introduction_section = IntroductionSection(comparison_util, article_util)
         self.host_star_section = HostStarSection(article_util)
         self.discovery_section = DiscoverySection(article_util)
@@ -69,6 +70,7 @@ class ExoplanetWikipediaArticleGenerator(BaseWikipediaArticleGenerator):
         self.habitability_section = HabitabilitySection(article_util)
         self.system_architecture_section = SystemArchitectureSection(article_util)
         self.observation_potential_section = ObservationPotentialSection(article_util)
+        self.spectroscopy_section = SpectroscopySection(article_util)
         self.formation_mechanism_section = FormationMechanismSection(article_util)
         self.see_also_section = SeeAlsoSection()
 
@@ -115,6 +117,7 @@ class ExoplanetWikipediaArticleGenerator(BaseWikipediaArticleGenerator):
             self.habitability_section.generate(exoplanet),
             self.system_architecture_section.generate(exoplanet, system_planets),
             self.observation_potential_section.generate(exoplanet),
+            self.spectroscopy_section.generate(exoplanet),
             self.formation_mechanism_section.generate(exoplanet),
         ]
 

@@ -136,15 +136,14 @@
   - [x] Tests unitaires (7 tests passent)
   - [x] Commit
 
-- [ ] **2.15 - Créer `spectroscopy_section.py`**
-
-  - [ ] Vérifier disponibilité spectres transmission (`pl_ntranspec`)
-  - [ ] Vérifier disponibilité spectres éclipse (`pl_nespec`)
-  - [ ] Vérifier disponibilité spectres imagerie directe (`pl_ndispec`)
-  - [ ] Générer section si données disponibles
-  - [ ] Intégrer dans `exoplanet_article_generator.py`
-  - [ ] Tests unitaires
-  - [ ] Commit
+- [x] **2.15 - Créer `spectroscopy_section.py`** ✅ **Complété**
+  - [x] Vérifier disponibilité spectres transmission (`pl_ntranspec`)
+  - [x] Vérifier disponibilité spectres éclipse (`pl_nespec`)
+  - [x] Vérifier disponibilité spectres imagerie directe (`pl_ndispec`)
+  - [x] Générer section si données disponibles
+  - [x] Intégrer dans `exoplanet_article_generator.py`
+  - [x] Tests unitaires (6 tests passent)
+  - [x] Commit
 
 - [ ] **2.16 - Créer `detection_observations_section.py`**
   - [ ] Lister méthodes de détection multiples (flags)
