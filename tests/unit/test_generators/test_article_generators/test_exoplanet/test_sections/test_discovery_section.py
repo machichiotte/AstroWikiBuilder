@@ -85,3 +85,72 @@ class TestDiscoverySection:
             )
             result = section.generate(exoplanet)
             assert expected_text in result
+
+    def test_discovery_section_with_telescope_and_instrument(self, article_formatter):
+        """Test avec télescope et instrument."""
+        exoplanet = Exoplanet(
+            pl_name="Test b",
+            disc_year=2021,
+            disc_telescope="Kepler",
+            disc_instrument="Kepler Cam",
+        )
+        section = DiscoverySection(article_formatter)
+        result = section.generate(exoplanet)
+
+        assert "Kepler" in result
+        assert "Kepler Cam" in result
+        assert "télescope Kepler" in result
+        assert "instrument Kepler Cam" in result
+
+    def test_discovery_section_with_telescope_only(self, article_formatter):
+        """Test avec télescope uniquement."""
+        exoplanet = Exoplanet(
+            pl_name="Test b",
+            disc_year=2021,
+            disc_telescope="TESS",
+        )
+        section = DiscoverySection(article_formatter)
+        result = section.generate(exoplanet)
+
+        assert "TESS" in result
+        assert "télescope TESS" in result
+        assert "instrument" not in result
+
+    def test_discovery_section_with_instrument_only(self, article_formatter):
+        """Test avec instrument uniquement."""
+        exoplanet = Exoplanet(
+            pl_name="Test b",
+            disc_year=2021,
+            disc_instrument="HARPS",
+        )
+        section = DiscoverySection(article_formatter)
+        result = section.generate(exoplanet)
+
+        assert "HARPS" in result
+        assert "instrument HARPS" in result
+        assert "télescope" not in result
+
+    def test_discovery_section_with_pubdate(self, article_formatter):
+        """Test avec date de publication."""
+        exoplanet = Exoplanet(
+            pl_name="Test b",
+            disc_year=2021,
+            disc_pubdate="2021-05",
+        )
+        section = DiscoverySection(article_formatter)
+        result = section.generate(exoplanet)
+
+        assert "mai 2021" in result
+        assert "annoncée en mai 2021" in result
+
+    def test_discovery_section_with_invalid_pubdate(self, article_formatter):
+        """Test avec date de publication invalide (format inattendu)."""
+        exoplanet = Exoplanet(
+            pl_name="Test b",
+            disc_year=2021,
+            disc_pubdate="2021",  # Trop court pour extraire le mois
+        )
+        section = DiscoverySection(article_formatter)
+        result = section.generate(exoplanet)
+
+        assert "annoncée" not in result

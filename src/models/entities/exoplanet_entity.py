@@ -148,6 +148,9 @@ class Exoplanet:
     disc_method: str | None = None
     disc_year: int | None = None
     disc_facility: str | None = None
+    disc_telescope: str | None = None
+    disc_instrument: str | None = None
+    disc_pubdate: str | None = None
     pre_discovery: str | None = None
     detection_type: str | None = None
     status: str | None = None

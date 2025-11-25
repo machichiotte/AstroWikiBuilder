@@ -58,4 +58,40 @@ class DiscoverySection:
         else:
             section += f"L'exoplanète a été découverte {date_str}.\n"
 
+        # Ajout des détails sur l'instrument et le télescope
+        telescope = exoplanet.disc_telescope
+        instrument = exoplanet.disc_instrument
+
+        if telescope and instrument:
+            section += f"La découverte a été réalisée grâce au télescope {telescope} et à l'instrument {instrument}.\n"
+        elif telescope:
+            section += f"La découverte a été réalisée grâce au télescope {telescope}.\n"
+        elif instrument:
+            section += f"La découverte a été réalisée grâce à l'instrument {instrument}.\n"
+
+        # Ajout de la date de publication
+        if exoplanet.disc_pubdate:
+            pub_date = exoplanet.disc_pubdate
+            # Formatage simple si c'est une chaîne YYYY-MM
+            if len(pub_date) >= 7:
+                year = pub_date[:4]
+                month = pub_date[5:7]
+                month_names = {
+                    "01": "janvier",
+                    "02": "février",
+                    "03": "mars",
+                    "04": "avril",
+                    "05": "mai",
+                    "06": "juin",
+                    "07": "juillet",
+                    "08": "août",
+                    "09": "septembre",
+                    "10": "octobre",
+                    "11": "novembre",
+                    "12": "décembre",
+                }
+                month_name = month_names.get(month)
+                if month_name:
+                    section += f"La découverte a été annoncée en {month_name} {year}.\n"
+
         return section
