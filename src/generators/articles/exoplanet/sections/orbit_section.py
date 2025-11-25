@@ -12,7 +12,24 @@ class OrbitSection:
 
     def generate(self, exoplanet: Exoplanet) -> str:
         """Génère la section sur l'orbite."""
-        if not any(
+        if not self._has_orbital_data(exoplanet):
+            return ""
+
+        content: list[str] = ["== Orbite ==\n"]
+
+        self._add_semi_major_axis(exoplanet, content)
+        self._add_eccentricity(exoplanet, content)
+        self._add_orbital_period(exoplanet, content)
+        self._add_inclination(exoplanet, content)
+        self._add_obliquity(exoplanet, content)
+        self._add_impact_parameter(exoplanet, content)
+        self._add_geometric_ratios(exoplanet, content)
+
+        return "\n".join(content)
+
+    def _has_orbital_data(self, exoplanet: Exoplanet) -> bool:
+        """Vérifie si des données orbitales sont disponibles."""
+        return any(
             [
                 exoplanet.pl_semi_major_axis,
                 exoplanet.pl_eccentricity,
@@ -24,81 +41,79 @@ class OrbitSection:
                 exoplanet.pl_ratdor,
                 exoplanet.pl_ratror,
             ]
-        ):
-            return ""
+        )
 
-        content: list[str] = ["== Orbite ==\n"]
-
+    def _add_semi_major_axis(self, exoplanet: Exoplanet, content: list[str]) -> None:
+        """Ajoute le demi-grand axe."""
         if exoplanet.pl_semi_major_axis:
-            semi_major_axis_str = self.article_util.format_uncertain_value_for_article(
+            value_str = self.article_util.format_uncertain_value_for_article(
                 exoplanet.pl_semi_major_axis
             )
-            if semi_major_axis_str:
+            if value_str:
                 content.append(
-                    f"L'exoplanète orbite à une distance de {semi_major_axis_str} [[unité astronomique|UA]] de son étoile."
+                    f"L'exoplanète orbite à une distance de {value_str} [[unité astronomique|UA]] de son étoile."
                 )
 
+    def _add_eccentricity(self, exoplanet: Exoplanet, content: list[str]) -> None:
+        """Ajoute l'excentricité."""
         if exoplanet.pl_eccentricity:
-            eccentricity_str: str = self.article_util.format_uncertain_value_for_article(
+            value_str = self.article_util.format_uncertain_value_for_article(
                 exoplanet.pl_eccentricity
             )
-            if eccentricity_str:
-                content.append(f"L'orbite a une excentricité de {eccentricity_str}.")
+            if value_str:
+                content.append(f"L'orbite a une excentricité de {value_str}.")
 
+    def _add_orbital_period(self, exoplanet: Exoplanet, content: list[str]) -> None:
+        """Ajoute la période orbitale."""
         if exoplanet.pl_orbital_period:
-            period_str: str = self.article_util.format_uncertain_value_for_article(
+            value_str = self.article_util.format_uncertain_value_for_article(
                 exoplanet.pl_orbital_period
             )
-            if period_str:
-                content.append(f"La période orbitale est de {period_str} [[jour|jours]].")
+            if value_str:
+                content.append(f"La période orbitale est de {value_str} [[jour|jours]].")
 
+    def _add_inclination(self, exoplanet: Exoplanet, content: list[str]) -> None:
+        """Ajoute l'inclinaison."""
         if exoplanet.pl_inclination:
-            inclination_str: str = self.article_util.format_uncertain_value_for_article(
+            value_str = self.article_util.format_uncertain_value_for_article(
                 exoplanet.pl_inclination
             )
-            if inclination_str:
+            if value_str:
                 content.append(
-                    f"L'inclinaison de l'orbite est de {inclination_str} [[degré (angle)|degrés]]."
+                    f"L'inclinaison de l'orbite est de {value_str} [[degré (angle)|degrés]]."
                 )
 
-        # Nouveaux paramètres orbitaux
+    def _add_obliquity(self, exoplanet: Exoplanet, content: list[str]) -> None:
+        """Ajoute les obliquités."""
         if exoplanet.pl_projobliq:
-            projobliq_str: str = self.article_util.format_uncertain_value_for_article(
-                exoplanet.pl_projobliq
-            )
-            if projobliq_str:
-                content.append(f"L'obliquité projetée est de {projobliq_str} degrés.")
+            value_str = self.article_util.format_uncertain_value_for_article(exoplanet.pl_projobliq)
+            if value_str:
+                content.append(f"L'obliquité projetée est de {value_str} degrés.")
 
         if exoplanet.pl_trueobliq:
-            trueobliq_str: str = self.article_util.format_uncertain_value_for_article(
-                exoplanet.pl_trueobliq
-            )
-            if trueobliq_str:
-                content.append(f"L'obliquité vraie est de {trueobliq_str} degrés.")
+            value_str = self.article_util.format_uncertain_value_for_article(exoplanet.pl_trueobliq)
+            if value_str:
+                content.append(f"L'obliquité vraie est de {value_str} degrés.")
 
+    def _add_impact_parameter(self, exoplanet: Exoplanet, content: list[str]) -> None:
+        """Ajoute le paramètre d'impact."""
         if exoplanet.pl_imppar:
-            imppar_str: str = self.article_util.format_uncertain_value_for_article(
-                exoplanet.pl_imppar
-            )
-            if imppar_str:
-                content.append(f"Le paramètre d'impact du transit est de {imppar_str}.")
+            value_str = self.article_util.format_uncertain_value_for_article(exoplanet.pl_imppar)
+            if value_str:
+                content.append(f"Le paramètre d'impact du transit est de {value_str}.")
 
+    def _add_geometric_ratios(self, exoplanet: Exoplanet, content: list[str]) -> None:
+        """Ajoute les rapports géométriques."""
         if exoplanet.pl_ratdor:
-            ratdor_str: str = self.article_util.format_uncertain_value_for_article(
-                exoplanet.pl_ratdor
-            )
-            if ratdor_str:
+            value_str = self.article_util.format_uncertain_value_for_article(exoplanet.pl_ratdor)
+            if value_str:
                 content.append(
-                    f"Le rapport entre la distance orbitale et le rayon stellaire (a/R*) est de {ratdor_str}."
+                    f"Le rapport entre la distance orbitale et le rayon stellaire (a/R*) est de {value_str}."
                 )
 
         if exoplanet.pl_ratror:
-            ratror_str: str = self.article_util.format_uncertain_value_for_article(
-                exoplanet.pl_ratror
-            )
-            if ratror_str:
+            value_str = self.article_util.format_uncertain_value_for_article(exoplanet.pl_ratror)
+            if value_str:
                 content.append(
-                    f"Le rapport entre le rayon planétaire et le rayon stellaire (Rp/R*) est de {ratror_str}."
+                    f"Le rapport entre le rayon planétaire et le rayon stellaire (Rp/R*) est de {value_str}."
                 )
-
-        return "\n".join(content)

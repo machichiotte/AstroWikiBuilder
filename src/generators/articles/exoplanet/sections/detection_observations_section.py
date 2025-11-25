@@ -12,21 +12,7 @@ class DetectionObservationsSection:
 
     def generate(self, exoplanet: Exoplanet) -> str:
         """Génère la section sur les méthodes de détection et observations."""
-        # Vérifier s'il y a des méthodes de détection multiples
-        detection_methods = []
-
-        if exoplanet.tran_flag and exoplanet.tran_flag == 1:
-            detection_methods.append("transits")
-        if exoplanet.rv_flag and exoplanet.rv_flag == 1:
-            detection_methods.append("vitesses radiales")
-        if exoplanet.ttv_flag and exoplanet.ttv_flag == 1:
-            detection_methods.append("variations du temps de transit (TTV)")
-        if exoplanet.ast_flag and exoplanet.ast_flag == 1:
-            detection_methods.append("astrométrie")
-        if exoplanet.micro_flag and exoplanet.micro_flag == 1:
-            detection_methods.append("microlentille gravitationnelle")
-        if exoplanet.pul_flag and exoplanet.pul_flag == 1:
-            detection_methods.append("chronométrage de pulsar")
+        detection_methods = self._collect_detection_methods(exoplanet)
 
         # Ne générer la section que s'il y a au moins 2 méthodes ou une facilité
         if len(detection_methods) < 2 and not exoplanet.disc_facility:
@@ -35,10 +21,36 @@ class DetectionObservationsSection:
         content: list[str] = ["== Détection et observations ==\n"]
 
         if len(detection_methods) >= 2:
-            methods_str = ", ".join(detection_methods[:-1]) + f" et {detection_methods[-1]}"
+            methods_str = self._format_methods_list(detection_methods)
             content.append(f"L'exoplanète a été détectée par plusieurs méthodes : {methods_str}.")
 
         if exoplanet.disc_facility:
             content.append(f"Les observations ont été réalisées avec {exoplanet.disc_facility}.")
 
         return "\n".join(content)
+
+    def _collect_detection_methods(self, exoplanet: Exoplanet) -> list[str]:
+        """Collecte les méthodes de détection utilisées."""
+        methods = []
+
+        method_mapping = {
+            "tran_flag": "transits",
+            "rv_flag": "vitesses radiales",
+            "ttv_flag": "variations du temps de transit (TTV)",
+            "ast_flag": "astrométrie",
+            "micro_flag": "microlentille gravitationnelle",
+            "pul_flag": "chronométrage de pulsar",
+        }
+
+        for flag_name, method_name in method_mapping.items():
+            flag_value = getattr(exoplanet, flag_name, None)
+            if flag_value and flag_value == 1:
+                methods.append(method_name)
+
+        return methods
+
+    def _format_methods_list(self, methods: list[str]) -> str:
+        """Formate la liste des méthodes en français."""
+        if len(methods) == 1:
+            return methods[0]
+        return ", ".join(methods[:-1]) + f" et {methods[-1]}"

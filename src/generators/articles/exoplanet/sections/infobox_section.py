@@ -1,7 +1,8 @@
 # src/generators/articles/exoplanet/sections/infobox_section.py
 
+from dataclasses import replace
+
 from src.constants.wikipedia_field_config import (
-    DEFAULT_WIKIPEDIA_UNITS_EXOPLANET,
     IS_NOTES_FIELDS_EXOPLANET,
 )
 from src.models.entities.exoplanet_entity import Exoplanet
@@ -26,30 +27,11 @@ class InfoboxSection:
         lines = ["{{Infobox Exoplanète"]
 
         wiki_reference = exoplanet.reference.to_wiki_ref() if exoplanet.reference else None
-
-        # Ajouter les identifiants alternatifs (HD, HIP, TIC, Gaia) à pl_altname
-        alt_names = list(exoplanet.pl_altname) if exoplanet.pl_altname else []
-
-        if exoplanet.hd_name:
-            alt_names.append(exoplanet.hd_name)
-        if exoplanet.hip_name:
-            alt_names.append(exoplanet.hip_name)
-        if exoplanet.tic_id:
-            alt_names.append(exoplanet.tic_id)
-        if exoplanet.gaia_id:
-            alt_names.append(exoplanet.gaia_id)
-
-        # Créer une copie modifiée de l'exoplanet avec les identifiants ajoutés
-        from dataclasses import replace
-
-        exoplanet_with_ids = replace(exoplanet, pl_altname=alt_names if alt_names else None)
-
-        # Récupération des mappings spécifiques aux exoplanètes
+        exoplanet_with_ids = self._add_alternative_identifiers(exoplanet)
         mappings = InfoboxMapper.convert_exoplanet_to_infobox()
 
         for mapping in mappings:
             value = getattr(exoplanet_with_ids, mapping.source_attribute, None)
-
             field_block = self.inbox_field_formatter.process_field(
                 value=value,
                 mapping=mapping,
@@ -59,13 +41,22 @@ class InfoboxSection:
             if field_block:
                 lines.append(field_block)
 
-        # Ajout des références globales
-        for full_ref in self.reference_manager.all_registered_references.values():
-            lines.append(full_ref)
-
         lines.append("}}")
         return "\n".join(lines)
 
-    @property
-    def default_field_mapping(self):
-        return DEFAULT_WIKIPEDIA_UNITS_EXOPLANET
+    def _add_alternative_identifiers(self, exoplanet: Exoplanet) -> Exoplanet:
+        """Ajoute les identifiants alternatifs à pl_altname."""
+        alt_names = list(exoplanet.pl_altname) if exoplanet.pl_altname else []
+
+        identifiers = [
+            exoplanet.hd_name,
+            exoplanet.hip_name,
+            exoplanet.tic_id,
+            exoplanet.gaia_id,
+        ]
+
+        for identifier in identifiers:
+            if identifier:
+                alt_names.append(identifier)
+
+        return replace(exoplanet, pl_altname=alt_names if alt_names else None)

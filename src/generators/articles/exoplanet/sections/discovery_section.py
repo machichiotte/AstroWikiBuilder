@@ -21,7 +21,23 @@ class DiscoverySection:
             return ""
 
         section = "== Découverte ==\n"
+        section += self._generate_discovery_sentence(exoplanet)
+        section += self._generate_instrument_info(exoplanet)
+        section += self._generate_publication_date(exoplanet)
 
+        return section
+
+    def _generate_discovery_sentence(self, exoplanet: Exoplanet) -> str:
+        """Génère la phrase principale de découverte."""
+        disc_method = self._get_translated_method(exoplanet.disc_method)
+        date_str = self._format_discovery_date(exoplanet.disc_year)
+
+        if disc_method:
+            return f"L'exoplanète a été découverte par la méthode {disc_method} {date_str}.\n"
+        return f"L'exoplanète a été découverte {date_str}.\n"
+
+    def _get_translated_method(self, disc_method) -> str | None:
+        """Traduit la méthode de découverte en français."""
         method_translations: dict[str, str] = {
             "Transit": "des transits",
             "Radial Velocity": "des vitesses radiales",
@@ -37,61 +53,63 @@ class DiscoverySection:
             "Transit Timing Variations": "des variations temporelles de transit",
         }
 
-        method_raw = (
-            exoplanet.disc_method.value
-            if exoplanet.disc_method and hasattr(exoplanet.disc_method, "value")
-            else ""
-        )
-        disc_method: str | None = method_translations.get(method_raw, None)
+        method_raw = disc_method.value if disc_method and hasattr(disc_method, "value") else ""
+        return method_translations.get(method_raw, None)
 
-        date_value = exoplanet.disc_year
+    def _format_discovery_date(self, disc_year) -> str:
+        """Formate la date de découverte."""
+        date_value = disc_year
         if hasattr(date_value, "value"):
             date_value = date_value.value
 
         if hasattr(date_value, "year"):
-            date_str: str = f"en {self.article_util.format_year_without_decimals(date_value.year)}"
-        else:
-            date_str: str = f"en {str(self.article_util.format_year_without_decimals(date_value))}"
+            return f"en {self.article_util.format_year_without_decimals(date_value.year)}"
+        return f"en {str(self.article_util.format_year_without_decimals(date_value))}"
 
-        if disc_method:
-            section += f"L'exoplanète a été découverte par la méthode {disc_method} {date_str}.\n"
-        else:
-            section += f"L'exoplanète a été découverte {date_str}.\n"
-
-        # Ajout des détails sur l'instrument et le télescope
+    def _generate_instrument_info(self, exoplanet: Exoplanet) -> str:
+        """Génère les informations sur le télescope et l'instrument."""
         telescope = exoplanet.disc_telescope
         instrument = exoplanet.disc_instrument
 
         if telescope and instrument:
-            section += f"La découverte a été réalisée grâce au télescope {telescope} et à l'instrument {instrument}.\n"
-        elif telescope:
-            section += f"La découverte a été réalisée grâce au télescope {telescope}.\n"
-        elif instrument:
-            section += f"La découverte a été réalisée grâce à l'instrument {instrument}.\n"
+            return f"La découverte a été réalisée grâce au télescope {telescope} et à l'instrument {instrument}.\n"
+        if telescope:
+            return f"La découverte a été réalisée grâce au télescope {telescope}.\n"
+        if instrument:
+            return f"La découverte a été réalisée grâce à l'instrument {instrument}.\n"
+        return ""
 
-        # Ajout de la date de publication
-        if exoplanet.disc_pubdate:
-            pub_date = exoplanet.disc_pubdate
-            # Formatage simple si c'est une chaîne YYYY-MM
-            if len(pub_date) >= 7:
-                year = pub_date[:4]
-                month = pub_date[5:7]
-                month_names = {
-                    "01": "janvier",
-                    "02": "février",
-                    "03": "mars",
-                    "04": "avril",
-                    "05": "mai",
-                    "06": "juin",
-                    "07": "juillet",
-                    "08": "août",
-                    "09": "septembre",
-                    "10": "octobre",
-                    "11": "novembre",
-                    "12": "décembre",
-                }
-                month_name = month_names.get(month)
-                if month_name:
-                    section += f"La découverte a été annoncée en {month_name} {year}.\n"
+    def _generate_publication_date(self, exoplanet: Exoplanet) -> str:
+        """Génère l'information sur la date de publication."""
+        if not exoplanet.disc_pubdate:
+            return ""
 
-        return section
+        pub_date = exoplanet.disc_pubdate
+        if len(pub_date) < 7:
+            return ""
+
+        year = pub_date[:4]
+        month = pub_date[5:7]
+        month_name = self._get_month_name(month)
+
+        if month_name:
+            return f"La découverte a été annoncée en {month_name} {year}.\n"
+        return ""
+
+    def _get_month_name(self, month: str) -> str | None:
+        """Retourne le nom du mois en français."""
+        month_names = {
+            "01": "janvier",
+            "02": "février",
+            "03": "mars",
+            "04": "avril",
+            "05": "mai",
+            "06": "juin",
+            "07": "juillet",
+            "08": "août",
+            "09": "septembre",
+            "10": "octobre",
+            "11": "novembre",
+            "12": "décembre",
+        }
+        return month_names.get(month)
