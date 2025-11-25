@@ -131,22 +131,14 @@ class PhysicalCharacteristicsSection:
 
         return f"sa densité de {density_value} g/cm³ ({comparison})"
 
-    def generate(self, exoplanet: Exoplanet) -> str:
-        """
-        Génère la section des caractéristiques physiques.
-
-        Returns:
-            str: Contenu de la section ou chaîne vide si pas de données
-        """
-        mass = self._get_value_or_none_if_nan(exoplanet.pl_mass)
-        radius = self._get_value_or_none_if_nan(exoplanet.pl_radius)
-        density = self._get_value_or_none_if_nan(exoplanet.pl_density)
-        temp = self._get_value_or_none_if_nan(exoplanet.pl_temperature)
-
-        if not any([mass is not None, radius is not None, density is not None, temp is not None]):
-            return ""
-
-        section = "== Caractéristiques physiques ==\n"
+    def _collect_characteristic_descriptions(
+        self,
+        mass: float | int | None,
+        radius: float | int | None,
+        density: float | int | None,
+        temp: float | int | None,
+    ) -> list[str]:
+        """Collecte les descriptions des caractéristiques disponibles."""
         desc_parts = []
 
         if mass is not None:
@@ -169,10 +161,33 @@ class PhysicalCharacteristicsSection:
             if temp_desc:
                 desc_parts.append(temp_desc)
 
-        if desc_parts:
-            if len(desc_parts) == 1:
-                section += f"L'exoplanète se distingue par {desc_parts[0]}.\n"
-            else:
-                section += f"L'exoplanète se distingue par {', '.join(desc_parts[:-1])} et {desc_parts[-1]}.\n"
+        return desc_parts
 
+    def _format_section_text(self, desc_parts: list[str]) -> str:
+        """Formate le texte de la section à partir des descriptions."""
+        if len(desc_parts) == 1:
+            return f"L'exoplanète se distingue par {desc_parts[0]}.\n"
+        return f"L'exoplanète se distingue par {', '.join(desc_parts[:-1])} et {desc_parts[-1]}.\n"
+
+    def generate(self, exoplanet: Exoplanet) -> str:
+        """
+        Génère la section des caractéristiques physiques.
+
+        Returns:
+            str: Contenu de la section ou chaîne vide si pas de données
+        """
+        mass = self._get_value_or_none_if_nan(exoplanet.pl_mass)
+        radius = self._get_value_or_none_if_nan(exoplanet.pl_radius)
+        density = self._get_value_or_none_if_nan(exoplanet.pl_density)
+        temp = self._get_value_or_none_if_nan(exoplanet.pl_temperature)
+
+        if not any([mass is not None, radius is not None, density is not None, temp is not None]):
+            return ""
+
+        desc_parts = self._collect_characteristic_descriptions(mass, radius, density, temp)
+        if not desc_parts:
+            return ""
+
+        section = "== Caractéristiques physiques ==\n"
+        section += self._format_section_text(desc_parts)
         return section
