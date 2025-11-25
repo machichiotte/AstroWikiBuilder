@@ -65,7 +65,6 @@ class InfoboxMapper:
             FieldMapping("disc_method", "méthode"),
             FieldMapping("disc_year", "date"),
             FieldMapping("disc_facility", "lieu"),
-            FieldMapping("pl_controv_flag", "controverse"),
             FieldMapping("pre_discovery", "prédécouverte"),
             FieldMapping("detection_type", "détection"),
             FieldMapping("status", "statut"),

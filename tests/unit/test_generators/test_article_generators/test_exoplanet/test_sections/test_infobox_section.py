@@ -69,17 +69,6 @@ class TestInfoboxSection:
         assert "Gaia DR3 4444555666" in result
         assert "HIP" not in result or "HIP =" not in result
 
-    def test_generate_with_controversy_flag(self, section):
-        """Test infobox with controversy flag."""
-        exoplanet = Exoplanet(
-            pl_name="Test b",
-            st_name="Test",
-            pl_controv_flag="1",
-        )
-        result = section.generate(exoplanet)
-
-        assert "controverse" in result or "1" in result
-
     def test_generate_with_physical_characteristics(self, section):
         """Test infobox with physical characteristics."""
         exoplanet = Exoplanet(
