@@ -12,7 +12,6 @@ class PhotometrySection:
 
     def generate(self, star: Star) -> str:
         """Génère la section photométrie avec un tableau des magnitudes."""
-        # Collecter toutes les magnitudes disponibles
         magnitudes = self._collect_magnitudes(star)
 
         if not magnitudes:
@@ -38,52 +37,79 @@ class PhotometrySection:
         magnitudes = []
 
         # Johnson (U, B, V)
-        if star.st_mag_u and star.st_mag_u.value is not None:
-            magnitudes.append(
-                {"band": "U", "value": self._format_magnitude(star.st_mag_u), "system": "Johnson"}
-            )
-
-        if star.st_mag_b and star.st_mag_b.value is not None:
-            magnitudes.append(
-                {"band": "B", "value": self._format_magnitude(star.st_mag_b), "system": "Johnson"}
-            )
-
-        if star.st_mag_v and star.st_mag_v.value is not None:
-            magnitudes.append(
-                {"band": "V", "value": self._format_magnitude(star.st_mag_v), "system": "Johnson"}
-            )
+        magnitudes.extend(self._collect_johnson_magnitudes(star))
 
         # Sloan (g, r, i)
-        if star.st_mag_g and star.st_mag_g.value is not None:
-            magnitudes.append(
-                {"band": "g", "value": self._format_magnitude(star.st_mag_g), "system": "Sloan"}
-            )
-
-        if star.st_mag_r and star.st_mag_r.value is not None:
-            magnitudes.append(
-                {"band": "r", "value": self._format_magnitude(star.st_mag_r), "system": "Sloan"}
-            )
-
-        if star.st_mag_i and star.st_mag_i.value is not None:
-            magnitudes.append(
-                {"band": "i", "value": self._format_magnitude(star.st_mag_i), "system": "Sloan"}
-            )
+        magnitudes.extend(self._collect_sloan_magnitudes(star))
 
         # 2MASS (J, H, K)
-        if star.st_mag_j and star.st_mag_j.value is not None:
-            magnitudes.append(
-                {"band": "J", "value": self._format_magnitude(star.st_mag_j), "system": "2MASS"}
-            )
+        magnitudes.extend(self._collect_2mass_magnitudes(star))
 
-        if star.st_mag_h and star.st_mag_h.value is not None:
-            magnitudes.append(
-                {"band": "H", "value": self._format_magnitude(star.st_mag_h), "system": "2MASS"}
-            )
+        return magnitudes
 
-        if star.st_mag_k and star.st_mag_k.value is not None:
-            magnitudes.append(
-                {"band": "K", "value": self._format_magnitude(star.st_mag_k), "system": "2MASS"}
-            )
+    def _collect_johnson_magnitudes(self, star: Star) -> list[dict]:
+        """Collecte les magnitudes Johnson."""
+        magnitudes = []
+
+        mag_mapping = [
+            (star.st_mag_u, "U"),
+            (star.st_mag_b, "B"),
+            (star.st_mag_v, "V"),
+        ]
+
+        for mag_value, band in mag_mapping:
+            if mag_value and mag_value.value is not None:
+                magnitudes.append(
+                    {
+                        "band": band,
+                        "value": self._format_magnitude(mag_value),
+                        "system": "Johnson",
+                    }
+                )
+
+        return magnitudes
+
+    def _collect_sloan_magnitudes(self, star: Star) -> list[dict]:
+        """Collecte les magnitudes Sloan."""
+        magnitudes = []
+
+        mag_mapping = [
+            (star.st_mag_g, "g"),
+            (star.st_mag_r, "r"),
+            (star.st_mag_i, "i"),
+        ]
+
+        for mag_value, band in mag_mapping:
+            if mag_value and mag_value.value is not None:
+                magnitudes.append(
+                    {
+                        "band": band,
+                        "value": self._format_magnitude(mag_value),
+                        "system": "Sloan",
+                    }
+                )
+
+        return magnitudes
+
+    def _collect_2mass_magnitudes(self, star: Star) -> list[dict]:
+        """Collecte les magnitudes 2MASS."""
+        magnitudes = []
+
+        mag_mapping = [
+            (star.st_mag_j, "J"),
+            (star.st_mag_h, "H"),
+            (star.st_mag_k, "K"),
+        ]
+
+        for mag_value, band in mag_mapping:
+            if mag_value and mag_value.value is not None:
+                magnitudes.append(
+                    {
+                        "band": band,
+                        "value": self._format_magnitude(mag_value),
+                        "system": "2MASS",
+                    }
+                )
 
         return magnitudes
 
@@ -98,11 +124,10 @@ class PhotometrySection:
             if mag_value.error_positive == mag_value.error_negative:
                 err_str = self.article_util.format_number_as_french_string(mag_value.error_positive)
                 return f"{value_str} ± {err_str}"
-            else:
-                err_pos = self.article_util.format_number_as_french_string(mag_value.error_positive)
-                err_neg = self.article_util.format_number_as_french_string(
-                    abs(mag_value.error_negative)
-                )
-                return f"{value_str} +{err_pos} −{err_neg}"
+            err_pos = self.article_util.format_number_as_french_string(mag_value.error_positive)
+            err_neg = self.article_util.format_number_as_french_string(
+                abs(mag_value.error_negative)
+            )
+            return f"{value_str} +{err_pos} −{err_neg}"
 
         return value_str

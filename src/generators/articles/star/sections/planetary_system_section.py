@@ -22,15 +22,31 @@ class PlanetarySystemSection:
         section = "== Système planétaire ==\n"
 
         # Ajouter des informations contextuelles sur le système
+        section += self._generate_system_context(exoplanets[0])
+
+        # Template de début
+        section += "{{Système planétaire début\n"
+        section += f"| nom = {star_name}\n"
+        section += "}}\n"
+
+        # Trier et ajouter les exoplanètes
+        sorted_exoplanets = self._sort_exoplanets(exoplanets)
+
+        for exoplanet in sorted_exoplanets:
+            section += self._generate_planet_template(exoplanet)
+
+        # Template de fin
+        section += "{{Système planétaire fin}}\n"
+
+        return section
+
+    def _generate_system_context(self, first_exo: Exoplanet) -> str:
+        """Génère les informations contextuelles sur le système."""
         context_parts = []
 
-        # Utiliser le premier exoplanet pour les infos système (elles sont identiques pour toutes)
-        first_exo = exoplanets[0]
-
         if first_exo.sy_snum and first_exo.sy_snum > 1:
-            context_parts.append(
-                f"Le système est composé de {first_exo.sy_snum} étoile{'s' if first_exo.sy_snum > 1 else ''}."
-            )
+            plural = "s" if first_exo.sy_snum > 1 else ""
+            context_parts.append(f"Le système est composé de {first_exo.sy_snum} étoile{plural}.")
 
         if first_exo.cb_flag and first_exo.cb_flag == 1:
             context_parts.append(
@@ -38,20 +54,18 @@ class PlanetarySystemSection:
             )
 
         if first_exo.sy_mnum and first_exo.sy_mnum > 0:
+            plural = "s" if first_exo.sy_mnum > 1 else ""
             context_parts.append(
-                f"Le système compte également {first_exo.sy_mnum} lune{'s' if first_exo.sy_mnum > 1 else ''} connue{'s' if first_exo.sy_mnum > 1 else ''}."
+                f"Le système compte également {first_exo.sy_mnum} lune{plural} connue{plural}."
             )
 
         if context_parts:
-            section += "\n".join(context_parts) + "\n\n"
+            return "\n".join(context_parts) + "\n\n"
+        return ""
 
-        # Template de début
-        section += "{{Système planétaire début\n"
-        section += f"| nom = {star_name}\n"
-        section += "}}\n"
+    def _sort_exoplanets(self, exoplanets: list[Exoplanet]) -> list[Exoplanet]:
+        """Trie les exoplanètes par demi-grand axe."""
 
-        # Trier les exoplanètes par demi-grand axe (distance orbitale)
-        # Si pas de demi-grand axe, utiliser le nom comme clé de tri secondaire
         def sort_key(exo):
             if exo.pl_semi_major_axis and exo.pl_semi_major_axis.value:
                 try:
@@ -60,16 +74,7 @@ class PlanetarySystemSection:
                     pass
             return (1, exo.pl_name)
 
-        sorted_exoplanets = sorted(exoplanets, key=sort_key)
-
-        # Templates pour chaque exoplanète
-        for exoplanet in sorted_exoplanets:
-            section += self._generate_planet_template(exoplanet)
-
-        # Template de fin
-        section += "{{Système planétaire fin}}\n"
-
-        return section
+        return sorted(exoplanets, key=sort_key)
 
     def _generate_planet_template(self, exoplanet: Exoplanet) -> str:
         """Génère le template Wiki pour une exoplanète donnée."""
@@ -140,17 +145,15 @@ class PlanetarySystemSection:
             if error_positive == error_negative:
                 # Utiliser le template {{±|erreur}}
                 return f"{value_str} {{{{±|{err_pos_str}}}}}"
-            else:
-                # Utiliser le template {{±|erreur_positive|erreur_négative}}
-                return f"{value_str} {{{{±|{err_pos_str}|{err_neg_str}}}}}"
-        elif error_positive is not None:
+            # Utiliser le template {{±|erreur_positive|erreur_négative}}
+            return f"{value_str} {{{{±|{err_pos_str}|{err_neg_str}}}}}"
+        if error_positive is not None:
             err_pos_str = self._to_french_decimal(error_positive, precision)
             return f"{value_str} +{err_pos_str}"
-        elif error_negative is not None:
+        if error_negative is not None:
             err_neg_str = self._to_french_decimal(error_negative, precision)
             return f"{value_str} -{err_neg_str}"
-        else:
-            return value_str
+        return value_str
 
     def _to_french_decimal(self, value: float, precision: int = 4) -> str:
         """
