@@ -49,3 +49,9 @@ check: lint test complexity ## Lance tout (CI complet)
 
 run: ## Lance le pipeline principal (mode mock par défaut)
 	poetry run python -m src.core.main --use-mock nasa_exoplanet_archive --skip-wikipedia-check
+
+run-prod: ## Lance le pipeline principal en production (sans mock, skip Wikipedia check)
+	poetry run python -m src.core.main --sources nasa_exoplanet_archive --skip-wikipedia-check
+
+run-prod-full: ## Lance le pipeline principal en production complète (avec Wikipedia check)
+	poetry run python -m src.core.main --sources nasa_exoplanet_archive

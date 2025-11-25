@@ -46,9 +46,12 @@ class SystemArchitectureSection:
 
         # Trier les planètes par demi-grand axe (si dispo) ou par nom
         def sort_key(p):
-            if p.pl_semi_major_axis and p.pl_semi_major_axis.value:
-                return float(p.pl_semi_major_axis.value)
-            return p.pl_name
+            if p.pl_semi_major_axis and p.pl_semi_major_axis.value is not None:
+                try:
+                    return (0, float(p.pl_semi_major_axis.value))
+                except (ValueError, TypeError):
+                    pass
+            return (1, p.pl_name)
 
         sorted_planets = sorted(system_planets, key=sort_key)
         planet_count = len(sorted_planets)

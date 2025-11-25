@@ -33,7 +33,7 @@ CACHE_PATHS: dict[str, dict[str, str]] = {
         # "mock": "generated/random_exoplanets_25.csv",
         "mock": "cache/nasa_exoplanet_archive/nea_mock_25.csv",
         # "mock": "cache/nasa_exoplanet_archive/nea_mock_complete.csv",
-        "real": "cache/nasa_exoplanet_archive/nea_downloaded.csv",
+        "real": "cache/nasa_exoplanet_archive/nea_mock_downloaded.csv",
     },
     "exoplanet_eu": {
         "mock": "cache/exoplanet_eu/exoplanet_eu_mock.csv",
