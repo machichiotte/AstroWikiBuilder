@@ -1,4 +1,4 @@
-.PHONY: help install test lint format clean check
+.PHONY: help install test lint format clean check clean-data
 
 help: ## Affiche cette aide
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
@@ -47,11 +47,16 @@ clean: ## Nettoie les fichiers temporaires
 
 check: lint test complexity ## Lance tout (CI complet)
 
-run: ## Lance le pipeline principal (mode mock par défaut)
+clean-data: ## Nettoie les fichiers de données générées (consolidated, statistics)
+	@echo "Nettoyage des données générées..."
+	@if exist "data\generated\consolidated" rmdir /s /q "data\generated\consolidated"
+	@echo "Données nettoyées."
+
+run: clean-data ## Lance le pipeline principal (mode mock par défaut)
 	poetry run python -m src.core.main --use-mock nasa_exoplanet_archive --skip-wikipedia-check
 
-run-prod: ## Lance le pipeline principal en production (sans mock, skip Wikipedia check)
+run-prod: clean-data ## Lance le pipeline principal en production (sans mock, skip Wikipedia check)
 	poetry run python -m src.core.main --sources nasa_exoplanet_archive --skip-wikipedia-check
 
-run-prod-full: ## Lance le pipeline principal en production complète (avec Wikipedia check)
+run-prod-full: clean-data ## Lance le pipeline principal en production complète (avec Wikipedia check)
 	poetry run python -m src.core.main --sources nasa_exoplanet_archive
