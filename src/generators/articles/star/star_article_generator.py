@@ -20,6 +20,9 @@ from src.generators.articles.star.sections.introduction_section import (
 from src.generators.articles.star.sections.observation_section import (
     ObservationSection,
 )
+from src.generators.articles.star.sections.photometry_section import (
+    PhotometrySection,
+)
 from src.generators.articles.star.sections.physical_characteristics_section import (
     PhysicalCharacteristicsSection,
 )
@@ -70,6 +73,7 @@ class StarWikipediaArticleGenerator(BaseWikipediaArticleGenerator):
         # Initialize granular sections
         self.physical_characteristics_section = PhysicalCharacteristicsSection(self.article_util)
         self.rotation_activity_section = RotationActivitySection(self.article_util)
+        self.photometry_section = PhotometrySection(self.article_util)
         self.observation_section = ObservationSection(self.article_util)
         self.environment_section = EnvironmentSection()
         self.history_section = HistorySection()
@@ -108,6 +112,7 @@ class StarWikipediaArticleGenerator(BaseWikipediaArticleGenerator):
         sections = [
             self.physical_characteristics_section.generate(star),
             self.rotation_activity_section.generate(star),
+            self.photometry_section.generate(star),
             self.observation_section.generate(star),
             self.environment_section.generate(star),
             self.history_section.generate(star),
