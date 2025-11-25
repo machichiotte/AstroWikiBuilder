@@ -82,6 +82,7 @@ class StatisticsService:
                 "modérée": 0,  # 0.3-0.5
                 "élevée": 0,  # > 0.5
             },
+            "planet_types": {},  # Types de planètes (Jupiter chaud, Neptune froid, etc.)
         }
 
         for exoplanet in exoplanets:
@@ -117,6 +118,9 @@ class StatisticsService:
                 self._update_eccentricity_stats(
                     exoplanet.pl_eccentricity.value, stats["eccentricity_ranges"]
                 )
+
+            # Type de planète
+            self._update_planet_type_stats(exoplanet, stats["planet_types"])
 
         logger.info("Statistics generation for exoplanets complete.")
         return stats
@@ -170,6 +174,14 @@ class StatisticsService:
             ranges_dict["modérée"] += 1
         else:
             ranges_dict["élevée"] += 1
+
+    def _update_planet_type_stats(self, exoplanet: Exoplanet, types_dict: dict[str, int]) -> None:
+        """Catégorise les exoplanètes par type (Jupiter chaud, Neptune froid, etc.)"""
+        from src.utils.astro.classification.exoplanet_type_util import ExoplanetTypeUtil
+
+        classifier = ExoplanetTypeUtil()
+        planet_type = classifier.determine_exoplanet_classification(exoplanet)
+        types_dict[planet_type] = types_dict.get(planet_type, 0) + 1
 
     def generate_statistics_star(self, stars: list[Star]) -> dict[str, Any]:
         """
