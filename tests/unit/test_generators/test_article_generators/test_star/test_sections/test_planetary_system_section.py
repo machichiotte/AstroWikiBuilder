@@ -38,6 +38,9 @@ class TestPlanetarySystemSection:
     def test_planetary_system_full(self, article_util, mock_star):
         exoplanet = MagicMock(spec=Exoplanet)
         exoplanet.pl_name = "Kepler-186 f"
+        exoplanet.sy_snum = None
+        exoplanet.cb_flag = None
+        exoplanet.sy_mnum = None
         exoplanet.pl_mass = ValueWithUncertainty(value=1.5)
         exoplanet.pl_radius = ValueWithUncertainty(value=1.1)
         exoplanet.pl_semi_major_axis = ValueWithUncertainty(value=0.4)
@@ -60,3 +63,81 @@ class TestPlanetarySystemSection:
         assert "0,04" in content  # excentricité
         assert "89,9" in content  # inclinaison
         assert "{{Système planétaire fin}}" in content
+
+    def test_planetary_system_with_multiple_stars(self, article_util, mock_star):
+        """Test avec système multi-stellaire."""
+        exoplanet = MagicMock(spec=Exoplanet)
+        exoplanet.pl_name = "Test b"
+        exoplanet.sy_snum = 2
+        exoplanet.cb_flag = None
+        exoplanet.sy_mnum = None
+        exoplanet.pl_mass = None
+        exoplanet.pl_radius = None
+        exoplanet.pl_semi_major_axis = None
+        exoplanet.pl_orbital_period = None
+        exoplanet.pl_eccentricity = None
+        exoplanet.pl_inclination = None
+
+        section = PlanetarySystemSection(article_util)
+        content = section.generate(mock_star, [exoplanet])
+
+        assert "2 étoiles" in content
+
+    def test_planetary_system_with_circumbinary(self, article_util, mock_star):
+        """Test avec planètes circumbinaires."""
+        exoplanet = MagicMock(spec=Exoplanet)
+        exoplanet.pl_name = "Test b"
+        exoplanet.sy_snum = None
+        exoplanet.cb_flag = 1
+        exoplanet.sy_mnum = None
+        exoplanet.pl_mass = None
+        exoplanet.pl_radius = None
+        exoplanet.pl_semi_major_axis = None
+        exoplanet.pl_orbital_period = None
+        exoplanet.pl_eccentricity = None
+        exoplanet.pl_inclination = None
+
+        section = PlanetarySystemSection(article_util)
+        content = section.generate(mock_star, [exoplanet])
+
+        assert "circumbinaires" in content
+
+    def test_planetary_system_with_moons(self, article_util, mock_star):
+        """Test avec lunes."""
+        exoplanet = MagicMock(spec=Exoplanet)
+        exoplanet.pl_name = "Test b"
+        exoplanet.sy_snum = None
+        exoplanet.cb_flag = None
+        exoplanet.sy_mnum = 3
+        exoplanet.pl_mass = None
+        exoplanet.pl_radius = None
+        exoplanet.pl_semi_major_axis = None
+        exoplanet.pl_orbital_period = None
+        exoplanet.pl_eccentricity = None
+        exoplanet.pl_inclination = None
+
+        section = PlanetarySystemSection(article_util)
+        content = section.generate(mock_star, [exoplanet])
+
+        assert "3 lunes" in content
+
+    def test_planetary_system_with_all_system_info(self, article_util, mock_star):
+        """Test avec toutes les informations système."""
+        exoplanet = MagicMock(spec=Exoplanet)
+        exoplanet.pl_name = "Test b"
+        exoplanet.sy_snum = 2
+        exoplanet.cb_flag = 1
+        exoplanet.sy_mnum = 1
+        exoplanet.pl_mass = None
+        exoplanet.pl_radius = None
+        exoplanet.pl_semi_major_axis = None
+        exoplanet.pl_orbital_period = None
+        exoplanet.pl_eccentricity = None
+        exoplanet.pl_inclination = None
+
+        section = PlanetarySystemSection(article_util)
+        content = section.generate(mock_star, [exoplanet])
+
+        assert "2 étoiles" in content
+        assert "circumbinaires" in content
+        assert "1 lune" in content

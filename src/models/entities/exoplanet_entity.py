@@ -106,6 +106,9 @@ class Exoplanet:
     caption: str | None = None
     sy_constellation: str | None = None
     sy_planet_count: int | None = None
+    sy_snum: int | None = None
+    sy_mnum: int | None = None
+    cb_flag: int | None = None
 
     # Étoile hôte
     st_name: str = None

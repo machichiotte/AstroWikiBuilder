@@ -21,6 +21,30 @@ class PlanetarySystemSection:
         star_name = star.st_name if star.st_name else "Cette étoile"
         section = "== Système planétaire ==\n"
 
+        # Ajouter des informations contextuelles sur le système
+        context_parts = []
+
+        # Utiliser le premier exoplanet pour les infos système (elles sont identiques pour toutes)
+        first_exo = exoplanets[0]
+
+        if first_exo.sy_snum and first_exo.sy_snum > 1:
+            context_parts.append(
+                f"Le système est composé de {first_exo.sy_snum} étoile{'s' if first_exo.sy_snum > 1 else ''}."
+            )
+
+        if first_exo.cb_flag and first_exo.cb_flag == 1:
+            context_parts.append(
+                "Les planètes orbitent autour d'un système binaire (planètes circumbinaires)."
+            )
+
+        if first_exo.sy_mnum and first_exo.sy_mnum > 0:
+            context_parts.append(
+                f"Le système compte également {first_exo.sy_mnum} lune{'s' if first_exo.sy_mnum > 1 else ''} connue{'s' if first_exo.sy_mnum > 1 else ''}."
+            )
+
+        if context_parts:
+            section += "\n".join(context_parts) + "\n\n"
+
         # Template de début
         section += "{{Système planétaire début\n"
         section += f"| nom = {star_name}\n"
