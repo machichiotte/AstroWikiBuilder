@@ -98,6 +98,10 @@ class Exoplanet:
     # Identifiants
     pl_name: str = None
     pl_altname: list[str] | None = field(default_factory=list)
+    hd_name: str | None = None
+    hip_name: str | None = None
+    tic_id: str | None = None
+    gaia_id: str | None = None
     image: str | None = None
     caption: str | None = None
     sy_constellation: str | None = None
@@ -151,6 +155,7 @@ class Exoplanet:
     disc_telescope: str | None = None
     disc_instrument: str | None = None
     disc_pubdate: str | None = None
+    pl_controv_flag: str | None = None
     pre_discovery: str | None = None
     detection_type: str | None = None
     status: str | None = None

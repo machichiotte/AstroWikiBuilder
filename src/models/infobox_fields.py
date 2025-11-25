@@ -20,6 +20,10 @@ class InfoboxMapper:
             # Identifiants
             FieldMapping("name", "nom"),
             FieldMapping("pl_altname", "autres noms"),
+            FieldMapping("hd_name", "HD"),
+            FieldMapping("hip_name", "HIP"),
+            FieldMapping("tic_id", "TIC"),
+            FieldMapping("gaia_id", "Gaia DR3"),
             FieldMapping("image", "image"),
             FieldMapping("caption", "légende"),
             # Étoile hôte
@@ -65,6 +69,7 @@ class InfoboxMapper:
             FieldMapping("disc_method", "méthode"),
             FieldMapping("disc_year", "date"),
             FieldMapping("disc_facility", "lieu"),
+            FieldMapping("pl_controv_flag", "controverse"),
             FieldMapping("pre_discovery", "prédécouverte"),
             FieldMapping("detection_type", "détection"),
             FieldMapping("status", "statut"),

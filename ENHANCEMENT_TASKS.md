@@ -1,9 +1,26 @@
-- [x] ~~Ajouter `disc_telescope` (nom du télescope)~~ ✅ Déjà dans `nea_entity.py`
-- [ ] Ajouter `disc_instrument` (nom de l'instrument)
-- [ ] Ajouter `disc_pubdate` (date de publication) - Non implémenté (peu prioritaire)
-- [ ] Utiliser ces champs dans `discovery_section.py`
-- [ ] Tests unitaires (couverture actuelle: **91%**)
-- [ ] Commit
+# Tâches d'Amélioration AstroWikiBuilder
+
+## 🚀 Phase 1 : Haute Priorité (Enrichissement du Contenu)
+
+### Exoplanètes
+
+- [x] **1.1 - Enrichir `physical_characteristics_section.py` (Exoplanètes)** ✅ **Complété**
+
+  - [x] Ajouter densité (`pl_dens`)
+  - [x] Ajouter température (`pl_eqt`)
+  - [x] Ajouter masse (`pl_mass`, `pl_bmasse`, `pl_bmassj`)
+  - [x] Ajouter rayon (`pl_radj`, `pl_rade`)
+  - [x] Tests unitaires
+  - [x] Commit
+
+- [x] **1.2 - Enrichir `discovery_section.py` (Exoplanètes)** ✅ **Complété**
+
+  - [x] ~~Ajouter `disc_telescope` (nom du télescope)~~ ✅ Déjà dans `nea_entity.py`
+  - [x] Ajouter `disc_instrument` (nom de l'instrument)
+  - [x] Ajouter `disc_pubdate` (date de publication)
+  - [x] Utiliser ces champs dans `discovery_section.py`
+  - [x] Tests unitaires (9 tests passent)
+  - [x] Commit
 
 - [ ] **1.3 - Enrichir `infobox_section.py` (Exoplanètes)**
   - [ ] Ajouter identifiants alternatifs (HD, HIP, TIC, Gaia DR2/DR3)
