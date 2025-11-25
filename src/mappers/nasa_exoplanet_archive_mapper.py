@@ -272,7 +272,7 @@ class NasaExoplanetArchiveMapper:
 
     def _parse_html_value(self, epoch_str_val: str) -> ValueWithUncertainty | None:
         fixed_html_str = re.sub(r'class=(\w+)"', r'class="\1"', epoch_str_val)
-        soup = BeautifulSoup(fixed_html_str, "html5lib")
+        soup = BeautifulSoup(fixed_html_str, "html.parser")
 
         try:
             val = soup.find("span", class_="supersubNumber")
