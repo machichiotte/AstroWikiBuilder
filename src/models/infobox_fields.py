@@ -20,10 +20,6 @@ class InfoboxMapper:
             # Identifiants
             FieldMapping("name", "nom"),
             FieldMapping("pl_altname", "autres noms"),
-            FieldMapping("hd_name", "HD"),
-            FieldMapping("hip_name", "HIP"),
-            FieldMapping("tic_id", "TIC"),
-            FieldMapping("gaia_id", "Gaia DR3"),
             FieldMapping("image", "image"),
             FieldMapping("caption", "légende"),
             # Étoile hôte

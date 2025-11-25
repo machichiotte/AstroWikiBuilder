@@ -27,11 +27,28 @@ class InfoboxSection:
 
         wiki_reference = exoplanet.reference.to_wiki_ref() if exoplanet.reference else None
 
+        # Ajouter les identifiants alternatifs (HD, HIP, TIC, Gaia) à pl_altname
+        alt_names = list(exoplanet.pl_altname) if exoplanet.pl_altname else []
+
+        if exoplanet.hd_name:
+            alt_names.append(exoplanet.hd_name)
+        if exoplanet.hip_name:
+            alt_names.append(exoplanet.hip_name)
+        if exoplanet.tic_id:
+            alt_names.append(exoplanet.tic_id)
+        if exoplanet.gaia_id:
+            alt_names.append(exoplanet.gaia_id)
+
+        # Créer une copie modifiée de l'exoplanet avec les identifiants ajoutés
+        from dataclasses import replace
+
+        exoplanet_with_ids = replace(exoplanet, pl_altname=alt_names if alt_names else None)
+
         # Récupération des mappings spécifiques aux exoplanètes
         mappings = InfoboxMapper.convert_exoplanet_to_infobox()
 
         for mapping in mappings:
-            value = getattr(exoplanet, mapping.source_attribute, None)
+            value = getattr(exoplanet_with_ids, mapping.source_attribute, None)
 
             field_block = self.inbox_field_formatter.process_field(
                 value=value,

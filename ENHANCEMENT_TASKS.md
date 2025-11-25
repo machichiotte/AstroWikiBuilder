@@ -22,11 +22,11 @@
   - [x] Tests unitaires (9 tests passent)
   - [x] Commit
 
-- [ ] **1.3 - Enrichir `infobox_section.py` (Exoplanètes)**
-  - [ ] Ajouter identifiants alternatifs (HD, HIP, TIC, Gaia DR2/DR3)
-  - [ ] Ajouter flag de controverse (`pl_controv_flag`)
-  - [ ] Tests unitaires (couverture actuelle: **93%**)
-  - [ ] Commit
+- [x] **1.3 - Enrichir `infobox_section.py` (Exoplanètes)** ✅ **Complété**
+  - [x] Ajouter identifiants alternatifs (HD, HIP, TIC, Gaia DR2/DR3)
+  - [x] Ajouter flag de controverse (`pl_controv_flag`)
+  - [x] Tests unitaires (8 tests passent)
+  - [x] Commit
 
 ### Étoiles
 
