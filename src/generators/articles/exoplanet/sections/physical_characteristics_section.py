@@ -85,6 +85,52 @@ class PhysicalCharacteristicsSection:
 
         return f"sa température {label}de {temp_value} [[Kelvin|K]]"
 
+    def _compare_to_solar_system(self, density: float) -> str:
+        """Compare la densité à celle des planètes du système solaire.
+
+        Args:
+            density: Densité en g/cm³
+
+        Returns:
+            Phrase de comparaison avec les planètes du système solaire
+        """
+        if density < 0.7:
+            return "moins dense que Saturne"
+        elif density < 1.0:
+            return "comparable à Saturne"
+        elif density < 1.5:
+            return "proche de Jupiter"
+        elif density < 2.0:
+            return "entre Jupiter et Neptune"
+        elif density < 3.5:
+            return "plus dense que les géantes gazeuses"
+        elif density < 5.0:
+            return "de densité intermédiaire"
+        else:
+            return "comparable aux planètes telluriques comme la Terre"
+
+    def _format_density_description(self, density: float | int) -> str | None:
+        """Formate la description de la densité.
+
+        Args:
+            density: Densité en g/cm³
+
+        Returns:
+            Description formatée de la densité ou None si erreur
+        """
+        try:
+            density_f = float(density)
+        except Exception:
+            return None
+
+        precision = 2
+        density_value = self.article_util.format_number_as_french_string(
+            density, precision=precision
+        )
+        comparison = self._compare_to_solar_system(density_f)
+
+        return f"sa densité de {density_value} g/cm³ ({comparison})"
+
     def generate(self, exoplanet: Exoplanet) -> str:
         """
         Génère la section des caractéristiques physiques.
@@ -94,9 +140,10 @@ class PhysicalCharacteristicsSection:
         """
         mass = self._get_value_or_none_if_nan(exoplanet.pl_mass)
         radius = self._get_value_or_none_if_nan(exoplanet.pl_radius)
+        density = self._get_value_or_none_if_nan(exoplanet.pl_density)
         temp = self._get_value_or_none_if_nan(exoplanet.pl_temperature)
 
-        if not any([mass is not None, radius is not None, temp is not None]):
+        if not any([mass is not None, radius is not None, density is not None, temp is not None]):
             return ""
 
         section = "== Caractéristiques physiques ==\n"
@@ -111,6 +158,11 @@ class PhysicalCharacteristicsSection:
             radius_desc = self._format_radius_description(radius)
             if radius_desc:
                 desc_parts.append(radius_desc)
+
+        if density is not None:
+            density_desc = self._format_density_description(density)
+            if density_desc:
+                desc_parts.append(density_desc)
 
         if temp is not None:
             temp_desc = self._format_temperature_description(temp)
