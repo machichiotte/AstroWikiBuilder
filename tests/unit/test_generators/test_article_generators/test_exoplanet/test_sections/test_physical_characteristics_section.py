@@ -1,7 +1,8 @@
 # tests/unit/test_generators/test_article_generators/test_exoplanet/test_sections/test_physical_characteristics_section.py
 
-import pytest
 from unittest.mock import MagicMock
+
+import pytest
 
 from src.generators.articles.exoplanet.sections.physical_characteristics_section import (
     PhysicalCharacteristicsSection,
