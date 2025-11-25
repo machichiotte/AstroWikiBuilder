@@ -26,6 +26,9 @@ from src.generators.articles.star.sections.physical_characteristics_section impo
 from src.generators.articles.star.sections.planetary_system_section import (
     PlanetarySystemSection,
 )
+from src.generators.articles.star.sections.rotation_activity_section import (
+    RotationActivitySection,
+)
 from src.generators.base.base_wikipedia_article_generator import (
     BaseWikipediaArticleGenerator,
 )
@@ -66,6 +69,7 @@ class StarWikipediaArticleGenerator(BaseWikipediaArticleGenerator):
 
         # Initialize granular sections
         self.physical_characteristics_section = PhysicalCharacteristicsSection(self.article_util)
+        self.rotation_activity_section = RotationActivitySection(self.article_util)
         self.observation_section = ObservationSection(self.article_util)
         self.environment_section = EnvironmentSection()
         self.history_section = HistorySection()
@@ -103,6 +107,7 @@ class StarWikipediaArticleGenerator(BaseWikipediaArticleGenerator):
         """
         sections = [
             self.physical_characteristics_section.generate(star),
+            self.rotation_activity_section.generate(star),
             self.observation_section.generate(star),
             self.environment_section.generate(star),
             self.history_section.generate(star),

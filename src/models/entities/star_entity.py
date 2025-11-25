@@ -184,6 +184,8 @@ class Star:
     st_metallicity_2: ValueWithUncertainty | None = None
     st_rotation: ValueWithUncertainty | None = None
     st_rotation_2: ValueWithUncertainty | None = None
+    st_vsin: ValueWithUncertainty | None = None
+    st_vsin_2: ValueWithUncertainty | None = None
     st_age: ValueWithUncertainty | None = None
     st_age_2: ValueWithUncertainty | None = None
     st_evolutionary_stage: str | None = None
