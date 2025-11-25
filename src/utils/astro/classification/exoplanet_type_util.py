@@ -1,5 +1,7 @@
 # src/utils/astro/classification/exoplanet_type_util.py
 
+import math
+
 from src.models.entities.exoplanet_entity import Exoplanet
 
 
@@ -129,7 +131,7 @@ class ExoplanetTypeUtil:
         self, insolation: float | None, semi_major_axis: float | None
     ) -> str:
         """Classifie un Neptune par insolation/distance."""
-        if insolation:
+        if insolation is not None and not math.isnan(insolation):
             return "Neptune chaud" if insolation > 20 else "Neptune froid"
         if semi_major_axis:
             return "Neptune chaud" if semi_major_axis < 1.0 else "Neptune froid"

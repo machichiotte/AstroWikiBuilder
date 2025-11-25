@@ -185,6 +185,30 @@ def _log_statistics_exoplanets(exo_stats: dict[str, Any]) -> None:
         title="Par plage de rayon (RJ)", data=exo_stats.get("radius_ranges", {}), total=total_exo
     )
 
+    _log_category_stats(
+        title="Par plage d'insolation (flux terrestre)",
+        data=exo_stats.get("insolation_ranges", {}),
+        total=total_exo,
+    )
+
+    _log_category_stats(
+        title="Par plage de température (K)",
+        data=exo_stats.get("temperature_ranges", {}),
+        total=total_exo,
+    )
+
+    _log_category_stats(
+        title="Par catégorie de densité",
+        data=exo_stats.get("density_categories", {}),
+        total=total_exo,
+    )
+
+    _log_category_stats(
+        title="Par plage d'excentricité",
+        data=exo_stats.get("eccentricity_ranges", {}),
+        total=total_exo,
+    )
+
 
 def _log_statistics_stars(star_stats: dict[str, Any]) -> None:
     """

@@ -35,5 +35,6 @@ class InsolationSection:
         elif flux_value < 4:
             section += f"La planète reçoit {flux_str} fois le flux lumineux que la Terre reçoit du Soleil. Ce flux élevé indique une proximité importante avec son étoile hôte, susceptible d'entraîner une température de surface très élevée et l'évaporation de toute eau liquide.\n"
         else:
-            section += f"La planète reçoit {flux_str} fois le flux lumineux que la Terre reçoit du Soleil. Ce flux extrêmement élevé, supérieur à celui de [[Mercure (planète)|Mercure]], indique une très grande proximité avec son étoile hôte. De telles conditions entraînent des températures de surface extrêmes et peuvent provoquer l'évaporation massive de l'atmosphère.\n"
+            section += f"La planète reçoit {flux_str} fois le flux lumineux que la Terre reçoit du Soleil. Ce flux extrêmement élevé, supérieur à celui de [[Mercure (planète)|Mercure]], indique une très grande proximité avec son étoile hôte. De telles conditions entraînent des températures de surface extrêmes et peuvent provoquer l'évaporation massive de l'atmosphère.\n\n"
+            section += "{{Note|Les planètes recevant un flux d'insolation très élevé sont surreprésentées dans les catalogues d'exoplanètes en raison des [[biais de détection]]. Les méthodes de détection par [[Méthode des transits|transit]] et par [[Méthode des vitesses radiales|vitesse radiale]] favorisent la découverte de planètes proches de leur étoile, qui orbitent rapidement et produisent des signaux plus intenses.}}\n"
         return section

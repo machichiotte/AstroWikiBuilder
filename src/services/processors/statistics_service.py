@@ -55,6 +55,33 @@ class StatisticsService:
                 "5-10": 0,
                 "10+": 0,
             },
+            "insolation_ranges": {
+                "0-0.5": 0,  # Très faible (au-delà de Mars)
+                "0.5-1.5": 0,  # Zone habitable
+                "1.5-10": 0,  # Modéré
+                "10-100": 0,  # Élevé
+                "100-1000": 0,  # Très élevé
+                "1000+": 0,  # Extrême (Jupiters chauds)
+            },
+            "temperature_ranges": {
+                "0-200": 0,  # Très froid
+                "200-400": 0,  # Froid
+                "400-600": 0,  # Tempéré
+                "600-1000": 0,  # Chaud
+                "1000-2000": 0,  # Très chaud
+                "2000+": 0,  # Extrême
+            },
+            "density_categories": {
+                "gazeuse": 0,  # < 2 g/cm³
+                "neptunienne": 0,  # 2-4 g/cm³
+                "tellurique": 0,  # > 4 g/cm³
+            },
+            "eccentricity_ranges": {
+                "circulaire": 0,  # < 0.1
+                "faible": 0,  # 0.1-0.3
+                "modérée": 0,  # 0.3-0.5
+                "élevée": 0,  # > 0.5
+            },
         }
 
         for exoplanet in exoplanets:
@@ -69,8 +96,80 @@ class StatisticsService:
             if exoplanet.pl_radius and exoplanet.pl_radius.value:
                 self._update_range_stats(exoplanet.pl_radius.value, stats["radius_ranges"])
 
+            # Plages d'insolation
+            if exoplanet.pl_insolation_flux and exoplanet.pl_insolation_flux.value:
+                self._update_insolation_stats(
+                    exoplanet.pl_insolation_flux.value, stats["insolation_ranges"]
+                )
+
+            # Plages de température
+            if exoplanet.pl_temperature and exoplanet.pl_temperature.value:
+                self._update_temperature_stats(
+                    exoplanet.pl_temperature.value, stats["temperature_ranges"]
+                )
+
+            # Catégories de densité
+            if exoplanet.pl_density and exoplanet.pl_density.value:
+                self._update_density_stats(exoplanet.pl_density.value, stats["density_categories"])
+
+            # Plages d'excentricité
+            if exoplanet.pl_eccentricity and exoplanet.pl_eccentricity.value:
+                self._update_eccentricity_stats(
+                    exoplanet.pl_eccentricity.value, stats["eccentricity_ranges"]
+                )
+
         logger.info("Statistics generation for exoplanets complete.")
         return stats
+
+    def _update_insolation_stats(self, value: float, ranges_dict: dict[str, int]) -> None:
+        """Catégorise l'insolation (flux stellaire relatif à la Terre)"""
+        if value < 0.5:
+            ranges_dict["0-0.5"] += 1
+        elif value < 1.5:
+            ranges_dict["0.5-1.5"] += 1
+        elif value < 10:
+            ranges_dict["1.5-10"] += 1
+        elif value < 100:
+            ranges_dict["10-100"] += 1
+        elif value < 1000:
+            ranges_dict["100-1000"] += 1
+        else:
+            ranges_dict["1000+"] += 1
+
+    def _update_temperature_stats(self, value: float, ranges_dict: dict[str, int]) -> None:
+        """Catégorise la température d'équilibre (en Kelvin)"""
+        if value < 200:
+            ranges_dict["0-200"] += 1
+        elif value < 400:
+            ranges_dict["200-400"] += 1
+        elif value < 600:
+            ranges_dict["400-600"] += 1
+        elif value < 1000:
+            ranges_dict["600-1000"] += 1
+        elif value < 2000:
+            ranges_dict["1000-2000"] += 1
+        else:
+            ranges_dict["2000+"] += 1
+
+    def _update_density_stats(self, value: float, categories_dict: dict[str, int]) -> None:
+        """Catégorise la densité (en g/cm³)"""
+        if value < 2:
+            categories_dict["gazeuse"] += 1
+        elif value < 4:
+            categories_dict["neptunienne"] += 1
+        else:
+            categories_dict["tellurique"] += 1
+
+    def _update_eccentricity_stats(self, value: float, ranges_dict: dict[str, int]) -> None:
+        """Catégorise l'excentricité orbitale"""
+        if value < 0.1:
+            ranges_dict["circulaire"] += 1
+        elif value < 0.3:
+            ranges_dict["faible"] += 1
+        elif value < 0.5:
+            ranges_dict["modérée"] += 1
+        else:
+            ranges_dict["élevée"] += 1
 
     def generate_statistics_star(self, stars: list[Star]) -> dict[str, Any]:
         """
