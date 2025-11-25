@@ -126,15 +126,15 @@
 
 ### Nouvelles Sections Exoplanètes
 
-- [ ] **2.14 - Enrichir `orbit_section.py`**
+- [x] **2.14 - Enrichir `orbit_section.py`** ✅ **Complété**
 
-  - [ ] Ajouter obliquité projetée (`pl_projobliq`)
-  - [ ] Ajouter obliquité vraie (`pl_trueobliq`)
-  - [ ] Ajouter séparation angulaire (`pl_angsep`)
-  - [ ] Ajouter paramètre d'impact (`pl_imppar`)
-  - [ ] Ajouter ratios géométriques (`pl_ratdor`, `pl_ratror`)
-  - [ ] Tests unitaires
-  - [ ] Commit
+  - [x] Utiliser obliquité projetée (`pl_projobliq`)
+  - [x] Utiliser obliquité vraie (`pl_trueobliq`)
+  - [x] Utiliser séparation angulaire (`pl_angsep`) - Déjà disponible comme `pl_angular_distance`
+  - [x] Utiliser paramètre d'impact (`pl_imppar`)
+  - [x] Utiliser ratios géométriques (`pl_ratdor`, `pl_ratror`)
+  - [x] Tests unitaires (7 tests passent)
+  - [x] Commit
 
 - [ ] **2.15 - Créer `spectroscopy_section.py`**
 

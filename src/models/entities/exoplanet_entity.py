@@ -128,6 +128,11 @@ class Exoplanet:
     pl_inclination: ValueWithUncertainty | None = None
     pl_argument_of_periastron: float | None = None
     pl_epoch: float | None = None
+    pl_projobliq: ValueWithUncertainty | None = None
+    pl_trueobliq: ValueWithUncertainty | None = None
+    pl_imppar: ValueWithUncertainty | None = None
+    pl_ratdor: ValueWithUncertainty | None = None
+    pl_ratror: ValueWithUncertainty | None = None
 
     # Caractéristiques physiques
     pl_mass: ValueWithUncertainty | None = None
