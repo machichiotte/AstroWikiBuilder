@@ -29,6 +29,7 @@ def mock_star():
     star.st_temperature = None
     star.st_mass = None
     star.st_radius = None
+    star.st_density = None
     star.st_luminosity = None
     return star
 
@@ -54,3 +55,35 @@ class TestPhysicalCharacteristicsSection:
         assert "type spectral G2V" in content
         assert "5778" in content
         assert "1,0" in content
+
+    def test_physical_characteristics_with_density(self, article_util, mock_star):
+        """Test avec densité stellaire."""
+        mock_star.st_density = ValueWithUncertainty(value=1.41)
+
+        section = PhysicalCharacteristicsSection(article_util)
+        content = section.generate(mock_star)
+
+        assert "== Caractéristiques physiques ==" in content
+        assert "densité moyenne" in content
+        assert "1,41" in content
+        assert "g/cm³" in content
+
+    def test_physical_characteristics_with_all_fields(self, article_util, mock_star):
+        """Test avec tous les champs."""
+        mock_star.st_spectral_type = "G2V"
+        mock_star.st_temperature = ValueWithUncertainty(value=5778)
+        mock_star.st_mass = ValueWithUncertainty(value=1.0)
+        mock_star.st_radius = ValueWithUncertainty(value=1.0)
+        mock_star.st_density = ValueWithUncertainty(value=1.41)
+        mock_star.st_luminosity = ValueWithUncertainty(value=1.0)
+
+        section = PhysicalCharacteristicsSection(article_util)
+        content = section.generate(mock_star)
+
+        assert "== Caractéristiques physiques ==" in content
+        assert "type spectral G2V" in content
+        assert "5778" in content
+        assert "masse" in content
+        assert "rayon" in content
+        assert "densité" in content
+        assert "luminosité" in content

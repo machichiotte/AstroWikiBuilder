@@ -21,6 +21,7 @@ class PhysicalCharacteristicsSection:
                 star.st_mass,
                 star.st_radius,
                 star.st_luminosity,
+                star.st_density,
             ]
         ):
             return ""
@@ -31,6 +32,7 @@ class PhysicalCharacteristicsSection:
         self._add_temperature(star, content)
         self._add_mass(star, content)
         self._add_radius(star, content)
+        self._add_density(star, content)
         self._add_luminosity(star, content)
 
         return "\n".join(content)
@@ -53,6 +55,11 @@ class PhysicalCharacteristicsSection:
         if star.st_radius and star.st_radius.value:
             radius: str = self.article_util.format_number_as_french_string(star.st_radius.value)
             content.append(f"Son rayon est d'environ {radius} fois celui du Soleil.")
+
+    def _add_density(self, star: Star, content: list[str]) -> None:
+        if star.st_density and star.st_density.value:
+            density: str = self.article_util.format_number_as_french_string(star.st_density.value)
+            content.append(f"Sa densité moyenne est d'environ {density} g/cm³.")
 
     def _add_luminosity(self, star: Star, content: list[str]) -> None:
         if star.st_luminosity and star.st_luminosity.value:
