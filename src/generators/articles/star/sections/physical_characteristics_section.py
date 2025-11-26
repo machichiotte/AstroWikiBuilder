@@ -34,6 +34,9 @@ class PhysicalCharacteristicsSection:
         self._add_radius(star, content)
         self._add_density(star, content)
         self._add_luminosity(star, content)
+        self._add_metallicity(star, content)
+        self._add_surface_gravity(star, content)
+        self._add_age(star, content)
 
         return "\n".join(content)
 
@@ -42,26 +45,43 @@ class PhysicalCharacteristicsSection:
             content.append(f"Cette étoile est de type spectral {star.st_spectral_type}.")
 
     def _add_temperature(self, star: Star, content: list[str]) -> None:
-        if star.st_temperature and star.st_temperature.value:
+        if star.st_temperature and star.st_temperature.value is not None:
             temp: str = self.article_util.format_number_as_french_string(star.st_temperature.value)
             content.append(f"Sa température effective est d'environ {temp} [[kelvin|K]].")
 
     def _add_mass(self, star: Star, content: list[str]) -> None:
-        if star.st_mass and star.st_mass.value:
+        if star.st_mass and star.st_mass.value is not None:
             mass: str = self.article_util.format_number_as_french_string(star.st_mass.value)
             content.append(f"Sa masse est estimée à {mass} fois celle du [[Soleil]].")
 
     def _add_radius(self, star: Star, content: list[str]) -> None:
-        if star.st_radius and star.st_radius.value:
+        if star.st_radius and star.st_radius.value is not None:
             radius: str = self.article_util.format_number_as_french_string(star.st_radius.value)
             content.append(f"Son rayon est d'environ {radius} fois celui du Soleil.")
 
     def _add_density(self, star: Star, content: list[str]) -> None:
-        if star.st_density and star.st_density.value:
+        if star.st_density and star.st_density.value is not None:
             density: str = self.article_util.format_number_as_french_string(star.st_density.value)
             content.append(f"Sa densité moyenne est d'environ {density} g/cm³.")
 
     def _add_luminosity(self, star: Star, content: list[str]) -> None:
-        if star.st_luminosity and star.st_luminosity.value:
+        if star.st_luminosity and star.st_luminosity.value is not None:
             lum: str = self.article_util.format_number_as_french_string(star.st_luminosity.value)
             content.append(f"Sa luminosité est d'environ {lum} fois celle du Soleil.")
+
+    def _add_metallicity(self, star: Star, content: list[str]) -> None:
+        if star.st_metallicity and star.st_metallicity.value is not None:
+            met: str = self.article_util.format_number_as_french_string(star.st_metallicity.value)
+            content.append(f"Sa métallicité est estimée à [Fe/H] = {met}.")
+
+    def _add_surface_gravity(self, star: Star, content: list[str]) -> None:
+        if star.st_surface_gravity and star.st_surface_gravity.value is not None:
+            logg: str = self.article_util.format_number_as_french_string(
+                star.st_surface_gravity.value
+            )
+            content.append(f"Sa gravité de surface (log g) est de {logg}.")
+
+    def _add_age(self, star: Star, content: list[str]) -> None:
+        if star.st_age and star.st_age.value is not None:
+            age: str = self.article_util.format_number_as_french_string(star.st_age.value)
+            content.append(f"L'âge de l'étoile est estimé à environ {age} milliards d'années.")

@@ -12,7 +12,7 @@ class RotationActivitySection:
 
     def generate(self, star: Star) -> str:
         """Génère la section sur la rotation et l'activité stellaire."""
-        if not any([star.st_rotation, star.st_vsin, star.st_radial_velocity]):
+        if not any([star.st_rotation, star.st_vsin, star.st_radial_velocity, star.st_log_rhk]):
             return ""
 
         content: list[str] = ["== Rotation et activité ==\n"]
@@ -30,5 +30,9 @@ class RotationActivitySection:
                 star.st_radial_velocity.value
             )
             content.append(f"La vitesse radiale systémique de l'étoile est d'environ {radv} km/s.")
+
+        if star.st_log_rhk and star.st_log_rhk.value:
+            rhk: str = self.article_util.format_number_as_french_string(star.st_log_rhk.value)
+            content.append(f"Son indice d'activité chromosphérique (log R'HK) est de {rhk}.")
 
         return "\n".join(content)

@@ -45,6 +45,18 @@ class PhotometrySection:
         # 2MASS (J, H, K)
         magnitudes.extend(self._collect_2mass_magnitudes(star))
 
+        # WISE (W1, W2, W3, W4)
+        magnitudes.extend(self._collect_wise_magnitudes(star))
+
+        # Gaia (G)
+        magnitudes.extend(self._collect_gaia_magnitudes(star))
+
+        # TESS (T)
+        magnitudes.extend(self._collect_tess_magnitudes(star))
+
+        # Kepler (Kp)
+        magnitudes.extend(self._collect_kepler_magnitudes(star))
+
         return magnitudes
 
     def _collect_johnson_magnitudes(self, star: Star) -> list[dict]:
@@ -110,6 +122,74 @@ class PhotometrySection:
                         "system": "2MASS",
                     }
                 )
+
+        return magnitudes
+
+    def _collect_wise_magnitudes(self, star: Star) -> list[dict]:
+        """Collecte les magnitudes WISE."""
+        magnitudes = []
+
+        mag_mapping = [
+            (star.st_mag_w1, "W1"),
+            (star.st_mag_w2, "W2"),
+            (star.st_mag_w3, "W3"),
+            (star.st_mag_w4, "W4"),
+        ]
+
+        for mag_value, band in mag_mapping:
+            if mag_value and mag_value.value is not None:
+                magnitudes.append(
+                    {
+                        "band": band,
+                        "value": self._format_magnitude(mag_value),
+                        "system": "WISE",
+                    }
+                )
+
+        return magnitudes
+
+    def _collect_gaia_magnitudes(self, star: Star) -> list[dict]:
+        """Collecte les magnitudes Gaia."""
+        magnitudes = []
+
+        if star.st_mag_gaia and star.st_mag_gaia.value is not None:
+            magnitudes.append(
+                {
+                    "band": "G",
+                    "value": self._format_magnitude(star.st_mag_gaia),
+                    "system": "Gaia",
+                }
+            )
+
+        return magnitudes
+
+    def _collect_tess_magnitudes(self, star: Star) -> list[dict]:
+        """Collecte les magnitudes TESS."""
+        magnitudes = []
+
+        if star.st_mag_t and star.st_mag_t.value is not None:
+            magnitudes.append(
+                {
+                    "band": "T",
+                    "value": self._format_magnitude(star.st_mag_t),
+                    "system": "TESS",
+                }
+            )
+
+        return magnitudes
+
+    def _collect_kepler_magnitudes(self, star: Star) -> list[dict]:
+        """Collecte les magnitudes Kepler."""
+        magnitudes = []
+
+        if star.st_mag_kep and star.st_mag_kep.value is not None:
+            magnitudes.append(
+                {
+                    "band": "Kp",
+                    "value": self._format_magnitude(star.st_mag_kep),
+                    "system": "Kepler",
+                }
+            )
 
         return magnitudes
 

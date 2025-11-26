@@ -146,6 +146,13 @@ class Star:
     st_mag_h_2: ValueWithUncertainty | None = None
     st_mag_k: ValueWithUncertainty | None = None
     st_mag_k_2: ValueWithUncertainty | None = None
+    st_mag_w1: ValueWithUncertainty | None = None
+    st_mag_w2: ValueWithUncertainty | None = None
+    st_mag_w3: ValueWithUncertainty | None = None
+    st_mag_w4: ValueWithUncertainty | None = None
+    st_mag_gaia: ValueWithUncertainty | None = None
+    st_mag_t: ValueWithUncertainty | None = None
+    st_mag_kep: ValueWithUncertainty | None = None
 
     # Indices de couleur
     st_u_b_color: ValueWithUncertainty | None = None
@@ -191,6 +198,7 @@ class Star:
     st_rotation_2: ValueWithUncertainty | None = None
     st_vsin: ValueWithUncertainty | None = None
     st_vsin_2: ValueWithUncertainty | None = None
+    st_log_rhk: ValueWithUncertainty | None = None
     st_age: ValueWithUncertainty | None = None
     st_age_2: ValueWithUncertainty | None = None
     st_evolutionary_stage: str | None = None

@@ -731,6 +731,7 @@ NEA_TO_STAR_MAPPING = {
     "st_spectype": "st_spectral_type",
     "st_radv": "st_radial_velocity",
     "st_rotp": "st_rotation",
+    "st_log_rhk": "st_log_rhk",
     "sy_snum": "sy_star_count",
 }
 

@@ -21,8 +21,13 @@ class PhysicalCharacteristicsSection:
             return value
         return None
 
-    def _format_mass_description(self, mass: float | int) -> str | None:
+    def _format_mass_description(self, exoplanet: Exoplanet) -> str | None:
         """Formate la description de la masse."""
+        mass_obj = exoplanet.pl_mass
+        if not mass_obj or mass_obj.value is None:
+            return None
+
+        mass = mass_obj.value
         try:
             mass_f = float(mass)
         except Exception:
@@ -38,7 +43,15 @@ class PhysicalCharacteristicsSection:
         else:
             label = "imposante"
 
-        return f"sa masse {label} de {mass_value} [[Masse_jovienne|''M''{{{{ind|J}}}}]]"
+        # Distinction masse minimale vs masse réelle
+        mass_type = "masse"
+        if exoplanet.disc_method == "Radial Velocity":
+            mass_type = "masse minimale"
+
+        # Si pl_minimum_mass est explicitement présent et différent de pl_mass, on pourrait affiner
+        # mais ici on se base sur la méthode de détection qui est le proxy standard.
+
+        return f"sa {mass_type} {label} de {mass_value} [[Masse_jovienne|''M''{{{{ind|J}}}}]]"
 
     def _format_radius_description(self, radius: float | int) -> str | None:
         """Formate la description du rayon."""
@@ -133,7 +146,7 @@ class PhysicalCharacteristicsSection:
 
     def _collect_characteristic_descriptions(
         self,
-        mass: float | int | None,
+        exoplanet: Exoplanet,
         radius: float | int | None,
         density: float | int | None,
         temp: float | int | None,
@@ -141,8 +154,8 @@ class PhysicalCharacteristicsSection:
         """Collecte les descriptions des caractéristiques disponibles."""
         desc_parts = []
 
-        if mass is not None:
-            mass_desc = self._format_mass_description(mass)
+        if exoplanet.pl_mass and exoplanet.pl_mass.value is not None:
+            mass_desc = self._format_mass_description(exoplanet)
             if mass_desc:
                 desc_parts.append(mass_desc)
 
@@ -184,7 +197,7 @@ class PhysicalCharacteristicsSection:
         if not any([mass is not None, radius is not None, density is not None, temp is not None]):
             return ""
 
-        desc_parts = self._collect_characteristic_descriptions(mass, radius, density, temp)
+        desc_parts = self._collect_characteristic_descriptions(exoplanet, radius, density, temp)
         if not desc_parts:
             return ""
 
