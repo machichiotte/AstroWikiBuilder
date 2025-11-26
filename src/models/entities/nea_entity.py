@@ -731,6 +731,7 @@ NEA_TO_STAR_MAPPING = {
     "st_spectype": "st_spectral_type",
     "st_radv": "st_radial_velocity",
     "st_rotp": "st_rotation",
+    "sy_snum": "sy_star_count",
 }
 
 # Mapping des colonnes NEA vers les attributs Exoplanet
@@ -762,6 +763,8 @@ NEA_TO_EXOPLANET_MAPPING = {
     "pl_insol": "pl_insolation_flux",
     "pl_trandep": "pl_transit_depth",
     "sy_pnum": "sy_planet_count",
+    "sy_snum": "sy_snum",
+    "cb_flag": "cb_flag",
 }
 
 # Unités par défaut pour certains champs NEA

@@ -94,6 +94,9 @@ class Star:
     st_caption: str | None = None
     st_coord_title: str | None = None
 
+    # Système stellaire
+    sy_star_count: int | None = None
+
     # Données d'observation
     apparent_magnitude: ValueWithUncertainty | None = None
     st_epoch: ValueWithUncertainty | None = None

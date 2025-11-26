@@ -31,10 +31,21 @@ class IntroductionSection:
             return None
 
         st_name: str = exoplanet.st_name
+
+        # Gestion des planètes circumbinaires
+        if exoplanet.cb_flag == 1:
+            system_type = (
+                "[[système binaire (astronomie)|système binaire]]"
+                if exoplanet.sy_snum == 2
+                else "[[système stellaire]]"
+            )
+            return f" en orbite circumbinaire autour du {system_type} [[{st_name}]]"
+
         star_type_descriptions: list[str] = (
             self.star_type_util.determine_star_types_from_properties(exoplanet)
         )
 
+        phrase = ""
         if star_type_descriptions:
             desc = star_type_descriptions[0].strip()
             desc_clean = desc[0].lower() + desc[1:]
@@ -42,9 +53,20 @@ class IntroductionSection:
             article = get_french_article_noun(
                 desc_clean, gender=genre, preposition="de", with_brackets=True
             )
-            return f" en orbite autour {article} [[{st_name}]]"
+            phrase = f" en orbite autour {article} [[{st_name}]]"
         else:
-            return f" en orbite autour de son étoile hôte [[{st_name}]]"
+            phrase = f" en orbite autour de son étoile hôte [[{st_name}]]"
+
+        # Ajout d'information sur la multiplicité du système
+        if exoplanet.sy_snum and exoplanet.sy_snum > 1:
+            if exoplanet.sy_snum == 2:
+                phrase += ", membre d'un [[système binaire (astronomie)|système binaire]]"
+            elif exoplanet.sy_snum == 3:
+                phrase += ", membre d'un [[système triple (astronomie)|système triple]]"
+            else:
+                phrase += f", membre d'un [[système stellaire]] de {exoplanet.sy_snum} étoiles"
+
+        return phrase
 
     def _compose_distance_phrase(self, exoplanet: Exoplanet) -> str | None:
         """Construit le segment de phrase concernant la distance."""

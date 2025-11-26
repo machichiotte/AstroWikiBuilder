@@ -50,11 +50,27 @@ class IntroductionSection:
 
         intro = f"'''{star_name}''' est"
 
+        # Détermination de la nature du système (binaire, triple, etc.)
+        is_multiple = False
+        if star.sy_star_count and star.sy_star_count > 1:
+            is_multiple = True
+            if star.sy_star_count == 2:
+                intro += " une [[étoile binaire]]"
+            elif star.sy_star_count == 3:
+                intro += " un [[système triple (astronomie)|système triple]]"
+            else:
+                intro += f" un [[système stellaire]] composé de {star.sy_star_count} étoiles"
+
         spectral_phrase = self._compose_star_type_phrase(star)
-        if spectral_phrase:
-            intro += f" {spectral_phrase}"
+
+        if is_multiple:
+            if spectral_phrase:
+                intro += f" dont la composante principale est {spectral_phrase}"
         else:
-            intro += " une étoile"
+            if spectral_phrase:
+                intro += f" {spectral_phrase}"
+            else:
+                intro += " une étoile"
 
         constellation_phrase = self._compose_constellation_phrase(star)
         if constellation_phrase:
