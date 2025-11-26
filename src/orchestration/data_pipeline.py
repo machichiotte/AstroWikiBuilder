@@ -109,6 +109,24 @@ def generate_and_export_statistics(
     return stats
 
 
+def _sort_dict_recursively(data: Any) -> Any:
+    """
+    Trie récursivement tous les dictionnaires par clé.
+
+    Args:
+        data: Données à trier (peut être dict, list, ou autre)
+
+    Returns:
+        Données triées
+    """
+    if isinstance(data, dict):
+        return {k: _sort_dict_recursively(v) for k, v in sorted(data.items())}
+    elif isinstance(data, list):
+        return [_sort_dict_recursively(item) for item in data]
+    else:
+        return data
+
+
 def _export_statistics_json(stats: dict[str, Any], output_dir: str, timestamp: str) -> None:
     """
     Sauvegarde les statistiques dans un fichier JSON.
@@ -121,9 +139,12 @@ def _export_statistics_json(stats: dict[str, Any], output_dir: str, timestamp: s
     stats_dir = os.path.join(output_dir, "statistics")
     os.makedirs(stats_dir, exist_ok=True)
 
+    # Trier tous les dictionnaires pour une meilleure lisibilité
+    sorted_stats = _sort_dict_recursively(stats)
+
     stats_path = os.path.join(stats_dir, f"statistics_{timestamp}.json")
     with open(stats_path, "w", encoding="utf-8") as f:
-        json.dump(stats, f, indent=2, ensure_ascii=False)
+        json.dump(sorted_stats, f, indent=2, ensure_ascii=False)
     logger.info(f"Statistiques sauvegardées dans {stats_path}")
 
 

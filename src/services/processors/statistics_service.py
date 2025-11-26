@@ -83,6 +83,67 @@ class StatisticsService:
                 "élevée": 0,  # > 0.5
             },
             "planet_types": {},  # Types de planètes (Jupiter chaud, Neptune froid, etc.)
+            # Nouvelles statistiques orbitales
+            "orbital_period_ranges": {
+                "< 1 jour": 0,
+                "1-10 jours": 0,
+                "10-100 jours": 0,
+                "100-365 jours": 0,
+                "1-10 ans": 0,
+                "> 10 ans": 0,
+            },
+            "semi_major_axis_ranges": {
+                "< 0.1 UA": 0,
+                "0.1-0.5 UA": 0,
+                "0.5-1.5 UA": 0,
+                "1.5-5 UA": 0,
+                "> 5 UA": 0,
+            },
+            "inclination_ranges": {
+                "< 10°": 0,
+                "10-45°": 0,
+                "45-90°": 0,
+                "> 90°": 0,
+            },
+            # Statistiques de découverte
+            "discovery_facilities": {},
+            "discovery_telescopes": {},
+            "discovery_programs": {},
+            # Statistiques stellaires
+            "star_distance_ranges": {
+                "< 10 pc": 0,
+                "10-50 pc": 0,
+                "50-100 pc": 0,
+                "100-500 pc": 0,
+                "> 500 pc": 0,
+            },
+            "star_magnitude_ranges": {
+                "< 5": 0,
+                "5-10": 0,
+                "10-15": 0,
+                "> 15": 0,
+            },
+            "star_metallicity_ranges": {
+                "< -0.5": 0,
+                "-0.5 à 0": 0,
+                "0 à +0.5": 0,
+                "> +0.5": 0,
+            },
+            # Statistiques système
+            "system_planet_count": {
+                "1": 0,
+                "2": 0,
+                "3-5": 0,
+                "> 5": 0,
+            },
+            "constellations": {},
+            # Statistiques atmosphériques
+            "atmospheric_observations": {
+                "with_transmission_spectrum": 0,
+                "with_emission_spectrum": 0,
+                "with_direct_imaging": 0,
+                "no_atmospheric_data": 0,
+            },
         }
 
         for exoplanet in exoplanets:
@@ -121,6 +182,82 @@ class StatisticsService:
 
             # Type de planète
             self._update_planet_type_stats(exoplanet, stats["planet_types"])
+
+            # Nouvelles statistiques orbitales
+            if exoplanet.pl_orbital_period and exoplanet.pl_orbital_period.value:
+                self._update_orbital_period_stats(
+                    exoplanet.pl_orbital_period.value, stats["orbital_period_ranges"]
+                )
+
+            if exoplanet.pl_semi_major_axis and exoplanet.pl_semi_major_axis.value:
+                self._update_semi_major_axis_stats(
+                    exoplanet.pl_semi_major_axis.value, stats["semi_major_axis_ranges"]
+                )
+
+            if exoplanet.pl_inclination and exoplanet.pl_inclination.value:
+                self._update_inclination_stats(
+                    exoplanet.pl_inclination.value, stats["inclination_ranges"]
+                )
+
+            # Statistiques de découverte
+            if exoplanet.disc_facility:
+                stats["discovery_facilities"][exoplanet.disc_facility] = (
+                    stats["discovery_facilities"].get(exoplanet.disc_facility, 0) + 1
+                )
+
+            if exoplanet.disc_telescope:
+                stats["discovery_telescopes"][exoplanet.disc_telescope] = (
+                    stats["discovery_telescopes"].get(exoplanet.disc_telescope, 0) + 1
+                )
+
+            if exoplanet.disc_program:
+                stats["discovery_programs"][exoplanet.disc_program] = (
+                    stats["discovery_programs"].get(exoplanet.disc_program, 0) + 1
+                )
+
+            # Statistiques stellaires
+            if exoplanet.st_distance and exoplanet.st_distance.value:
+                self._update_star_distance_stats(
+                    exoplanet.st_distance.value, stats["star_distance_ranges"]
+                )
+
+            if exoplanet.st_apparent_magnitude:
+                # st_apparent_magnitude peut être float ou ValueWithUncertainty
+                mag_value = (
+                    exoplanet.st_apparent_magnitude.value
+                    if hasattr(exoplanet.st_apparent_magnitude, "value")
+                    else exoplanet.st_apparent_magnitude
+                )
+                if mag_value is not None:
+                    self._update_star_magnitude_stats(mag_value, stats["star_magnitude_ranges"])
+
+            if exoplanet.st_metallicity and exoplanet.st_metallicity.value:
+                self._update_star_metallicity_stats(
+                    exoplanet.st_metallicity.value, stats["star_metallicity_ranges"]
+                )
+
+            # Statistiques système
+            if exoplanet.sy_planet_count:
+                # sy_planet_count peut être int ou ValueWithUncertainty
+                count_value = (
+                    exoplanet.sy_planet_count.value
+                    if hasattr(exoplanet.sy_planet_count, "value")
+                    else exoplanet.sy_planet_count
+                )
+                if count_value is not None:
+                    self._update_system_planet_count_stats(
+                        int(count_value), stats["system_planet_count"]
+                    )
+
+            if exoplanet.sy_constellation:
+                stats["constellations"][exoplanet.sy_constellation] = (
+                    stats["constellations"].get(exoplanet.sy_constellation, 0) + 1
+                )
+
+            # Statistiques atmosphériques
+            self._update_atmospheric_observations_stats(
+                exoplanet, stats["atmospheric_observations"]
+            )
 
         logger.info("Statistics generation for exoplanets complete.")
         return stats
@@ -182,6 +319,112 @@ class StatisticsService:
         classifier = ExoplanetTypeUtil()
         planet_type = classifier.determine_exoplanet_classification(exoplanet)
         types_dict[planet_type] = types_dict.get(planet_type, 0) + 1
+
+    def _update_orbital_period_stats(self, value: float, ranges_dict: dict[str, int]) -> None:
+        """Catégorise la période orbitale (en jours)"""
+        if value < 1:
+            ranges_dict["< 1 jour"] += 1
+        elif value < 10:
+            ranges_dict["1-10 jours"] += 1
+        elif value < 100:
+            ranges_dict["10-100 jours"] += 1
+        elif value < 365:
+            ranges_dict["100-365 jours"] += 1
+        elif value < 3650:  # 10 ans
+            ranges_dict["1-10 ans"] += 1
+        else:
+            ranges_dict["> 10 ans"] += 1
+
+    def _update_semi_major_axis_stats(self, value: float, ranges_dict: dict[str, int]) -> None:
+        """Catégorise le demi-grand axe (en UA)"""
+        if value < 0.1:
+            ranges_dict["< 0.1 UA"] += 1
+        elif value < 0.5:
+            ranges_dict["0.1-0.5 UA"] += 1
+        elif value < 1.5:
+            ranges_dict["0.5-1.5 UA"] += 1
+        elif value < 5:
+            ranges_dict["1.5-5 UA"] += 1
+        else:
+            ranges_dict["> 5 UA"] += 1
+
+    def _update_inclination_stats(self, value: float, ranges_dict: dict[str, int]) -> None:
+        """Catégorise l'inclinaison orbitale (en degrés)"""
+        if value < 10:
+            ranges_dict["< 10°"] += 1
+        elif value < 45:
+            ranges_dict["10-45°"] += 1
+        elif value < 90:
+            ranges_dict["45-90°"] += 1
+        else:
+            ranges_dict["> 90°"] += 1
+
+    def _update_star_distance_stats(self, value: float, ranges_dict: dict[str, int]) -> None:
+        """Catégorise la distance stellaire (en parsecs)"""
+        if value < 10:
+            ranges_dict["< 10 pc"] += 1
+        elif value < 50:
+            ranges_dict["10-50 pc"] += 1
+        elif value < 100:
+            ranges_dict["50-100 pc"] += 1
+        elif value < 500:
+            ranges_dict["100-500 pc"] += 1
+        else:
+            ranges_dict["> 500 pc"] += 1
+
+    def _update_star_magnitude_stats(self, value: float, ranges_dict: dict[str, int]) -> None:
+        """Catégorise la magnitude apparente"""
+        if value < 5:
+            ranges_dict["< 5"] += 1
+        elif value < 10:
+            ranges_dict["5-10"] += 1
+        elif value < 15:
+            ranges_dict["10-15"] += 1
+        else:
+            ranges_dict["> 15"] += 1
+
+    def _update_star_metallicity_stats(self, value: float, ranges_dict: dict[str, int]) -> None:
+        """Catégorise la métallicité stellaire [Fe/H]"""
+        if value < -0.5:
+            ranges_dict["< -0.5"] += 1
+        elif value < 0:
+            ranges_dict["-0.5 à 0"] += 1
+        elif value < 0.5:
+            ranges_dict["0 à +0.5"] += 1
+        else:
+            ranges_dict["> +0.5"] += 1
+
+    def _update_system_planet_count_stats(self, value: int, ranges_dict: dict[str, int]) -> None:
+        """Catégorise le nombre de planètes par système"""
+        if value == 1:
+            ranges_dict["1"] += 1
+        elif value == 2:
+            ranges_dict["2"] += 1
+        elif value <= 5:
+            ranges_dict["3-5"] += 1
+        else:
+            ranges_dict["> 5"] += 1
+
+    def _update_atmospheric_observations_stats(
+        self, exoplanet: Exoplanet, stats_dict: dict[str, int]
+    ) -> None:
+        """Catégorise les observations atmosphériques"""
+        has_data = False
+
+        if exoplanet.pl_ntranspec and exoplanet.pl_ntranspec > 0:
+            stats_dict["with_transmission_spectrum"] += 1
+            has_data = True
+
+        if exoplanet.pl_nespec and exoplanet.pl_nespec > 0:
+            stats_dict["with_emission_spectrum"] += 1
+            has_data = True
+
+        if exoplanet.pl_ndispec and exoplanet.pl_ndispec > 0:
+            stats_dict["with_direct_imaging"] += 1
+            has_data = True
+
+        if not has_data:
+            stats_dict["no_atmospheric_data"] += 1
 
     def generate_statistics_star(self, stars: list[Star]) -> dict[str, Any]:
         """
