@@ -147,6 +147,7 @@ class Exoplanet:
     pl_temperature: ValueWithUncertainty | None = None
     pl_insolation_flux: ValueWithUncertainty | None = None
     pl_transit_depth: ValueWithUncertainty | None = None
+    pl_occultation_depth: ValueWithUncertainty | None = None
     pl_albedo_bond: float | None = None
 
     # Atmosphère

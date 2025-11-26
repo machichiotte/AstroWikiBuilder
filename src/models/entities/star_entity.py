@@ -96,6 +96,8 @@ class Star:
 
     # Système stellaire
     sy_star_count: int | None = None
+    sy_mnum: int | None = None
+    sy_pm: ValueWithUncertainty | None = None
 
     # Données d'observation
     apparent_magnitude: ValueWithUncertainty | None = None
@@ -120,6 +122,8 @@ class Star:
     st_distance_2: ValueWithUncertainty | None = None
     glon: ValueWithUncertainty | None = None
     glat: ValueWithUncertainty | None = None
+    elon: ValueWithUncertainty | None = None
+    elat: ValueWithUncertainty | None = None
 
     # Caractéristiques spectroscopiques
     st_spectral_type: str | None = None

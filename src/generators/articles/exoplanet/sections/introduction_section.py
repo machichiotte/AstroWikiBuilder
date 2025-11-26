@@ -66,6 +66,13 @@ class IntroductionSection:
             else:
                 phrase += f", membre d'un [[système stellaire]] de {exoplanet.sy_snum} étoiles"
 
+        # Ajout d'information sur les lunes si présentes
+        if exoplanet.sy_mnum and exoplanet.sy_mnum > 0:
+            if exoplanet.sy_mnum == 1:
+                phrase += ", accompagné d'une lune"
+            else:
+                phrase += f", accompagné de {exoplanet.sy_mnum} lunes"
+
         return phrase
 
     def _compose_distance_phrase(self, exoplanet: Exoplanet) -> str | None:

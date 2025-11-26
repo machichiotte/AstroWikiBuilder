@@ -22,6 +22,8 @@ class OrbitSection:
         self._add_orbital_period(exoplanet, content)
         self._add_inclination(exoplanet, content)
         self._add_obliquity(exoplanet, content)
+        self._add_periastron_time(exoplanet, content)
+        self._add_argument_of_periastron(exoplanet, content)
         self._add_impact_parameter(exoplanet, content)
         self._add_geometric_ratios(exoplanet, content)
 
@@ -40,6 +42,8 @@ class OrbitSection:
                 exoplanet.pl_imppar,
                 exoplanet.pl_ratdor,
                 exoplanet.pl_ratror,
+                exoplanet.pl_periastron_time,
+                exoplanet.pl_argument_of_periastron,
             ]
         )
 
@@ -94,6 +98,25 @@ class OrbitSection:
             value_str = self.article_util.format_uncertain_value_for_article(exoplanet.pl_trueobliq)
             if value_str:
                 content.append(f"L'obliquité vraie est de {value_str} degrés.")
+
+    def _add_periastron_time(self, exoplanet: Exoplanet, content: list[str]) -> None:
+        """Ajoute la date du passage au périastre."""
+        if exoplanet.pl_periastron_time and exoplanet.pl_periastron_time.value is not None:
+            value_str = self.article_util.format_number_as_french_string(
+                exoplanet.pl_periastron_time.value
+            )
+            content.append(f"Le passage au périastre a lieu à JD {value_str}.")
+
+    def _add_argument_of_periastron(self, exoplanet: Exoplanet, content: list[str]) -> None:
+        """Ajoute l'argument du périastre."""
+        if (
+            exoplanet.pl_argument_of_periastron
+            and exoplanet.pl_argument_of_periastron.value is not None
+        ):
+            value_str = self.article_util.format_number_as_french_string(
+                exoplanet.pl_argument_of_periastron.value
+            )
+            content.append(f"L'argument du périastre (ω) est de {value_str} degrés.")
 
     def _add_impact_parameter(self, exoplanet: Exoplanet, content: list[str]) -> None:
         """Ajoute le paramètre d'impact."""

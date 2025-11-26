@@ -27,6 +27,13 @@ class DetectionObservationsSection:
         if exoplanet.disc_facility:
             content.append(f"Les observations ont été réalisées avec {exoplanet.disc_facility}.")
 
+        if exoplanet.pl_occultation_depth and exoplanet.pl_occultation_depth.value is not None:
+            depth_str = self.article_util.format_uncertain_value_for_article(
+                exoplanet.pl_occultation_depth
+            )
+            if depth_str:
+                content.append(f"La profondeur d'occultation mesurée est de {depth_str}.")
+
         return "\n".join(content)
 
     def _collect_detection_methods(self, exoplanet: Exoplanet) -> list[str]:

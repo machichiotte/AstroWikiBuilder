@@ -701,6 +701,8 @@ NEA_TO_STAR_MAPPING = {
     "sy_pmdec": "st_proper_motion_dec",
     "sy_plx": "st_parallax",
     "sy_dist": "st_distance",
+    "elon": "elon",
+    "elat": "elat",
     # Magnitudes
     "sy_bmag": "st_mag_b",
     "sy_vmag": "st_mag_v",
@@ -733,6 +735,8 @@ NEA_TO_STAR_MAPPING = {
     "st_rotp": "st_rotation",
     "st_log_rhk": "st_log_rhk",
     "sy_snum": "sy_star_count",
+    "sy_mnum": "sy_mnum",
+    "sy_pm": "sy_pm",
 }
 
 # Mapping des colonnes NEA vers les attributs Exoplanet
@@ -763,6 +767,7 @@ NEA_TO_EXOPLANET_MAPPING = {
     "st_age": "st_age",
     "pl_insol": "pl_insolation_flux",
     "pl_trandep": "pl_transit_depth",
+    "pl_occdep": "pl_occultation_depth",
     "sy_pnum": "sy_planet_count",
     "sy_snum": "sy_snum",
     "cb_flag": "cb_flag",
