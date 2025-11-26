@@ -2,7 +2,7 @@
 
 ![CI/CD Pipeline](https://github.com/machichiotte/AstroWikiBuilder/workflows/CI/CD%20Pipeline/badge.svg)
 ![Python Version](https://img.shields.io/badge/python-3.13-blue.svg)
-![Code Coverage](https://img.shields.io/badge/coverage-86%25-brightgreen.svg)
+![Code Coverage](https://img.shields.io/badge/coverage-96%25-brightgreen.svg)
 ![Code Quality](https://img.shields.io/badge/maintainability-A-brightgreen.svg)
 ![Security](https://img.shields.io/badge/security-passing-brightgreen.svg)
 
@@ -83,6 +83,7 @@ Les résultats (données consolidées, statistiques, brouillons) sont générés
 Le projet utilise un `Makefile` pour simplifier les tâches courantes :
 
 ### Qualité du code
+
 ```bash
 make lint          # Vérifie le style (Ruff) et la sécurité (Bandit)
 make format        # Formate automatiquement le code
@@ -91,23 +92,27 @@ make audit         # Audit de sécurité approfondi
 ```
 
 ### Tests
+
 ```bash
 make test          # Lance tous les tests
 make cov           # Tests avec rapport de couverture
 ```
 
 ### Analyse
+
 ```bash
 make stats         # Compte les lignes de code (cloc)
 make complexity    # Complexité cyclomatique et maintenabilité
 ```
 
 ### CI/CD
+
 ```bash
 make check         # Lance lint + tests + complexity (pour CI)
 ```
 
 ### Utilitaires
+
 ```bash
 make clean         # Nettoie les fichiers temporaires
 make help          # Affiche toutes les commandes disponibles
