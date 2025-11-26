@@ -144,6 +144,31 @@ class StatisticsService:
                 "with_direct_imaging": 0,
                 "no_atmospheric_data": 0,
             },
+            # Nouvelles statistiques Phase 2
+            "periastron_data_availability": {
+                "with_periastron_time": 0,
+                "with_argument_of_periastron": 0,
+                "with_both": 0,
+                "with_neither": 0,
+            },
+            "occultation_stats": {
+                "with_occultation_depth": 0,
+                "occultation_depth_ranges": {
+                    "< 0.001": 0,
+                    "0.001-0.01": 0,
+                    "0.01-0.1": 0,
+                    "> 0.1": 0,
+                },
+            },
+            "moon_statistics": {
+                "systems_with_moons": 0,
+                "total_moons": 0,
+                "moon_count_distribution": {
+                    "1": 0,
+                    "2-3": 0,
+                    "4+": 0,
+                },
+            },
         }
 
         for exoplanet in exoplanets:
@@ -258,6 +283,23 @@ class StatisticsService:
             self._update_atmospheric_observations_stats(
                 exoplanet, stats["atmospheric_observations"]
             )
+
+            # Nouvelles statistiques Phase 2
+            self._update_periastron_data_stats(exoplanet, stats["periastron_data_availability"])
+
+            if exoplanet.pl_occultation_depth and exoplanet.pl_occultation_depth.value:
+                stats["occultation_stats"]["with_occultation_depth"] += 1
+                self._update_occultation_depth_stats(
+                    exoplanet.pl_occultation_depth.value,
+                    stats["occultation_stats"]["occultation_depth_ranges"],
+                )
+
+            if exoplanet.sy_mnum and exoplanet.sy_mnum > 0:
+                stats["moon_statistics"]["systems_with_moons"] += 1
+                stats["moon_statistics"]["total_moons"] += exoplanet.sy_mnum
+                self._update_moon_count_stats(
+                    exoplanet.sy_mnum, stats["moon_statistics"]["moon_count_distribution"]
+                )
 
         logger.info("Statistics generation for exoplanets complete.")
         return stats
@@ -426,6 +468,45 @@ class StatisticsService:
         if not has_data:
             stats_dict["no_atmospheric_data"] += 1
 
+    def _update_periastron_data_stats(
+        self, exoplanet: Exoplanet, stats_dict: dict[str, int]
+    ) -> None:
+        """Catégorise la disponibilité des données de périastre"""
+        has_time = exoplanet.pl_periastron_time and exoplanet.pl_periastron_time.value is not None
+        has_argument = (
+            exoplanet.pl_argument_of_periastron
+            and exoplanet.pl_argument_of_periastron.value is not None
+        )
+
+        if has_time:
+            stats_dict["with_periastron_time"] += 1
+        if has_argument:
+            stats_dict["with_argument_of_periastron"] += 1
+        if has_time and has_argument:
+            stats_dict["with_both"] += 1
+        if not has_time and not has_argument:
+            stats_dict["with_neither"] += 1
+
+    def _update_occultation_depth_stats(self, value: float, ranges_dict: dict[str, int]) -> None:
+        """Catégorise la profondeur d'occultation"""
+        if value < 0.001:
+            ranges_dict["< 0.001"] += 1
+        elif value < 0.01:
+            ranges_dict["0.001-0.01"] += 1
+        elif value < 0.1:
+            ranges_dict["0.01-0.1"] += 1
+        else:
+            ranges_dict["> 0.1"] += 1
+
+    def _update_moon_count_stats(self, value: int, distribution_dict: dict[str, int]) -> None:
+        """Catégorise le nombre de lunes"""
+        if value == 1:
+            distribution_dict["1"] += 1
+        elif value <= 3:
+            distribution_dict["2-3"] += 1
+        else:
+            distribution_dict["4+"] += 1
+
     def generate_statistics_star(self, stars: list[Star]) -> dict[str, Any]:
         """
         Retourne des statistiques sur les données collectées pour les étoiles.
@@ -442,6 +523,49 @@ class StatisticsService:
             "total_stars": len(stars),
             "spectral_types": {},
             "discovery_years": {},
+            # Nouvelles statistiques Phase 2
+            "star_age_stats": {
+                "with_age_data": 0,
+                "age_ranges": {
+                    "< 1 Gyr": 0,
+                    "1-5 Gyr": 0,
+                    "5-10 Gyr": 0,
+                    "> 10 Gyr": 0,
+                },
+            },
+            "stellar_activity_stats": {
+                "with_activity_data": 0,
+                "activity_levels": {
+                    "très active": 0,
+                    "active": 0,
+                    "modérée": 0,
+                    "calme": 0,
+                },
+            },
+            "proper_motion_stats": {
+                "with_total_pm": 0,
+                "pm_ranges": {
+                    "< 10 mas/an": 0,
+                    "10-50 mas/an": 0,
+                    "50-100 mas/an": 0,
+                    "> 100 mas/an": 0,
+                },
+            },
+            "ecliptic_coordinates_stats": {
+                "with_ecliptic_coords": 0,
+                "ecliptic_latitude_ranges": {
+                    "< 10°": 0,
+                    "10-30°": 0,
+                    "30-60°": 0,
+                    "> 60°": 0,
+                },
+            },
+            "stellar_multiplicity_stats": {
+                "single_stars": 0,
+                "binary_systems": 0,
+                "triple_systems": 0,
+                "higher_order_systems": 0,
+            },
         }
 
         logger.info(f"Generating statistics for {len(stars)} stars.")
@@ -464,5 +588,96 @@ class StatisticsService:
                         f"Could not parse year from disc_year.value: {star.disc_year.value} for star {star.st_name}"
                     )
 
+            # Nouvelles statistiques Phase 2
+            if star.st_age and star.st_age.value is not None:
+                stats["star_age_stats"]["with_age_data"] += 1
+                self._update_star_age_stats(
+                    star.st_age.value, stats["star_age_stats"]["age_ranges"]
+                )
+
+            if star.st_log_rhk and star.st_log_rhk.value is not None:
+                stats["stellar_activity_stats"]["with_activity_data"] += 1
+                self._update_stellar_activity_stats(
+                    star.st_log_rhk.value, stats["stellar_activity_stats"]["activity_levels"]
+                )
+
+            if star.sy_pm and star.sy_pm.value is not None:
+                stats["proper_motion_stats"]["with_total_pm"] += 1
+                self._update_proper_motion_stats(
+                    star.sy_pm.value, stats["proper_motion_stats"]["pm_ranges"]
+                )
+
+            if (star.elon and star.elon.value is not None) or (
+                star.elat and star.elat.value is not None
+            ):
+                stats["ecliptic_coordinates_stats"]["with_ecliptic_coords"] += 1
+                if star.elat and star.elat.value is not None:
+                    self._update_ecliptic_latitude_stats(
+                        abs(star.elat.value),
+                        stats["ecliptic_coordinates_stats"]["ecliptic_latitude_ranges"],
+                    )
+
+            if star.sy_star_count:
+                self._update_stellar_multiplicity_stats(
+                    star.sy_star_count, stats["stellar_multiplicity_stats"]
+                )
+
         logger.info("Statistics generation for stars complete.")
         return stats
+
+    def _update_star_age_stats(self, value: float, ranges_dict: dict[str, int]) -> None:
+        """Catégorise l'âge stellaire (en milliards d'années)"""
+        if value < 1:
+            ranges_dict["< 1 Gyr"] += 1
+        elif value < 5:
+            ranges_dict["1-5 Gyr"] += 1
+        elif value < 10:
+            ranges_dict["5-10 Gyr"] += 1
+        else:
+            ranges_dict["> 10 Gyr"] += 1
+
+    def _update_stellar_activity_stats(self, value: float, levels_dict: dict[str, int]) -> None:
+        """Catégorise l'activité chromosphérique (log R'HK)"""
+        if value > -4.5:
+            levels_dict["très active"] += 1
+        elif value > -4.75:
+            levels_dict["active"] += 1
+        elif value > -5.0:
+            levels_dict["modérée"] += 1
+        else:
+            levels_dict["calme"] += 1
+
+    def _update_proper_motion_stats(self, value: float, ranges_dict: dict[str, int]) -> None:
+        """Catégorise le mouvement propre total (en mas/an)"""
+        if value < 10:
+            ranges_dict["< 10 mas/an"] += 1
+        elif value < 50:
+            ranges_dict["10-50 mas/an"] += 1
+        elif value < 100:
+            ranges_dict["50-100 mas/an"] += 1
+        else:
+            ranges_dict["> 100 mas/an"] += 1
+
+    def _update_ecliptic_latitude_stats(self, value: float, ranges_dict: dict[str, int]) -> None:
+        """Catégorise la latitude écliptique (en degrés, valeur absolue)"""
+        if value < 10:
+            ranges_dict["< 10°"] += 1
+        elif value < 30:
+            ranges_dict["10-30°"] += 1
+        elif value < 60:
+            ranges_dict["30-60°"] += 1
+        else:
+            ranges_dict["> 60°"] += 1
+
+    def _update_stellar_multiplicity_stats(
+        self, value: int, multiplicity_dict: dict[str, int]
+    ) -> None:
+        """Catégorise la multiplicité stellaire"""
+        if value == 1:
+            multiplicity_dict["single_stars"] += 1
+        elif value == 2:
+            multiplicity_dict["binary_systems"] += 1
+        elif value == 3:
+            multiplicity_dict["triple_systems"] += 1
+        else:
+            multiplicity_dict["higher_order_systems"] += 1
