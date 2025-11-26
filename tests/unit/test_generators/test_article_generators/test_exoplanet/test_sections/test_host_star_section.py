@@ -29,7 +29,7 @@ class TestHostStarSection:
         exoplanet = Exoplanet(pl_name="Test b", st_name="Test Star")
         section = HostStarSection(article_formatter)
         result = section.generate(exoplanet)
-        assert "== Étoile hôte ==" in result
+        assert "== Étoile ==" in result
         assert "Test Star" in result
         assert "type spectral" not in result
 
@@ -45,7 +45,7 @@ class TestHostStarSection:
         )
         section = HostStarSection(article_formatter)
         result = section.generate(exoplanet)
-        assert "== Étoile hôte ==" in result
+        assert "== Étoile ==" in result
         assert "Test Star" in result
         assert "G2V" in result
         assert "masse de 1" in result
@@ -61,6 +61,6 @@ class TestHostStarSection:
         )
         section = HostStarSection(article_formatter)
         result = section.generate(exoplanet)
-        assert "== Étoile hôte ==" in result
+        assert "== Étoile ==" in result
         assert "type spectral K5" in result
         assert "masse" not in result

@@ -21,22 +21,31 @@ class HostStarSection:
         if not exoplanet.st_name:
             return ""
 
-        intro = f"== Étoile hôte ==\nL'exoplanète orbite autour de [[{exoplanet.st_name}]], "
+        content = ["== Étoile =="]
+
+        # Description de l'étoile
+        intro = f"L'exoplanète orbite autour de l'étoile [[{exoplanet.st_name}]]"
 
         characteristics = [
             extractor(exoplanet) for extractor in self.extractors.values() if extractor(exoplanet)
         ]
 
-        if not characteristics:
-            return (
-                "== Étoile hôte ==\n"
-                f"L'exoplanète orbite autour de l'étoile [[{exoplanet.st_name}]].\n"
-            )
+        if characteristics:
+            if len(characteristics) == 1:
+                intro += f", {characteristics[0]}"
+            else:
+                intro += f", {', '.join(characteristics[:-1])} et {characteristics[-1]}"
 
-        if len(characteristics) == 1:
-            return intro + f"{characteristics[0]}.\n"
+        intro += "."
+        content.append(f"\n{intro}\n")
 
-        return intro + f"{', '.join(characteristics[:-1])} et {characteristics[-1]}.\n"
+        # Tableau du système planétaire si plusieurs planètes
+        if exoplanet.sy_planet_count and exoplanet.sy_planet_count > 1:
+            # Nettoyer le nom de l'étoile pour le template
+            star_name_clean = exoplanet.st_name.replace(" ", "-")
+            content.append(f"{{{{Système planétaire de {star_name_clean}}}}}\n")
+
+        return "\n".join(content)
 
     # ----- Extractors -----
 
