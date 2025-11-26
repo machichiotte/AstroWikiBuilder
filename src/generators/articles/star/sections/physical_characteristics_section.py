@@ -28,15 +28,28 @@ class PhysicalCharacteristicsSection:
 
         content: list[str] = ["== Caractéristiques physiques ==\n"]
 
-        self._add_spectral_type(star, content)
-        self._add_temperature(star, content)
-        self._add_mass(star, content)
-        self._add_radius(star, content)
-        self._add_density(star, content)
-        self._add_luminosity(star, content)
-        self._add_metallicity(star, content)
-        self._add_surface_gravity(star, content)
-        self._add_age(star, content)
+        # Vérifier si c'est un système multiple
+        is_multiple_system = star.sy_star_count and star.sy_star_count > 1
+
+        if is_multiple_system:
+            # Pour les systèmes multiples, format liste
+            content.append("Les étoiles composant ce système sont :\n")
+            self._add_component_description(star, "A", content)
+
+            # Si des données pour la composante B existent
+            if self._has_component_b_data(star):
+                self._add_component_description(star, "B", content)
+        else:
+            # Pour les étoiles simples, format classique
+            self._add_spectral_type(star, content)
+            self._add_temperature(star, content)
+            self._add_mass(star, content)
+            self._add_radius(star, content)
+            self._add_density(star, content)
+            self._add_luminosity(star, content)
+            self._add_metallicity(star, content)
+            self._add_surface_gravity(star, content)
+            self._add_age(star, content)
 
         return "\n".join(content)
 
@@ -85,3 +98,72 @@ class PhysicalCharacteristicsSection:
         if star.st_age and star.st_age.value is not None:
             age: str = self.article_util.format_number_as_french_string(star.st_age.value)
             content.append(f"L'âge de l'étoile est estimé à environ {age} milliards d'années.")
+
+    def _has_component_b_data(self, star: Star) -> bool:
+        """Vérifie si des données existent pour la composante B."""
+        return any(
+            [star.st_mass_2, star.st_radius_2, star.st_temperature_2, star.st_spectral_type_2]
+        )
+
+    def _add_component_description(self, star: Star, component: str, content: list[str]) -> None:
+        """Génère la description d'une composante stellaire."""
+        star_name = star.st_name if star.st_name else "L'étoile"
+
+        # Déterminer le type d'étoile
+        star_type = self._get_star_type_description(star, component)
+
+        # Construire la description
+        desc_parts = []
+
+        if component == "A":
+            if star.st_mass and star.st_mass.value is not None:
+                mass = self.article_util.format_number_as_french_string(star.st_mass.value)
+                desc_parts.append(f"{{{{unité|{mass}|[[masse solaire]]}}}}")
+
+            if star.st_radius and star.st_radius.value is not None:
+                radius = self.article_util.format_number_as_french_string(star.st_radius.value)
+                desc_parts.append(f"{{{{unité|{radius}|[[rayon solaire]]}}}}")
+
+        elif component == "B":
+            if star.st_mass_2 and star.st_mass_2.value is not None:
+                mass = self.article_util.format_number_as_french_string(star.st_mass_2.value)
+                desc_parts.append(f"{{{{unité|{mass}|masse solaire}}}}")
+
+            if star.st_radius_2 and star.st_radius_2.value is not None:
+                radius = self.article_util.format_number_as_french_string(star.st_radius_2.value)
+                desc_parts.append(f"{{{{unité|{radius}|rayon solaire}}}}")
+
+        # Assembler la description
+        if desc_parts:
+            desc_text = " et ".join(desc_parts)
+            content.append(
+                f"* '''{{{{nobr|{star_name} {component}}}}}''', {star_type} d'environ {desc_text} ;"
+            )
+        else:
+            content.append(f"* '''{{{{nobr|{star_name} {component}}}}}''', {star_type} ;")
+
+    def _get_star_type_description(self, star: Star, component: str) -> str:
+        """Retourne une description du type d'étoile."""
+        if component == "A":
+            spectral = star.st_spectral_type
+        else:
+            spectral = star.st_spectral_type_2
+
+        if not spectral:
+            return "étoile"
+
+        # Déterminer le type basé sur la classe spectrale
+        spectral_str = str(spectral).upper()
+
+        if spectral_str.startswith("O") or spectral_str.startswith("B"):
+            return "étoile chaude"
+        elif spectral_str.startswith("A") or spectral_str.startswith("F"):
+            return "étoile blanche"
+        elif spectral_str.startswith("G"):
+            return "[[naine jaune]]"
+        elif spectral_str.startswith("K"):
+            return "[[naine orange]]"
+        elif spectral_str.startswith("M"):
+            return "[[naine rouge]]"
+        else:
+            return "étoile"
