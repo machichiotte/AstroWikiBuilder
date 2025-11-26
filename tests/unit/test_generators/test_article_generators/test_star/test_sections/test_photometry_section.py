@@ -34,6 +34,14 @@ def mock_star():
     star.st_mag_j = None
     star.st_mag_h = None
     star.st_mag_k = None
+    # Phase 2 fields
+    star.st_mag_w1 = None
+    star.st_mag_w2 = None
+    star.st_mag_w3 = None
+    star.st_mag_w4 = None
+    star.st_mag_gaia = None
+    star.st_mag_t = None
+    star.st_mag_kep = None
     return star
 
 

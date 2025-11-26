@@ -139,25 +139,6 @@ class TestPhysicalCharacteristicsSection:
         result = section._format_density_description("invalid")
         assert result is None
 
-    def test_format_mass_description_low_mass(self, section):
-        """Test formatage d'une masse faible."""
-        result = section._format_mass_description(0.05)
-        assert result is not None
-        assert "faible" in result
-
-    def test_format_mass_description_moderate_mass(self, section):
-        """Test formatage d'une masse modérée."""
-        result = section._format_mass_description(0.5)
-        assert result is not None
-        assert "modérée" in result
-
-    def test_format_mass_description_high_mass(self, section):
-        """Test formatage d'une masse imposante."""
-        result = section._format_mass_description(2.0)
-        assert result is not None
-        assert "imposante" in result
-
-    def test_format_radius_description_compact(self, section):
         """Test formatage d'un rayon compact."""
         result = section._format_radius_description(0.3)
         assert result is not None

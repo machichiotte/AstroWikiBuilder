@@ -31,6 +31,10 @@ def mock_star():
     star.st_distance = None
     star.glon = None
     star.glat = None
+    # Phase 2 fields
+    star.sy_pm = None
+    star.elon = None
+    star.elat = None
     return star
 
 

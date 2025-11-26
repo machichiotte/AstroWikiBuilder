@@ -28,6 +28,8 @@ def mock_star():
     star.st_rotation = None
     star.st_vsin = None
     star.st_radial_velocity = None
+    # Phase 2 field
+    star.st_log_rhk = None
     return star
 
 

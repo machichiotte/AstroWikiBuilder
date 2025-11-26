@@ -25,6 +25,7 @@ def article_util():
 def mock_star():
     star = MagicMock(spec=Star)
     star.st_name = "Kepler-186"
+    star.sy_star_count = 1  # Étoile simple par défaut
     star.st_spectral_type = None
     star.st_temperature = None
     star.st_mass = None
