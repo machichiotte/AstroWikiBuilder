@@ -82,13 +82,45 @@ class PlanetarySystemSection:
         template = "{{Système planétaire\n"
         template += f"| exoplanète = [[{pl_name}]]\n"
 
-        # Masse
-        mass_str = self._format_field_with_uncertainty(exoplanet.pl_mass)
-        template += f"| masse = {mass_str}\n"
+        # Masse : privilégier la masse terrestre pour les petits objets (< 0.1 M_J)
+        use_earth_mass = False
+        if exoplanet.pl_mass_earth and exoplanet.pl_mass_earth.value is not None:
+            # Si on a la masse terrestre, on regarde si c'est pertinent
+            if exoplanet.pl_mass and exoplanet.pl_mass.value is not None:
+                try:
+                    if float(exoplanet.pl_mass.value) < 0.1:
+                        use_earth_mass = True
+                except (ValueError, TypeError):
+                    pass
+            else:
+                # Si on n'a que la masse terrestre, on l'utilise
+                use_earth_mass = True
 
-        # Rayon
-        radius_str = self._format_field_with_uncertainty(exoplanet.pl_radius)
-        template += f"| rayon = {radius_str}\n"
+        if use_earth_mass:
+            mass_str = self._format_field_with_uncertainty(exoplanet.pl_mass_earth)
+            template += f"| masse_terrestre = {mass_str}\n"
+        else:
+            mass_str = self._format_field_with_uncertainty(exoplanet.pl_mass)
+            template += f"| masse = {mass_str}\n"
+
+        # Rayon : privilégier le rayon terrestre pour les petits objets (< 0.5 R_J)
+        use_earth_radius = False
+        if exoplanet.pl_radius_earth and exoplanet.pl_radius_earth.value is not None:
+            if exoplanet.pl_radius and exoplanet.pl_radius.value is not None:
+                try:
+                    if float(exoplanet.pl_radius.value) < 0.5:
+                        use_earth_radius = True
+                except (ValueError, TypeError):
+                    pass
+            else:
+                use_earth_radius = True
+
+        if use_earth_radius:
+            radius_str = self._format_field_with_uncertainty(exoplanet.pl_radius_earth)
+            template += f"| rayon_terrestre = {radius_str}\n"
+        else:
+            radius_str = self._format_field_with_uncertainty(exoplanet.pl_radius)
+            template += f"| rayon = {radius_str}\n"
 
         # Demi-grand axe
         axis_str = self._format_field_with_uncertainty(exoplanet.pl_semi_major_axis)

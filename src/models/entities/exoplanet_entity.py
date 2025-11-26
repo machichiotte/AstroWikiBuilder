@@ -139,8 +139,10 @@ class Exoplanet:
 
     # Caractéristiques physiques
     pl_mass: ValueWithUncertainty | None = None
+    pl_mass_earth: ValueWithUncertainty | None = None
     pl_minimum_mass: ValueWithUncertainty | None = None
     pl_radius: ValueWithUncertainty | None = None
+    pl_radius_earth: ValueWithUncertainty | None = None
     pl_density: ValueWithUncertainty | None = None
     pl_gravity: float | None = None
     pl_rotation_period: float | None = None
