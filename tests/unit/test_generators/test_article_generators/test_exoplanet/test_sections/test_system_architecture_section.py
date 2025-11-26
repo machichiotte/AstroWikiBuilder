@@ -26,7 +26,7 @@ class TestSystemArchitectureSection:
         """Test avec plusieurs planètes mais sans la liste détaillée (fallback)."""
         exoplanet = Exoplanet(pl_name="Test b", st_name="Star", sy_planet_count=3)
         result = section.generate(exoplanet)
-        assert "== Architecture du système ==" in result
+        assert "== Système planétaire ==" in result
         assert "système de 3 planètes connues" in result
 
     def test_generate_with_siblings_sorted(self, section):
@@ -52,7 +52,7 @@ class TestSystemArchitectureSection:
         # Test pour la planète du milieu (c)
         result_c = section.generate(planet_c, system_planets=system)
 
-        assert "== Architecture du système ==" in result_c
+        assert "== Système planétaire ==" in result_c
         assert "compte au moins 3 planètes confirmées" in result_c
         assert "[[Star c]] est la 2e planète en partant de l'étoile" in result_c
         assert "Les autres planètes du système sont [[Star b]] et [[Star d]]" in result_c

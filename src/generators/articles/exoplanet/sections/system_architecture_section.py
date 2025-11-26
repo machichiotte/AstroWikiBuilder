@@ -5,13 +5,13 @@ from src.utils.formatters.article_formatter import ArticleFormatter
 
 
 class SystemArchitectureSection:
-    """Génère la section architecture du système pour les articles d'exoplanètes."""
+    """Génère la section système planétaire pour les articles d'exoplanètes."""
 
     def __init__(self, article_util: ArticleFormatter):
         self.article_util = article_util
 
     def generate(self, exoplanet: Exoplanet, system_planets: list[Exoplanet] = None) -> str:
-        """Génère la section sur l'architecture du système planétaire."""
+        """Génère la section sur le système planétaire."""
         # Si on a la liste des planètes du système, on l'utilise pour enrichir le contenu
         if system_planets and len(system_planets) > 1:
             return self._generate_with_siblings(exoplanet, system_planets)
@@ -30,7 +30,7 @@ class SystemArchitectureSection:
         if planet_count <= 1:
             return ""
 
-        section = "== Architecture du système ==\n"
+        section = "== Système planétaire ==\n"
         if planet_count == 2:
             section += f"Cette planète fait partie d'un système binaire planétaire orbitant autour de [[{exoplanet.st_name}]]. L'existence de multiples planètes dans un même système permet d'étudier la formation et l'évolution planétaire de manière comparative.\n"
         elif planet_count >= 3 and planet_count <= 5:
@@ -56,7 +56,7 @@ class SystemArchitectureSection:
         sorted_planets = sorted(system_planets, key=sort_key)
         planet_count = len(sorted_planets)
 
-        section = "== Architecture du système ==\n"
+        section = "== Système planétaire ==\n"
         section += f"Le système planétaire de [[{current_planet.st_name}]] compte au moins {planet_count} planètes confirmées. "
 
         # Trouver la position de la planète actuelle
