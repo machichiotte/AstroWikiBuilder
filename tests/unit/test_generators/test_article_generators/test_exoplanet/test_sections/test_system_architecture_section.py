@@ -55,7 +55,13 @@ class TestSystemArchitectureSection:
         assert "== Système planétaire ==" in result_c
         assert "compte au moins 3 planètes confirmées" in result_c
         assert "[[Star c]] est la 2e planète en partant de l'étoile" in result_c
-        assert "Les autres planètes du système sont [[Star b]] et [[Star d]]" in result_c
+
+        # Vérification du tableau
+        assert "{{Système planétaire début" in result_c
+        assert "| exoplanète = [[Star b]]" in result_c
+        assert "| exoplanète = [[Star c]]" in result_c
+        assert "| exoplanète = [[Star d]]" in result_c
+        assert "{{Système planétaire fin}}" in result_c
 
     def test_generate_with_siblings_position_first(self, section):
         """Test position 'plus interne'."""
@@ -73,7 +79,9 @@ class TestSystemArchitectureSection:
 
         result = section.generate(planet_b, system_planets=system)
         assert "la plus interne" in result
-        assert "L'autre planète connue du système est [[Star c]]" in result
+        assert "{{Système planétaire début" in result
+        assert "| exoplanète = [[Star b]]" in result
+        assert "| exoplanète = [[Star c]]" in result
 
     def test_generate_with_siblings_position_last(self, section):
         """Test position 'plus externe'."""
@@ -91,3 +99,4 @@ class TestSystemArchitectureSection:
 
         result = section.generate(planet_c, system_planets=system)
         assert "la plus externe" in result
+        assert "{{Système planétaire début" in result

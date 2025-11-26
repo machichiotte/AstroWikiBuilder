@@ -39,12 +39,6 @@ class HostStarSection:
         intro += "."
         content.append(f"\n{intro}\n")
 
-        # Tableau du système planétaire si plusieurs planètes
-        if exoplanet.sy_planet_count and exoplanet.sy_planet_count > 1:
-            # Nettoyer le nom de l'étoile pour le template
-            star_name_clean = exoplanet.st_name.replace(" ", "-")
-            content.append(f"{{{{Système planétaire de {star_name_clean}}}}}\n")
-
         return "\n".join(content)
 
     # ----- Extractors -----
