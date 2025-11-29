@@ -23,8 +23,13 @@ class HostStarSection:
 
         content = ["== Étoile =="]
 
-        # Description de l'étoile
-        intro = f"L'exoplanet orbite autour de l'étoile [[{exoplanet.st_name}]]"
+        # Description de l'étoile - adapter selon le type de système
+        if exoplanet.sy_snum and exoplanet.sy_snum > 1 and exoplanet.cb_flag == 0:
+            # Système multiple, planète non-circumbinaire
+            intro = f"L'exoplanète orbite autour de l'une des étoiles du système [[{exoplanet.st_name}]]"
+        else:
+            # Système simple ou planète circumbinaire
+            intro = f"L'exoplanète orbite autour de l'étoile [[{exoplanet.st_name}]]"
 
         characteristics = [
             extractor(exoplanet) for extractor in self.extractors.values() if extractor(exoplanet)
