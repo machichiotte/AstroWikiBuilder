@@ -24,7 +24,7 @@ class HostStarSection:
         content = ["== Étoile =="]
 
         # Description de l'étoile
-        intro = f"L'exoplanète orbite autour de l'étoile [[{exoplanet.st_name}]]"
+        intro = f"L'exoplanet orbite autour de l'étoile [[{exoplanet.st_name}]]"
 
         characteristics = [
             extractor(exoplanet) for extractor in self.extractors.values() if extractor(exoplanet)
