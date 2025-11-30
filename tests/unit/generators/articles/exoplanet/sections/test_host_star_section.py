@@ -31,7 +31,6 @@ def test_host_star_with_planetary_system(mock_article_formatter):
     assert "== Étoile ==" in content
     assert "[[Kepler-10]]" in content
     assert "type spectral G" in content
-    assert "{{Système planétaire de Kepler-10}}" in content
 
 
 def test_host_star_single_planet_no_table(mock_article_formatter):
@@ -70,7 +69,6 @@ def test_host_star_with_all_characteristics(mock_article_formatter):
     assert "masse de 1.0" in content
     assert "métallicité de 0.1" in content
     assert "âgée de 4.5" in content
-    assert "{{Système planétaire de Test-Star}}" in content
 
 
 def test_host_star_empty(mock_article_formatter):

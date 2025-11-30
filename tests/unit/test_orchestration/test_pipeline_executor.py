@@ -71,6 +71,8 @@ class TestExecutePipeline:
             consolidated_dir="consolidated",
             skip_wikipedia_check=False,
             sources=["nasa"],
+            generate_exoplanets=True,
+            generate_stars=True,
         )
 
     @patch("src.orchestration.pipeline_executor.create_output_directories")
@@ -79,12 +81,14 @@ class TestExecutePipeline:
     @patch("src.orchestration.pipeline_executor.fetch_and_ingest_data")
     @patch("src.orchestration.pipeline_executor.export_consolidated_data")
     @patch("src.orchestration.pipeline_executor.generate_and_export_statistics")
-    @patch("src.orchestration.pipeline_executor.generate_and_persist_exoplanet_drafts")
-    @patch("src.orchestration.pipeline_executor.generate_and_persist_star_drafts")
+    @patch("src.utils.wikipedia.draft_util.build_exoplanet_article_draft")
+    @patch("src.utils.wikipedia.draft_util.persist_drafts_by_entity_type")
+    @patch("src.orchestration.draft_pipeline.generate_and_persist_star_drafts_separated")
     def test_execute_pipeline_full_workflow(
         self,
-        mock_star_drafts,
-        mock_exo_drafts,
+        mock_star_drafts_separated,
+        mock_persist_drafts,
+        mock_build_draft,
         mock_stats,
         mock_export,
         mock_ingest,
@@ -103,8 +107,26 @@ class TestExecutePipeline:
 
         # Create a mock processor
         mock_processor = Mock()
-        # Configure resolve_wikipedia_status_for_exoplanets to return two empty lists
-        mock_processor.resolve_wikipedia_status_for_exoplanets.return_value = ([], [])
+        # Configure resolve_wikipedia_status_for_exoplanets to return some articles
+        mock_processor.resolve_wikipedia_status_for_exoplanets.return_value = (
+            ["Existing Planet"],  # existing
+            ["Missing Planet"],  # missing
+        )
+        # Configure resolve_wikipedia_status_for_stars
+        mock_processor.resolve_wikipedia_status_for_stars.return_value = (
+            ["Existing Star"],
+            ["Missing Star"],
+        )
+
+        # Mock collect_all_exoplanets
+        mock_planet1 = Mock()
+        mock_planet1.pl_name = "Existing Planet"
+        mock_planet1.st_name = "Existing Star"
+        mock_planet2 = Mock()
+        mock_planet2.pl_name = "Missing Planet"
+        mock_planet2.st_name = "Missing Star"
+
+        mock_processor.collect_all_exoplanets.return_value = [mock_planet1, mock_planet2]
 
         # We need to patch _initialize_data_processor to return our mock_processor
         with patch(
@@ -130,61 +152,15 @@ class TestExecutePipeline:
             mock_ingest.assert_called_once()
             mock_export.assert_called_once()
             mock_stats.assert_called_once()
-            # In full workflow (skip_wikipedia_check=False), if missing_articles is empty,
-            # generate_and_persist_exoplanet_drafts is NOT called.
-            # But wait, the test expects it to be called?
-            # Let's check the code:
-            # if missing_articles: ... generate_and_persist_exoplanet_drafts ...
-            # So if we return ([], []), it won't be called.
-            # If we want it called, we need to return some missing articles.
 
-            # Let's adjust the mock to return some missing articles
-            mock_processor.resolve_wikipedia_status_for_exoplanets.return_value = (
-                [],
-                ["Planet B"],
-            )
-            # And we also need to mock collect_all_exoplanets to return objects with pl_name "Planet B"
-            mock_planet = Mock()
-            mock_planet.pl_name = "Planet B"
-            mock_processor.collect_all_exoplanets.return_value = [mock_planet]
+            # Vérifier que build_exoplanet_article_draft est appelé pour les deux planètes
+            assert mock_build_draft.call_count == 2
 
-            # But wait, the code imports build_exoplanet_article_draft and persist_drafts_by_entity_type inside the if block.
-            # And generate_and_persist_exoplanet_drafts is NOT called in the else block!
-            # Instead, it manually calls build_exoplanet_article_draft and persist_drafts_by_entity_type.
-            # BUT the test mocks generate_and_persist_exoplanet_drafts and expects it to be called.
-            # Ah, looking at pipeline_executor.py lines 103-116:
-            # It does NOT call generate_and_persist_exoplanet_drafts function from draft_pipeline.
-            # It implements the logic inline (or imports utils).
-            # So mock_exo_drafts.assert_called_once() will FAIL if the code doesn't call it.
+            # Vérifier que persist_drafts_by_entity_type est appelé
+            mock_persist_drafts.assert_called_once()
 
-            # Wait, line 81 calls generate_and_persist_exoplanet_drafts(processor, args.drafts_dir) when skip_wikipedia_check is True.
-            # But when False (this test), it does manual logic.
-            # So the test expectation `mock_exo_drafts.assert_called_once()` seems wrong for the current implementation of `execute_pipeline`
-            # OR `execute_pipeline` should be calling `generate_and_persist_exoplanet_drafts` instead of inline logic.
-
-            # Given I cannot easily change the implementation of execute_pipeline to use the function without verifying if it supports filtering,
-            # I should probably update the test to NOT expect generate_and_persist_exoplanet_drafts to be called in this branch,
-            # OR patch the inline functions.
-
-            # However, looking at the test `test_execute_pipeline_full_workflow`, it seems it was written assuming `generate_and_persist_exoplanet_drafts` is called.
-            # If I look at `src/orchestration/draft_pipeline.py`, maybe it has a filter argument?
-            # I don't have that file open.
-
-            # Let's assume for now I should just fix the TypeError first.
-            # But if I fix TypeError and the assertion fails, I'm still stuck.
-
-            # Let's look at `test_execute_pipeline_skip_wikipedia_check`.
-            # It expects `mock_exo_drafts.assert_not_called()`.
-            # But the code calls it on line 81.
-            # So that test needs to change to `assert_called_once()`.
-
-            # Back to `test_execute_pipeline_full_workflow`.
-            # If I mock `resolve_wikipedia_status_for_exoplanets` to return `([], [])` (no missing),
-            # then the `if missing_articles:` block is skipped.
-            # Then `mock_exo_drafts` (which mocks `generate_and_persist_exoplanet_drafts`) should NOT be called.
-            # So I should change the assertion to `assert_not_called()` if I return empty missing list.
-
-            pass
+            # Vérifier que generate_and_persist_star_drafts_separated est appelé
+            mock_star_drafts_separated.assert_called_once()
 
     @patch("src.orchestration.pipeline_executor.create_output_directories")
     @patch("src.orchestration.pipeline_executor.initialize_services")
@@ -263,6 +239,8 @@ class TestExecutePipeline:
         """Test du pipeline avec seulement le traitement des données."""
         # Configuration
         mock_args.skip_wikipedia_check = True
+        mock_args.generate_exoplanets = False
+        mock_args.generate_stars = False
 
         exo_repo = Mock()
         star_repo = Mock()
@@ -309,10 +287,10 @@ class TestExecutePipeline:
     @patch("src.orchestration.pipeline_executor.generate_and_export_statistics")
     @patch("src.utils.wikipedia.draft_util.build_exoplanet_article_draft")
     @patch("src.utils.wikipedia.draft_util.persist_drafts_by_entity_type")
-    @patch("src.orchestration.pipeline_executor.generate_and_persist_star_drafts")
+    @patch("src.orchestration.draft_pipeline.generate_and_persist_star_drafts_separated")
     def test_execute_pipeline_with_missing_articles(
         self,
-        mock_star_drafts,
+        mock_star_drafts_separated,
         mock_persist,
         mock_build_draft,
         mock_stats,
@@ -359,6 +337,12 @@ class TestExecutePipeline:
             ["Planet B", "Planet C"],  # missing articles
         )
 
+        # Configure resolve_wikipedia_status_for_stars
+        mock_processor.resolve_wikipedia_status_for_stars.return_value = (
+            [],
+            [],
+        )
+
         # Mock collect_all_exoplanets to return all planets
         mock_processor.collect_all_exoplanets.return_value = [
             mock_planet1,
@@ -367,7 +351,7 @@ class TestExecutePipeline:
         ]
 
         # Mock draft generation
-        mock_build_draft.side_effect = lambda exo: f"Draft for {exo.pl_name}"
+        mock_build_draft.side_effect = lambda exo, system_planets=None: f"Draft for {exo.pl_name}"
 
         with patch(
             "src.orchestration.pipeline_executor._initialize_data_processor",
@@ -390,18 +374,15 @@ class TestExecutePipeline:
         # Vérifier que collect_all_exoplanets a été appelé
         mock_processor.collect_all_exoplanets.assert_called_once()
 
-        # Vérifier que build_exoplanet_article_draft a été appelé 2 fois (pour Planet B et C)
-        assert mock_build_draft.call_count == 2
+        # Vérifier que build_exoplanet_article_draft a été appelé 3 fois (pour Planet A, B et C)
+        # Car on génère maintenant aussi les drafts pour les articles existants
+        assert mock_build_draft.call_count == 3
 
         # Vérifier que persist_drafts_by_entity_type a été appelé
         mock_persist.assert_called_once()
 
-        # Vérifier que generate_and_persist_star_drafts a été appelé avec les exoplanètes filtrées
-        mock_star_drafts.assert_called_once()
-        call_args = mock_star_drafts.call_args
-        exoplanets_arg = call_args[0][2]  # Third argument
-        assert len(exoplanets_arg) == 2
-        assert all(exo.pl_name in ["Planet B", "Planet C"] for exo in exoplanets_arg)
+        # Vérifier que generate_and_persist_star_drafts_separated a été appelé
+        mock_star_drafts_separated.assert_called_once()
 
     @patch("src.orchestration.pipeline_executor.create_output_directories")
     @patch("src.orchestration.pipeline_executor.initialize_services")
@@ -409,8 +390,14 @@ class TestExecutePipeline:
     @patch("src.orchestration.pipeline_executor.fetch_and_ingest_data")
     @patch("src.orchestration.pipeline_executor.export_consolidated_data")
     @patch("src.orchestration.pipeline_executor.generate_and_export_statistics")
+    @patch("src.utils.wikipedia.draft_util.build_exoplanet_article_draft")
+    @patch("src.utils.wikipedia.draft_util.persist_drafts_by_entity_type")
+    @patch("src.orchestration.draft_pipeline.generate_and_persist_star_drafts_separated")
     def test_execute_pipeline_no_missing_articles(
         self,
+        mock_star_drafts_separated,
+        mock_persist_drafts,
+        mock_build_draft,
         mock_stats,
         mock_export,
         mock_ingest,
@@ -441,11 +428,31 @@ class TestExecutePipeline:
         # Mock processor
         mock_processor = Mock()
 
+        # Mock exoplanets
+        mock_planet1 = Mock()
+        mock_planet1.pl_name = "Planet A"
+        mock_planet1.st_name = "Star A"
+        mock_planet2 = Mock()
+        mock_planet2.pl_name = "Planet B"
+        mock_planet2.st_name = "Star B"
+
         # Configure resolve_wikipedia_status_for_exoplanets to return no missing articles
         mock_processor.resolve_wikipedia_status_for_exoplanets.return_value = (
             ["Planet A", "Planet B"],  # all existing
             [],  # no missing articles
         )
+
+        # Configure resolve_wikipedia_status_for_stars
+        mock_processor.resolve_wikipedia_status_for_stars.return_value = (
+            ["Star A", "Star B"],
+            [],
+        )
+
+        # Mock collect_all_exoplanets to return all planets
+        mock_processor.collect_all_exoplanets.return_value = [
+            mock_planet1,
+            mock_planet2,
+        ]
 
         with patch(
             "src.orchestration.pipeline_executor._initialize_data_processor",
@@ -464,3 +471,12 @@ class TestExecutePipeline:
 
         # Vérifier que resolve_wikipedia_status_for_exoplanets a été appelé
         mock_processor.resolve_wikipedia_status_for_exoplanets.assert_called_once()
+
+        # Vérifier que build_exoplanet_article_draft a été appelé pour les articles existants
+        assert mock_build_draft.call_count == 2
+
+        # Vérifier que persist_drafts_by_entity_type a été appelé
+        mock_persist_drafts.assert_called_once()
+
+        # Vérifier que generate_and_persist_star_drafts_separated a été appelé
+        mock_star_drafts_separated.assert_called_once()
