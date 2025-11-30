@@ -76,10 +76,39 @@ def parse_cli_arguments() -> argparse.Namespace:
         help=f'Directory for storing generated Wikipedia draft articles. Default: "{DEFAULT_DRAFTS_DIR}"',
     )
 
+    parser.add_argument(
+        "--generate-exoplanets",
+        action="store_true",
+        default=True,
+        help="Générer les brouillons d'exoplanètes (activé par défaut)",
+    )
+
+    parser.add_argument(
+        "--no-generate-exoplanets",
+        dest="generate_exoplanets",
+        action="store_false",
+        help="Ne PAS générer les brouillons d'exoplanètes",
+    )
+
+    parser.add_argument(
+        "--generate-stars",
+        action="store_true",
+        default=True,
+        help="Générer les brouillons d'étoiles (activé par défaut)",
+    )
+
+    parser.add_argument(
+        "--no-generate-stars",
+        dest="generate_stars",
+        action="store_false",
+        help="Ne PAS générer les brouillons d'étoiles",
+    )
+
     args = parser.parse_args()
     logger.info(
         f"Arguments reçus : Sources={args.sources}, Mocks={args.use_mock}, "
         f"SkipWikiCheck={args.skip_wikipedia_check}, "
+        f"GenerateExoplanets={args.generate_exoplanets}, GenerateStars={args.generate_stars}, "
         f"OutputDir={args.output_dir}, DraftsDir={args.drafts_dir}"
     )
     return args

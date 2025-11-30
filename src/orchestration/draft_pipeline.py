@@ -113,7 +113,7 @@ def generate_and_persist_star_drafts(
         star_name: str = getattr(star, "st_name", "UNKNOWN")
 
         if isinstance(star, Star):
-            if idx % 100 == 0 or idx == total:
+            if idx % 50 == 0 or idx == total:  # Log tous les 50 étoiles au lieu de 100
                 logger.info(f"Progression: {idx}/{total} étoiles traitées...")
 
             star_exoplanets = exoplanets_by_star_name.get(star_name, [])
@@ -127,4 +127,89 @@ def generate_and_persist_star_drafts(
         {},
         drafts_dir,
         "star",
+    )
+
+
+def generate_and_persist_star_drafts_separated(
+    processor: DataProcessor,
+    drafts_dir: str,
+    exoplanets: list[Exoplanet],
+    existing_star_articles: dict,
+    missing_star_articles: dict,
+) -> None:
+    """
+    Génère et sauvegarde les brouillons d'étoiles en les séparant
+    selon leur statut Wikipedia (existing/missing).
+
+    Args:
+        processor: Instance du DataProcessor
+        drafts_dir: Répertoire de sortie pour les brouillons
+        exoplanets: Liste d'exoplanètes pour enrichissement
+        existing_star_articles: Dict des étoiles avec articles existants
+        missing_star_articles: Dict des étoiles sans articles
+    """
+    stars: list[Star] = processor.collect_all_stars()
+    total = len(stars)
+    logger.info(f"Génération de {total} brouillons d'étoiles (séparés par statut)...")
+
+    # Créer un index des exoplanètes par nom d'étoile hôte
+    exoplanets_by_star_name: dict[str, list[Exoplanet]] = {}
+    if exoplanets:
+        for exoplanet in exoplanets:
+            if hasattr(exoplanet, "st_name") and exoplanet.st_name:
+                star_name = str(exoplanet.st_name)
+                exoplanets_by_star_name.setdefault(star_name, []).append(exoplanet)
+
+        logger.info(f"Index créé pour {len(exoplanets_by_star_name)} étoiles avec exoplanètes")
+
+    # Séparer les étoiles selon leur statut Wikipedia
+    stars_existing = [s for s in stars if s.st_name in existing_star_articles]
+    stars_missing = [s for s in stars if s.st_name in missing_star_articles]
+
+    logger.info(
+        f"Séparation : {len(stars_missing)} étoiles manquantes, "
+        f"{len(stars_existing)} étoiles existantes"
+    )
+
+    # Générer les drafts pour les étoiles MANQUANTES
+    missing_drafts = {}
+    if stars_missing:
+        total_missing = len(stars_missing)
+        logger.info(f"Génération de {total_missing} brouillons d'étoiles manquantes...")
+
+        for idx, star in enumerate(stars_missing, 1):
+            if idx % 50 == 0 or idx == total_missing:
+                logger.info(f"  Progression manquantes: {idx}/{total_missing}")
+
+            star_name = star.st_name
+            star_exoplanets = exoplanets_by_star_name.get(star_name, [])
+            missing_drafts[star_name] = build_star_article_draft(star, exoplanets=star_exoplanets)
+
+    # Générer les drafts pour les étoiles EXISTANTES (pour comparaison)
+    existing_drafts = {}
+    if stars_existing:
+        total_existing = len(stars_existing)
+        logger.info(
+            f"Génération de {total_existing} brouillons d'étoiles existantes (pour comparaison)..."
+        )
+
+        for idx, star in enumerate(stars_existing, 1):
+            if idx % 50 == 0 or idx == total_existing:
+                logger.info(f"  Progression existantes: {idx}/{total_existing}")
+
+            star_name = star.st_name
+            star_exoplanets = exoplanets_by_star_name.get(star_name, [])
+            existing_drafts[star_name] = build_star_article_draft(star, exoplanets=star_exoplanets)
+
+    # Sauvegarder dans les bons dossiers
+    logger.info("Sauvegarde des brouillons d'étoiles...")
+    persist_drafts_by_entity_type(
+        missing_drafts,
+        existing_drafts,
+        drafts_dir,
+        "star",
+    )
+    logger.info(
+        f"Brouillons d'étoiles sauvegardés : {len(missing_drafts)} manquantes, "
+        f"{len(existing_drafts)} existantes"
     )

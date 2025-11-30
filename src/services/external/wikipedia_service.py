@@ -3,6 +3,7 @@ import logging
 from typing import Any
 
 from src.models.entities.exoplanet_entity import Exoplanet
+from src.models.entities.star_entity import Star
 from src.utils.wikipedia.wikipedia_checker import WikiArticleInfo, WikipediaChecker
 
 logger: logging.Logger = logging.getLogger(__name__)
@@ -65,6 +66,50 @@ class WikipediaService:
                 else:
                     logger.warning(
                         f"Exoplanet name '{exoplanet_name_origin}' from context not found in initial results for title '{queried_title}'."
+                    )
+
+        return all_results
+
+    def fetch_articles_for_star_batch(self, stars: list[Star]) -> dict[str, dict[str, Any]]:
+        """
+        Vérifie l'existence des articles Wikipedia pour les étoiles.
+        Returns a dictionary mapping Star name to a dictionary of its article infos (name -> info dict).
+        """
+        logger.info(f"Starting Wikipedia article check for {len(stars)} stars.")
+
+        all_results = {}
+        titles_to_check = []
+        context_for_titles = {}
+
+        # Map titles to be checked to their star context
+        for star in stars:
+            star_name = star.st_name
+            all_results[star_name] = {}  # Initialize results for this star
+
+            # Pour les étoiles, on vérifie uniquement le nom principal
+            titles_to_check.append(star_name)
+            context_for_titles[star_name] = {
+                "star_name": star_name,
+                "is_primary_name": True,
+            }
+
+        # Check in batches
+        batch_size = 50
+        for i in range(0, len(titles_to_check), batch_size):
+            batch_titles = titles_to_check[i : i + batch_size]
+
+            batch_results: dict[str, WikiArticleInfo] = (
+                self.wikipedia_checker.check_article_existence_batch(batch_titles)
+            )
+
+            # Map results back to the per-star structure
+            for queried_title, wiki_info in batch_results.items():
+                star_name_origin = context_for_titles[queried_title]["star_name"]
+                if star_name_origin in all_results:
+                    all_results[star_name_origin][queried_title] = wiki_info
+                else:
+                    logger.warning(
+                        f"Star name '{star_name_origin}' from context not found in initial results for title '{queried_title}'."
                     )
 
         return all_results

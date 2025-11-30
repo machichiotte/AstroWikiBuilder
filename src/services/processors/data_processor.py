@@ -122,6 +122,42 @@ class DataProcessor:
             return {}
         return self.wiki_service.fetch_articles_for_exoplanet_batch(all_exoplanets)
 
+    def resolve_wikipedia_status_for_stars(
+        self,
+    ) -> tuple[dict[str, dict[str, WikiArticleInfo]], dict[str, dict[str, WikiArticleInfo]]]:
+        """
+        Récupère les informations des articles Wikipedia pour les étoiles
+        et les sépare en existants et manquants.
+        """
+        logger.info("Starting process to get and separate Wikipedia articles for stars by status.")
+        all_articles_info: dict[str, dict[str, WikiArticleInfo]] = (
+            self.fetch_wikipedia_articles_for_stars()
+        )
+        if not all_articles_info:
+            logger.warning("No Wikipedia article information was retrieved for stars.")
+            return {}, {}
+
+        existing_articles, missing_articles = self.wiki_service.split_by_article_existence(
+            all_articles_info
+        )
+        logger.info(
+            f"Separation complete: {len(existing_articles)} stars with existing articles, "
+            f"{len(missing_articles)} stars with no articles found."
+        )
+        return existing_articles, missing_articles
+
+    def fetch_wikipedia_articles_for_stars(
+        self,
+    ) -> dict[str, dict[str, WikiArticleInfo]]:
+        """
+        Récupère les informations des articles Wikipedia pour toutes les étoiles du référentiel.
+        """
+        all_stars: list[Star] = self.star_repository.get_all_stars()
+        if not all_stars:
+            logger.warning("No stars in star_repository to check Wikipedia for.")
+            return {}
+        return self.wiki_service.fetch_articles_for_star_batch(all_stars)
+
     # ============================================================================
     # EXPORT DES DONNÉES
     # ============================================================================
