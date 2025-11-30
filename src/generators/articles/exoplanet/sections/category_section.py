@@ -20,7 +20,11 @@ class CategorySection:
     def generate(self, exoplanet: Exoplanet) -> str:
         """Génère la section des catégories."""
         categories = self.build_categories(exoplanet)
-        return "\n".join(categories) if categories else ""
+        if not categories:
+            return ""
+        # Formater chaque catégorie avec le préfixe Wikipedia
+        formatted_categories = [f"[[Catégorie:{cat}]]" for cat in categories]
+        return "\n".join(formatted_categories)
 
     def build_categories(self, exoplanet: Exoplanet) -> list[str]:
         """Génère la liste des catégories."""
