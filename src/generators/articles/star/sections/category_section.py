@@ -1,3 +1,5 @@
+# src/generators/articles/star/sections/category_section.py
+
 from collections.abc import Callable
 
 from src.generators.base.category_rules_manager import CategoryRulesManager
@@ -8,7 +10,6 @@ from src.utils.astro.classification.star_type_util import StarTypeUtil
 class CategorySection:
     """
     Classe pour générer les catégories des articles d'étoiles.
-    Utilise un générateur de règles centralisé.
     """
 
     def __init__(self, rules_filepath: str = "src/constants/categories_rules.yaml"):
@@ -18,7 +19,31 @@ class CategorySection:
     def generate(self, star: Star) -> str:
         """Génère la section des catégories."""
         categories = self.build_categories(star)
-        return "\n".join(categories) if categories else ""
+        if not categories:
+            return ""
+
+        # Séparer les catégories multiples (certaines fonctions retournent plusieurs catégories séparées par \n)
+        all_categories = []
+        for cat in categories:
+            # Séparer les catégories multiples
+            if "\n" in cat:
+                all_categories.extend(cat.split("\n"))
+            else:
+                all_categories.append(cat)
+
+        # Formater chaque catégorie avec le préfixe Wikipedia
+        formatted_categories = []
+        for cat in all_categories:
+            cat = cat.strip()  # Enlever les espaces en début/fin
+            if not cat:  # Ignorer les chaînes vides
+                continue
+            # Si la catégorie commence déjà par [[Catégorie:
+            if cat.startswith("[[Catégorie:"):
+                formatted_categories.append(cat)
+            else:
+                formatted_categories.append(f"[[Catégorie:{cat}]]")
+
+        return "\n".join(formatted_categories)
 
     def build_categories(self, star: Star) -> list[str]:
         """
@@ -78,9 +103,8 @@ class CategorySection:
             for prefix, category in catalog_mappings.items():
                 if name.startswith(prefix):
                     key = extract_key(name, prefix)
-                    formatted = f"{category}|{key}]]"  # Catégorie déjà incluse dans YAML
-                    formatted = formatted.replace("]]", "")  # nettoyer pour éviter ]] de trop
-                    categories.add(f"{formatted}]]")
+                    formatted = f"{category}|{key}"
+                    categories.add(formatted)
 
         # Nom principal
         if star.st_name:
@@ -108,7 +132,7 @@ class CategorySection:
             if spectral_class in mapping:
                 return mapping[spectral_class]
             else:
-                return f"[[Catégorie:Étoile de type spectral {spectral_class}]]"
+                return f"Étoile de type spectral {spectral_class}"
         return None
 
     def map_luminosity_class_to_category(self, star: Star) -> str | None:
@@ -125,7 +149,7 @@ class CategorySection:
             if luminosity in mapping:
                 return mapping[luminosity]
             else:
-                return f"[[Catégorie:Classe de luminosité {luminosity}]]"
+                return f"Classe de luminosité {luminosity}"
         return None
 
     def map_star_type_to_category(self, star: Star) -> str | None:
@@ -155,13 +179,13 @@ class CategorySection:
                 "Étoile pauvre en métaux",
                 "Étoile riche en métaux",
             ]:
-                categories.append(f"[[Catégorie:{star_type}]]")
+                categories.append(star_type)
             # Pour les types spectraux standards
             elif star_type.startswith("Étoile de type spectral"):
-                categories.append(f"[[Catégorie:{star_type}]]")
+                categories.append(star_type)
             # Pour les étoiles variables
             elif star_type.startswith("Étoile variable"):
-                categories.append(f"[[Catégorie:{star_type}]]")
+                categories.append(star_type)
 
         return "\n".join(categories) if categories else None
 
@@ -169,7 +193,7 @@ class CategorySection:
         """
         Ajoute une catégorie personnalisée pour le système planétaire.
         """
-        return "\n[[Catégorie:Système planétaire]]"
+        return "Système planétaire"
 
     def map_constellation_to_category(self, star: Star) -> str | None:
         """

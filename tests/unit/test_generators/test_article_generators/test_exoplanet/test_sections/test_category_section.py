@@ -22,3 +22,17 @@ class TestCategorySection:
         result = section.generate(exoplanet)
         # Should return categories
         assert result != ""
+
+    def test_categories_format(self, exoplanet):
+        """Test que les catégories sont correctement formatées sans double préfixe."""
+        section = CategorySection()
+        result = section.generate(exoplanet)
+
+        # Vérifier qu'il n'y a pas de double [[Catégorie:
+        assert "[[Catégorie:[[Catégorie:" not in result
+
+        # Vérifier que toutes les lignes commencent par [[Catégorie:
+        for line in result.split("\n"):
+            if line.strip():
+                assert line.startswith("[[Catégorie:")
+                assert line.endswith("]]")

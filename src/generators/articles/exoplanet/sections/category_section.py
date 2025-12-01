@@ -31,7 +31,6 @@ class CategorySection:
         custom_rules: list[Callable] = [
             self.map_planet_type_to_category,
             self.map_discovery_program_to_category,
-            self.map_constellation_to_category,
         ]
         return self._category_rules_manager.generate_categories_for(
             exoplanet, "exoplanet", custom_rules=custom_rules
@@ -78,11 +77,3 @@ class CategorySection:
                 if key.lower() in discovered_by_program.lower():
                     return cat
         return None
-
-    def map_constellation_to_category(self, exoplanet: Exoplanet) -> str | None:
-        """Règle personnalisée pour déterminer la catégorie liée à la constellation."""
-        if not exoplanet.sy_constellation:
-            return None
-
-        constellation = exoplanet.sy_constellation.strip()
-        return f"Exoplanète de la constellation de {constellation}"

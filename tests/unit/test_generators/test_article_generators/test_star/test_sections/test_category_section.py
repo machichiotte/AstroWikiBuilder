@@ -15,6 +15,8 @@ def mock_star():
     star = MagicMock(spec=Star)
     star.st_name = "Kepler-186"
     star.sy_constellation = None
+    star.st_altname = []
+    star.st_spectype = None
     return star
 
 
@@ -26,15 +28,27 @@ class TestCategorySection:
         section = CategorySection()
         section._category_rules_manager = MagicMock()
         section._category_rules_manager.rules = {
-            "common": {
-                "mapped": {"sy_constellation": {"Cygne": "[[Catégorie:Constellation du Cygne]]"}}
-            }
+            "common": {"mapped": {"sy_constellation": {"Cygne": "Constellation du Cygne"}}}
         }
 
         mock_star.sy_constellation = "Cygne"
         result = section.map_constellation_to_category(mock_star)
-        assert result == "[[Catégorie:Constellation du Cygne]]"
+        assert result == "Constellation du Cygne"
 
         mock_star.sy_constellation = "Unknown"
         result = section.map_constellation_to_category(mock_star)
         assert result is None
+
+    def test_categories_format(self, mock_star):
+        """Test que les catégories sont correctement formatées sans double préfixe."""
+        section = CategorySection()
+        result = section.generate(mock_star)
+
+        # Vérifier qu'il n'y a pas de double [[Catégorie:
+        assert "[[Catégorie:[[Catégorie:" not in result
+
+        # Vérifier que toutes les lignes commencent par [[Catégorie:
+        for line in result.split("\n"):
+            if line.strip():
+                assert line.startswith("[[Catégorie:")
+                assert line.endswith("]]")
