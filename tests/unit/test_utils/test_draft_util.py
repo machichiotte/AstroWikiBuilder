@@ -149,7 +149,9 @@ class TestPersistDraftsByEntityType:
 
         persist_drafts_by_entity_type(missing, existing, "drafts", "exoplanet")
 
-        assert mock_makedirs.call_count == 2
+        # 2 pour les répertoires de base (missing_entity_dir, existing_entity_dir)
+        # + 2 pour les sous-dossiers catalogue (un pour missing, un pour existing)
+        assert mock_makedirs.call_count == 4
         assert mock_file.call_count == 2
 
     @patch("builtins.open", new_callable=mock_open)
@@ -158,5 +160,6 @@ class TestPersistDraftsByEntityType:
         """Test avec dictionnaires vides."""
         persist_drafts_by_entity_type({}, {}, "drafts", "exoplanet")
 
+        # Seulement les 2 répertoires de base sont créés
         assert mock_makedirs.call_count == 2
         mock_file.assert_not_called()
