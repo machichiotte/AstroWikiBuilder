@@ -42,6 +42,15 @@ class TestCategorySection:
     def test_categories_format(self, mock_star):
         """Test que les catégories sont correctement formatées sans double préfixe."""
         section = CategorySection()
+
+        # Mock the category rules manager to return a list of categories
+        section._category_rules_manager = MagicMock()
+        section._category_rules_manager.generate_categories_for.return_value = [
+            "Étoile",
+            "Système planétaire",
+            "Objet du catalogue Kepler|0186",
+        ]
+
         result = section.generate(mock_star)
 
         # Vérifier qu'il n'y a pas de double [[Catégorie:
