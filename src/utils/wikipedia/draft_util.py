@@ -42,6 +42,58 @@ def sanitize_draft_filename(filename: str) -> str:
     return filename
 
 
+def extract_catalog_prefix(name: str) -> str:
+    """
+    Extrait le préfixe du catalogue à partir du nom d'une entité.
+
+    Args:
+        name: Le nom de l'entité (exoplanète ou étoile)
+
+    Returns:
+        Le préfixe du catalogue (kepler, k2, toi, wasp, etc.) ou 'autre' si aucun préfixe reconnu
+    """
+    if not name:
+        return "autre"
+
+    # Convertir en majuscules pour la comparaison
+    name_upper = name.upper().strip()
+
+    # Liste des préfixes de catalogues connus (ordre important pour éviter les conflits)
+    catalog_prefixes = [
+        ("KEPLER-", "kepler"),
+        ("K2-", "k2"),
+        ("KOI-", "koi"),
+        ("TOI-", "toi"),
+        ("TIC ", "tic"),
+        ("WASP-", "wasp"),
+        ("HAT-P-", "hat"),
+        ("HATS-", "hats"),
+        ("TRES-", "tres"),
+        ("XO-", "xo"),
+        ("QATAR-", "qatar"),
+        ("KELT-", "kelt"),
+        ("OGLE-", "ogle"),
+        ("MOA-", "moa"),
+        ("TRAPPIST-", "trappist"),
+        ("COROT-", "corot"),
+        ("HD ", "hd"),
+        ("HIP ", "hip"),
+        ("HR ", "hr"),
+        ("GJ ", "gj"),
+        ("GLIESE ", "gliese"),
+        ("LHS ", "lhs"),
+        ("2MASS ", "2mass"),
+        ("WISE ", "wise"),
+        ("GAIA ", "gaia"),
+    ]
+
+    for prefix, folder_name in catalog_prefixes:
+        if name_upper.startswith(prefix):
+            return folder_name
+
+    return "autre"
+
+
 # ============================================================================
 # GÉNÉRATION DE CONTENU D'ARTICLES
 # ============================================================================
@@ -181,7 +233,7 @@ def persist_drafts_by_entity_type(
     entity_type: str,
 ) -> None:
     """
-    Sauvegarde les brouillons dans les répertoires appropriés.
+    Sauvegarde les brouillons dans les répertoires appropriés, organisés par catalogue.
 
     Args:
         missing_drafts: Dictionnaire des brouillons manquants {nom: contenu}
@@ -190,7 +242,7 @@ def persist_drafts_by_entity_type(
         entity_type: Type d'entité ('exoplanet' ou 'star')
     """
     try:
-        # Créer les répertoires s'ils n'existent pas
+        # Créer les répertoires de base
         missing_dir: str = os.path.join(drafts_dir, "missing")
         existing_dir: str = os.path.join(drafts_dir, "existing")
 
@@ -201,26 +253,52 @@ def persist_drafts_by_entity_type(
         os.makedirs(missing_entity_dir, exist_ok=True)
         os.makedirs(existing_entity_dir, exist_ok=True)
 
+        # Compteurs pour les statistiques
+        catalog_counts = {}
+
         # Sauvegarder les brouillons manquants
         for name, content in missing_drafts.items():
+            # Extraire le préfixe du catalogue
+            catalog_prefix = extract_catalog_prefix(name)
+
+            # Créer le sous-dossier du catalogue
+            catalog_dir = os.path.join(missing_entity_dir, catalog_prefix)
+            os.makedirs(catalog_dir, exist_ok=True)
+
+            # Compter par catalogue
+            catalog_counts[catalog_prefix] = catalog_counts.get(catalog_prefix, 0) + 1
+
+            # Sauvegarder le fichier
             filename: str = sanitize_draft_filename(name) + ".wiki"
-            filepath: str = os.path.join(missing_entity_dir, filename)
+            filepath: str = os.path.join(catalog_dir, filename)
             with open(filepath, "w", encoding="utf-8") as f:
                 f.write(content)
-            # logger.info(f"Brouillon manquant sauvegardé : {filepath}")
 
         # Sauvegarder les brouillons existants
         for name, content in existing_drafts.items():
+            # Extraire le préfixe du catalogue
+            catalog_prefix = extract_catalog_prefix(name)
+
+            # Créer le sous-dossier du catalogue
+            catalog_dir = os.path.join(existing_entity_dir, catalog_prefix)
+            os.makedirs(catalog_dir, exist_ok=True)
+
+            # Sauvegarder le fichier
             filename = sanitize_draft_filename(name) + ".wiki"
-            filepath = os.path.join(existing_entity_dir, filename)
+            filepath = os.path.join(catalog_dir, filename)
             with open(filepath, "w", encoding="utf-8") as f:
                 f.write(content)
-            # logger.info(f"Brouillon existant sauvegardé : {filepath}")
 
         total = len(missing_drafts) + len(existing_drafts)
         logger.info(
             f"Total de {total} brouillons sauvegardés dans : {missing_entity_dir} et {existing_entity_dir}"
         )
+
+        # Afficher les statistiques par catalogue
+        if catalog_counts:
+            logger.info("Répartition par catalogue :")
+            for catalog, count in sorted(catalog_counts.items()):
+                logger.info(f"  - {catalog}: {count} brouillons")
 
     except Exception as e:
         logger.error(f"Erreur lors de la sauvegarde des brouillons : {str(e)}")
